@@ -8,7 +8,7 @@ Date: 2026-08-27 · Phase 0.2 — Monorepo Skeleton Bootstrap
 | 项 | 值 |
 | --- | --- |
 | Starting SHA（Frozen Architecture Baseline） | `7e109201e250dd5843add2249a24afa699766dd0` |
-| Result SHA | 本轮提交（`docs: freeze validated HFM architecture baseline` 之后的新提交，SHA 见提交后状态） |
+| Result SHA（Monorepo Skeleton） | `669752912579f6f8f1ba7553e7f1083ff5f765b8` |
 | 工作树起点 | clean，HEAD = origin/main = `7e10920` |
 
 ## Created Structure
@@ -63,7 +63,7 @@ hfm/
 ## Runtime Smoke
 
 - Backend：`uvicorn hfm.main:app --port 8100` → `GET /health` **200** `{"status":"ok","service":"hfm"}`；`GET /ready` **200** `{"status":"ready","service":"hfm"}`
-- Frontend：`vite dev`（port 5199）→ **HTTP 200**，`<title>HFM · 皇甫谧人文数字平台</title>`
+- Frontend：`pnpm --filter @hfm/frontend run dev --port 5199` → vite 绑定 `http://localhost:5199/`（`VITE v6.4.3 ready` 日志证据）→ `GET /` **HTTP 200**，`<title>HFM · 皇甫谧人文数字平台</title>`（curl 证据）
 - 全程无需启动 PostgreSQL / Elasticsearch / Redis / MinIO（符合 JUSTIFIED_WITH_CONDITIONS，零强制基础设施）
 
 ## HFB Reuse Confirmation
@@ -121,7 +121,7 @@ Working Tree:
 CLEAN
 
 Result SHA:
-<commit sha recorded after commit>
+669752912579f6f8f1ba7553e7f1083ff5f765b8
 
 READY FOR CODEX SKELETON ACCEPTANCE:
 YES
