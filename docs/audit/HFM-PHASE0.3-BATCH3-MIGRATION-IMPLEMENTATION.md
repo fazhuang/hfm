@@ -14,7 +14,7 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 3
 ## 3. Candidate Inventory
 
 - 完整清单见 `docs/migration/hfb/HFM-PHASE0.3-BATCH3-INVENTORY.md`
-- 汇总：候选 11 项 → **PORT 2 · ADAPT 1 · REFERENCE_ONLY 1 · DEFER 5 · REJECT 3**；迁移 3 个单元（真实达标，少于上限 5）
+- 汇总：候选 11 项 → **PORT 2 · ADAPT 1 · REFERENCE_ONLY 1 · DEFER 4 · REJECT 3**（合计 11）；迁移 3 个单元（真实达标，少于上限 5）
 
 ## 4. PORT Assets
 
