@@ -6,6 +6,7 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 4（末轮
 ## 1. Starting Baseline
 
 - **Batch 3 Migration Baseline**：`c7ec91ac6dc8667dc1c2b9cd73e386a8745024eb`（HFM HEAD = origin/main，working tree clean）
+- **Batch 4 Implementation Candidate / Result SHA**：`df537faad63bccb44ecd2a2eac442b8cd853adc3` — 身份为 **Batch 4 zero-code implementation/audit candidate**，非 Batch 4 Migration Baseline（后者尚未建立）
 
 ## 2. HFB Source Snapshot
 
@@ -14,8 +15,10 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 4（末轮
 ## 3. Remaining Asset Audit Result
 
 - 完整审计见 `docs/migration/hfb/HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md`
+- **Unique Remaining-Asset Audit Entries: 40**（RA-001 … RA-040；逐项明细与 Audit Population Definition 见审计文档）
 - Frozen Reuse Matrix 22 项能力全部为**核心领域或 Phase 1 Deliverables**（DOMAIN_DEFERRED 17 / PHASE1_DEFERRED 5），无一项属 Phase 0.3 LOW-coupling shared asset
 - A–J 十区域在 HFB 固定 snapshot 中**不存在**额外可分离通用资产（validation/temporal/path 无独立通用实现；identifier 仅 DB 耦合 uuid7；observability 仅基础 logging 已覆盖；前端通用 utils 已全覆盖）
+- **SHARED_ASSET_REMAINING = 0**
 
 ## 4. Phase 0.3 Shared Asset Coverage
 
@@ -114,3 +117,25 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 4（末轮
 
 - **Starlette/httpx Deprecation Warning: OPEN / NON-BLOCKING**（未升级依赖、未"顺手解决"；若未修改依赖自然消失则不处理）
 - /ready 骨架期轻量（无外部依赖，符合 Frozen 条件性基础设施原则）
+
+## Acceptance Documentation Corrections
+
+```text
+P2-1 Result SHA missing:
+CLOSED — Batch 4 Implementation Candidate / Result SHA 已绑定 df537fa…（见 §1）
+
+P2-2 Remaining Audit population not independently enumerable:
+CLOSED — Audit Population Definition（Set A ∪ B）+ RA-001 … RA-040 逐项表已建立；Unique Remaining-Asset Audit Entries = 40
+（Evidence: HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md, RA-001 … RA-040）
+
+Remaining P0:
+0
+
+Remaining P1:
+0
+
+Remaining P2:
+0
+```
+
+注：以上为文档修正完成状态记录；最终关闭由 Codex 定向复验裁决。
