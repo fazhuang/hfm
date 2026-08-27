@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+coverage/
+.vite/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Build / temp
+tmp/
+temp/
+.cache/
+
+# Secrets / local
+*.pem
+*.key
+secrets/
+
+# Playwright
+playwright-report/
+test-results/
