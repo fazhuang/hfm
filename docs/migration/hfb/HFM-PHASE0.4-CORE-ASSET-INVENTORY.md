@@ -16,7 +16,7 @@ HFB Source Snapshot：`03755b57ec0e4c8023d1447619f7d6ead9e44d73`
 | CA-006 | Concept / Acupoint | TCMEntity | `models/tcm_entity.py` | tcm_entities | — | — | — | TESTED | MEDIUM | EXTEND |
 | CA-007 | Work | Work（FRBR） | `models/bibliographic.py` | works | — | — | test_advanced_bibliographic_model.py | TESTED | LOW | REUSE |
 | CA-008 | Edition / Manifestation | Edition / Manifestation | `models/bibliographic.py` | editions / manifestations | — | — | 同上 | TESTED | LOW | REUSE |
-| CA-009 | NormalizedText / 辑佚 | NormalizedText / OCRArtifact / FragmentProvenance | `models/bibliographic.py` | normalized_texts / ocr_artifacts / fragment_provenance | — | — | TESTED | MEDIUM | EXTEND |
+| CA-009 | NormalizedText / 辑佚 | NormalizedText / OCRArtifact / FragmentProvenance | `models/bibliographic.py` | normalized_texts / ocr_artifacts / fragment_provenance | — | — | — | TESTED | MEDIUM | EXTEND |
 | CA-010 | Book | Book | `models/book.py` | books | — | v1/entities.py /books | test_entity_models.py | TESTED | LOW | REUSE |
 | CA-011 | ClassicalVersion | ClassicalVersion（edition_type/public_domain_status/review_status） | `models/classical_version.py` | classical_versions | — | v1/classical_versions.py | test_classical_versions_rbac.py | TESTED | MEDIUM | EXTEND |
 | CA-012 | Version | Version（is_formal_source/withdrawn_at） | `models/version.py` | versions | version_center | v1/version_center.py | test_version_tree.py | TESTED+ENFORCED | LOW | REUSE |
@@ -30,7 +30,7 @@ HFB Source Snapshot：`03755b57ec0e4c8023d1447619f7d6ead9e44d73`
 | CA-020 | SourceRef | SourceRef（page_location 字符串） | `models/academic_evidence.py` | source_refs | — | — | — | TESTED | LOW | REUSE |
 | CA-021 | Evidence | Evidence（Level 1-4 + source_ref_id + source_passage_id + taint） | `models/academic_evidence.py` | evidences | candidate_publish_uow | v1/evidences.py | test_phase_a0_candidate_pipeline.py | TESTED | LOW | REUSE |
 | CA-022 | Citation | Citation（多态 target → evidence_id） | `models/academic_evidence.py` | citations | citation_persistence | — | test_citation_persistence.py | TESTED | MEDIUM | ADAPT（target → Assertion） |
-| CA-023 | Assertion | 无统一模型（Variant/AcademicRelation/CandidateExtraction/GenerationProof） | — | — | — | — | PARTIAL | HIGH（设计） | NEW |
+| CA-023 | Assertion | 无统一模型（Variant/AcademicRelation/CandidateExtraction/GenerationProof） | — | — | — | — | — | PARTIAL | HIGH（设计） | NEW |
 | CA-024 | 学术污损 | AcademicTaintAuditLog | `models/academic_taint.py` | academic_taint_audit_logs | academic_taint_service | — | test_academic_taint_lifecycle.py | ENFORCED+TESTED | LOW | REUSE |
 | CA-025 | Legacy Provenance | LegacyProvenanceDecision / EvidencePackage | `models/legacy_provenance.py` | legacy_* | production_query_policy | — | test_production_query_policy.py | ENFORCED+TESTED | MEDIUM | REUSE（数据迁移治理） |
 | CA-026 | CandidateExtraction → Assertion 桥 | CandidateExtraction / CandidateStatus（5 态） | `models/candidate_extraction.py` | candidate_extractions | candidate_extraction_service | v1/extractions.py | — | ENFORCED+TESTED | HIGH | ADAPT（审核通过 → Assertion；治理链保留） |
