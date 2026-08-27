@@ -83,3 +83,31 @@ def test_migration_idempotent_replay_same_state(tmp_path: Path) -> None:
     first = _tables(db_file)
     assert _alembic(db_file, "upgrade", "head").returncode == 0
     assert _tables(db_file) == first
+
+
+def test_migration_existing_cd0_db_upgrade_to_0002(tmp_path: Path) -> None:
+    """CD-1 migration must upgrade an existing CD-0 database in place."""
+    db_file = tmp_path / "cd0-existing.db"
+    assert _alembic(db_file, "upgrade", "0001").returncode == 0
+    before = _tables(db_file)
+    assert "entities" not in before
+    assert "persons" not in before
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    after = _tables(db_file)
+    assert {"entities", "persons"} <= after
+    # CD-0 tables preserved
+    assert {"sources", "source_refs", "institutions"} <= after
+    # CD-1 schema shape
+    assert {"id", "entity_type", "name"} <= _columns(db_file, "entities")
+    assert {"entity_id", "domain_status", "dynasty"} <= _columns(db_file, "persons")
+
+
+def test_migration_0002_downgrade_preserves_cd0(tmp_path: Path) -> None:
+    """Downgrading 0002 drops CD-1 tables but keeps CD-0 tables."""
+    db_file = tmp_path / "cd1-downgrade.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    result = _alembic(db_file, "downgrade", "0001")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert not {"entities", "persons"} & tables
+    assert {"sources", "source_refs", "institutions"} <= tables
