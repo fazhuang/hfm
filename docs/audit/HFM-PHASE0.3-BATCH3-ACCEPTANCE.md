@@ -5,7 +5,7 @@ Mode: READ-ONLY acceptance — 未修改 HFM 源码/测试/配置/依赖/Git 历
 
 ## 1. Final Verdict
 
-**PASS**（0 P0 / 0 P1 / 1 P2 / 2 P3）
+**PASS**（0 P0 / 0 P1 / 0 P2 / 2 P3）
 
 ## 2. Repository Baseline
 
@@ -17,6 +17,7 @@ Mode: READ-ONLY acceptance — 未修改 HFM 源码/测试/配置/依赖/Git 历
 | Working tree | clean（验收前） | CONFIRMED |
 | merge-base（b5388af..b3207ed） | `b5388af0490f9d7b3e14b9a6f1f1ccff781e81c1` | CONFIRMED（ancestry 成立） |
 | 历史链 | b3207ed → b5388af → c2f61d5 → 45e6cc1 → 981030f → 5ba7662 | CONFIRMED（无改写） |
+| 记录身份 | `b3207ed` = Batch 3 implementation candidate；`5d8466a` = first acceptance-record correction commit；**Current Acceptance Record: this commit** | CONFIRMED |
 
 ## 3. Inventory Verification
 
@@ -33,7 +34,7 @@ REJECT: 3
 
 **INVENTORY COUNTS: CONFIRMED**（inventory 内部一致：11 = 2+1+1+4+3；Migrated Assets 3 = PORT 2 + ADAPT 1）。
 
-**P2-1**：实施报告 §3 汇总行写「DEFER 5」，与 inventory（权威，DEFER 4）不符 — 计数笔误，不影响任何迁移内容；本轮只读不修复，建议下一治理轮修正。
+**P2-1（CLOSED）**：实施报告 §3 汇总行「DEFER 5」已修正为「DEFER 4」（提交 `5d8466a`），与 inventory（权威）一致；计数笔误，不影响任何迁移内容。
 
 ## 4. Asset-by-Asset Verification
 
@@ -143,12 +144,18 @@ diff `b5388af..b3207ed` 新增代码扫描：无 Person/Book/Edition/Version/Cha
 | --- | --- | --- |
 | P0 | 0 | — |
 | P1 | 0 | — |
-| P2 | 1 | 实施报告 §3「DEFER 5」与 inventory「DEFER 4」不符（计数笔误；inventory 权威一致；不影响迁移内容） |
+| P2 | 0 | — |
 | P3 | 2 | ① Starlette/httpx deprecation warning（既有，OPEN/NON-BLOCKING，未恶化、未升级依赖"顺手解决"）；② /ready 骨架期轻量（无外部依赖，符合 Frozen 条件性基础设施原则，Phase 1 引入 infra 时完善） |
+
+**Previous P2: CLOSED**
+
+- 实施报告 §3「DEFER 5」与 inventory「DEFER 4」不符（计数笔误）已修正（`5d8466a`：实施报告计数修正 + 验收报告入库）。
+- Remaining Acceptance Corrections: **NONE**
 
 ## 18. Batch 3 Ruling
 
 **HFM PHASE 0.3 BATCH 3: ACCEPTED**
 
-- P2 修正项留待后续治理提交（本轮 READ-ONLY 不修复）。
+- Previous P2: **CLOSED** — The acceptance report is now tracked and the DEFER count is corrected to 4.
+- Remaining Acceptance Corrections: **NONE**
 - Batch 4 不在本轮授权范围内。
