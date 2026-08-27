@@ -1,0 +1,19 @@
+{
+  "name": "hfm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HFM — Huangfu Mi Humanities Digital Platform (monorepo skeleton)",
+  "packageManager": "pnpm@10.33.2",
+  "scripts": {
+    "dev": "pnpm --filter @hfm/frontend run dev",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r run test",
+    "build": "pnpm -r run build",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "vue-demi"]
+  }
+}

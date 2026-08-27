@@ -31,4 +31,8 @@ Architecture Greenfield + Capability Brownfield
 
 ## 当前阶段
 
-Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
+**Phase 0.2 — Monorepo Skeleton**（2026-08-27）
+
+- Frozen Architecture Baseline：`7e109201e250dd5843add2249a24afa699766dd0`（见 `docs/governance/BASELINE-MANAGEMENT.md`）
+- HFB 是资产供体（数据资产、技术能力、研究成果来源），**尚未授权 migration**；
+- **尚未进入 Phase 1**（G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 均为 Phase 1 Deliverables，未实现）。
