@@ -16,7 +16,7 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 4（末轮
 
 - 完整审计见 `docs/migration/hfb/HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md`
 - **Unique Remaining-Asset Audit Entries: 40**（RA-001 … RA-040；逐项明细与 Audit Population Definition 见审计文档）
-- Frozen Reuse Matrix 22 项能力全部为**核心领域或 Phase 1 Deliverables**（DOMAIN_DEFERRED 17 / PHASE1_DEFERRED 5），无一项属 Phase 0.3 LOW-coupling shared asset
+- Frozen Reuse Matrix 22 项能力全部为**核心领域（CORE_DOMAIN 17）或 Phase 1 Deliverables（PHASE1_DELIVERABLE 5）**，无一项属 Phase 0.3 LOW-coupling shared asset
 - A–J 十区域在 HFB 固定 snapshot 中**不存在**额外可分离通用资产（validation/temporal/path 无独立通用实现；identifier 仅 DB 耦合 uuid7；observability 仅基础 logging 已覆盖；前端通用 utils 已全覆盖）
 - **SHARED_ASSET_REMAINING = 0**
 
@@ -33,10 +33,11 @@ Date: 2026-08-27 · Phase 0.3 — SELECTIVE ASSET MIGRATION — BATCH 4（末轮
 
 未生成 Batch 4 Inventory — 覆盖审计结论为 SUFFICIENT，无 MIGRATION_CANDIDATE（§6/§7 流程：无候选则不产出 Inventory）。
 
-## 6–10. PORT / ADAPT / REFERENCE_ONLY / DEFER / REJECT
+## 6–10. PORT / ADAPT / REFERENCE_ONLY / DEFER / REJECT（Batch 4 Migration Inventory）
 
 - **Migrated Assets: 0**（PORT 0 / ADAPT 0 / REFERENCE_ONLY 0 / DEFER 0 / REJECT 0 — 无迁移单元）
-- 审计级决策（22 矩阵能力 + 共享家族）：ALREADY_COVERED 8 · DOMAIN_DEFERRED 17 · PHASE1_DEFERRED 5 · REJECT 4 · REFERENCE_ONLY 1（详见审计文档）
+- **Coverage Audit 类别统计**（正式口径，与 RA-001…RA-040 一致，属另一统计体系）：ALREADY_COVERED 10 · CORE_DOMAIN 18 · PHASE1_DELIVERABLE 7 · REJECTED_AS_NON_REUSABLE 5 · SHARED_ASSET_REMAINING 0 = 40（详见审计文档）
+- 注：Coverage Audit 类别（ALREADY_COVERED/CORE_DOMAIN/PHASE1_DELIVERABLE/REJECTED_AS_NON_REUSABLE/SHARED_ASSET_REMAINING）与 Migration Inventory 计数（PORT/ADAPT/REFERENCE_ONLY/DEFER/REJECT）为**两个独立统计体系**，不得混用。
 
 ## 11. Source → Target Mapping
 
@@ -128,6 +129,12 @@ P2-2 Remaining Audit population not independently enumerable:
 CLOSED — Audit Population Definition（Set A ∪ B）+ RA-001 … RA-040 逐项表已建立；Unique Remaining-Asset Audit Entries = 40
 （Evidence: HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md, RA-001 … RA-040）
 
+P2-3a Stale coverage-count terminology:
+CLOSED — 实施报告 §6–10 旧审计级计数行已替换为统一正式类别（ALREADY_COVERED 10 · CORE_DOMAIN 18 · PHASE1_DELIVERABLE 7 · REJECTED_AS_NON_REUSABLE 5 · SHARED_ASSET_REMAINING 0 = 40），并与 Migration Inventory 计数明确分离
+
+P2-3b RA-028 Markdown table pipe ambiguity:
+CLOSED — RA-028 Evidence 单元格管道符已转义（`useToast\|useTheme\|useFocusTrap`），表格列结构一致
+
 Remaining P0:
 0
 
@@ -136,6 +143,9 @@ Remaining P1:
 
 Remaining P2:
 0
+
+Ready for Codex Final Targeted Verification:
+YES
 ```
 
 注：以上为文档修正完成状态记录；最终关闭由 Codex 定向复验裁决。

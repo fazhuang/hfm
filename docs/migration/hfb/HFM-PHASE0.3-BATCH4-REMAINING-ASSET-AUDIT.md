@@ -112,7 +112,7 @@ Unique audit entries（A ∪ B）:
 | RA-025 | API response envelope | SHARED_ASSET_SEARCH | `utils/response.py` | B1/B2 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
 | RA-026 | Exceptions / error handlers / request-id | SHARED_ASSET_SEARCH | `core/exceptions.py` + `core/error_handlers.py` + `middleware/request_id.py` | B1 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
 | RA-027 | Pagination / query contract | SHARED_ASSET_SEARCH | `schemas/common.py` | B2 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
-| RA-028 | Frontend presentation-independent utils | SHARED_ASSET_SEARCH | `packages/utils` + `composables/useToast|useTheme|useFocusTrap` | B1/B2 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
+| RA-028 | Frontend presentation-independent utils | SHARED_ASSET_SEARCH | `packages/utils` + `composables/useToast\|useTheme\|useFocusTrap` | B1/B2 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
 | RA-029 | Error normalization | SHARED_ASSET_SEARCH | `api/client.ts`（getApiErrorDetail） | B3 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
 | RA-030 | System / runtime endpoints | SHARED_ASSET_SEARCH | `api/version.py` | B3 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
 | RA-031 | Test infrastructure | SHARED_ASSET_SEARCH | `test-setup.ts` | B3 | ALREADY_COVERED | LOW | 已迁移 | ALREADY_MIGRATED |
