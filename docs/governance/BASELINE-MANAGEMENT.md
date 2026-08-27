@@ -14,6 +14,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.3
 | **Selective Migration Batch 1（选择性迁移批 1）** | **本轮治理提交** | Accepted Candidate `981030f`（PASS）归档后形成；后续 Batch 2 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Selective Migration Batch 2（选择性迁移批 2）** | **本轮治理提交** | Accepted Candidate `c2f61d5`（PASS）归档后形成；后续 Batch 3 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Selective Migration Batch 3（选择性迁移批 3）** | **本轮治理提交** | Final Acceptance Record `702211c`（PASS，P0/P1/P2=0）归档后形成；后续 Batch 4 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
+| **Phase 0.3 Selective Shared Asset Migration（Phase 0.3 选择性共享资产迁移）** | **本轮治理提交** | Final Batch = Batch 4（PASS，零代码完成审计）；Phase 0.3 停止条件已满足，无 Batch 5 | **COMPLETE / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -107,6 +108,32 @@ this commit
 - **非阻塞观察项（保留）**：Starlette/httpx Deprecation Warning — OPEN / NON-BLOCKING（不属 Batch 3 未关闭条件；禁止未经授权升级依赖解决）
 - **治理动作**：提交 `docs: archive accepted HFM migration batch 3`；本治理提交完成后其实际 SHA 为 **Batch 3 Migration Baseline**，后续 Batch 4（如获授权）必须从该基线开始，而非直接从 `b3207ed` 或 `702211c` 开始。
 
+## Phase 0.3 完成归档（2026-08-27）
+
+```text
+Phase 0.3 Selective Shared Asset Migration
+
+Status:
+COMPLETE / FROZEN
+
+Final Batch:
+Batch 4
+
+Batch 4 Final Acceptance:
+PASS
+
+Final Acceptance Record:
+docs/audit/HFM-PHASE0.3-BATCH4-ACCEPTANCE.md
+
+Phase 0.3 Completion Governance Record:
+this commit
+```
+
+- **Phase 0.3 Completion Baseline: this commit**（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
+- **BATCH 5: NOT REQUIRED** — shared/foundation selective migration 已无继续批次的必要
+- **CORE DOMAIN MIGRATION: NOT AUTHORIZED** · **PHASE 1 BUSINESS CODING: NOT AUTHORIZED** — Phase 0.3 COMPLETE 不自动授权下一阶段；下一阶段编号与范围由后续独立治理指令决定
+- 非阻塞观察项（保留）：Starlette/httpx Deprecation Warning — OPEN / NON-BLOCKING（不属 Phase 0.3 未完成项）
+
 ## 冻结语义
 
 **Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
@@ -138,6 +165,7 @@ this commit
 - **MONOREPO SKELETON**：**FROZEN / VALIDATED**
 - **HFB → HFM PI MIGRATION**：**BATCH 1 · 2 · 3 ACCEPTED / FROZEN**；**BATCH 4 NOT AUTHORIZED** — Batch 4 必须由后续独立指令明确授权（不得将 BATCH 4 = ELIGIBLE 自动改写为 ALLOWED）；仅允许执行已授权的独立迁移任务，不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
 - **PHASE 1 BUSINESS CODING**：**NOT AUTHORIZED** — G1 / G2 / G3 / G4 / G7 仍为 Phase 1 Deliverables
+- **BATCH 5**：**NOT REQUIRED**（shared/foundation selective migration 完成，无继续批次必要）；**CORE DOMAIN MIGRATION**：**NOT AUTHORIZED**（下一阶段编号与范围由后续独立治理指令决定）
 
 ## 变更规则（Frozen 之后）
 
@@ -163,3 +191,6 @@ this commit
 - `docs/migration/hfb/HFM-PHASE0.3-BATCH3-INVENTORY.md`（Batch 3 迁移清单，2026-08-27）
 - `docs/audit/HFM-PHASE0.3-BATCH3-MIGRATION-IMPLEMENTATION.md`（Batch 3 实施报告，2026-08-27）
 - `docs/audit/HFM-PHASE0.3-BATCH3-ACCEPTANCE.md`（Batch 3 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md`（Batch 4 剩余资产审计，RA-001…RA-040，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH4-MIGRATION-IMPLEMENTATION.md`（Batch 4 实施报告，NO_MIGRATION_REQUIRED，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH4-ACCEPTANCE.md`（Batch 4 验收归档，FINAL VERDICT: PASS，2026-08-27）
