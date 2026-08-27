@@ -1,10 +1,10 @@
 # HFM 技术基线（v1.0）
 
-Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
+Status: **Frozen** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
 
 ## 目的与范围
 
-本文档定义 HFM 各架构边界的技术基线（Technology Baseline），与 HFB Asset Reuse Matrix v1.0 同属 **Provisional Architecture Baseline（暂定架构基线，提交 `ba4f615`）**。经 Codex Re-Acceptance（VALIDATED_WITH_CORRECTIONS）修正后**仍为 Provisional**；所列修正全部落地并重新通过 Codex 后方可升级为 Frozen Baseline（见 `docs/governance/BASELINE-MANAGEMENT.md`）。
+本文档定义 HFM 各架构边界的技术基线（Technology Baseline），与 HFB Asset Reuse Matrix v1.0 共同构成 **Frozen Architecture Baseline**。原始 Provisional 基线（提交 `ba4f615`）经 Codex Re-Acceptance（VALIDATED_WITH_CORRECTIONS）修正、候选绑定门禁证明（G14/G15）后获得 **Frozen Eligibility: ELIGIBLE**，由本轮治理提交正式升级为 Frozen（见 `docs/governance/BASELINE-MANAGEMENT.md`）。
 
 **依据**：
 
@@ -16,6 +16,17 @@ Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase
 
 **本版本不定义**：数据库表、API 契约、物理部署拓扑、云厂商选择。
 
+## 冻结语义（Frozen Semantics）
+
+**Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
+
+**Frozen 不表示**：
+
+- 所有 Phase 1 功能已实现；
+- G1/G2/G3/G4/G7 已完成；
+- HFB 代码可以无条件迁移；
+- HFM 可以开始业务开发。
+
 ## 决策原则
 
 1. **同源复用**：HFM 与 HFB 保持同语言/框架族（Python + FastAPI / Vue 3 + TypeScript），最小化 Port 成本；不因引入新技术而迁移已验证能力。
@@ -24,7 +35,7 @@ Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase
 4. **条件性基础设施原则**：> Introduce infrastructure only when target requirements or measured scale justify it. Redis、MinIO、Elasticsearch 不得作为一期无条件强制基础设施。
 5. **前端不引入 React**：遵循 AGENTS.md 约束；UI 组件资源选择须兼容 Vue 3 面（shadcn/ui 仅作概念基础，React-only 组件不得直接落入 Vue 面）。
 6. **边界契约优先**：技术选型服从 HFM-BOUNDARIES-v0.1 的依赖方向（上层可依赖下层，Domain/Evidence & Provenance 不依赖任何边界）。
-7. **先冷冻结、后演进**：Provisional 期间任何变更仍须经 ADR 裁决并升版本号，禁止静默替换。
+7. **先冷冻结、后演进**：Frozen 之后任何变更须经 ADR 裁决并升版本号，禁止静默替换。
 
 ## Codex 技术确定性分类（CODEX-REACCEPTANCE §9）
 
@@ -51,7 +62,7 @@ Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase
 | 缓存 / 限流 / 队列 | Redis（**条件性**） | JUSTIFIED_WITH_CONDITIONS | HFB 角色未独立验证；按实测需要引入（§9） |
 | 对象存储 | MinIO / S3 兼容（**条件性**） | JUSTIFIED_WITH_CONDITIONS | G4 媒体/PDF/非遗资产需求证明后引入（§9） |
 | AI | OpenAI / Anthropic 网关 + Evidence-Gate | JUSTIFIED（基础）+ 条件扩展 | Evidence-Gated 复用；医学护栏（G8）为条件性扩展 |
-| 测试 | pytest · vitest · vue-tsc · ESLint/Prettier · ruff · mypy · Playwright · pre-commit | JUSTIFIED | REUSE HFB 门禁体系（§2.3/§12）；G14/G15 为 Phase 1 ENTRY GATE |
+| 测试 | pytest · vitest · vue-tsc · ESLint/Prettier · ruff · mypy · Playwright · pre-commit | JUSTIFIED | REUSE HFB 门禁体系（§2.3/§12）；**G14/G15 已关闭**（候选绑定门禁证明，见 `docs/audit/HFD-PHASE0-GATE-PROOF.md`） |
 | CI/CD | GitHub Actions（对齐 HFB CI 门禁清单） | JUSTIFIED | REUSE（§2.3） |
 | 本地运行 | Docker Compose（PG + ES + Redis + MinIO） | 开发工具 | 仅本地开发便利；不等同于一期强制基础设施 |
 | Observability | **UNKNOWN / TO BE DECIDED** | UNKNOWN | **不引入** Prometheus / Grafana / OpenTelemetry / ELK / Sentry；Phase 1 依运行与验收需求单独 ADR 决策 |
@@ -77,7 +88,7 @@ Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase
 | React / Next.js | **Rejected** | AGENTS.md 约束；Vue 栈已复用且能力已验证 |
 | HFB runtime 依赖 | **Rejected（禁止）** | ADR-0001；HFB 仅作能力/数据/参考来源 |
 | 复制 HFB live DB / 永久共享 HFB production DB | **Rejected（禁止）** | 数据继承边界（原则 3）；HFB 数据仅作 migration/import source |
-| 一期无条件强制 Redis / MinIO / ES | **Rejected（Provisional）** | 条件性基础设施原则（§4 JUSTIFIED_WITH_CONDITIONS） |
+| 一期无条件强制 Redis / MinIO / ES | **Rejected（Frozen）** | 条件性基础设施原则（§4 JUSTIFIED_WITH_CONDITIONS） |
 | Observability 平台（Prometheus / Grafana / OpenTelemetry / ELK / Sentry） | Deferred | Phase 1 依运行与验收需求单独 ADR 决策 |
 | 统一消息总线（Kafka 等） | Deferred | 单体起步；队列需求出现时再评估 |
 | 云厂商锁定 | Deferred | 归属 `infra/` 阶段决策 |
@@ -87,7 +98,9 @@ Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase
 
 ## 版本与升级信息
 
-- **版本**：v1.0（**Provisional**）
-- **日期**：2026-08-27（Phase 0）
-- **依据**：BASELINE-AUDIT v1.1（HEAD `2d98b610`）+ DOMAIN-MAP v1.1 + CODEX-REACCEPTANCE（VALIDATED_WITH_CORRECTIONS）+ ADR-0001 + HFM-BOUNDARIES-v0.1
-- **升级规则**：Codex Re-Acceptance 所列修正（矩阵补全、状态规范化、Library/Search EXTEND、G14/G15 门禁）全部落地并重新通过 Codex 后，升级为 **Frozen Baseline**；升级后任何技术基线变更须新增 ADR 并升版本号（v1.1、v2.0 …），不得静默替换。
+- **版本**：v1.0（**Frozen**）
+- **冻结日期**：2026-08-27（Phase 0）
+- **升级路径**：`ba4f615`（Provisional）→ `344821a`（Codex 修正对齐）→ `a6a83c0`（门禁证明）→ 本轮治理提交（Frozen）
+- **依据**：BASELINE-AUDIT v1.1（HEAD `2d98b610`）+ DOMAIN-MAP v1.1 + CODEX-REACCEPTANCE（VALIDATED_WITH_CORRECTIONS）+ GATE-PROOF（G14/G15 关闭）+ ADR-0001 + HFM-BOUNDARIES-v0.1
+- **Gate 状态**：G14（验证环境）、G15（mypy 门禁）**已关闭**；G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 为 **Phase 1 Deliverables**，不属 Phase 0 未完成项。
+- **变更规则**：Frozen 之后任何技术基线变更须新增 ADR 并升版本号（v1.1、v2.0 …），不得静默替换。
