@@ -1,6 +1,6 @@
 # HFM Baseline Management（基线管理）
 
-Status: Active · Date: 2026-08-27 · Phase 0.3
+Status: Active · Date: 2026-08-27 · Phase 0.4
 
 ## 基线关系（2026-08-27 冻结后）
 
@@ -15,6 +15,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.3
 | **Selective Migration Batch 2（选择性迁移批 2）** | **本轮治理提交** | Accepted Candidate `c2f61d5`（PASS）归档后形成；后续 Batch 3 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Selective Migration Batch 3（选择性迁移批 3）** | **本轮治理提交** | Final Acceptance Record `702211c`（PASS，P0/P1/P2=0）归档后形成；后续 Batch 4 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Phase 0.3 Selective Shared Asset Migration（Phase 0.3 选择性共享资产迁移）** | **本轮治理提交** | Final Batch = Batch 4（PASS，零代码完成审计）；Phase 0.3 停止条件已满足，无 Batch 5 | **COMPLETE / FROZEN** |
+| **Phase 0.4 Core Domain Contract（Core Domain 契约）** | **本轮治理提交** | Accepted Candidate `39b2a91`（FINAL CONTRACT ACCEPTANCE，PASS，P0/P1/P2=0）归档后形成；后续 CD-0 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -134,6 +135,38 @@ this commit
 - **CORE DOMAIN MIGRATION: NOT AUTHORIZED** · **PHASE 1 BUSINESS CODING: NOT AUTHORIZED** — Phase 0.3 COMPLETE 不自动授权下一阶段；下一阶段编号与范围由后续独立治理指令决定
 - 非阻塞观察项（保留）：Starlette/httpx Deprecation Warning — OPEN / NON-BLOCKING（不属 Phase 0.3 未完成项）
 
+## Phase 0.4 Core Domain Contract 冻结（2026-08-27）
+
+```text
+Phase 0.4 Core Domain Contract
+
+Status:
+ACCEPTED / FROZEN
+
+Accepted Candidate:
+39b2a91e1f2bb0719202705636ce3a2bed0ee7f9
+
+Final Acceptance:
+PASS
+
+P0:
+0
+
+P1:
+0
+
+P2:
+0
+
+Governance Record:
+this commit
+```
+
+- **Core Domain Contract Baseline: this commit**（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
+- **First Recommended Core Batch: CD-0** — Authorization: **NOT AUTHORIZED**（不得出现 CD-0 ALLOWED）
+- **冻结语义**：Core Domain Scope / Canonical Model / Assertion Contract / Evidence Lineage / Migration DAG / Migration Strategy / Definition of Done 已完成独立验收，可作为后续 Core Domain 实施的形式规范输入。**不表示**：Core Domain 已实现、DB schema 已建立、数据已迁移、CD-0 已授权、Phase 1 已开始、Public API 已确定、Publication 已实现。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-ACCEPTANCE.md`
+
 ## 冻结语义
 
 **Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
@@ -166,6 +199,7 @@ this commit
 - **HFB → HFM PI MIGRATION**：**BATCH 1 · 2 · 3 ACCEPTED / FROZEN**；**BATCH 4 NOT AUTHORIZED** — Batch 4 必须由后续独立指令明确授权（不得将 BATCH 4 = ELIGIBLE 自动改写为 ALLOWED）；仅允许执行已授权的独立迁移任务，不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
 - **PHASE 1 BUSINESS CODING**：**NOT AUTHORIZED** — G1 / G2 / G3 / G4 / G7 仍为 Phase 1 Deliverables
 - **BATCH 5**：**NOT REQUIRED**（shared/foundation selective migration 完成，无继续批次必要）；**CORE DOMAIN MIGRATION**：**NOT AUTHORIZED**（下一阶段编号与范围由后续独立治理指令决定）
+- **CD-0**：**NOT AUTHORIZED**（Core Domain Contract 已 FROZEN，但实施须另行独立授权）
 
 ## 变更规则（Frozen 之后）
 
@@ -193,4 +227,7 @@ this commit
 - `docs/audit/HFM-PHASE0.3-BATCH3-ACCEPTANCE.md`（Batch 3 验收归档，FINAL VERDICT: PASS，2026-08-27）
 - `docs/migration/hfb/HFM-PHASE0.3-BATCH4-REMAINING-ASSET-AUDIT.md`（Batch 4 剩余资产审计，RA-001…RA-040，2026-08-27）
 - `docs/audit/HFM-PHASE0.3-BATCH4-MIGRATION-IMPLEMENTATION.md`（Batch 4 实施报告，NO_MIGRATION_REQUIRED，2026-08-27）
-- `docs/audit/HFM-PHASE0.3-BATCH4-ACCEPTANCE.md`（Batch 4 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-ACCEPTANCE.md`（Phase 0.4 Core Domain Contract 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/domain/HFM-CORE-DOMAIN-SCOPE-v0.1.md` + `HFM-ASSERTION-CONTRACT-v0.1.md` + `HFM-EVIDENCE-LINEAGE-CONTRACT-v0.1.md` + `HFM-CANONICAL-DOMAIN-MODEL-v0.1.md`（Core Domain 契约集，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.4-CORE-ASSET-INVENTORY.md` + `HFM-CORE-DATA-MIGRATION-STRATEGY-v0.1.md` + `HFM-PHASE0.4-CORE-MIGRATION-DAG.md`（Core 迁移规划，2026-08-27）
+- `docs/governance/HFM-CORE-DOMAIN-DEFINITION-OF-DONE.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-RISK-REGISTER.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AUDIT.md`（DoD/风险/审计，2026-08-27）

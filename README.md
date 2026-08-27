@@ -31,15 +31,12 @@ Architecture Greenfield + Capability Brownfield
 
 ## 当前阶段
 
-**Phase 0.3 — Selective Shared Asset Migration Complete**（2026-08-27）
+**Phase 0.4 — Core Domain Contract Accepted / Frozen**（2026-08-27）
 
 - Architecture Baseline: **Frozen**（`7e109201e250dd5843add2249a24afa699766dd0`）
 - Engineering Skeleton Baseline: **Frozen**（`5ba7662` 治理链，见 `docs/governance/BASELINE-MANAGEMENT.md`）
-- Migration Batch 1: **Accepted / Frozen**（`981030f`）
-- Migration Batch 2: **Accepted / Frozen**（`c2f61d5`）
-- Migration Batch 3: **Accepted / Frozen**（`b3207ed`）
-- Migration Batch 4: **Accepted**（`df537fa`，零代码完成审计）
-- **Phase 0.3 Shared Asset Migration: Complete / Frozen**（Final Acceptance Record `docs/audit/HFM-PHASE0.3-BATCH4-ACCEPTANCE.md`）
-- Batch 5: **Not Required**
+- Phase 0.3 Shared Asset Migration: **Complete / Frozen**（`f495fa0`）
+- **Core Domain Contract: Accepted / Frozen**（`39b2a91`，FINAL CONTRACT ACCEPTANCE PASS）
 - Core Domain Migration: **Not Authorized**
+- CD-0: **Not Authorized**（First Recommended Core Batch: CD-0 — 未授权）
 - Phase 1: **Not Authorized**（G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 均为 Phase 1 Deliverables，未实现）
