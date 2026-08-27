@@ -17,6 +17,16 @@ export default tseslint.config(
     },
   },
   {
+    files: ['src/**/*.ts', 'src/**/*.vue'],
+    languageOptions: {
+      globals: {
+        crypto: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+      },
+    },
+  },
+  {
     rules: {
       'vue/multi-word-component-names': 'off',
     },
