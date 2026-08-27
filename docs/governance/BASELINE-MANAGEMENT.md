@@ -1,6 +1,6 @@
 # HFM Baseline Management（基线管理）
 
-Status: Active · Date: 2026-08-27 · Phase 0.2
+Status: Active · Date: 2026-08-27 · Phase 0.3
 
 ## 基线关系（2026-08-27 冻结后）
 
@@ -11,6 +11,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.2
 | Validated Phase 0 Governance HEAD（已验证 Phase 0 治理 HEAD） | `a6a83c0` | Codex 修正对齐（`344821a`）+ 候选绑定门禁证明（`a6a83c0`，G14/G15 关闭） | Validated |
 | **Frozen Architecture Baseline（冻结架构基线）** | **本轮治理提交** | 通过 Codex 复验（Frozen Eligibility: ELIGIBLE）后正式冻结的 Phase 0 架构与技术决策 | **Frozen** |
 | **Engineering Skeleton Baseline（工程骨架基线）** | **本轮治理提交** | 通过 Codex Skeleton Acceptance（VALIDATED_WITH_CORRECTIONS，P2 闭环）后正式冻结的 Phase 0.2 工程骨架 | **Frozen** |
+| **Selective Migration Batch 1（选择性迁移批 1）** | **本轮治理提交** | Accepted Candidate `981030f`（PASS）归档后形成；后续 Batch 2 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -26,6 +27,24 @@ Status: Active · Date: 2026-08-27 · Phase 0.2
 - **Skeleton Implementation**：`6697529`
 - **历史链**（未改写，无 squash/rebase/amend/force push）：`7e10920`（Frozen Architecture Baseline）→ `6697529`（Skeleton Implementation）→ `960cb3a`（P2 Correction）→ `ae3d4c6`（Terminal Acceptance Record）→ `4bf2d28`（Rebinding Record）→ `e7ac52b`（Self-Referenced Final Acceptance Record）
 - **冻结动作**：治理提交 `docs: freeze validated HFM engineering skeleton baseline`；Engineering Skeleton Baseline SHA 采用自引用模式（this commit），提交后经 `git rev-parse HEAD` 记录实际 SHA 作为后续迁移任务的固定起始 SHA。
+
+## Batch 1 迁移归档（2026-08-27，Phase 0.3）
+
+```text
+Selective Migration Batch 1
+Accepted Candidate:
+981030f61c2a8ef9fc524891de7be3e61cd7aae4
+
+Acceptance:
+PASS
+
+Governance Record:
+this commit
+```
+
+- **HFB Source**：`03755b57ec0e4c8023d1447619f7d6ead9e44d73`（完整 SHA）
+- **验收依据**：`docs/audit/HFM-PHASE0.3-BATCH1-ACCEPTANCE.md`（FINAL VERDICT: PASS）
+- **治理动作**：提交 `docs: archive accepted HFM migration batch 1`；本治理提交完成后其实际 SHA 为 **Batch 1 Migration Baseline**，后续 Batch 2（如获授权）必须从该基线开始，而非直接从 `981030f` 开始。
 
 ## 冻结语义
 
@@ -56,7 +75,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.2
 ## 后续准入（2026-08-27 更新）
 
 - **MONOREPO SKELETON**：**FROZEN / VALIDATED**
-- **HFB → HFM PI MIGRATION**：**ALLOWED** — 仅允许执行后续独立迁移任务；不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
+- **HFB → HFM PI MIGRATION**：**BATCH 1 ACCEPTED / FROZEN**；**BATCH 2 NOT AUTHORIZED** — Batch 2 必须由后续独立指令明确授权（不得将 Batch 2 = ELIGIBLE 自动改写为 ALLOWED）；仅允许执行已授权的独立迁移任务，不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
 - **PHASE 1 BUSINESS CODING**：**NOT AUTHORIZED** — G1 / G2 / G3 / G4 / G7 仍为 Phase 1 Deliverables
 
 ## 变更规则（Frozen 之后）
@@ -74,3 +93,6 @@ Status: Active · Date: 2026-08-27 · Phase 0.2
 - `docs/audit/HFD-PHASE0-GATE-PROOF.md`（G14/G15 关闭证明，2026-08-27）
 - `docs/audit/HFM-PHASE0.2-SKELETON-IMPLEMENTATION.md`（Phase 0.2 骨架实现，2026-08-27）
 - `docs/audit/HFM-PHASE0.2-CODEX-SKELETON-ACCEPTANCE.md`（CONDITIONAL PASS / VALIDATED_WITH_CORRECTIONS，P2 CLOSED，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.3-BATCH1-INVENTORY.md`（Batch 1 迁移清单，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH1-MIGRATION-IMPLEMENTATION.md`（Batch 1 实施报告，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH1-ACCEPTANCE.md`（Batch 1 验收归档，FINAL VERDICT: PASS，2026-08-27）

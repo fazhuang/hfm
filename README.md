@@ -31,9 +31,10 @@ Architecture Greenfield + Capability Brownfield
 
 ## 当前阶段
 
-**Phase 0.2 — Engineering Skeleton Baseline Frozen**（2026-08-27）
+**Phase 0.3 — Selective Asset Migration Batch 1 Accepted**（2026-08-27）
 
 - Architecture Baseline: **Frozen**（`7e109201e250dd5843add2249a24afa699766dd0`）
-- Engineering Skeleton Baseline: **Frozen**（SHA 见 `docs/governance/BASELINE-MANAGEMENT.md`）
-- HFB Selective Migration: **Authorized**（仅限后续独立迁移任务）
-- Phase 1 Business Coding: **Not Authorized**（G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 均为 Phase 1 Deliverables，未实现）
+- Engineering Skeleton Baseline: **Frozen**（`5ba7662` 治理链，见 `docs/governance/BASELINE-MANAGEMENT.md`）
+- Migration Batch 1: **Accepted**（`981030f`，PASS）
+- Migration Batch 2: **Not Authorized**
+- Phase 1: **Not Authorized**（G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 均为 Phase 1 Deliverables，未实现）
