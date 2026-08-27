@@ -1,10 +1,10 @@
 # HFM 技术基线（v1.0）
 
-Status: **Frozen** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
+Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
 
 ## 目的与范围
 
-本文档冻结 HFM 各架构边界的技术基线（Technology Baseline），是 Phase 0 的第二个冻结交付物（第一个为 HFB Asset Reuse Matrix v1.0）。
+本文档定义 HFM 各架构边界的技术基线（Technology Baseline），与 HFB Asset Reuse Matrix v1.0 同属 **Provisional Architecture Baseline（暂定架构基线，提交 `ba4f615`）**；经 Codex HFB Re-Acceptance 通过后升级为 Frozen Baseline（见 `docs/governance/BASELINE-MANAGEMENT.md`）。
 
 **依据**：
 
@@ -65,9 +65,9 @@ Status: **Frozen** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository
 | 数据库表 / API 契约 | Deferred | 下一阶段（Phase 1 设计）定义 |
 | 前端 UI 库完整引入 | Deferred | 按 AGENTS.md 选择顺序按需引入，不预装 |
 
-## 冻结信息
+## 版本与升级信息
 
-- **版本**：v1.0（Frozen）
-- **冻结日期**：2026-08-27（Phase 0）
+- **版本**：v1.0（Provisional）
+- **日期**：2026-08-27（Phase 0）
 - **依据**：BASELINE-AUDIT v1.1（HEAD `2d98b610`）+ DOMAIN-MAP v1.1 + ADR-0001 + HFM-BOUNDARIES-v0.1
-- **变更规则**：冻结后任何技术基线变更须新增 ADR 并升版本号（v1.1、v2.0 …），不得静默替换。
+- **升级规则**：Codex HFB Re-Acceptance 通过后升级为 **Frozen Baseline**；升级后任何技术基线变更须新增 ADR 并升版本号（v1.1、v2.0 …），不得静默替换。

@@ -1,11 +1,11 @@
 # HFB → HFM Asset Reuse Matrix
 
-Status: **Frozen** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
+Status: **Provisional（暂定）** · Version: 1.0 · Date: 2026-08-27 · Phase 0 — Repository Bootstrap & HFB Asset Reuse Planning
 
 > 依据：`docs/audit/HFD-PHASE0-BASELINE-AUDIT.md` v1.1（HEAD `2d98b610`）+ `docs/audit/HFD-PHASE0-DOMAIN-MAP.md` v1.1。
 > 判定词汇：REUSE（原样复用）/ EXTEND（复用并扩展）/ ADAPT（适配改造）/ DEPRECATE（废弃）/ NEW（新建）。
 > 迁移策略：Port（携带证据链移植代码）/ Port + Extend（移植后扩展）/ Port + Build（移植并新建缺失部分）/ Deprecate（排除）/ Build（全新构建）。
-> 变更规则：冻结后任何裁决变更须经 ADR 裁决并升版；跨切 NEW 缺口（G1 医学合规 / G2 匿名门户 / G3 发布快照 / G4 非遗媒体）登记于 BASELINE-AUDIT §14 Gap Register。
+> 变更规则：本矩阵属于 Provisional Architecture Baseline（提交 `ba4f615`），Codex HFB Re-Acceptance 通过后升级为 Frozen；升级后任何裁决变更须经 ADR 裁决并升版。跨切 NEW 缺口（G1 医学合规 / G2 匿名门户 / G3 发布快照 / G4 非遗媒体）登记于 BASELINE-AUDIT §14 Gap Register（见 `docs/governance/BASELINE-MANAGEMENT.md`）。
 
 | Domain / Capability | HFB Source | Verdict | HFM Target | Migration Strategy | Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
