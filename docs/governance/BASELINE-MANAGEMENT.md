@@ -13,6 +13,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.3
 | **Engineering Skeleton Baseline（工程骨架基线）** | **本轮治理提交** | 通过 Codex Skeleton Acceptance（VALIDATED_WITH_CORRECTIONS，P2 闭环）后正式冻结的 Phase 0.2 工程骨架 | **Frozen** |
 | **Selective Migration Batch 1（选择性迁移批 1）** | **本轮治理提交** | Accepted Candidate `981030f`（PASS）归档后形成；后续 Batch 2 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Selective Migration Batch 2（选择性迁移批 2）** | **本轮治理提交** | Accepted Candidate `c2f61d5`（PASS）归档后形成；后续 Batch 3 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
+| **Selective Migration Batch 3（选择性迁移批 3）** | **本轮治理提交** | Final Acceptance Record `702211c`（PASS，P0/P1/P2=0）归档后形成；后续 Batch 4 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -69,6 +70,43 @@ this commit
 - **验收依据**：`docs/audit/HFM-PHASE0.3-BATCH2-ACCEPTANCE.md`（FINAL VERDICT: PASS）
 - **治理动作**：提交 `docs: archive accepted HFM migration batch 2`；本治理提交完成后其实际 SHA 为 **Batch 2 Migration Baseline**，后续 Batch 3（如获授权）必须从该基线开始，而非直接从 `c2f61d5` 开始。
 
+## Batch 3 迁移归档（2026-08-27，Phase 0.3）
+
+```text
+Selective Migration Batch 3
+
+Starting Migration Baseline:
+b5388af0490f9d7b3e14b9a6f1f1ccff781e81c1
+
+Implementation Candidate:
+b3207edd16ed2478f6229fdc15dfafb21aec83ad
+
+Final Acceptance Record:
+702211cfa40075bc1ca4d5a0bef44450016c38e2
+
+Acceptance:
+PASS
+
+P0:
+0
+
+P1:
+0
+
+P2:
+0
+
+Governance Record:
+this commit
+```
+
+- **HFB Source Snapshot**：`03755b57ec0e4c8023d1447619f7d6ead9e44d73`（完整 SHA，与 Batch 1/2 一致）
+- **验收依据**：`docs/audit/HFM-PHASE0.3-BATCH3-ACCEPTANCE.md`（FINAL VERDICT: PASS；P0/P1/P2=0）
+- **Batch 3 摘要**：Candidates Audited 11 · Migrated Assets 3 · PORT 2 · ADAPT 1 · REFERENCE_ONLY 1 · DEFER 4 · REJECT 3 · HIGH Coupling Migrated 0 · Core Domain Migration NO · Phase 1 Business Coding NO · Permanent HFB Runtime Dependency NO
+- **质量归档**：Ruff/Ruff Format/mypy/pytest/ESLint/Prettier/vue-tsc/Vitest/Build 全部 PASS；Batch 1/2 Regression PASS；Runtime Smoke PASS
+- **非阻塞观察项（保留）**：Starlette/httpx Deprecation Warning — OPEN / NON-BLOCKING（不属 Batch 3 未关闭条件；禁止未经授权升级依赖解决）
+- **治理动作**：提交 `docs: archive accepted HFM migration batch 3`；本治理提交完成后其实际 SHA 为 **Batch 3 Migration Baseline**，后续 Batch 4（如获授权）必须从该基线开始，而非直接从 `b3207ed` 或 `702211c` 开始。
+
 ## 冻结语义
 
 **Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
@@ -98,7 +136,7 @@ this commit
 ## 后续准入（2026-08-27 更新）
 
 - **MONOREPO SKELETON**：**FROZEN / VALIDATED**
-- **HFB → HFM PI MIGRATION**：**BATCH 1 ACCEPTED / FROZEN**；**BATCH 2 ACCEPTED / FROZEN**；**BATCH 3 NOT AUTHORIZED** — Batch 3 必须由后续独立指令明确授权（不得将 Batch 3 = ELIGIBLE 自动改写为 ALLOWED）；仅允许执行已授权的独立迁移任务，不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
+- **HFB → HFM PI MIGRATION**：**BATCH 1 · 2 · 3 ACCEPTED / FROZEN**；**BATCH 4 NOT AUTHORIZED** — Batch 4 必须由后续独立指令明确授权（不得将 BATCH 4 = ELIGIBLE 自动改写为 ALLOWED）；仅允许执行已授权的独立迁移任务，不意味着可自行选择迁移内容、一次迁移多个业务域、开始 Phase 1、或创建 Publication / Media / Medical / Teaching 新业务实现
 - **PHASE 1 BUSINESS CODING**：**NOT AUTHORIZED** — G1 / G2 / G3 / G4 / G7 仍为 Phase 1 Deliverables
 
 ## 变更规则（Frozen 之后）
@@ -122,3 +160,6 @@ this commit
 - `docs/migration/hfb/HFM-PHASE0.3-BATCH2-INVENTORY.md`（Batch 2 迁移清单，2026-08-27）
 - `docs/audit/HFM-PHASE0.3-BATCH2-MIGRATION-IMPLEMENTATION.md`（Batch 2 实施报告，2026-08-27）
 - `docs/audit/HFM-PHASE0.3-BATCH2-ACCEPTANCE.md`（Batch 2 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.3-BATCH3-INVENTORY.md`（Batch 3 迁移清单，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH3-MIGRATION-IMPLEMENTATION.md`（Batch 3 实施报告，2026-08-27）
+- `docs/audit/HFM-PHASE0.3-BATCH3-ACCEPTANCE.md`（Batch 3 验收归档，FINAL VERDICT: PASS，2026-08-27）
