@@ -12,7 +12,9 @@ Status: Active · Date: 2026-08-27 · Phase 0
 ## 升级规则
 
 - `ba4f615`（Provisional Architecture Baseline）在 **Codex HFB Re-Acceptance 通过**后升级为 **Frozen Architecture Baseline**；
+- 当前状态（2026-08-27）：Codex Re-Acceptance = **CONDITIONAL PASS / VALIDATED_WITH_CORRECTIONS**，`ba4f615` **仍为 Provisional**，不具 Frozen 资格；
 - Codex 复核对象：`BASELINE-AUDIT v1.1` + `DOMAIN-MAP v1.1` 的结论与 `ba4f615` 暂定裁决的一致性（判定、证据链、验证分层）；
+- **升级前置条件**（CODEX-REACCEPTANCE §17）：① 复用矩阵补全至完整 capability list（Workspace/Workflow/Audit/Snapshot 等 22 项）；② 全部行级状态规范为 Provisional，Library/Search 改为 EXTEND；③ G14/G15 在可达的候选绑定 CI 兼容环境中关闭；
 - 升级动作：将本页与两份交付物中的状态从 Provisional 改为 Frozen，并记录 Codex 复核绑定信息。
 
 ## 变更规则（升级为 Frozen 之后）
@@ -26,3 +28,4 @@ Status: Active · Date: 2026-08-27 · Phase 0
 - `docs/migration/hfb/HFB-ASSET-REUSE-MATRIX.md`
 - `docs/audit/HFD-PHASE0-BASELINE-AUDIT.md` v1.1（HFB HEAD `2d98b610`）
 - `docs/audit/HFD-PHASE0-DOMAIN-MAP.md` v1.1
+- `docs/audit/HFD-PHASE0-CODEX-REACCEPTANCE.md`（VALIDATED_WITH_CORRECTIONS，2026-08-27）
