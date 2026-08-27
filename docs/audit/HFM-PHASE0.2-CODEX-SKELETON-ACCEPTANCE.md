@@ -231,13 +231,13 @@ PHASE 1 BUSINESS CODING: NOT AUTHORIZED
 
 ## 17. Correction Closure（第二次复验终态，2026-08-27）
 
-Pi 两条修正经复验确认闭环。本节将本报告更新为**最新 candidate-bound 终态记录**（第一次 pass 记录保留于 §1–§16）。第三次复验将终态 HEAD 重新绑定至 `ae3d4c6`（P2 修正提交 `960cb3a` 保持历史身份，其父提交为 Skeleton `6697529`）。
+Pi 两条修正经复验确认闭环。本节将本报告更新为**最新 candidate-bound 终态记录**（第一次 pass 记录保留于 §1–§16）。第三次复验将终态 HEAD 绑定至 `ae3d4c6`；第四次复验（2026-08-27）改为自引用绑定（this commit），使记录在任何验证时点与当前 HEAD 一致，避免文档性复验提交导致 SHA 漂移。
 
 ### 17.1 Candidate-Bound 终态
 
 | 项 | 值 |
 | --- | --- |
-| Current HEAD（终态绑定） | `ae3d4c638b811616c00a6c5da36c07100e41213f`（working tree clean） |
+| Current HEAD（终态绑定） | 本记录提交（this commit）— 验证时点 HEAD 即本记录；绑定链：`6697529`（Skeleton）→ `960cb3a`（P2 修正）→ `ae3d4c6`（终态记录）→ 本记录 |
 | P2 修正提交（历史身份） | `960cb3a`（父提交 `6697529`，仅修改两份验收/实现 Markdown） |
 | Skeleton Result SHA | `669752912579f6f8f1ba7553e7f1083ff5f765b8`（实现报告已记录） |
 | Frozen Architecture Baseline | `7e109201e250dd5843add2249a24afa699766dd0`（ancestry CONFIRMED） |
@@ -261,7 +261,7 @@ HFM PHASE 0.2
 CODEX SKELETON ACCEPTANCE (FINAL)
 ================================
 
-Current HEAD: ae3d4c638b811616c00a6c5da36c07100e41213f
+Current HEAD: this commit（本记录；验证时点 HEAD 即本记录）
 Working Tree: CLEAN
 
 Frozen Baseline Ancestry: CONFIRMED
