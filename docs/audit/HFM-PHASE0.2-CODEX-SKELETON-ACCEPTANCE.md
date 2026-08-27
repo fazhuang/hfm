@@ -1,6 +1,6 @@
 # HFM Phase 0.2 — Codex Skeleton Acceptance
 
-Date: 2026-08-27 (Asia/Shanghai)  
+Date: 2026-08-27 (Asia/Shanghai)
 Mode: read-only acceptance; no HFM production/config/test/manifest/Python/CI/Git-history changes.
 
 ## 1. Verdict
@@ -129,7 +129,7 @@ Independent checks found:
 The only HFB references in HFM are governance/documentation references and an allowed Pinia or
 toolchain-level skeleton choice. The HFB repository was not re-audited.
 
-**HFB Business Code Copied: NO**  
+**HFB Business Code Copied: NO**<br>
 **Permanent HFB Runtime Dependency: NO**
 
 ## 11. Phase 1 Scope Audit
@@ -225,6 +225,61 @@ P3 Observations: 2
 
 FINAL VERDICT: CONDITIONAL PASS
 HFM ENGINEERING SKELETON: VALIDATED_WITH_CORRECTIONS
+HFB → HFM PI MIGRATION: ELIGIBLE
+PHASE 1 BUSINESS CODING: NOT AUTHORIZED
+```
+
+## 17. Correction Closure（第二次复验终态，2026-08-27）
+
+Pi 两条修正经复验确认闭环。本节将本报告更新为**最新 candidate-bound 终态记录**（第一次 pass 记录保留于 §1–§16）。
+
+### 17.1 Candidate-Bound 终态
+
+| 项 | 值 |
+| --- | --- |
+| Current HEAD | `960cb3a9ee900ab4d427b0d22bf8ac8636dc7295`（working tree clean） |
+| Skeleton Result SHA | `669752912579f6f8f1ba7553e7f1083ff5f765b8`（实现报告已记录） |
+| Frozen Architecture Baseline | `7e109201e250dd5843add2249a24afa699766dd0`（ancestry CONFIRMED） |
+| Frontend runtime | `pnpm --filter @hfm/frontend run dev --port 5199` → `http://localhost:5199/` HTTP 200（vite 日志 + curl 证据） |
+
+### 17.2 §14 P2 条件状态
+
+| P2 条件 | 状态 | 证据 |
+| --- | --- | --- |
+| Pi 报告 Result SHA 占位 | **CLOSED** | 实现报告 Baseline 表与 Final Gate 两处均已记录实际 SHA `6697529…` |
+| Frontend runtime 端口证据不可复现 | **CLOSED** | 端口 5199 与可复现命令绑定：vite 日志 `Local: http://localhost:5199/` + curl HTTP 200 |
+
+### 17.3 复验门禁（第二次，全部 PASS）
+
+Backend /health、/ready: PASS · Ruff / mypy / pytest: PASS · ESLint / vue-tsc / Vitest / Build: PASS · HFB Business Code Copied: NO · Phase 1 Features: NO
+
+### 17.4 终态裁决
+
+```text
+HFM PHASE 0.2
+CODEX SKELETON ACCEPTANCE (FINAL)
+================================
+
+Current HEAD: 960cb3a9ee900ab4d427b0d22bf8ac8636dc7295
+Working Tree: CLEAN
+
+Frozen Baseline Ancestry: CONFIRMED
+Pi Implementation Report: CONFIRMED（Result SHA + 端口证据已修正）
+Monorepo Structure: PASS
+All Quality Gates: PASS
+Runtime Smoke: PASS
+HFB Business Code Copied: NO
+Permanent HFB Runtime Dependency: NO
+Phase 1 Features Implemented: NO
+Unauthorized Infrastructure: NO
+
+P0 Blockers: 0
+P1 Major: 0
+P2 Minor: 0（CLOSED）
+P3 Observations: 2（非阻塞）
+
+FINAL VERDICT: CONDITIONAL PASS
+HFM ENGINEERING SKELETON: VALIDATED_WITH_CORRECTIONS（修正已闭环）
 HFB → HFM PI MIGRATION: ELIGIBLE
 PHASE 1 BUSINESS CODING: NOT AUTHORIZED
 ```
