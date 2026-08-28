@@ -18,6 +18,7 @@ from sqlalchemy.pool import StaticPool
 import hfm.models.chapter  # noqa: F401 — register models on Base.metadata
 import hfm.models.edition  # noqa: F401
 import hfm.models.entity  # noqa: F401
+import hfm.models.evidence  # noqa: F401
 import hfm.models.institution  # noqa: F401
 import hfm.models.passage  # noqa: F401
 import hfm.models.person  # noqa: F401
