@@ -168,6 +168,21 @@ Contract Deviations:
 0
 ```
 
+## 28.1 Codex CD-2 Acceptance BLOCK → P0/P1 修正记录
+
+Codex 独立验收判定 BLOCK（P0×1 / P1×3），涉及跨 Work 关系与 lineage 约束。本轮修复：
+
+| 阻塞 | 修复 | 证据 |
+| --- | --- | --- |
+| **P0** Passage 跨 Work 一致性（chapter/version 指向不同 Work） | `PassageRepository._validate_cross_work`：create/update 解析 chapter.work_id 与 version→edition→work_id，不一致抛 ValueError | test_passage_cross_work_version_rejected |
+| **P1** Version lineage 仅检测不阻止（self-cycle / 多节点 cycle） | `parent_version_id` 纳入 `immutable_fields`（post-create 变更被拒 → 无法形成 cycle）+ `_validate_lineage`（父存在 + 同 Edition）+ 模型 `@validates` self-ref 守卫 | test_version_parent_cycle_rejected / test_version_cross_edition_parent_rejected / test_invariant_i2_cycle_formation_rejected |
+| **P1** Edition/Chapter 自引用与跨 Work 层级未防护 | `lineage_parent_edition_id` / `parent_id` 纳入 immutable_fields + `EditionRepository._validate_lineage`（同 Work）+ `ChapterRepository._validate_parent`（同 Work）+ 模型 `@validates` self-ref 守卫 | test_edition_cross_work_lineage_rejected / test_chapter_cross_work_parent_rejected |
+| **P1** version_id / lineage 字段未纳入 protected guard | `Passage.immutable_fields` 增加 `version_id`（pinned reference）；`parent_version_id` / `lineage_parent_edition_id` / `parent_id` 分别纳入各模型 immutable_fields | test_invariant_i4_protected_fields / test_cd2_protected_fields_guard / test_passage_pinned_version_update_rejected |
+
+- **I2 / I4 修正后状态**：I2 Version Reproducibility — **PASS**（谱系强制 + 无环）；I4 No Silent Overwrite — **PASS**（protected 字段守卫）
+- pytest 104 → **112 passed**（新增 8 项负向/守卫测试）；mypy 73 files / ruff 全绿
+- 未修改 Frozen Contract、未触碰 CD-0/CD-1 模型行为（CD-0/CD-1 测试原样通过）
+
 ## 29. Unauthorized Additions
 
 ```text

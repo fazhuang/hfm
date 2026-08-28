@@ -32,3 +32,13 @@ async def test_chapter_hierarchy_parent(session: AsyncSession) -> None:
     resolved = await repo.get_by_id(child.parent_id or "")
     assert resolved is not None
     assert resolved.title == "卷一"
+
+
+async def test_chapter_cross_work_parent_rejected(session: AsyncSession) -> None:
+    """Hierarchy parent must belong to the same Work (P1)."""
+    work_a = await WorkRepository(session).create(title="针灸甲乙经")
+    work_b = await WorkRepository(session).create(title="玄晏春秋")
+    parent = await ChapterRepository(session).create(work_id=work_a.id, title="卷一")
+    repo = ChapterRepository(session)
+    with pytest.raises(ValueError):
+        await repo.create(work_id=work_b.id, title="跨书章节", parent_id=parent.id)

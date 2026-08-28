@@ -7,8 +7,10 @@ description, parent_id self-FK hierarchy). ADAPT: anchored to Work
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from sqlalchemy import ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
 
@@ -17,6 +19,17 @@ class Chapter(BaseModel):
     """A chapter / section within a Work."""
 
     __tablename__ = "chapters"
+
+    #: hierarchy parent is a protected structural identity relationship.
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "parent_id"})
+
+    @validates("parent_id")
+    def _validate_parent(self, key: str, value: object) -> object:
+        if value is not None:
+            current_id = getattr(self, "id", None)
+            if current_id is not None and value == current_id:
+                raise ValueError("parent_id cannot reference the chapter itself")
+        return value
 
     work_id: Mapped[str] = mapped_column(
         ForeignKey("works.id", ondelete="CASCADE"),

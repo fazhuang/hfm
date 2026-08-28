@@ -9,16 +9,34 @@ pinned, reproducible reference — nothing resolves to "latest" in Core.
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
 
 
 class Version(BaseModel):
-    """A specific textual version of an Edition (北宋刻本、日本刊本...)."""
+    """A specific textual version of an Edition (北宋刻本、日本刊本...).
+
+    parent_version_id is a protected structural identity (I2): lineage is
+    fixed at creation; post-create mutation is rejected, so multi-node
+    cycles cannot be formed via the repository.
+    """
 
     __tablename__ = "versions"
+
+    #: lineage parent is a protected structural identity relationship.
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "parent_version_id"})
+
+    @validates("parent_version_id")
+    def _validate_parent(self, key: str, value: object) -> object:
+        if value is not None:
+            current_id = getattr(self, "id", None)
+            if current_id is not None and value == current_id:
+                raise ValueError("parent_version_id cannot reference the version itself")
+        return value
 
     edition_id: Mapped[str] = mapped_column(
         ForeignKey("editions.id", ondelete="CASCADE"),

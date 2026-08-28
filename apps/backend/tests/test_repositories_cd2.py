@@ -46,3 +46,15 @@ async def test_cross_work_chapter_fk_rejected(session: AsyncSession) -> None:
     repo = ChapterRepository(session)
     with pytest.raises(IntegrityError):
         await repo.create(work_id="no-such-work", title="孤儿章节")
+
+
+async def test_cd2_protected_fields_guard(session: AsyncSession) -> None:
+    """CD-2 protected fields (version_id / lineage) reject post-create mutation."""
+    from hfm.models.passage import Passage
+
+    assert "version_id" in Passage.immutable_fields
+    work = await WorkRepository(session).create(title="针灸甲乙经")
+    chapter = await ChapterRepository(session).create(work_id=work.id, title="卷一")
+    passage = await PassageRepository(session).create(chapter_id=chapter.id, content_text="条文")
+    with pytest.raises(ValueError):
+        await PassageRepository(session).update(passage.id, version_id="any")

@@ -41,3 +41,15 @@ async def test_edition_lineage_parent(session: AsyncSession) -> None:
     resolved_parent = await repo.get_by_id(child.lineage_parent_edition_id or "")
     assert resolved_parent is not None
     assert resolved_parent.edition_name == "底本"
+
+
+async def test_edition_cross_work_lineage_rejected(session: AsyncSession) -> None:
+    """Lineage parent must belong to the same Work (P1)."""
+    work_a = await WorkRepository(session).create(title="针灸甲乙经")
+    work_b = await WorkRepository(session).create(title="玄晏春秋")
+    parent = await EditionRepository(session).create(work_id=work_a.id, edition_name="底本")
+    repo = EditionRepository(session)
+    with pytest.raises(ValueError):
+        await repo.create(
+            work_id=work_b.id, edition_name="跨书版本", lineage_parent_edition_id=parent.id
+        )

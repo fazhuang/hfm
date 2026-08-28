@@ -50,7 +50,33 @@ async def test_version_lineage_parent(session: AsyncSession) -> None:
 async def test_version_missing_parent_rejected(session: AsyncSession) -> None:
     edition_id = await _make_edition(session)
     repo = VersionRepository(session)
-    with pytest.raises(IntegrityError):
+    with pytest.raises(ValueError):
         await repo.create(
             edition_id=edition_id, version_name="无父版本", parent_version_id="missing-parent"
         )
+
+
+async def test_version_cross_edition_parent_rejected(session: AsyncSession) -> None:
+    """Lineage parent must belong to the same Edition (I2)."""
+    work = await WorkRepository(session).create(title="针灸甲乙经")
+    edition_a = await EditionRepository(session).create(work_id=work.id, edition_name="宋刻本")
+    edition_b = await EditionRepository(session).create(work_id=work.id, edition_name="四库本")
+    parent = await VersionRepository(session).create(edition_id=edition_a.id, version_name="底本")
+    repo = VersionRepository(session)
+    with pytest.raises(ValueError):
+        await repo.create(
+            edition_id=edition_b.id, version_name="跨版本谱系", parent_version_id=parent.id
+        )
+
+
+async def test_version_parent_cycle_rejected(session: AsyncSession) -> None:
+    """I2: parent_version_id is protected — post-create mutation (cycle formation) rejected."""
+    edition_id = await _make_edition(session)
+    repo = VersionRepository(session)
+    root = await repo.create(edition_id=edition_id, version_name="底本")
+    child = await repo.create(
+        edition_id=edition_id, version_name="校勘本", parent_version_id=root.id
+    )
+    # attempting to rewire root.parent = child (would create a cycle) is rejected
+    with pytest.raises(ValueError):
+        await repo.update(root.id, parent_version_id=child.id)

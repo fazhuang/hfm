@@ -1,5 +1,6 @@
 """CD-2 invariant tests (I2 / I4 / I5)."""
 
+import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.core.locator import Locator
@@ -29,14 +30,15 @@ async def test_invariant_i2_version_lineage_acyclic(session: AsyncSession) -> No
     assert await repo.lineage_has_cycle(root_id) is False
 
 
-async def test_invariant_i2_cycle_detection(session: AsyncSession) -> None:
-    """I2: a forced lineage cycle is detectable (detection helper)."""
+async def test_invariant_i2_cycle_formation_rejected(session: AsyncSession) -> None:
+    """I2: rewiring lineage to form a cycle is rejected (protected parent)."""
     _, _, root_id, child_id = await _make_chain(session)
     repo = VersionRepository(session)
-    # force a cycle: root.parent = child
-    await repo.update(root_id, **{"parent_version_id": child_id})
-    assert await repo.lineage_has_cycle(root_id) is True
-    assert await repo.lineage_has_cycle(child_id) is True
+    # root.parent = child would create root → child → root cycle; rejected
+    with pytest.raises(ValueError):
+        await repo.update(root_id, parent_version_id=child_id)
+    # detection helper still reports an acyclic lineage as clean
+    assert await repo.lineage_has_cycle(child_id) is False
 
 
 async def test_invariant_i2_pinned_version_reproducible(session: AsyncSession) -> None:
@@ -56,6 +58,20 @@ async def test_invariant_i2_pinned_version_reproducible(session: AsyncSession) -
     rendered = locator.to_locator_string()
     assert f"version:{root_id}" in rendered
     assert f"passage:{passage.id}" in rendered
+
+
+async def test_invariant_i4_protected_fields(session: AsyncSession) -> None:
+    """I4: lineage/pinned-reference fields are protected from silent overwrite."""
+    from hfm.models.chapter import Chapter
+    from hfm.models.edition import Edition
+    from hfm.models.passage import Passage
+    from hfm.models.version import Version
+
+    assert "parent_version_id" in Version.immutable_fields
+    assert "lineage_parent_edition_id" in Edition.immutable_fields
+    assert "parent_id" in Chapter.immutable_fields
+    assert "version_id" in Passage.immutable_fields
+    assert "id" in Version.immutable_fields
 
 
 async def test_invariant_i5_stable_identity(session: AsyncSession) -> None:

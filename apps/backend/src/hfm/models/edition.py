@@ -7,8 +7,10 @@ lineage_parent_edition_id self-FK).
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from sqlalchemy import ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
 
@@ -17,6 +19,17 @@ class Edition(BaseModel):
     """A specific expression/edition of a Work (宋本、四库本...)."""
 
     __tablename__ = "editions"
+
+    #: lineage parent is a structural identity relationship (protected).
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "lineage_parent_edition_id"})
+
+    @validates("lineage_parent_edition_id")
+    def _validate_lineage_parent(self, key: str, value: object) -> object:
+        if value is not None:
+            current_id = getattr(self, "id", None)
+            if current_id is not None and value == current_id:
+                raise ValueError("lineage_parent_edition_id cannot reference the edition itself")
+        return value
 
     work_id: Mapped[str] = mapped_column(
         ForeignKey("works.id", ondelete="CASCADE"),

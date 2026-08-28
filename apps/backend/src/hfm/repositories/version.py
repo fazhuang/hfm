@@ -1,6 +1,8 @@
-"""Version repository (CD-2, I2)."""
+"""Version repository (CD-2, I2 lineage enforcement)."""
 
 from __future__ import annotations
+
+from typing import Any
 
 from sqlalchemy import select
 
@@ -9,9 +11,32 @@ from hfm.repositories.base import BaseRepository
 
 
 class VersionRepository(BaseRepository[Version]):
-    """CRUD for Version with lineage awareness (I2)."""
+    """CRUD for Version with lineage enforcement (I2).
+
+    parent_version_id is protected (immutable after creation); create-time
+    checks enforce same-Edition lineage and parent existence, so post-create
+    multi-node cycles cannot be formed. lineage_has_cycle provides
+    reproducible detection for verification.
+    """
 
     model = Version
+
+    async def _validate_lineage(self, edition_id: str, parent_version_id: str | None) -> None:
+        if parent_version_id is None:
+            return
+        parent = await self.session.get(Version, parent_version_id)
+        if parent is None:
+            raise ValueError("parent version does not exist")
+        if parent.edition_id != edition_id:
+            raise ValueError("parent version must belong to the same Edition")
+
+    async def create(self, **kwargs: Any) -> Version:
+        edition_id = str(kwargs.get("edition_id") or "")
+        parent_version_id = kwargs.get("parent_version_id")
+        await self._validate_lineage(
+            edition_id, str(parent_version_id) if parent_version_id else None
+        )
+        return await super().create(**kwargs)
 
     async def get_by_edition(self, edition_id: str) -> list[Version]:
         stmt = (
@@ -21,11 +46,7 @@ class VersionRepository(BaseRepository[Version]):
         return list(result.scalars().all())
 
     async def lineage_has_cycle(self, version_id: str) -> bool:
-        """I2: walk the parent chain and report a cycle (detection, not enforcement).
-
-        Enforcement of acyclic lineage is a service-layer concern (out of CD-2);
-        this helper provides reproducible detection for lineage validation.
-        """
+        """Walk the parent chain and report a cycle (detection helper)."""
         seen: set[str] = set()
         current: str | None = version_id
         while current is not None:

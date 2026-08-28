@@ -1,7 +1,6 @@
 """Tests for the Passage model (CD-2 — REUSE + locator, I2)."""
 
 import pytest
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.core.locator import Locator
@@ -33,9 +32,35 @@ async def test_passage_construction(session: AsyncSession) -> None:
 
 
 async def test_passage_requires_chapter(session: AsyncSession) -> None:
+    """Missing chapter is rejected (repository cross-work validation)."""
     repo = PassageRepository(session)
-    with pytest.raises(IntegrityError):
+    with pytest.raises(ValueError):
         await repo.create(chapter_id="missing-chapter", content_text="孤儿条文")
+
+
+async def test_passage_cross_work_version_rejected(session: AsyncSession) -> None:
+    """P0: a passage version must belong to the same Work as its chapter."""
+    work_a = await WorkRepository(session).create(title="针灸甲乙经")
+    work_b = await WorkRepository(session).create(title="玄晏春秋")
+    chapter_a = await ChapterRepository(session).create(work_id=work_a.id, title="卷一")
+    edition_b = await EditionRepository(session).create(work_id=work_b.id, edition_name="校本")
+    version_b = await VersionRepository(session).create(
+        edition_id=edition_b.id, version_name="校本版"
+    )
+    repo = PassageRepository(session)
+    with pytest.raises(ValueError):
+        await repo.create(chapter_id=chapter_a.id, version_id=version_b.id, content_text="跨书条文")
+
+
+async def test_passage_pinned_version_update_rejected(session: AsyncSession) -> None:
+    """I2: version_id is protected — post-create mutation is rejected."""
+    _, chapter_id, version_id = await _make_chain(session)
+    repo = PassageRepository(session)
+    passage = await repo.create(
+        chapter_id=chapter_id, version_id=version_id, content_text="定本条文"
+    )
+    with pytest.raises(ValueError):
+        await repo.update(passage.id, version_id="other-version")
 
 
 async def test_passage_locator_resolution(session: AsyncSession) -> None:

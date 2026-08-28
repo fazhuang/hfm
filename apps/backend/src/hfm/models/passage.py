@@ -9,6 +9,8 @@ pinned fixed reference — Core never silently resolves "latest" (I2).
 
 from __future__ import annotations
 
+from typing import ClassVar
+
 from sqlalchemy import ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -16,9 +18,16 @@ from hfm.db.base import BaseModel
 
 
 class Passage(BaseModel):
-    """The atomic unit of classical text — independently citable and comparable."""
+    """The atomic unit of classical text — independently citable and comparable.
+
+    version_id is a pinned fixed reference (I2): once set, it is protected
+    from post-create mutation (no silent 'latest' swap).
+    """
 
     __tablename__ = "passages"
+
+    #: pinned version reference is protected (I2).
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "version_id"})
 
     chapter_id: Mapped[str] = mapped_column(
         ForeignKey("chapters.id", ondelete="CASCADE"),
