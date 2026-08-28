@@ -2,6 +2,36 @@
 
 Status: Active · Date: 2026-08-27 · Phase 0.4
 
+## Phase 0.4 Contract Amendment（CANDIDATE — 未冻结，2026-08-28）
+
+```text
+Phase 0.4 — Core Domain Contract Reconciliation Amendment v0.2
+
+Status:
+CANDIDATE / AWAITING CODEX ACCEPTANCE（非 ACCEPTED / 非 FROZEN / 非 BASELINE）
+
+Amendment Document:
+docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md
+
+Candidate Report:
+docs/audit/HFM-PHASE0.4-CONTRACT-RECONCILIATION-AMENDMENT.md
+
+Reason:
+Completion Final Audit BLOCK（P0×1 + P1×2）：Frozen Inventory/Canonical/DAG/DoD
+未定义唯一可完成的 Phase 0.4 target；DAG 已 EXHAUSTED（CD-0…CD-6）。
+
+Scope:
+28/28 CA assets 获最终 disposition（IMPLEMENTED_CORE 15 / POST_PHASE_DEFERRED 11 /
+NON_RUNTIME_GOVERNANCE 1 / BRIDGE_FROZEN 1）；12/12 canonical concepts 获归属；
+CORE-COMPLETION 定义为非 CD 节点（dry-run owner）；CA-002/CA-026/Place 全部非 AMBIGUOUS。
+
+本轮未授权:
+CORE-COMPLETION / Phase 0.4 Completion Freeze / CD-7（NONEXISTENT）/ Phase 1。
+
+注意:
+本候选未冻结；Codex 验收通过并另行授权后才可能进入 Completion 流程。
+```
+
 ## 基线关系（2026-08-27 冻结后）
 
 | 基线 | 提交 | 含义 | 状态 |
