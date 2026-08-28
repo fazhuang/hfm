@@ -1,16 +1,26 @@
 {
-  "candidate_set_manifest_sha256": "db68b8cf4f7d6927750c13f876639569864d69da12646fcc1d4eb9090ab37dc5",
+  "candidate_set_manifest_sha256": "d91c10f9c7d5f992cd67e7cfd2370fa29121685604ab64d052de63d030db0836",
+  "correction_reasons": [
+    "C1 synthetic absent-field assertion (biography)",
+    "C2 Edition.file_path substituted for SourceRef.page_location",
+    "insufficient dedup identity (work_title, version_name)"
+  ],
+  "edition_contract_role": "source-preservation candidate — non-transforming (Frozen Strategy §7 defines no Edition transformation class); validated and preserved as source evidence; NEVER counted as C2 rows",
   "equations": {
-    "accepted_eq": "accepted = transformed",
-    "source_eq": "source = accepted + rejected + duplicate",
-    "target_eq": "target = transformed - duplicate_consumed"
+    "accept_transform": "accepted = transformed",
+    "target": "target = transformed - duplicate_consumed",
+    "transformation_scope": "source = accepted + rejected + duplicate",
+    "universe": "source_universe = transformation_source + preserved_non_transforming (96 = 4 + 92)"
   },
   "errors": [],
+  "failed_previous_candidate": "e26598f3be8b3e8b9decd902c9a5e929f0e59e2a",
   "governance_baseline": "00ed3ff244578d975c2748fa9d85a8d14e4c7c37",
   "idempotency": {
-    "candidate_id_set_stable": true,
-    "rerun_target_count": 97,
-    "result": "PASS"
+    "final_target": 4,
+    "first_application_target": 4,
+    "result": "PASS",
+    "second_application_duplicate_existing": 4,
+    "second_application_new_rows": 0
   },
   "implementation_baseline": "d08e343dbbc52dedfcbd5bba69918e6a4b74256d",
   "isolation": {
@@ -18,23 +28,25 @@
     "persistent_state_after_dry_run": "NONE",
     "production_db_touched": false
   },
-  "migration_version": "hfm-phase0.4-core-completion-v1",
+  "migration_version": "hfm-phase0.4-core-completion-v2",
+  "preservation_manifest_sha256": "577c3203484e93e38da8732554579652ec5a47bad82a852648c5c429f8346cac",
+  "previous_acceptance": "FAIL",
   "reconciliation_by_class": {
     "C1": {
-      "accepted": 5,
+      "accepted": 4,
       "duplicate": 0,
       "rejected": 0,
-      "source": 5,
-      "target": 5,
-      "transformed": 5
+      "source": 4,
+      "target": 4,
+      "transformed": 4
     },
     "C2": {
-      "accepted": 92,
+      "accepted": 0,
       "duplicate": 0,
       "rejected": 0,
-      "source": 92,
-      "target": 92,
-      "transformed": 92
+      "source": 0,
+      "target": 0,
+      "transformed": 0
     },
     "C3": {
       "accepted": 0,
@@ -62,6 +74,8 @@
     "normalized_keys": [
       "reconciliation",
       "total",
+      "source_universe",
+      "edition_preserved",
       "rejections",
       "duplicates",
       "candidate_set_sha256",
@@ -71,32 +85,36 @@
     "run_a_eq_run_b": true
   },
   "run_a": {
-    "candidate_set_sha256": "916784ac9c359805fa80e7db0002eba041e5b9cd67fb27c46cc64179afaf4126",
+    "candidate_set_sha256": "94179e7e11a95612dfbfbb1d1fa378aa469abea15bf9829241e7d54cdaf413cb",
     "duplicates": [],
+    "edition_preserved": 92,
     "reconciliation": {
-      "accepted": 97,
+      "accepted": 4,
       "duplicate": 0,
       "rejected": 0,
-      "source": 97,
-      "target": 97,
-      "transformed": 97
+      "source": 4,
+      "target": 4,
+      "transformed": 4
     },
     "rejections": [],
-    "target_db_rows": 97
+    "source_universe": 96,
+    "target_db_rows": 4
   },
   "run_b": {
-    "candidate_set_sha256": "916784ac9c359805fa80e7db0002eba041e5b9cd67fb27c46cc64179afaf4126",
+    "candidate_set_sha256": "94179e7e11a95612dfbfbb1d1fa378aa469abea15bf9829241e7d54cdaf413cb",
     "duplicates": [],
+    "edition_preserved": 92,
     "reconciliation": {
-      "accepted": 97,
+      "accepted": 4,
       "duplicate": 0,
       "rejected": 0,
-      "source": 97,
-      "target": 97,
-      "transformed": 97
+      "source": 4,
+      "target": 4,
+      "transformed": 4
     },
     "rejections": [],
-    "target_db_rows": 97
+    "source_universe": 96,
+    "target_db_rows": 4
   },
   "silent_failure_paths": 0,
   "source_artifact": "apps/frontend/src/data/huangfu_mi_exhibition.json",

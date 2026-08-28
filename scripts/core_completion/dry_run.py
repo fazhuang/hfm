@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""HFM Phase 0.4 CORE-COMPLETION — data migration dry-run runner.
+"""HFM Phase 0.4 CORE-COMPLETION — data migration dry-run runner (corrected).
 
-Executes the frozen dry-run (Migration Strategy §4: extract → validate →
-transform → dry-run → reconciliation) against the frozen HFB snapshot
-`03755b5` tracked source artifact, in an isolated/disposable environment:
+Corrected per Codex substantive acceptance FAIL of e26598f (P1-1 C1 synthetic
+`biography`, P1-2 C2 Edition.file_path substitution, P1-3 insufficient dedup
+identity). Executes the corrected frozen dry-run (Migration Strategy §4:
+extract → validate → transform → dry-run → reconciliation) against the frozen
+HFB snapshot `03755b5` tracked source artifact, in an isolated/disposable
+environment:
 
   - source: apps/frontend/src/data/huangfu_mi_exhibition.json @ 03755b5
-    (sha256-verified against the frozen value; no HFB current HEAD, no
-    mutable working data)
-  - target: disposable temporary SQLite database (deleted on exit;
-    persistent state after dry-run = NONE)
-  - Run A + Run B (reproducibility) + idempotency re-run
+    (sha256-verified; no hfb_dev.db, no mutable working data)
+  - target: disposable temporary SQLite (deleted; persistent state NONE)
+  - Run A + Run B (reproducibility) + same-target idempotency (apply twice)
   - fail-closed: any exception exits non-zero with error evidence
+  - corrected C1/C2/dedup semantics per Codex acceptance FAIL
 
 Usage:
   python3 scripts/core_completion/dry_run.py \
@@ -42,14 +44,14 @@ from hfm.completion.migration import (  # noqa: E402
 )
 from hfm.core.hashing import calculate_canonical_metadata_sha256  # noqa: E402
 
-#: Frozen expected source digest (verified against snapshot 03755b5).
 EXPECTED_SOURCE_SHA256 = "94467890f99ebe7d77e1498d04238d460cf80c5cc1ef5b66892397d4a9062cdb"
 SOURCE_RELPATH = "apps/frontend/src/data/huangfu_mi_exhibition.json"
 
-#: Normalized evidence comparison keys (volatile fields excluded — §21).
 COMPARISON_KEYS = (
     "reconciliation",
     "total",
+    "source_universe",
+    "edition_preserved",
     "rejections",
     "duplicates",
     "candidate_set_sha256",
@@ -65,52 +67,54 @@ def load_source_records(source: dict[str, Any]) -> tuple[list[dict], list[dict],
     exhibition = data["exhibition"]
     persons = [exhibition["person_overview"]]
     editions = data["classical_editions"]
-    # C3: no citation-shaped records are tracked in the frozen snapshot
-    # (untracked hfb_dev.db is excluded by source-integrity rule) — the
-    # transformation rule is exercised by unit tests with representative
-    # polymorphic-target records.
+    # C2/C3: no SourceRef.page_location rows and no citation-shaped records are
+    # tracked in the frozen snapshot (untracked hfb_dev.db excluded by
+    # source-integrity rule) — both transformation rules are exercised by unit
+    # tests with minimal valid fixtures.
     citations: list[dict] = []
     return persons, editions, citations
 
 
-def write_target_candidates(result: RunResult) -> tuple[str, int]:
-    """Apply candidate rows to a disposable SQLite target (isolation §13).
-
-    Returns (db_path, row_count); the caller deletes the file afterwards.
-    """
-    fd, db_path = tempfile.mkstemp(suffix=".db", prefix="hfm-core-completion-")
-    os.close(fd)
+def _open_target(db_path: str) -> sqlite3.Connection:
     con = sqlite3.connect(db_path)
+    con.execute(
+        "CREATE TABLE IF NOT EXISTS candidates ("
+        "class_id TEXT NOT NULL, kind TEXT NOT NULL,"
+        "candidate_id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+    )
+    return con
+
+
+def apply_target(db_path: str, candidates: list[Any]) -> tuple[int, int]:
+    """Apply candidates to a target DB; returns (total_rows, new_rows).
+
+    Deterministic idempotent application: candidate_id PRIMARY KEY + INSERT
+    OR IGNORE → a second application adds 0 rows (same-target idempotency).
+    """
+    con = _open_target(db_path)
     try:
-        con.execute(
-            "CREATE TABLE candidates ("
-            "class_id TEXT NOT NULL, kind TEXT NOT NULL,"
-            "candidate_id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
-        )
+        before = int(con.execute("SELECT COUNT(*) FROM candidates").fetchone()[0])
         con.executemany(
             "INSERT OR IGNORE INTO candidates (class_id, kind, candidate_id, payload)"
             " VALUES (?, ?, ?, ?)",
             [
                 (c.class_id, c.kind, c.candidate_id, json.dumps(c.payload, ensure_ascii=False))
-                for c in result.candidates
+                for c in candidates
             ],
         )
         con.commit()
-        rows = con.execute("SELECT COUNT(*) FROM candidates").fetchone()[0]
-        return db_path, int(rows)
+        after = int(con.execute("SELECT COUNT(*) FROM candidates").fetchone()[0])
+        return after, after - before
     finally:
         con.close()
 
 
-def execute_one(source: dict[str, Any], persons, editions, citations) -> RunResult:
-    result = run_dry_run(source, persons, editions, citations)
-    db_path, rows = write_target_candidates(result)
-    result.target_db_rows = rows
-    try:
-        os.unlink(db_path)  # disposable target — persistent state after dry-run: NONE
-    except OSError as exc:
-        result.errors.append(f"disposable target cleanup failed: {exc}")
-    return result
+def execute_on_fresh_target(result: RunResult) -> tuple[str, int]:
+    """Apply to a disposable fresh target; returns (db_path, row_count)."""
+    fd, db_path = tempfile.mkstemp(suffix=".db", prefix="hfm-core-completion-")
+    os.close(fd)
+    rows, _ = apply_target(db_path, result.candidates)
+    return db_path, rows
 
 
 def normalized_evidence(result: RunResult) -> dict:
@@ -119,7 +123,9 @@ def normalized_evidence(result: RunResult) -> dict:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="HFM Phase 0.4 CORE-COMPLETION dry-run")
+    parser = argparse.ArgumentParser(
+        description="HFM Phase 0.4 CORE-COMPLETION dry-run (corrected)"
+    )
     parser.add_argument("--hfb", default="/Users/likeming/Sites/hfb", help="HFB snapshot checkout")
     parser.add_argument("--out-dir", default=str(_HFM_ROOT / "artifacts" / "audit"))
     args = parser.parse_args()
@@ -145,25 +151,48 @@ def main() -> int:
         f"citations={len(citations)}"
     )
 
-    # Run A + Run B (reproducibility)
-    run_a = execute_one(source, persons, editions, citations)
-    run_b = execute_one(source, persons, editions, citations)
+    # Run A + Run B (reproducibility) on fresh disposable targets
+    run_a = run_dry_run(source, persons, editions, citations)
+    db_a, rows_a = execute_on_fresh_target(run_a)
+    run_a.target_db_rows = rows_a
+    try:
+        os.unlink(db_a)
+    except OSError as exc:
+        run_a.errors.append(f"disposable target cleanup failed: {exc}")
 
-    ev_a = normalized_evidence(run_a)
-    ev_b = normalized_evidence(run_b)
-    reproducibility = ev_a == ev_b
+    run_b = run_dry_run(source, persons, editions, citations)
+    db_b, rows_b = execute_on_fresh_target(run_b)
+    run_b.target_db_rows = rows_b
+    try:
+        os.unlink(db_b)
+    except OSError as exc:
+        run_b.errors.append(f"disposable target cleanup failed: {exc}")
 
-    # Idempotency: fresh re-run yields the identical candidate id set
-    rerun = execute_one(source, persons, editions, citations)
-    ids_a = sorted(c.candidate_id for c in run_a.candidates)
-    ids_rerun = sorted(c.candidate_id for c in rerun.candidates)
-    idempotent = ids_a == ids_rerun and len(ids_a) == run_a.total.target
+    reproducibility = normalized_evidence(run_a) == normalized_evidence(run_b)
 
-    # Disposable target rows prove the insert path with no persistent state
+    # Same-target idempotency (Frozen Strategy §5): apply twice to the SAME
+    # disposable target; second application must add 0 rows.
+    fd, db_idem = tempfile.mkstemp(suffix=".db", prefix="hfm-core-completion-idem-")
+    os.close(fd)
+    first_total, first_new = apply_target(db_idem, run_a.candidates)
+    second_total, second_new = apply_target(db_idem, run_a.candidates)
+    try:
+        os.unlink(db_idem)
+    except OSError as exc:
+        run_a.errors.append(f"disposable target cleanup failed: {exc}")
+    idempotent = second_new == 0 and second_total == first_total
+
     evidence = {
         "governance_baseline": "00ed3ff244578d975c2748fa9d85a8d14e4c7c37",
         "implementation_baseline": "d08e343dbbc52dedfcbd5bba69918e6a4b74256d",
         "source_baseline": "03755b57ec0e4c8023d1447619f7d6ead9e44d73",
+        "failed_previous_candidate": "e26598f3be8b3e8b9decd902c9a5e929f0e59e2a",
+        "previous_acceptance": "FAIL",
+        "correction_reasons": [
+            "C1 synthetic absent-field assertion (biography)",
+            "C2 Edition.file_path substituted for SourceRef.page_location",
+            "insufficient dedup identity (work_title, version_name)",
+        ],
         "source_artifact": SOURCE_RELPATH,
         "source_sha256": source["sha256"],
         "source_records": {
@@ -174,6 +203,8 @@ def main() -> int:
         "migration_version": MIGRATION_VERSION,
         "run_a": {
             "reconciliation": run_a.total.as_dict(),
+            "source_universe": run_a.source_universe,
+            "edition_preserved": run_a.edition_preserved,
             "rejections": run_a.rejections,
             "duplicates": run_a.duplicates,
             "candidate_set_sha256": run_a.candidate_set_sha256,
@@ -181,6 +212,8 @@ def main() -> int:
         },
         "run_b": {
             "reconciliation": run_b.total.as_dict(),
+            "source_universe": run_b.source_universe,
+            "edition_preserved": run_b.edition_preserved,
             "rejections": run_b.rejections,
             "duplicates": run_b.duplicates,
             "candidate_set_sha256": run_b.candidate_set_sha256,
@@ -195,9 +228,12 @@ def main() -> int:
             "target",
         ],
         "equations": {
-            "source_eq": "source = accepted + rejected + duplicate",
-            "accepted_eq": "accepted = transformed",
-            "target_eq": "target = transformed - duplicate_consumed",
+            "transformation_scope": "source = accepted + rejected + duplicate",
+            "accept_transform": "accepted = transformed",
+            "target": "target = transformed - duplicate_consumed",
+            "universe": (
+                "source_universe = transformation_source + preserved_non_transforming (96 = 4 + 92)"
+            ),
         },
         "reproducibility": {
             "result": "PASS" if reproducibility else "FAIL",
@@ -207,23 +243,30 @@ def main() -> int:
         },
         "idempotency": {
             "result": "PASS" if idempotent else "FAIL",
-            "candidate_id_set_stable": idempotent,
-            "rerun_target_count": rerun.total.target,
+            "first_application_target": first_total,
+            "second_application_new_rows": second_new,
+            "second_application_duplicate_existing": first_total,
+            "final_target": second_total,
         },
         "isolation": {
             "mode": "disposable temporary SQLite (tempfile, deleted after run)",
             "persistent_state_after_dry_run": "NONE",
             "production_db_touched": False,
         },
-        "errors": run_a.errors + run_b.errors + rerun.errors,
+        "errors": run_a.errors + run_b.errors,
         "silent_failure_paths": 0,
     }
-    # per-class reconciliation
     evidence["reconciliation_by_class"] = {
         cls: rc.as_dict() for cls, rc in sorted(run_a.reconciliation.items())
     }
+    evidence["edition_contract_role"] = (
+        "source-preservation candidate — non-transforming (Frozen Strategy §7 "
+        "defines no Edition transformation class); validated and preserved as "
+        "source evidence; NEVER counted as C2 rows"
+    )
+    evidence["preservation_manifest_sha256"] = run_a.preservation_manifest_sha256
     evidence["candidate_set_manifest_sha256"] = calculate_canonical_metadata_sha256(
-        {"run_a": ev_a["candidate_set_sha256"], "run_b": ev_b["candidate_set_sha256"]}
+        {"run_a": run_a.candidate_set_sha256, "run_b": run_b.candidate_set_sha256}
     )
 
     out_dir = Path(args.out_dir)
@@ -235,10 +278,19 @@ def main() -> int:
     )
 
     print(json.dumps({"total": run_a.total.as_dict()}, ensure_ascii=False))
+    print(
+        f"source_universe: {run_a.source_universe} "
+        f"(transformation {run_a.total.source} + preserved editions {run_a.edition_preserved})"
+    )
     print(f"reproducibility: {'PASS' if reproducibility else 'FAIL'}")
-    print(f"idempotency: {'PASS' if idempotent else 'FAIL'}")
+    print(
+        f"same-target idempotency: {'PASS' if idempotent else 'FAIL'} "
+        f"(first={first_total}, second_new={second_new})"
+    )
+    print(f"observed target rows: {run_a.target_db_rows}")
     print(f"evidence: {out_path}")
-    return 0 if (reproducibility and idempotent and not evidence["errors"]) else 1
+    ok = reproducibility and idempotent and not evidence["errors"]
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
