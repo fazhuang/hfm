@@ -48,4 +48,4 @@ Nodes: 14 · Edges: 36 · Cycles: 0 · Unreachable nodes: 0
 | P1-09 | P1-12 | Research/public state must remain distinct | YES | state isolation trace |
 | P1-13 | P1-11 | Public projection needs version/audit state | YES | publication audit |
 
-The 26 edges above are the contractual dependency set. No edge points to Display, HFB UI/Workspace/RBAC reuse, AI, 3D, VR, XR, Virtual Training, or Clinical Recommendation. No edge requires an HFB runtime service.
+The 36 edges above are the contractual dependency set. No edge points to Display, HFB UI/Workspace/RBAC reuse, AI, 3D, VR, XR, Virtual Training, or Clinical Recommendation. No edge requires an HFB runtime service.

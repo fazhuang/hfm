@@ -5,7 +5,7 @@ Status: NPG-9 GOVERNANCE OUTPUT · NOT IMPLEMENTATION AUTHORIZATION
 | DoD-ID | Scope provenance | Exact PASS condition |
 | --- | --- | --- |
 | DOD-01 | P1-GOV; all IN scope | 14/14 IN items have exactly one WP, DAG position, acceptance, evidence and this DoD mapping. |
-| DOD-02 | P1-GOV; DAG | DAG has 14 nodes, 26 declared edges, zero cycles, zero unreachable nodes, and no deferred dependency. |
+| DOD-02 | P1-GOV; DAG | DAG has 14 nodes, 36 declared edges, zero cycles, zero unreachable nodes, and no deferred dependency. |
 | DOD-03 | P1-GOV/P1-CONTENT/P1-RBAC | AB-01…AB-16 checks pass; HFM owns canonical truth and no HFB runtime dependency exists. |
 | DOD-04 | P1-CONTENT/P1-EVIDENCE/P1-VERSION | Admission, SourceRef/Evidence/Citation, version and rights rejection tests pass with no orphan chain. |
 | DOD-05 | P1-A…P1-D | A/B/C/D capabilities each have evidenced domain fixtures, cross-domain references, version and publication state. |
