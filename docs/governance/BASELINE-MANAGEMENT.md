@@ -2,6 +2,48 @@
 
 Status: Active · Date: 2026-08-27 · Phase 0.4
 
+## Phase 0.4 Completion Baseline（2026-08-28 冻结）
+
+```text
+Phase 0.4 — Core Domain Completion（CORE-COMPLETION ACCEPTED & FROZEN）
+
+Status:
+COMPLETE / ACCEPTED / ARCHIVED / FROZEN
+
+Original Core Domain Contract Baseline:
+366df69715613022326eb7a3c06ae7f145ebacb9
+
+Phase 0.4 Amended Contract Baseline:
+00ed3ff244578d975c2748fa9d85a8d14e4c7c37
+
+CD-6 Implementation Baseline:
+d08e343dbbc52dedfcbd5bba69918e6a4b74256d
+
+HFB Source Snapshot:
+03755b57ec0e4c8023d1447619f7d6ead9e44d73
+
+Failed Historical CORE-COMPLETION Candidate:
+e26598f3be8b3e8b9decd902c9a5e929f0e59e2a（substantive acceptance FAIL）
+
+Accepted CORE-COMPLETION Candidate:
+7960fb64a43250573d436898d45c7aa615bff1f6
+
+Candidate Set SHA256:
+94179e7e11a95612dfbfbb1d1fa378aa469abea15bf9829241e7d54cdaf413cb
+
+Phase 0.4 Completion Baseline:
+this commit（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
+
+Final Acceptance:
+PASS（P0/P1/P2 = 0/0/0；P3 = 1 non-blocking；BLOCKERS: NONE）
+```
+
+- **Phase 0.4 Completion Baseline: this commit**（自引用；正式完成基线 — 绑定 Governance 00ed3ff / Implementation d08e343 / Source 03755b5 / Completion Candidate 7960fb6 的已接受完成态；不取代历史治理/实现基线）
+- **冻结语义**：Phase 0.4 COMPLETE — CD-0…CD-6 ACCEPTED/FROZEN；CORE-COMPLETION ACCEPTED/ARCHIVED/FROZEN；Inventory 28/28 CLOSED；Completion Evidence CLOSED；DoD 9/9 PASS。**不表示**：actual production HFB import 已执行（NO；0 records；persistent state NONE）、CD-7 存在（NONEXISTENT）、Phase 1 已实现（NOT IMPLEMENTED IN THIS TASK）。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CORE-COMPLETION-ACCEPTANCE-ARCHIVE.md`（FINAL VERDICT: PASS；e26598f FAIL 历史如实保留）
+- **失败候选历史**：e26598f（FAIL，3×P1 — C1 synthetic biography / C2 file_path 替代 / dedup identity 不足）→ 7960fb6 修正并 CLOSED；不重写历史、不删除失败证据
+- **未来阶段**：Phase 1 须在 Phase 0.4 冻结后另行授权/规划；下一个任务必须从本正式 Phase 0.4 Completion Baseline 开始
+
 ## Phase 0.4 Amended Contract Baseline（2026-08-28 冻结）
 
 ```text

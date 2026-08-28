@@ -31,21 +31,16 @@ Architecture Greenfield + Capability Brownfield
 
 ## 当前阶段
 
-**Phase 0.4 — Core Domain CD-6 Accepted / Frozen；Contract Amendment v0.2 ACCEPTED / FROZEN（Completion 未闭合）**（2026-08-28）
+**Phase 0.4 — COMPLETE / ACCEPTED / ARCHIVED / FROZEN**（2026-08-28）
 
 - Architecture Baseline: **Frozen**（`7e109201e250dd5843add2249a24afa699766dd0`）
 - Engineering Skeleton: **Frozen**（`5ba7662` 治理链，见 `docs/governance/BASELINE-MANAGEMENT.md`）
 - Phase 0.3 Shared Asset Migration: **Complete / Frozen**（`f495fa0`）
 - Core Domain Contract: **Accepted / Frozen**（`39b2a91`；v0.1 保持 HISTORICALLY FROZEN）
-- **Core Domain Contract Amendment v0.2: Accepted / Frozen**（`6331dee` 验收 → 归档冻结；28/28 Inventory disposition + 12/12 canonical ownership + CORE-COMPLETION 定义；`docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md`）
-- **Phase 0.4 Completion: NOT COMPLETE**（DoD 未闭合；dry-run/reconciliation 未执行；Inventory 已契约性闭合）
-- CD-0: **Accepted / Frozen**（`e1c33af`）
-- CD-1: **Accepted / Frozen**（`7402ce5`）
-- CD-2: **Accepted / Frozen**（`2288979`）
-- CD-3: **Accepted / Frozen**（`6528ab0`）
-- CD-4: **Accepted / Frozen**（`79cf3f7`）
-- CD-5: **Accepted / Frozen**（`523294a`，FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE PASS）
-- **CD-6: Accepted / Frozen**（`7bb6e2e`，FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE PASS）
-- CD-7: **Not Authorized**（Frozen DAG 仅定义 CD-0…CD-6）
-- Core Domain Migration Beyond CD-6: **Not Authorized**
-- Phase 1: **Not Authorized**（G1 医学合规 / G2 匿名访问 / G3 发布快照 / G4 非遗媒体 / G7 SoD 均为 Phase 1 Deliverables，未实现）
+- Core Domain Contract Amendment v0.2: **Accepted / Frozen**（`6331dee`；28/28 Inventory disposition + 12/12 canonical ownership + CORE-COMPLETION 定义）
+- **Core Domain: CD-0…CD-6 Accepted / Frozen**（`e1c33af` `7402ce5` `2288979` `6528ab0` `79cf3f7` `523294a` `7bb6e2e`）
+- **CORE-COMPLETION: Accepted / Archived / Frozen**（Candidate `7960fb6`，FINAL VERDICT PASS；失败候选 `e26598f` FAIL 历史保留）
+- **Phase 0.4 Completion Baseline: `d08e343…链上最新归档冻结提交`**（见 BASELINE-MANAGEMENT；DoD 9/9；Inventory 28/28 CLOSED；Completion Evidence CLOSED）
+- Actual HFB production import: **NOT performed**（0 records；persistent state NONE）
+- CD-7: **Nonexistent**
+- Phase 1: **Not implemented by this freeze**（G1/G2/G3/G4/G7 均未实现；须在 Phase 0.4 冻结后另行授权）
