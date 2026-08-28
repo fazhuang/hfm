@@ -199,3 +199,51 @@ def test_migration_0004_downgrade_preserves_cd2(tmp_path: Path) -> None:
         "chapters",
         "passages",
     } <= tables
+
+
+def test_migration_existing_cd3_db_upgrade_to_0005(tmp_path: Path) -> None:
+    """CD-4 migration must upgrade an existing CD-3 database in place."""
+    db_file = tmp_path / "cd3-existing.db"
+    assert _alembic(db_file, "upgrade", "0004").returncode == 0
+    before = _tables(db_file)
+    assert "assertions" not in before
+    assert "assertion_evidences" not in before
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    after = _tables(db_file)
+    assert {"assertions", "assertion_evidences"} <= after
+    assert "evidences" in after  # CD-3 preserved
+    cols = _columns(db_file, "assertions")
+    assert {
+        "id",
+        "subject_entity_id",
+        "predicate",
+        "value",
+        "object_entity_id",
+        "assertion_type",
+        "editorial_status",
+    } <= cols
+    join_cols = _columns(db_file, "assertion_evidences")
+    assert {"assertion_id", "evidence_id"} <= join_cols
+
+
+def test_migration_0005_downgrade_preserves_cd3(tmp_path: Path) -> None:
+    """Downgrading 0005 drops assertion tables but keeps CD-0/1/2/3 tables."""
+    db_file = tmp_path / "cd4-downgrade.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    result = _alembic(db_file, "downgrade", "0004")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert not {"assertions", "assertion_evidences"} & tables
+    assert {
+        "sources",
+        "source_refs",
+        "institutions",
+        "entities",
+        "persons",
+        "works",
+        "editions",
+        "versions",
+        "chapters",
+        "passages",
+        "evidences",
+    } <= tables
