@@ -197,6 +197,59 @@ async def test_db_probe_relation_invalid_fk(session: AsyncSession) -> None:
         )
 
 
+async def test_db_probe_aggregation_subject_mismatch(session: AsyncSession) -> None:
+    """P1 fix (direct-DB): raw INSERT with subject != event is rejected by the trigger."""
+    from hfm.repositories.assertion import AssertionRepository
+
+    entity_id = await _make_event_entity(session)
+    event = await EventRepository(session).create(
+        entity_id=entity_id,
+        event_type=EventType.birth,
+        start_year=215,
+        start_precision=EventBoundPrecision.year,
+        end_year=215,
+        end_precision=EventBoundPrecision.year,
+    )
+    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
+    person_assertion = await AssertionRepository(session).create(
+        subject_entity_id=person.id, predicate="born_in", value="安定"
+    )
+    with pytest.raises(IntegrityError, match="subject mismatch"):
+        await session.execute(
+            sa.text(
+                "INSERT INTO event_assertions (event_id, assertion_id) VALUES (:event, :assertion)"
+            ),
+            {"event": event.entity_id, "assertion": person_assertion.id},
+        )
+
+
+async def test_db_probe_aggregation_subject_match_allowed(session: AsyncSession) -> None:
+    """Direct-DB: raw INSERT succeeds when subject_entity_id == event_id."""
+    from hfm.repositories.assertion import AssertionRepository
+
+    entity_id = await _make_event_entity(session)
+    event = await EventRepository(session).create(
+        entity_id=entity_id,
+        event_type=EventType.birth,
+        start_year=215,
+        start_precision=EventBoundPrecision.year,
+        end_year=215,
+        end_precision=EventBoundPrecision.year,
+    )
+    assertion = await AssertionRepository(session).create(
+        subject_entity_id=event.entity_id, predicate="occurred_at", value="公元215年"
+    )
+    await session.execute(
+        sa.text(
+            "INSERT INTO event_assertions (event_id, assertion_id) VALUES (:event, :assertion)"
+        ),
+        {"event": event.entity_id, "assertion": assertion.id},
+    )
+    await session.flush()
+    rows = (await session.execute(sa.text("SELECT COUNT(*) FROM event_assertions"))).scalar_one()
+    assert rows == 1
+
+
 async def test_db_probe_event_delete_cascades_aggregation(session: AsyncSession) -> None:
     """event_assertions CASCADE: deleting the events row removes aggregation edges."""
     entity_id = await _make_event_entity(session)
@@ -208,11 +261,10 @@ async def test_db_probe_event_delete_cascades_aggregation(session: AsyncSession)
         end_year=215,
         end_precision=EventBoundPrecision.year,
     )
-    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
     from hfm.repositories.assertion import AssertionRepository
 
     assertion = await AssertionRepository(session).create(
-        subject_entity_id=person.id, predicate="born_in", value="安定"
+        subject_entity_id=event.entity_id, predicate="occurred_at", value="公元215年"
     )
     await EventRepository(session).attach_assertion(event.entity_id, assertion.id)
     await session.execute(

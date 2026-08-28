@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+import sqlalchemy as sa
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,9 +33,8 @@ async def _make_event(session: AsyncSession) -> str:
 
 
 async def test_event_assertion_aggregation_and_evidence_chain(session: AsyncSession) -> None:
-    """事件证据链: Event → Assertion → Evidence → SourceRef → Source (I1)."""
+    """事件证据链: Event → Assertion(subject=event) → Evidence → SourceRef → Source (I1)."""
     event_id = await _make_event(session)
-    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
     source, _ = await SourceRepository(session).create_idempotent(
         source_key="ssjys", title="世说新语·容止"
     )
@@ -42,8 +42,9 @@ async def test_event_assertion_aggregation_and_evidence_chain(session: AsyncSess
     evidence = await EvidenceRepository(session).create(
         description="皇甫谧年二十余，以为痴", source_ref_id=ref.id
     )
+    # the event evidence aggregate = assertions ABOUT the event (subject = event entity)
     assertion = await AssertionRepository(session).create(
-        subject_entity_id=person.id, predicate="born_in", value="安定"
+        subject_entity_id=event_id, predicate="occurred_at", value="公元215年"
     )
     await AssertionRepository(session).attach_evidence(assertion.id, evidence.id)
 
@@ -57,12 +58,49 @@ async def test_event_assertion_aggregation_and_evidence_chain(session: AsyncSess
     assert await fresh.assertion_ids(event_id) == [assertion.id]
 
 
+async def test_attach_assertion_rejects_subject_mismatch(session: AsyncSession) -> None:
+    """P1 fix: assertions about other subjects cannot enter the event aggregate."""
+    event_id = await _make_event(session)
+    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
+    # subject = the person, NOT the event — must be rejected (domain boundary)
+    assertion = await AssertionRepository(session).create(
+        subject_entity_id=person.id, predicate="born_in", value="安定"
+    )
+    with pytest.raises(ValueError, match="subject_entity_id"):
+        await EventRepository(session).attach_assertion(event_id, assertion.id)
+
+
+async def test_event_aggregate_contract_invariant(session: AsyncSession) -> None:
+    """Contract invariant: every aggregated assertion's subject == event entity."""
+    event_id = await _make_event(session)
+    a1 = await AssertionRepository(session).create(
+        subject_entity_id=event_id, predicate="occurred_at", value="公元215年"
+    )
+    a2 = await AssertionRepository(session).create(
+        subject_entity_id=event_id, predicate="occurred_at", value="公元214年"
+    )
+    repo = EventRepository(session)
+    await repo.attach_assertion(event_id, a1.id)
+    await repo.attach_assertion(event_id, a2.id)
+    # I3: conflicting date claims about the same event coexist (no unique subject+predicate)
+    assert sorted(await repo.assertion_ids(event_id)) == sorted([a1.id, a2.id])
+    rows = (
+        await session.execute(
+            sa.text(
+                "SELECT COUNT(*) FROM event_assertions ea"
+                " JOIN assertions a ON a.id = ea.assertion_id"
+                " WHERE a.subject_entity_id != ea.event_id"
+            )
+        )
+    ).scalar_one()
+    assert rows == 0
+
+
 async def test_attach_assertion_rejects_withdrawn(session: AsyncSession) -> None:
     """Withdrawn Assertions cannot anchor an event record (withdrawn-reference gate)."""
     event_id = await _make_event(session)
-    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
     assertion = await AssertionRepository(session).create(
-        subject_entity_id=person.id, predicate="born_in", value="安定"
+        subject_entity_id=event_id, predicate="occurred_at", value="公元215年"
     )
     await AssertionRepository(session).update(assertion.id, editorial_status="withdrawn")
     with pytest.raises(ValueError, match="withdrawn"):
@@ -71,9 +109,8 @@ async def test_attach_assertion_rejects_withdrawn(session: AsyncSession) -> None
 
 async def test_attach_assertion_idempotent(session: AsyncSession) -> None:
     event_id = await _make_event(session)
-    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
     assertion = await AssertionRepository(session).create(
-        subject_entity_id=person.id, predicate="authored", value="针灸甲乙经"
+        subject_entity_id=event_id, predicate="authored", value="针灸甲乙经"
     )
     repo = EventRepository(session)
     await repo.attach_assertion(event_id, assertion.id)
@@ -83,9 +120,8 @@ async def test_attach_assertion_idempotent(session: AsyncSession) -> None:
 
 async def test_attach_assertion_missing_targets(session: AsyncSession) -> None:
     event_id = await _make_event(session)
-    person = await EntityRepository(session).create(entity_type=EntityType.person, name="皇甫谧")
     assertion = await AssertionRepository(session).create(
-        subject_entity_id=person.id, predicate="authored", value="针灸甲乙经"
+        subject_entity_id=event_id, predicate="authored", value="针灸甲乙经"
     )
     with pytest.raises(ValueError, match="event does not exist"):
         await EventRepository(session).attach_assertion(

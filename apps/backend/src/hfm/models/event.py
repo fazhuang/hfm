@@ -23,7 +23,20 @@ from __future__ import annotations
 import enum
 from typing import ClassVar
 
-from sqlalchemy import Boolean, CheckConstraint, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    Column,
+    ForeignKey,
+    Integer,
+    String,
+    Table,
+    UniqueConstraint,
+)
+from sqlalchemy import (
+    event as sa_event,
+)
+from sqlalchemy.engine import Connection
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import Base, BaseModel
@@ -114,11 +127,12 @@ class Event(BaseModel):
     """A life-event aggregate with a canonical temporal frame (CD-6 — NEW)."""
 
     __tablename__ = "events"
-    #: single-PK typed-Entity table: identity = entity_id (1:1 → entities.id).
-    #: the inherited BaseModel surrogate id is removed so model and migration
-    #: stay consistent (persons' migration already ships entity_id-only PK).
-    id = None  # type: ignore[assignment]
+    #: typed-Entity identity: entity_id 1:1 → entities.id (UNIQUE, NOT NULL).
+    #: the row keeps the BaseModel UUIDv7 surrogate PK (standard model shape)
+    #: while the UNIQUE entity_id is the semantic identity and the FK target
+    #: for event_relations / event_assertions.
     __table_args__ = (
+        UniqueConstraint("entity_id", name="uq_events_entity_id"),
         CheckConstraint(
             f"event_type IN ({_EVENT_TYPE_VALUES})",
             name="ck_events_event_type",
@@ -222,8 +236,9 @@ class Event(BaseModel):
 
     entity_id: Mapped[str] = mapped_column(
         ForeignKey("entities.id", ondelete="RESTRICT"),
-        primary_key=True,
-        comment="稳定标识（= entities.id，1:1；EntityType.event，I5）",
+        nullable=False,
+        unique=True,
+        comment="稳定标识（= entities.id，1:1 UNIQUE；EntityType.event，I5）",
     )
     event_type: Mapped[EventType] = mapped_column(
         String(30),
@@ -286,3 +301,23 @@ event_assertions = Table(
         comment="聚合主张（CD-4）",
     ),
 )
+
+
+#: SQLite-only backstop: the event domain boundary requires every aggregated
+#: Assertion to have subject_entity_id == event_id (Frozen CD-6 scope —
+#: event evidence aggregate = assertions ABOUT the event). A CHECK cannot
+#: express the join, so an insert trigger enforces it at the DB layer (§35
+#: strong-probe pattern); the repository raises ValueError first. PostgreSQL
+#: relies on the repository guard (no portable trigger).
+def _create_aggregation_trigger(target: object, connection: Connection, **kw: object) -> None:
+    connection.exec_driver_sql(
+        "CREATE TRIGGER IF NOT EXISTS trg_event_assertions_subject_match"
+        " BEFORE INSERT ON event_assertions"
+        " FOR EACH ROW"
+        " WHEN NOT EXISTS (SELECT 1 FROM assertions"
+        "   WHERE id = NEW.assertion_id AND subject_entity_id = NEW.event_id)"
+        " BEGIN SELECT RAISE(ABORT, 'event_assertions subject mismatch'); END"
+    )
+
+
+sa_event.listen(event_assertions, "after_create", _create_aggregation_trigger)

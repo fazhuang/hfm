@@ -1,4 +1,8 @@
-"""Event repository (CD-6 — NEW, CA-004)."""
+"""Event repository (CD-6 — NEW, CA-004).
+
+Typed-Entity Event aggregate: identity on the CD-1 Entity row (entity_id),
+canonical temporal frame, and Assertion aggregation (事件证据链).
+"""
 
 from __future__ import annotations
 
@@ -57,8 +61,10 @@ class EventRepository(BaseRepository[Event]):
     async def attach_assertion(self, event_id: str, assertion_id: str) -> None:
         """Aggregate an Assertion to the Event (事件证据链, Frozen Canonical §1).
 
-        Rejects withdrawn Assertions (withdrawn-reference gate — CD-5
-        consistency): a withdrawn claim cannot anchor an event's record.
+        Domain boundary (Frozen CD-6 scope): the event evidence aggregate is
+        assertions ABOUT the event — every aggregated Assertion must have
+        subject_entity_id == event_id (the event's Entity identity). Rejects
+        withdrawn Assertions (withdrawn-reference gate — CD-5 consistency).
         """
         event = await self.get_by_id(event_id)
         if event is None:
@@ -68,6 +74,10 @@ class EventRepository(BaseRepository[Event]):
         assertion = await self.session.get(Assertion, assertion_id)
         if assertion is None:
             raise ValueError("assertion does not exist")
+        if assertion.subject_entity_id != event_id:
+            raise ValueError(
+                "assertion subject_entity_id must equal event_id (event domain boundary)"
+            )
         if assertion.editorial_status == EditorialStatus.withdrawn:
             raise ValueError("cannot aggregate a withdrawn assertion (withdrawn-reference gate)")
         stmt = select(event_assertions).where(

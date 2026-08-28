@@ -238,13 +238,13 @@ PASS（/health /ready /config 200 + X-Request-ID + /config 零敏感）
 Ruff: PASS
 Ruff Format: PASS — 107 files（`ruff format --check .`）
 mypy: PASS — 98 source files
-pytest: PASS — 207 passed（170 + 37 CD-6 新增）
+pytest: PASS — 211 passed（170 + 41 CD-6 新增）
 ESLint: PASS
 Prettier: PASS
 vue-tsc: PASS
 Vitest: PASS — 24 passed
 Build: PASS
-CD-6 Newly Introduced Quality Waivers: 0
+CD-6 Newly Introduced Quality Waivers: 0（P2 `type: ignore` 已移除）
 ```
 
 ## 27. Runtime Smoke
@@ -272,6 +272,22 @@ Permanent HFB Runtime Dependency: NO
 Contract Deviations:
 0
 ```
+
+## 29.1 Codex CD-6 Acceptance BLOCK → P1×1 + P2×1 修正记录
+
+Codex 独立验收判定 BLOCK：① P1 — `attach_assertion` 未强制 `Assertion.subject_entity_id = event Entity id`（事件域边界 + I1 语义）；② P2 — `models/event.py:120` 含未报告的 `# type: ignore[assignment]`。
+
+| 阻塞 | 修复 | 证据 |
+| --- | --- | --- |
+| **P1** 聚合 subject 门禁 | `EventRepository.attach_assertion` 拒绝 `subject_entity_id != event_id` 的主张（Frozen CD-6 Scope：事件证据聚合 = 关于事件的 Assertion）；SQLite 层 `trg_event_assertions_subject_match` 触发器兜底（CHECK 无法表达 join；§35 探针模式；PostgreSQL 依赖仓库守卫） | test_attach_assertion_rejects_subject_mismatch / test_db_probe_aggregation_subject_mismatch / test_db_probe_aggregation_subject_match_allowed / test_event_aggregate_contract_invariant（查询级不变量）+ 迁移 0008 触发器 |
+| **P2** `type: ignore` | 移除 `id = None  # type: ignore[assignment]`；events 表改为标准 BaseModel 形状（id UUIDv7 PK + entity_id UNIQUE NOT NULL FK — 1:1 typed-Entity 由 UNIQUE 保证，FK 指向 entity_id 合法）；迁移 0008 同步（id PK + uq_events_entity_id） | mypy 98 files 零豁免；`git diff` 新引入 type: ignore = 0；迁移门禁 PASS |
+| 测试重构 | 证据链/幂等/缺失目标/级联测试改为 subject=event 主张（符合域边界）；新增 4 项门禁测试 | 见上 |
+
+- **I1 Event Provenance Chain 修正后**：PASS（聚合断言 subject=event；Event→Assertion→Evidence→SourceRef→Source 全链验证）
+- **Event Assertion Aggregation 修正后**：PASS（subject 匹配强制 + DB 触发器 + 契约不变量查询）
+- **Assertion Subject = Event Entity Integrity 修正后**：PASS
+- pytest 207 → **211 passed**（+4）；mypy 98 files / ruff 全绿 / Ruff Format 107 files
+- 未改变 CD-0-5 冻结语义；迁移 0001-0007 UNCHANGED（仅本批 0008 修正）
 
 ## 30. Unauthorized Additions
 
@@ -310,7 +326,7 @@ REUSE: 0 · EXTEND: 0 · ADAPT: 1 · NEW: 2
 Scope/Verdict Count Semantics: CLEAR（Scope Item 与 asset verdict 计数体系独立）
 
 CD-6 Newly Applicable Invariants: I1 / I4 / I5（DIRECTLY APPLICABLE）；I3（SUPPORTED）
-I1 Provenance: PASS
+I1 Provenance: PASS（P1 修正后：聚合 subject 门禁 + 触发器 + 契约查询）
 I2 Version Reproducibility: PASS
 I3 Assertion Coexistence: PASS
 I4 No Silent Overwrite: PASS

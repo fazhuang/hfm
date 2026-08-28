@@ -43,7 +43,8 @@ _ROLES = ("actor", "participant", "witness", "other")
 def upgrade() -> None:
     op.create_table(
         "events",
-        sa.Column("entity_id", sa.String(36), primary_key=True),
+        sa.Column("id", sa.String(36), primary_key=True),
+        sa.Column("entity_id", sa.String(36), nullable=False),
         sa.Column("event_type", sa.String(30), nullable=False),
         sa.Column("start_year", sa.Integer(), nullable=True),
         sa.Column("start_month", sa.Integer(), nullable=True),
@@ -88,6 +89,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.ForeignKeyConstraint(["entity_id"], ["entities.id"], ondelete="RESTRICT"),
+        sa.UniqueConstraint("entity_id", name="uq_events_entity_id"),
         sa.CheckConstraint(
             f"event_type IN ({', '.join(repr(t) for t in _EVENT_TYPES)})",
             name="ck_events_event_type",
@@ -183,6 +185,21 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(["event_id"], ["events.entity_id"], ondelete="CASCADE"),
         sa.ForeignKeyConstraint(["assertion_id"], ["assertions.id"], ondelete="CASCADE"),
     )
+
+    # SQLite-only backstop: event evidence aggregate = assertions ABOUT the
+    # event (subject_entity_id == event_id). A CHECK cannot express the join,
+    # so an insert trigger enforces it at the DB layer (§35 strong probes);
+    # the repository raises ValueError first. PostgreSQL relies on the
+    # repository guard (no portable trigger).
+    if op.get_bind().dialect.name == "sqlite":
+        op.execute(
+            "CREATE TRIGGER IF NOT EXISTS trg_event_assertions_subject_match"
+            " BEFORE INSERT ON event_assertions"
+            " FOR EACH ROW"
+            " WHEN NOT EXISTS (SELECT 1 FROM assertions"
+            "   WHERE id = NEW.assertion_id AND subject_entity_id = NEW.event_id)"
+            " BEGIN SELECT RAISE(ABORT, 'event_assertions subject mismatch'); END"
+        )
 
 
 def downgrade() -> None:
