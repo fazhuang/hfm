@@ -31,13 +31,14 @@ Architecture Greenfield + Capability Brownfield
 
 ## 当前阶段
 
-**Phase 0.4 — Core Domain CD-6 Accepted / Frozen；Contract Amendment v0.2 CANDIDATE（待验收）**（2026-08-28）
+**Phase 0.4 — Core Domain CD-6 Accepted / Frozen；Contract Amendment v0.2 ACCEPTED / FROZEN（Completion 未闭合）**（2026-08-28）
 
 - Architecture Baseline: **Frozen**（`7e109201e250dd5843add2249a24afa699766dd0`）
 - Engineering Skeleton: **Frozen**（`5ba7662` 治理链，见 `docs/governance/BASELINE-MANAGEMENT.md`）
 - Phase 0.3 Shared Asset Migration: **Complete / Frozen**（`f495fa0`）
-- Core Domain Contract: **Accepted / Frozen**（`39b2a91`）
-- **Core Domain Contract Amendment v0.2: CANDIDATE（待 Codex 验收；未冻结）** — 28/28 Inventory disposition + 12/12 canonical ownership + CORE-COMPLETION 定义（`docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md`）
+- Core Domain Contract: **Accepted / Frozen**（`39b2a91`；v0.1 保持 HISTORICALLY FROZEN）
+- **Core Domain Contract Amendment v0.2: Accepted / Frozen**（`6331dee` 验收 → 归档冻结；28/28 Inventory disposition + 12/12 canonical ownership + CORE-COMPLETION 定义；`docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md`）
+- **Phase 0.4 Completion: NOT COMPLETE**（DoD 未闭合；dry-run/reconciliation 未执行；Inventory 已契约性闭合）
 - CD-0: **Accepted / Frozen**（`e1c33af`）
 - CD-1: **Accepted / Frozen**（`7402ce5`）
 - CD-2: **Accepted / Frozen**（`2288979`）

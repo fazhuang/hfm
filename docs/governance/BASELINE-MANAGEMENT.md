@@ -2,35 +2,42 @@
 
 Status: Active · Date: 2026-08-27 · Phase 0.4
 
-## Phase 0.4 Contract Amendment（CANDIDATE — 未冻结，2026-08-28）
+## Phase 0.4 Amended Contract Baseline（2026-08-28 冻结）
 
 ```text
-Phase 0.4 — Core Domain Contract Reconciliation Amendment v0.2
+Phase 0.4 — Core Domain Contract Amendment v0.2
 
 Status:
-CANDIDATE / AWAITING CODEX ACCEPTANCE（非 ACCEPTED / 非 FROZEN / 非 BASELINE）
+ACCEPTED / ARCHIVED / FROZEN
 
-Amendment Document:
-docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md
+Original Core Domain Contract Baseline:
+366df69715613022326eb7a3c06ae7f145ebacb9
 
-Candidate Report:
-docs/audit/HFM-PHASE0.4-CONTRACT-RECONCILIATION-AMENDMENT.md
+Accepted Contract Amendment Candidate:
+6331dee20402a2113fad0f918f7121b2dc9ff142
 
-Reason:
-Completion Final Audit BLOCK（P0×1 + P1×2）：Frozen Inventory/Canonical/DAG/DoD
-未定义唯一可完成的 Phase 0.4 target；DAG 已 EXHAUSTED（CD-0…CD-6）。
+Phase 0.4 Amended Contract Baseline:
+this commit（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
 
-Scope:
-28/28 CA assets 获最终 disposition（IMPLEMENTED_CORE 15 / POST_PHASE_DEFERRED 11 /
-NON_RUNTIME_GOVERNANCE 1 / BRIDGE_FROZEN 1）；12/12 canonical concepts 获归属；
-CORE-COMPLETION 定义为非 CD 节点（dry-run owner）；CA-002/CA-026/Place 全部非 AMBIGUOUS。
+CD-6 Implementation Baseline:
+d08e343dbbc52dedfcbd5bba69918e6a4b74256d
 
-本轮未授权:
-CORE-COMPLETION / Phase 0.4 Completion Freeze / CD-7（NONEXISTENT）/ Phase 1。
+HFB Source Snapshot:
+03755b57ec0e4c8023d1447619f7d6ead9e44d73
 
-注意:
-本候选未冻结；Codex 验收通过并另行授权后才可能进入 Completion 流程。
+Final Acceptance:
+PASS（P0/P1/P2/P3 = 0/0/0/0；BLOCKERS: NONE）
+
+Governance Record:
+this commit
 ```
+
+- **Phase 0.4 Amended Contract Baseline: this commit**（自引用；Codex 验收 `6331dee` 后经本归档提交正式冻结；未来 CORE-COMPLETION 授权必须由 Governance/Implementation/Source 三基线派生）
+- **冻结语义**：Inventory 28/28 已契约性闭合（IMPLEMENTED_CORE 15 / POST_PHASE_DEFERRED 11 / NON_RUNTIME_GOVERNANCE 1 / BRIDGE_FROZEN 1）；Canonical 12/12 归属（0 歧义）；CORE-COMPLETION 定义为非 CD 节点（dry-run owner）。**不表示**：Phase 0.4 Completion PASS / DoD 闭合 / dry-run 已执行 / actual import 已授权 / CORE-COMPLETION 已授权 / Phase 1 已授权。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CONTRACT-AMENDMENT-ACCEPTANCE-ARCHIVE.md`（FINAL VERDICT: PASS）
+- **Amendment 文档**：`docs/governance/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AMENDMENT-v0.2.md`（已 ACCEPTED/ARCHIVED/FROZEN；语义未修改）
+- **历史真实**：原 v0.1 契约（366df69）保持 HISTORICALLY FROZEN / NOT REWRITTEN；Amendment 仅对显式裁决事项生效（precedence: Amendment governs adjudicated; v0.1 governs untouched）
+- **未授权**：CORE-COMPLETION / dry-run / reconciliation 执行 / actual import / Phase 0.4 Completion Freeze / CD-7（NONEXISTENT）/ Phase 1
 
 ## 基线关系（2026-08-27 冻结后）
 
