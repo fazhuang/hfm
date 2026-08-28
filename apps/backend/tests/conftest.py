@@ -15,9 +15,16 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.pool import StaticPool
 
-import hfm.models.institution  # noqa: F401 — register models on Base.metadata
+import hfm.models.chapter  # noqa: F401 — register models on Base.metadata
+import hfm.models.edition  # noqa: F401
+import hfm.models.entity  # noqa: F401
+import hfm.models.institution  # noqa: F401
+import hfm.models.passage  # noqa: F401
+import hfm.models.person  # noqa: F401
 import hfm.models.source  # noqa: F401
 import hfm.models.source_ref  # noqa: F401
+import hfm.models.version  # noqa: F401
+import hfm.models.work  # noqa: F401
 from hfm.db.base import Base
 
 
