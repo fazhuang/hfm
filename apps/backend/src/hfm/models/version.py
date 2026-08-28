@@ -9,9 +9,10 @@ pinned, reproducible reference — nothing resolves to "latest" in Core.
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import ClassVar
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
@@ -63,4 +64,9 @@ class Version(BaseModel):
         ForeignKey("versions.id", ondelete="SET NULL"),
         nullable=True,
         comment="版本谱系父版本（I2；自引用，须无环）",
+    )
+    withdrawn_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        comment="撤回时间（Frozen Canonical §2：撤回版本不得被新引用 — I2）",
     )

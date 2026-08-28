@@ -13,9 +13,10 @@ ADAPT of HFB `SourceAdmissionEntry` identity/rights metadata (CA-019) @
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import ClassVar
 
-from sqlalchemy import String, Text, UniqueConstraint
+from sqlalchemy import DateTime, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
@@ -63,4 +64,9 @@ class Source(BaseModel):
     )
     legacy_source_key: Mapped[str | None] = mapped_column(
         String(200), nullable=True, comment="HFB 旧数据来源键（迁移用）"
+    )
+    withdrawn_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+        comment="撤回时间（Lineage §2.5：撤回 → Evidence taint → Citation 拒绝）",
     )

@@ -307,3 +307,15 @@ def test_migration_0006_downgrade_preserves_cd4(tmp_path: Path) -> None:
         "assertions",
         "assertion_evidences",
     } <= tables
+
+
+def test_migration_0007_withdrawal_columns(tmp_path: Path) -> None:
+    """0007 adds withdrawn_at to sources/versions; downgrade removes them."""
+    db_file = tmp_path / "cd6-withdrawal.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    assert "withdrawn_at" in _columns(db_file, "sources")
+    assert "withdrawn_at" in _columns(db_file, "versions")
+    result = _alembic(db_file, "downgrade", "0006")
+    assert result.returncode == 0, result.stderr
+    assert "withdrawn_at" not in _columns(db_file, "sources")
+    assert "withdrawn_at" not in _columns(db_file, "versions")

@@ -143,9 +143,9 @@ Frontend Business Changes:
 | Gate | Result |
 | --- | --- |
 | Ruff | PASS |
-| Ruff format | PASS（98 files） |
+| Ruff format（`ruff format --check .`） | PASS（99 files） |
 | mypy --strict | PASS（91 source files，零豁免） |
-| pytest | **167 passed**（前 152 + CD-5 15） |
+| pytest | **170 passed**（前 152 + CD-5 18） |
 | ESLint | PASS |
 | Prettier | PASS |
 | vue-tsc | PASS |
@@ -168,6 +168,21 @@ Frontend Business Changes:
 Contract Deviations:
 0
 ```
+
+## 31.1 Codex CD-5 Acceptance BLOCK → P1×2 + P2 修正记录
+
+Codex 独立验收判定 BLOCK：① P1 — Version 无撤回状态（Frozen Canonical §2 要求 Citation 拒绝 withdrawn Version）；② P1 — Source 撤回 → Evidence taint → Citation 拒绝级联缺失（Lineage §2.5）；③ P2 — 报告 Ruff Format 计数与独立复验不符。
+
+| 阻塞 | 修复 | 证据 |
+| --- | --- | --- |
+| **P1** withdrawn Version 门禁 | `Version.withdrawn_at` + `VersionRepository.mark_withdrawn` + `CitationRepository.create` 拒绝 withdrawn Version（I2） | test_citation_withdrawn_version_rejected / test_i2_citation_* |
+| **P1** Source 撤回 → Evidence taint 级联 | `Source.withdrawn_at` + `SourceRepository.mark_withdrawn`（级联标记锚定 Evidences source_withdrawn）+ `CitationRepository.create` 拒绝 tainted evidence | test_citation_tainted_evidence_rejected |
+| **P2** Ruff Format 计数 | 以官方门禁 `ruff format --check .` 为准（99 files） | §28 |
+| Migration | `0007_cd5_withdrawal`（sources/versions 增加 withdrawn_at；0006→0007；downgrade 移除） | test_migration_0007_withdrawal_columns |
+
+- **I2 修正后状态**：PASS（withdrawn Version 拒绝 + pinned no-latest-drift + pin immutable）
+- pytest 167 → **170 passed**（+3）；mypy 91 files / ruff 全绿
+- 未改变 CD-0-4 冻结语义（仅为 Frozen Canonical/Lineage 契约要求的撤回状态补全字段；回归全绿）
 
 ## 32. Unauthorized Additions
 

@@ -1,7 +1,8 @@
-"""Version repository (CD-2, I2 lineage enforcement)."""
+"""Version repository (CD-2, I2 lineage enforcement + withdrawal)."""
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import select
@@ -37,6 +38,18 @@ class VersionRepository(BaseRepository[Version]):
             edition_id, str(parent_version_id) if parent_version_id else None
         )
         return await super().create(**kwargs)
+
+    async def mark_withdrawn(self, version_id: str) -> Version | None:
+        """Mark a Version withdrawn (Frozen Canonical §2 — I2).
+
+        Withdrawn Versions cannot be newly cited by Citations.
+        """
+        version = await self.get_by_id(version_id)
+        if version is None:
+            return None
+        version.withdrawn_at = datetime.now(UTC)
+        await self.session.flush()
+        return version
 
     async def get_by_edition(self, edition_id: str) -> list[Version]:
         stmt = (
