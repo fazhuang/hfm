@@ -17,6 +17,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.4
 | **Phase 0.3 Selective Shared Asset Migration（Phase 0.3 选择性共享资产迁移）** | **本轮治理提交** | Final Batch = Batch 4（PASS，零代码完成审计）；Phase 0.3 停止条件已满足，无 Batch 5 | **COMPLETE / FROZEN** |
 | **Phase 0.4 Core Domain Contract（Core Domain 契约）** | **本轮治理提交** | Accepted Candidate `39b2a91`（FINAL CONTRACT ACCEPTANCE，PASS，P0/P1/P2=0）归档后形成；后续 CD-0 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Phase 0.4 — Core Domain Implementation CD-0** | **本轮治理提交** | Accepted Candidate `e1c33af`（FINAL IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2=0）归档后形成；后续 CD-1 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
+| **Phase 0.4 — Core Domain Implementation CD-1** | **本轮治理提交** | Accepted Candidate `7402ce5`（FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2/P3=0）归档后形成；后续 CD-2 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -202,6 +203,43 @@ this commit
 - **冻结语义**：CD-0 Frozen Scope 已完成实现并通过独立验收，可作为下一 Core Domain 批次的稳定基础。**不表示**：整个 Core Domain 已完成、CD-1 已授权、Assertion/Evidence 全部实现、HFB Core 数据已全部迁移、Public Portal 已实现、Phase 1 已启动。
 - **验收归档**：`docs/audit/HFM-PHASE0.4-CD0-ACCEPTANCE.md`（P1 Immutable Source Identity CLOSED；Scope 8/8；I1/I4/I5/I6 PASS，I2/I3 NOT IN CD-0 SCOPE）
 
+## Phase 0.4 CD-1 冻结（2026-08-27）
+
+```text
+Phase 0.4 — Core Domain Implementation CD-1
+
+Status:
+ACCEPTED / FROZEN
+
+Starting Baseline:
+504e45e2d707b7e439e8b2610c109f30fa581f65
+
+Accepted Candidate:
+7402ce5e6a86a11b9526e8985bc82957b04b7009
+
+Final Acceptance:
+PASS
+
+P0:
+0
+
+P1:
+0
+
+P2:
+0
+
+P3:
+0
+
+Governance Record:
+this commit
+```
+
+- **CD-1 Implementation Baseline: this commit**（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
+- **冻结语义**：Frozen CD-1 Scope（Entity/EntityType/Person + repository + migration 0002 + invariants I4/I5/I6）已完成并通过 Codex 独立验收，可作为下一 Core Domain 批次的稳定基础。**不表示**：整个 Core Domain 已完成、I1/I2/I3 已实现、Assertion/Evidence/Citation/SourceRef 已实现、CD-2 已授权、Core Domain 全量迁移已授权、Phase 1 已启动。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CD1-ACCEPTANCE.md`（Scope 8/8；Scope/Verdict Count Semantics CLEAR；I1/I2/I3 NOT IN CD-1 SCOPE）
+
 ## 冻结语义
 
 **Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
@@ -236,6 +274,7 @@ this commit
 - **BATCH 5**：**NOT REQUIRED**（shared/foundation selective migration 完成，无继续批次必要）；**CORE DOMAIN MIGRATION**：**NOT AUTHORIZED**（下一阶段编号与范围由后续独立治理指令决定）
 - **CD-0**：**NOT AUTHORIZED**（Core Domain Contract 已 FROZEN，但实施须另行独立授权）
 - **CD-1**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-0**：**NOT AUTHORIZED**（CD-0 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
+- **CD-2**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-1**：**NOT AUTHORIZED**（CD-1 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 
 ## 变更规则（Frozen 之后）
 
@@ -267,6 +306,9 @@ this commit
 - `docs/migration/hfb/HFM-PHASE0.4-CD0-IMPLEMENTATION-SCOPE.md`（CD-0 Scope 提取 + Traceability Matrix，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD0-IMPLEMENTATION.md`（CD-0 实施报告，Scope 8/8，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD0-ACCEPTANCE.md`（CD-0 验收归档，FINAL VERDICT: PASS，P1 CLOSED，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.4-CD1-IMPLEMENTATION-SCOPE.md`（CD-1 Scope 提取 + Traceability Matrix，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CD1-IMPLEMENTATION.md`（CD-1 实施报告，Scope 8/8，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CD1-ACCEPTANCE.md`（CD-1 验收归档，FINAL VERDICT: PASS，2026-08-27）
 - `docs/domain/HFM-CORE-DOMAIN-SCOPE-v0.1.md` + `HFM-ASSERTION-CONTRACT-v0.1.md` + `HFM-EVIDENCE-LINEAGE-CONTRACT-v0.1.md` + `HFM-CANONICAL-DOMAIN-MODEL-v0.1.md`（Core Domain 契约集，2026-08-27）
 - `docs/migration/hfb/HFM-PHASE0.4-CORE-ASSET-INVENTORY.md` + `HFM-CORE-DATA-MIGRATION-STRATEGY-v0.1.md` + `HFM-PHASE0.4-CORE-MIGRATION-DAG.md`（Core 迁移规划，2026-08-27）
 - `docs/governance/HFM-CORE-DOMAIN-DEFINITION-OF-DONE.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-RISK-REGISTER.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AUDIT.md`（DoD/风险/审计，2026-08-27）
