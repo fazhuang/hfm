@@ -319,3 +319,68 @@ def test_migration_0007_withdrawal_columns(tmp_path: Path) -> None:
     assert result.returncode == 0, result.stderr
     assert "withdrawn_at" not in _columns(db_file, "sources")
     assert "withdrawn_at" not in _columns(db_file, "versions")
+
+
+def test_migration_0008_event_tables(tmp_path: Path) -> None:
+    """0008 adds events/event_relations/event_assertions; downgrade removes them."""
+    db_file = tmp_path / "cd7-event.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {"events", "event_relations", "event_assertions"} <= tables
+    assert {
+        "entity_id",
+        "event_type",
+        "start_year",
+        "start_month",
+        "start_day",
+        "start_precision",
+        "start_approximate",
+        "end_year",
+        "end_month",
+        "end_day",
+        "end_precision",
+        "end_approximate",
+    } <= _columns(db_file, "events")
+    result = _alembic(db_file, "downgrade", "0007")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "event_assertions" not in tables
+    assert "event_relations" not in tables
+    assert "events" not in tables
+
+
+def test_migration_0008_fresh_chain_preserves_history(tmp_path: Path) -> None:
+    """0001 → head still works after 0008; CD-0/1/2/3/4/5 tables preserved."""
+    db_file = tmp_path / "cd7-chain.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {
+        "sources",
+        "source_refs",
+        "institutions",
+        "entities",
+        "persons",
+        "works",
+        "editions",
+        "versions",
+        "chapters",
+        "passages",
+        "evidences",
+        "assertions",
+        "assertion_evidences",
+        "citations",
+        "events",
+        "event_relations",
+        "event_assertions",
+    } <= tables
+    # constraint names survive in SQLite (probe table attributes)
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        ev_checks = {c["name"] for c in inspector.get_check_constraints("events")}
+        assert "ck_events_start_le_end" in ev_checks
+        assert "ck_events_start_consistency" in ev_checks
+        rel_checks = {c["name"] for c in inspector.get_check_constraints("event_relations")}
+        assert "ck_event_relations_not_self" in rel_checks
+    finally:
+        engine.dispose()
