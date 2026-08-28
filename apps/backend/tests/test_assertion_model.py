@@ -64,9 +64,25 @@ async def test_assertion_content_immutable(session: AsyncSession) -> None:
     with pytest.raises(ValueError):
         await repo.update(assertion.id, value="篡改")
     with pytest.raises(ValueError):
+        await repo.update(assertion.id, confidence=Confidence.low)
+    with pytest.raises(ValueError):
+        await repo.update(assertion.id, assertion_type=AssertionType.TEXTUAL)
+    with pytest.raises(ValueError):
+        await repo.update(assertion.id, revision=2)
+    with pytest.raises(ValueError):
         assertion.predicate = "died_in"
     with pytest.raises(ValueError):
         assertion.subject_entity_id = "other"
+    with pytest.raises(ValueError):
+        assertion.value = "直接篡改"
+    with pytest.raises(ValueError):
+        assertion.assertion_type = AssertionType.HISTORICAL
+    with pytest.raises(ValueError):
+        assertion.confidence = Confidence.high
+    with pytest.raises(ValueError):
+        assertion.revision = 99
+    with pytest.raises(ValueError):
+        assertion.created_by = "another-actor"
 
 
 async def test_assertion_editorial_status_transition(session: AsyncSession) -> None:
@@ -80,6 +96,7 @@ async def test_assertion_editorial_status_transition(session: AsyncSession) -> N
     assert updated is not None
     assert updated.editorial_status == EditorialStatus.approved
     assert updated.value == "针灸甲乙经"  # content unchanged
+    assert updated.revision == 1  # revision never mutated in place (I4)
 
 
 def test_assertion_enums() -> None:

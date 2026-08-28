@@ -37,9 +37,11 @@ async def test_assertion_immutable_fields_declared(session: AsyncSession) -> Non
         "value",
         "object_entity_id",
         "assertion_type",
+        "confidence",
+        "revision",
+        "created_by",
     } <= Assertion.immutable_fields
     assert "editorial_status" not in Assertion.immutable_fields
-    assert "confidence" not in Assertion.immutable_fields
 
 
 async def test_assertion_object_entity_relation(session: AsyncSession) -> None:

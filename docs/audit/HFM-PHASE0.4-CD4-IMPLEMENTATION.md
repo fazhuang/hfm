@@ -166,6 +166,20 @@ Contract Deviations:
 0
 ```
 
+## 30.1 Codex CD-4 Acceptance BLOCK → P1×2 修正记录
+
+Codex 独立验收判定 BLOCK（P1×2）：① 直接 ORM 可改 value/object_entity_id/assertion_type/confidence，repository 可改 confidence；② revision 可被修改（I4 要求修订=新建）。
+
+| 阻塞 | 修复 | 证据 |
+| --- | --- | --- |
+| **P1-1** 内容字段直接 ORM 突变 + repository 改 confidence | `value`/`object_entity_id`/`assertion_type`/`confidence`/`revision`/`created_by` 全部纳入 `immutable_fields` + 统一 `@validates`（id-based 守卫：persisted 后任何变更拒绝，含 nullable 字段 None→value 后期赋值） | test_assertion_content_immutable（repository + 直接赋值双层，覆盖 confidence/type/revision/created_by） |
+| **P1-2** revision 可变 | `revision` 纳入 immutable_fields + @validates（修订 = 新建 Assertion，永不在位修改） | test_assertion_content_immutable（revision=99 拒绝）/ test_assertion_editorial_status_transition（revision 保持 1） |
+| 边界保持 | `editorial_status` 仍为唯一可变字段（研究编辑态转换，非发布态） | test_assertion_editorial_status_transition |
+
+- **I4 修正后状态**：PASS（全部内容字段 + confidence + revision + created_by protected；repository + model 双层）
+- pytest 152 passed（既有测试原位扩展）；mypy 84 files / ruff 全绿
+- 未修改 Frozen Contract、未触碰 CD-0-3 模型行为（回归全绿）
+
 ## 31. Unauthorized Additions
 
 ```text

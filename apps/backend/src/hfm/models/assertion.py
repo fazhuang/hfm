@@ -84,9 +84,20 @@ class Assertion(BaseModel):
         ),
     )
 
-    #: content-bearing fields are immutable (I4) — a revision is a new assertion.
+    #: content-bearing fields, confidence, revision and provenance are
+    #: immutable (I4) — a revision is a new assertion, never in-place mutation.
     immutable_fields: ClassVar[frozenset[str]] = frozenset(
-        {"id", "subject_entity_id", "predicate", "value", "object_entity_id", "assertion_type"}
+        {
+            "id",
+            "subject_entity_id",
+            "predicate",
+            "value",
+            "object_entity_id",
+            "assertion_type",
+            "confidence",
+            "revision",
+            "created_by",
+        }
     )
 
     @validates("predicate")
@@ -101,6 +112,17 @@ class Assertion(BaseModel):
         current = getattr(self, "subject_entity_id", None)
         if current is not None and value != current:
             raise ValueError("subject_entity_id is immutable (I4): create a new assertion")
+        return value
+
+    @validates(
+        "value", "object_entity_id", "assertion_type", "confidence", "revision", "created_by"
+    )
+    def _validate_immutable_content(self, key: str, value: object) -> object:
+        current = getattr(self, key, None)
+        # id-based guard: once persisted, any change from the loaded state is rejected
+        # (also covers nullable fields created as None, e.g. created_by / object_entity_id)
+        if self.id is not None and value != current:
+            raise ValueError(f"{key} is immutable (I4): create a new assertion")
         return value
 
     subject_entity_id: Mapped[str] = mapped_column(
