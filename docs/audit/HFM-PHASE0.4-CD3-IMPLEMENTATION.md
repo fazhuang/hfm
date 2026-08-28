@@ -177,6 +177,20 @@ Contract Deviations:
 0
 ```
 
+## 30.1 Codex CD-3 Acceptance BLOCK → P1 修正记录
+
+Codex 独立验收判定 BLOCK（P1×1）：`content_hash` 覆盖可变更字段（description/evidence_level），repository update 可改内容却保留旧哈希；直接 ORM 突变也可改 content_hash → 违反 I4。
+
+| 阻塞 | 修复 | 证据 |
+| --- | --- | --- |
+| **P1** content_hash 与可变内容不一致（update 改 description/evidence_level 留旧哈希） | `description` / `evidence_level` 纳入 `immutable_fields`（I4 no-silent-overwrite：修订 = 新建 evidence，非静默编辑）→ 哈希永不过期 | test_evidence_content_fields_immutable / test_evidence_crud_and_get_by_source_ref（update 拒绝） |
+| **P1** 直接 ORM 突变 content_hash | 模型 `@validates("content_hash")` 守卫（persisted 后拒绝变更） | test_evidence_content_hash_protected（direct mutation 拒绝） |
+| 防御纵深：直接 ORM 突变 description/evidence_level | 模型 `@validates("description")` / `@validates("evidence_level")` | test_evidence_content_fields_immutable |
+
+- **I4 修正后状态**：PASS（content/anchors/hash 全部 protected；repository + model 双层）
+- pytest 130 → **131 passed**（+1 专项；既有测试原位更新）；mypy 78 files / ruff 全绿
+- 未修改 Frozen Contract、未触碰 CD-0/1/2 模型行为（回归全绿）
+
 ## 31. Unauthorized Additions
 
 ```text

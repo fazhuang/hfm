@@ -49,6 +49,27 @@ async def test_evidence_content_hash_protected(session: AsyncSession) -> None:
     )
     with pytest.raises(ValueError):
         await repo.update(evidence.id, content_hash="tampered")
+    # direct ORM mutation of content_hash is rejected (model @validates)
+    with pytest.raises(ValueError):
+        evidence.content_hash = "tampered-direct"
+
+
+async def test_evidence_content_fields_immutable(session: AsyncSession) -> None:
+    """I4: description / evidence_level are immutable — no stale content_hash."""
+    source_ref_id = await _make_source_ref(session)
+    repo = EvidenceRepository(session)
+    evidence = await repo.create(
+        description="定稿", evidence_level=EvidenceLevel.LEVEL_2, source_ref_id=source_ref_id
+    )
+    with pytest.raises(ValueError):
+        await repo.update(evidence.id, description="篡改内容")
+    with pytest.raises(ValueError):
+        await repo.update(evidence.id, evidence_level=EvidenceLevel.LEVEL_4)
+    # direct ORM mutation is rejected too
+    with pytest.raises(ValueError):
+        evidence.description = "直接篡改"
+    with pytest.raises(ValueError):
+        evidence.evidence_level = EvidenceLevel.LEVEL_4
 
 
 async def test_evidence_taint_lifecycle(session: AsyncSession) -> None:

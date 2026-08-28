@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import ClassVar
 
 from sqlalchemy import CheckConstraint, DateTime, Enum, ForeignKey, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
 
@@ -45,10 +45,40 @@ class Evidence(BaseModel):
         ),
     )
 
-    #: provenance anchors and derived integrity digest are protected (I1/I4).
+    #: provenance anchors, content, and the derived integrity digest are
+    #: protected (I1/I4): content_hash can never go stale because the
+    #: covered fields are immutable after creation.
     immutable_fields: ClassVar[frozenset[str]] = frozenset(
-        {"id", "content_hash", "source_ref_id", "source_passage_id"}
+        {
+            "id",
+            "content_hash",
+            "source_ref_id",
+            "source_passage_id",
+            "description",
+            "evidence_level",
+        }
     )
+
+    @validates("content_hash")
+    def _validate_content_hash(self, key: str, value: object) -> object:
+        current = getattr(self, "content_hash", None)
+        if current is not None and value != current:
+            raise ValueError("content_hash is immutable (I4)")
+        return value
+
+    @validates("description")
+    def _validate_description(self, key: str, value: object) -> object:
+        current = getattr(self, "description", None)
+        if current is not None and value != current:
+            raise ValueError("description is immutable (I4): create a new evidence instead")
+        return value
+
+    @validates("evidence_level")
+    def _validate_evidence_level(self, key: str, value: object) -> object:
+        current = getattr(self, "evidence_level", None)
+        if current is not None and value != current:
+            raise ValueError("evidence_level is immutable (I4): create a new evidence instead")
+        return value
 
     description: Mapped[str] = mapped_column(Text, nullable=False, comment="证据内容概述/考证逻辑")
     evidence_level: Mapped[EvidenceLevel] = mapped_column(
