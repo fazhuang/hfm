@@ -4,12 +4,35 @@ Date: 2026-08-29 · Phase 1 — Implementation Evidence（P1-00 Governance / P1-
 Execution baseline: `a49ed5225422b41409fecaefd12d3f14ee0606c8` · Branch: `phase1/p1-00-p1-01`
 证据契约：HFM-PHASE1-EVIDENCE-CONTRACT-v1.md（E-00 / E-01）
 
+## 候选修正记录（Codex BLOCK → 证据一致性修正）
+
+Codex 独立验收 BLOCK：实施证据事实计数不一致。修正如下（仅证据文档；代码/测试/迁移零改动）：
+
+| 阻断 | 原值 | 实际值 | 修正 |
+| --- | --- | --- | --- |
+| P1-00 测试计数 | 13 项 | **11 项**（pytest --collect-only 实测） | 已修正 |
+| P1-01 测试计数 | 12 项 | **14 项**（pytest --collect-only 实测） | 已修正 |
+| 文件列举遗漏 | — | `apps/backend/src/hfm/phase1/__init__.py` 已提交未列举 | 已补列 |
+| 回归计数 | 260 | **261**（含迁移门禁测试后全量实测） | 已修正 |
+
 ## 实施范围
 
 ```text
 P1-00 — Phase 1 Governance / Contract Enforcement（DAG 前置门禁 + 追踪矩阵 + 负向守卫）
 P1-01 — Content Admission / Canonical Content Core（ContentArtifact 准入层）
 仅实现已授权前沿；未实施任何下游 WP。
+
+Files changed（11）:
+  apps/backend/src/hfm/phase1/__init__.py
+  apps/backend/src/hfm/phase1/governance.py
+  apps/backend/src/hfm/models/content_artifact.py
+  apps/backend/src/hfm/repositories/content_artifact.py
+  apps/backend/alembic/versions/0009_p1_content_admission.py
+  apps/backend/tests/test_phase1_governance.py
+  apps/backend/tests/test_content_admission.py
+  apps/backend/tests/test_migrations.py
+  apps/backend/tests/conftest.py
+  docs/audit/HFM-PHASE1-P1-00-P1-01-IMPLEMENTATION.md（本文件）
 ```
 
 ## WP-ID P1-00 — Governance / Contract Enforcement
@@ -17,10 +40,10 @@ P1-01 — Content Admission / Canonical Content Core（ContentArtifact 准入层
 | 项 | 内容 |
 | --- | --- |
 | Acceptance Criterion | every IN scope maps once to WP/DAG/criterion/DoD; no unauthorized WP or scope expansion（E-00） |
-| Test/Evidence | `tests/test_phase1_governance.py`（13 项） |
+| Test/Evidence | `tests/test_phase1_governance.py`（11 项） |
 | Result | PASS |
-| Artifact/Path | `apps/backend/src/hfm/phase1/governance.py`（WP 注册 + 36 边 DAG + 前置门禁 + 负向守卫 + 追踪矩阵） |
-| Verification command | `cd apps/backend && ../../.venv/bin/pytest tests/test_phase1_governance.py -q`（13 passed） |
+| Artifact/Path | `apps/backend/src/hfm/phase1/governance.py`（WP 注册 + 36 边 DAG + 前置门禁 + 负向守卫 + 追踪矩阵）+ `apps/backend/src/hfm/phase1/__init__.py` |
+| Verification command | `cd apps/backend && ../../.venv/bin/pytest tests/test_phase1_governance.py -q`（11 passed） |
 
 证据明细（E-00 / DOD-01 / DOD-02 / DOD-11）：
 
@@ -40,10 +63,10 @@ Negative:       CD-7 NONEXISTENT; Production HFB Import NOT AUTHORIZED; 无 DEFE
 | 项 | 内容 |
 | --- | --- |
 | Acceptance Criterion | invalid provenance/rights is rejected; admitted content has source/version state; no metadata-only admission（E-01） |
-| Test/Evidence | `tests/test_content_admission.py`（12 项）+ 迁移测试 `test_migration_0009_content_artifacts` |
+| Test/Evidence | `tests/test_content_admission.py`（14 项）+ 迁移测试 `test_migration_0009_content_artifacts` |
 | Result | PASS |
 | Artifact/Path | `apps/backend/src/hfm/models/content_artifact.py` + `apps/backend/src/hfm/repositories/content_artifact.py` + `apps/backend/alembic/versions/0009_p1_content_admission.py` |
-| Verification command | `cd apps/backend && ../../.venv/bin/pytest tests/test_content_admission.py -q`（12 passed） |
+| Verification command | `cd apps/backend && ../../.venv/bin/pytest tests/test_content_admission.py -q`（14 passed） |
 
 证据明细（E-01 fail-closed；AB-06；AB invariant 1/5）：
 
@@ -66,7 +89,7 @@ DB constraints:       ck_content_artifacts_rejection_has_reason / source_present
 ## 回归
 
 ```text
-pytest: 260 passed / 0 failed / 1 warning（P3 Starlette/httpx — 既有，未修复）
+pytest: 261 passed / 0 failed / 1 warning（P3 Starlette/httpx — 既有，未修复）
 mypy: PASS（107 source files）· Ruff: PASS · Ruff Format: PASS（117 files）
 Frontend: ESLint PASS · Prettier PASS · vue-tsc PASS · Vitest 24 passed · Build PASS
 Alembic head: 0009（0001→0009 链 + downgrade 门禁测试 PASS）
