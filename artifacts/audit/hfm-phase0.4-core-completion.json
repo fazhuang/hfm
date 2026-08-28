@@ -1,0 +1,110 @@
+{
+  "candidate_set_manifest_sha256": "db68b8cf4f7d6927750c13f876639569864d69da12646fcc1d4eb9090ab37dc5",
+  "equations": {
+    "accepted_eq": "accepted = transformed",
+    "source_eq": "source = accepted + rejected + duplicate",
+    "target_eq": "target = transformed - duplicate_consumed"
+  },
+  "errors": [],
+  "governance_baseline": "00ed3ff244578d975c2748fa9d85a8d14e4c7c37",
+  "idempotency": {
+    "candidate_id_set_stable": true,
+    "rerun_target_count": 97,
+    "result": "PASS"
+  },
+  "implementation_baseline": "d08e343dbbc52dedfcbd5bba69918e6a4b74256d",
+  "isolation": {
+    "mode": "disposable temporary SQLite (tempfile, deleted after run)",
+    "persistent_state_after_dry_run": "NONE",
+    "production_db_touched": false
+  },
+  "migration_version": "hfm-phase0.4-core-completion-v1",
+  "reconciliation_by_class": {
+    "C1": {
+      "accepted": 5,
+      "duplicate": 0,
+      "rejected": 0,
+      "source": 5,
+      "target": 5,
+      "transformed": 5
+    },
+    "C2": {
+      "accepted": 92,
+      "duplicate": 0,
+      "rejected": 0,
+      "source": 92,
+      "target": 92,
+      "transformed": 92
+    },
+    "C3": {
+      "accepted": 0,
+      "duplicate": 0,
+      "rejected": 0,
+      "source": 0,
+      "target": 0,
+      "transformed": 0
+    }
+  },
+  "reconciliation_schema": [
+    "source",
+    "accepted",
+    "transformed",
+    "rejected",
+    "duplicate",
+    "target"
+  ],
+  "reproducibility": {
+    "excluded_volatile_fields": [
+      "timestamps",
+      "temp db paths",
+      "run ids"
+    ],
+    "normalized_keys": [
+      "reconciliation",
+      "total",
+      "rejections",
+      "duplicates",
+      "candidate_set_sha256",
+      "target_candidate_count"
+    ],
+    "result": "PASS",
+    "run_a_eq_run_b": true
+  },
+  "run_a": {
+    "candidate_set_sha256": "916784ac9c359805fa80e7db0002eba041e5b9cd67fb27c46cc64179afaf4126",
+    "duplicates": [],
+    "reconciliation": {
+      "accepted": 97,
+      "duplicate": 0,
+      "rejected": 0,
+      "source": 97,
+      "target": 97,
+      "transformed": 97
+    },
+    "rejections": [],
+    "target_db_rows": 97
+  },
+  "run_b": {
+    "candidate_set_sha256": "916784ac9c359805fa80e7db0002eba041e5b9cd67fb27c46cc64179afaf4126",
+    "duplicates": [],
+    "reconciliation": {
+      "accepted": 97,
+      "duplicate": 0,
+      "rejected": 0,
+      "source": 97,
+      "target": 97,
+      "transformed": 97
+    },
+    "rejections": [],
+    "target_db_rows": 97
+  },
+  "silent_failure_paths": 0,
+  "source_artifact": "apps/frontend/src/data/huangfu_mi_exhibition.json",
+  "source_baseline": "03755b57ec0e4c8023d1447619f7d6ead9e44d73",
+  "source_records": {
+    "citations": 0,
+    "editions": 92,
+    "persons": 1
+  },
+  "source_sha256": "94467890f99ebe7d77e1498d04238d460cf80c5cc1ef5b66892397d4a9062cdb"
+}
