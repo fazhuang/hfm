@@ -384,3 +384,34 @@ def test_migration_0008_fresh_chain_preserves_history(tmp_path: Path) -> None:
         assert "ck_event_relations_not_self" in rel_checks
     finally:
         engine.dispose()
+
+
+def test_migration_0009_content_artifacts(tmp_path: Path) -> None:
+    """0009 adds content_artifacts; downgrade removes them; 0001→head works."""
+    db_file = tmp_path / "p1-admission.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert "content_artifacts" in tables
+    assert {
+        "source_id",
+        "content_hash",
+        "provenance_status",
+        "rights_status",
+        "validation_result",
+        "admission_state",
+        "rejection_reason",
+        "version_id",
+    } <= _columns(db_file, "content_artifacts")
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        checks = {c["name"] for c in inspector.get_check_constraints("content_artifacts")}
+        assert "ck_content_artifacts_rejection_has_reason" in checks
+        assert "ck_content_artifacts_source_present" in checks
+        uniques = {c["name"] for c in inspector.get_unique_constraints("content_artifacts")}
+        assert "uq_content_artifacts_source_hash" in uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0008")
+    assert result.returncode == 0, result.stderr
+    assert "content_artifacts" not in _tables(db_file)

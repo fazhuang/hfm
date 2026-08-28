@@ -18,6 +18,7 @@ from sqlalchemy.pool import StaticPool
 import hfm.models.assertion  # noqa: F401 — register models on Base.metadata
 import hfm.models.chapter  # noqa: F401
 import hfm.models.citation  # noqa: F401
+import hfm.models.content_artifact  # noqa: F401
 import hfm.models.edition  # noqa: F401
 import hfm.models.entity  # noqa: F401
 import hfm.models.event  # noqa: F401
