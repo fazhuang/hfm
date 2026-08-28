@@ -373,6 +373,49 @@ this commit
 - **冻结语义**：Frozen CD-4 Scope 9/9（Assertion 契约）已完成并通过 Codex 独立验收；I3 Assertion Coexistence 首次 APPLICABLE 并验收；I4 内容字段 + confidence + revision + created_by 全部 protected。**不表示**：Core Domain 完成、Citation/Event/Place 实现、数据全部迁移、Public Portal、Publication Snapshot、Phase 1 启动、CD-5 授权。
 - **验收归档**：`docs/audit/HFM-PHASE0.4-CD4-ACCEPTANCE.md`（P1×2 修正闭环；I3/I4/I5/I6 PASS；I1/I2 回归 PASS）
 
+## Phase 0.4 CD-6 冻结（2026-08-28）
+
+```text
+Phase 0.4 — Core Domain Implementation CD-6
+
+Status:
+ACCEPTED / FROZEN
+
+Starting Baseline:
+834ad1b47c6b5583dd840e670d9c7a65fad55356
+
+Initial Candidate:
+b593b93edf8665139b19b5d3829957c651ebbc0e
+
+Accepted Candidate:
+7bb6e2e1c15d62989e890cb36e97290df4142692
+
+Final Acceptance:
+PASS
+
+P0:
+0
+
+P1:
+0
+
+P2:
+0
+
+P3:
+1 — non-blocking Starlette/httpx deprecation warning
+
+Governance Record:
+this commit
+
+CD-6 Implementation Baseline:
+this commit
+```
+
+- **CD-6 Implementation Baseline: this commit**（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA；后续 CD-7 如获授权必须从此基线开始，不得从 `b593b93` 或 `7bb6e2e` 直接开始）
+- **冻结语义**：Frozen CD-6 Scope 3/3（Event NEW + Person/Event 关系 ADAPT + 事件证据链）已完成并通过 Codex 独立验收；I1 本批 DIRECTLY APPLICABLE 并验收（聚合 subject 门禁 + SQLite 触发器）；I3 SUPPORTED。**不表示**：Core Domain 完成、Place 实现、数据全部迁移、Public Portal、Publication Snapshot、Phase 1 启动、CD-7 授权。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CD6-ACCEPTANCE.md`（P1×1+P2×1 修正闭环；I1 本批验收；I2/I3/I4/I5/I6 PASS）
+
 ## Phase 0.4 CD-5 冻结（2026-08-27）
 
 ```text
@@ -455,6 +498,7 @@ this commit
 - **CD-4**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-3**：**NOT AUTHORIZED**（CD-3 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 - **CD-5**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-4**：**NOT AUTHORIZED**（CD-4 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 - **CD-6**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-5**：**NOT AUTHORIZED**（CD-5 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
+- **CD-7**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-6**：**NOT AUTHORIZED**（CD-6 已 ACCEPTED/FROZEN，后续批次须另行独立授权；Frozen DAG 仅定义 CD-0…CD-6）
 
 ## 变更规则（Frozen 之后）
 
@@ -501,6 +545,9 @@ this commit
 - `docs/migration/hfb/HFM-PHASE0.4-CD5-IMPLEMENTATION-SCOPE.md`（CD-5 Scope 提取 + Traceability Matrix，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD5-IMPLEMENTATION.md`（CD-5 实施报告，Scope 9/9 + P1×2+P2 修正记录，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD5-ACCEPTANCE.md`（CD-5 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.4-CD6-IMPLEMENTATION-SCOPE.md`（CD-6 Scope 提取 + Traceability Matrix，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CD6-IMPLEMENTATION.md`（CD-6 实施报告，Scope 3/3 + P1×1+P2×1 修正记录，2026-08-28）
+- `docs/audit/HFM-PHASE0.4-CD6-ACCEPTANCE.md`（CD-6 验收归档，FINAL VERDICT: PASS，2026-08-28）
 - `docs/domain/HFM-CORE-DOMAIN-SCOPE-v0.1.md` + `HFM-ASSERTION-CONTRACT-v0.1.md` + `HFM-EVIDENCE-LINEAGE-CONTRACT-v0.1.md` + `HFM-CANONICAL-DOMAIN-MODEL-v0.1.md`（Core Domain 契约集，2026-08-27）
 - `docs/migration/hfb/HFM-PHASE0.4-CORE-ASSET-INVENTORY.md` + `HFM-CORE-DATA-MIGRATION-STRATEGY-v0.1.md` + `HFM-PHASE0.4-CORE-MIGRATION-DAG.md`（Core 迁移规划，2026-08-27）
 - `docs/governance/HFM-CORE-DOMAIN-DEFINITION-OF-DONE.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-RISK-REGISTER.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AUDIT.md`（DoD/风险/审计，2026-08-27）
