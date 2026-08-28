@@ -19,6 +19,7 @@ Status: Active · Date: 2026-08-27 · Phase 0.4
 | **Phase 0.4 — Core Domain Implementation CD-0** | **本轮治理提交** | Accepted Candidate `e1c33af`（FINAL IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2=0）归档后形成；后续 CD-1 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Phase 0.4 — Core Domain Implementation CD-1** | **本轮治理提交** | Accepted Candidate `7402ce5`（FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2/P3=0）归档后形成；后续 CD-2 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 | **Phase 0.4 — Core Domain Implementation CD-2** | **本轮治理提交** | Accepted Candidate `2288979`（FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2=0，P3=1 非阻塞）归档后形成；后续 CD-3 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
+| **Phase 0.4 — Core Domain Implementation CD-3** | **本轮治理提交** | Accepted Candidate `6528ab0`（FINAL INDEPENDENT IMPLEMENTATION ACCEPTANCE，PASS，P0/P1/P2=0，P3=1 非阻塞）归档后形成；后续 CD-4 如获授权，必须从该治理提交开始 | **ACCEPTED / FROZEN** |
 
 ## 冻结记录（Promotion Record）
 
@@ -284,6 +285,49 @@ this commit
 - **冻结语义**：Frozen CD-2 Scope 9/9（Work/Edition/Version/Chapter/Passage + Locator 复用）已完成并通过 Codex 独立验收；Version reproducibility / pinned reference / lineage enforcement / cross-work consistency / protected guard 已验收。**不表示**：Core Domain 完成、I1/I3 实现、Assertion/Evidence/SourceRef/Citation 实现、数据全部迁移、Public Portal、Publication Snapshot、Phase 1 启动、CD-3 授权。
 - **验收归档**：`docs/audit/HFM-PHASE0.4-CD2-ACCEPTANCE.md`（P0/P1 修正闭环；I2/I4/I5/I6 PASS；I1/I3 NOT IN SCOPE；P3=1 OPEN/NON-BLOCKING）
 
+## Phase 0.4 CD-3 冻结（2026-08-27）
+
+```text
+Phase 0.4 — Core Domain Implementation CD-3
+
+Status:
+ACCEPTED / FROZEN
+
+Starting Baseline:
+b545e5babfc8aa4b89f1488112c544afd927b4ba
+
+Initial Candidate:
+7a4e080c7b754f307bd7af64a804adb0199afc48
+
+Accepted Candidate:
+6528ab02e61461c739f029fedbcb7db2635c7647
+
+Final Acceptance:
+PASS
+
+P0:
+0
+
+P1:
+0
+
+P2:
+0
+
+P3:
+1 — non-blocking Starlette/httpx deprecation warning
+
+Governance Record:
+this commit
+
+CD-3 Implementation Baseline:
+this commit
+```
+
+- **CD-3 Implementation Baseline: this commit**（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA；后续 CD-4 如获授权必须从此基线开始，不得从 `7a4e080` 或 `6528ab0` 直接开始）
+- **冻结语义**：Frozen CD-3 Scope 9/9（Evidence + EvidenceLevel + taint + content_hash）已完成并通过 Codex 独立验收；I1 Provenance 首次 APPLICABLE 并验收；content_hash 完整性 / protected guard / orphan 拒绝 / Evidence-Admission 解耦已验收。**不表示**：Core Domain 完成、I3 实现、Assertion/Citation 实现、数据全部迁移、Public Portal、Publication Snapshot、Phase 1 启动、CD-4 授权。
+- **验收归档**：`docs/audit/HFM-PHASE0.4-CD3-ACCEPTANCE.md`（P1 content-hash 修正闭环；I1/I4/I5/I6 PASS；I3 NOT IN SCOPE；P3=1 OPEN/NON-BLOCKING）
+
 ## 冻结语义
 
 **Frozen 表示**：当前 Phase 0 架构与技术决策已经冻结，可作为后续 Skeleton 和迁移工作的开发输入。
@@ -320,6 +364,7 @@ this commit
 - **CD-1**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-0**：**NOT AUTHORIZED**（CD-0 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 - **CD-2**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-1**：**NOT AUTHORIZED**（CD-1 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 - **CD-3**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-2**：**NOT AUTHORIZED**（CD-2 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
+- **CD-4**：**NOT AUTHORIZED**；**CORE DOMAIN MIGRATION BEYOND CD-3**：**NOT AUTHORIZED**（CD-3 已 ACCEPTED/FROZEN，后续批次须另行独立授权）
 
 ## 变更规则（Frozen 之后）
 
@@ -357,6 +402,9 @@ this commit
 - `docs/migration/hfb/HFM-PHASE0.4-CD2-IMPLEMENTATION-SCOPE.md`（CD-2 Scope 提取 + Traceability Matrix，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD2-IMPLEMENTATION.md`（CD-2 实施报告，Scope 9/9 + P0/P1 修正记录，2026-08-27）
 - `docs/audit/HFM-PHASE0.4-CD2-ACCEPTANCE.md`（CD-2 验收归档，FINAL VERDICT: PASS，2026-08-27）
+- `docs/migration/hfb/HFM-PHASE0.4-CD3-IMPLEMENTATION-SCOPE.md`（CD-3 Scope 提取 + Traceability Matrix，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CD3-IMPLEMENTATION.md`（CD-3 实施报告，Scope 9/9 + P1 修正记录，2026-08-27）
+- `docs/audit/HFM-PHASE0.4-CD3-ACCEPTANCE.md`（CD-3 验收归档，FINAL VERDICT: PASS，2026-08-27）
 - `docs/domain/HFM-CORE-DOMAIN-SCOPE-v0.1.md` + `HFM-ASSERTION-CONTRACT-v0.1.md` + `HFM-EVIDENCE-LINEAGE-CONTRACT-v0.1.md` + `HFM-CANONICAL-DOMAIN-MODEL-v0.1.md`（Core Domain 契约集，2026-08-27）
 - `docs/migration/hfb/HFM-PHASE0.4-CORE-ASSET-INVENTORY.md` + `HFM-CORE-DATA-MIGRATION-STRATEGY-v0.1.md` + `HFM-PHASE0.4-CORE-MIGRATION-DAG.md`（Core 迁移规划，2026-08-27）
 - `docs/governance/HFM-CORE-DOMAIN-DEFINITION-OF-DONE.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-RISK-REGISTER.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AUDIT.md`（DoD/风险/审计，2026-08-27）
