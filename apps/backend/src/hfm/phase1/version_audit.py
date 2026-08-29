@@ -28,6 +28,7 @@ from hfm.core.hashing import calculate_canonical_metadata_sha256
 from hfm.db.base import BaseModel
 from hfm.models.assertion import Assertion
 from hfm.models.audit import AuditLog
+from hfm.models.c_domain import CDomainRelation, CDomainTerm
 from hfm.models.chapter import Chapter
 from hfm.models.citation import Citation
 from hfm.models.content_artifact import ContentArtifact
@@ -35,6 +36,7 @@ from hfm.models.edition import Edition
 from hfm.models.entity import Entity
 from hfm.models.event import Event
 from hfm.models.evidence import Evidence
+from hfm.models.heritage import HeritageProject, HeritageRelation
 from hfm.models.passage import Passage
 from hfm.models.person import Person
 from hfm.models.publication import PublicationRecord
@@ -181,6 +183,10 @@ _SCOPE_MODELS: dict[str, type[BaseModel]] = {
     "table:events": Event,
     "table:content_artifacts": ContentArtifact,
     "table:publication_records": PublicationRecord,
+    "table:c_domain_terms": CDomainTerm,
+    "table:c_domain_relations": CDomainRelation,
+    "table:heritage_projects": HeritageProject,
+    "table:heritage_relations": HeritageRelation,
 }
 
 

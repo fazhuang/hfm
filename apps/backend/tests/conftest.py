@@ -17,6 +17,7 @@ from sqlalchemy.pool import StaticPool
 
 import hfm.models.assertion  # noqa: F401 — register models on Base.metadata
 import hfm.models.audit  # noqa: F401
+import hfm.models.c_domain  # noqa: F401
 import hfm.models.chapter  # noqa: F401
 import hfm.models.citation  # noqa: F401
 import hfm.models.content_artifact  # noqa: F401
@@ -25,6 +26,7 @@ import hfm.models.entity  # noqa: F401
 import hfm.models.event  # noqa: F401
 import hfm.models.event_relation  # noqa: F401
 import hfm.models.evidence  # noqa: F401
+import hfm.models.heritage  # noqa: F401
 import hfm.models.identity  # noqa: F401
 import hfm.models.institution  # noqa: F401
 import hfm.models.passage  # noqa: F401

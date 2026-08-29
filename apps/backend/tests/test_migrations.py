@@ -461,3 +461,57 @@ def test_migration_0011_frontier3(tmp_path: Path) -> None:
     assert "subject_entity_id" not in _columns(db_file, "content_artifacts")
     assert "entity_id" not in _columns(db_file, "works")
     assert "id" not in _columns(db_file, "persons")
+
+
+def test_migration_0012_frontier4(tmp_path: Path) -> None:
+    """0012 adds C-domain terms/relations + heritage projects/relations; downgrade."""
+    db_file = tmp_path / "p1-frontier4.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {
+        "c_domain_terms",
+        "c_domain_relations",
+        "heritage_projects",
+        "heritage_relations",
+    } <= tables
+    assert {"id", "entity_id", "term_type", "term_name", "canonical_passage_id"} <= _columns(
+        db_file, "c_domain_terms"
+    )
+    assert {
+        "id",
+        "source_term_entity_id",
+        "target_term_entity_id",
+        "relation_type",
+        "evidence_id",
+    } <= _columns(db_file, "c_domain_relations")
+    assert {"id", "entity_id", "project_name", "official_name"} <= _columns(
+        db_file, "heritage_projects"
+    )
+    assert {
+        "id",
+        "project_entity_id",
+        "subject_entity_id",
+        "relation_role",
+        "official_name",
+        "evidence_id",
+    } <= _columns(db_file, "heritage_relations")
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        term_checks = {c["name"] for c in inspector.get_check_constraints("c_domain_terms")}
+        assert "ck_c_domain_terms_term_type" in term_checks
+        rel_checks = {c["name"] for c in inspector.get_check_constraints("c_domain_relations")}
+        assert "ck_c_domain_relations_not_self" in rel_checks
+        her_checks = {c["name"] for c in inspector.get_check_constraints("heritage_relations")}
+        assert "ck_heritage_relations_year_order" in her_checks
+        term_uniques = {c["name"] for c in inspector.get_unique_constraints("c_domain_terms")}
+        assert "uq_c_domain_terms_entity_id" in term_uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0011")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "c_domain_terms" not in tables
+    assert "c_domain_relations" not in tables
+    assert "heritage_projects" not in tables
+    assert "heritage_relations" not in tables

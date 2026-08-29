@@ -10,6 +10,12 @@ person) and Works are searchable — public person/Work hits are restricted
 by the canonical PUBLISHED artifact binding (subject_entity_id), so
 unpublished A/B content is excluded from public search; research visibility
 obeys RBAC (authenticated only). No second search subsystem.
+P1-05/P1-06 integration (frontier-4): C-domain terms (《针灸甲乙经》
+historical terms) and D-domain heritage projects are searchable — public
+hits are restricted by the canonical PUBLISHED artifact binding, so
+unpublished C/D content is excluded from public search; withdrawn records
+are excluded publicly (withdrawal removes the PUBLISHED projection);
+research visibility obeys RBAC (authenticated only).
 
 Matching uses portable ILIKE (Chinese substring works on PostgreSQL and the
 SQLite test path); production has pg_trgm GIN indexes (migration 0010,
@@ -25,9 +31,11 @@ from typing import Any
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from hfm.models.c_domain import CDomainTerm
 from hfm.models.content_artifact import ContentArtifact
 from hfm.models.entity import Entity, EntityType
 from hfm.models.evidence import Evidence
+from hfm.models.heritage import HeritageProject
 from hfm.models.passage import Passage
 from hfm.models.publication import PublicationRecord, PublicationStatus
 from hfm.models.work import Work
@@ -157,6 +165,54 @@ class SearchService:
             )
             for p in persons
         ]
+        # P1-05: public C-domain terms — PUBLISHED artifact binding
+        c_term_rows = (
+            await self.session.execute(
+                select(CDomainTerm.entity_id, CDomainTerm.term_name)
+                .where(
+                    CDomainTerm.term_name.ilike(pattern),
+                    CDomainTerm.entity_id.in_(published_subjects),
+                )
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="c_term",
+                id=str(t.entity_id),
+                title=str(t.term_name),
+                snippet="",
+                version_id=None,
+                publication_status=published,
+            )
+            for t in c_term_rows
+        ]
+        # P1-06: public heritage projects — PUBLISHED artifact binding
+        heritage_rows = (
+            await self.session.execute(
+                select(HeritageProject.entity_id, HeritageProject.project_name)
+                .where(
+                    (HeritageProject.project_name.ilike(pattern))
+                    | (
+                        HeritageProject.official_name.is_not(None)
+                        & HeritageProject.official_name.ilike(pattern)
+                    ),
+                    HeritageProject.entity_id.in_(published_subjects),
+                )
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="heritage_project",
+                id=str(h.entity_id),
+                title=str(h.project_name),
+                snippet="",
+                version_id=None,
+                publication_status=published,
+            )
+            for h in heritage_rows
+        ]
         return SearchResult(hits=tuple(hits), total=total, page=page, page_size=page_size)
 
     async def research_search(
@@ -212,6 +268,50 @@ class SearchService:
                 publication_status="RESEARCH",
             )
             for p in persons
+        ]
+        # P1-05: research C-domain terms — authenticated; no publication filter
+        c_term_rows = (
+            await self.session.execute(
+                select(CDomainTerm.entity_id, CDomainTerm.term_name)
+                .where(CDomainTerm.term_name.ilike(pattern))
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="c_term",
+                id=str(t.entity_id),
+                title=str(t.term_name),
+                snippet="",
+                version_id=None,
+                publication_status="RESEARCH",
+            )
+            for t in c_term_rows
+        ]
+        # P1-06: research heritage projects — authenticated; no publication filter
+        heritage_rows = (
+            await self.session.execute(
+                select(HeritageProject.entity_id, HeritageProject.project_name)
+                .where(
+                    (HeritageProject.project_name.ilike(pattern))
+                    | (
+                        HeritageProject.official_name.is_not(None)
+                        & HeritageProject.official_name.ilike(pattern)
+                    )
+                )
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="heritage_project",
+                id=str(h.entity_id),
+                title=str(h.project_name),
+                snippet="",
+                version_id=None,
+                publication_status="RESEARCH",
+            )
+            for h in heritage_rows
         ]
         return SearchResult(hits=tuple(hits), total=total, page=page, page_size=page_size)
 

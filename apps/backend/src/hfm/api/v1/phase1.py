@@ -19,7 +19,9 @@ from hfm.api.v1.deps import (
 )
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import hash_password, issue_token, verify_password
+from hfm.phase1.c_domain import CDomainService
 from hfm.phase1.evidence_chain import EvidenceChainService
+from hfm.phase1.heritage import HeritageService
 from hfm.phase1.literature import LiteratureService
 from hfm.phase1.person import PersonService
 from hfm.phase1.publication import PublicationService
@@ -42,6 +44,16 @@ def _to_int(value: object, default: int = 0) -> int:
         return int(str(value))
     except (ValueError, TypeError):
         return default
+
+
+def _to_year(value: object) -> int | None:
+    """Coerce an optional year; absent/malformed → None (fail closed)."""
+    if value is None:
+        return None
+    try:
+        return int(str(value))
+    except (ValueError, TypeError):
+        return None
 
 
 # ---------------------------------------------------------------- auth
@@ -160,6 +172,29 @@ async def public_work(session: SessionDep, work_id: str) -> dict[str, Any]:
     record = await LiteratureService(session).get_public_work(work_id)
     if record is None:
         raise HTTPException(status_code=404, detail="work not published")
+    return api_response(data=record)
+
+
+@public_router.get("/c-terms/{entity_id}")
+async def public_c_term(session: SessionDep, entity_id: str) -> dict[str, Any]:
+    """P1-05: public C-domain term — PUBLISHED, evidenced relations only.
+
+    Returns the historical term + related structured historical records +
+    original text/source (canonical passage) with version context. No
+    clinical recommendation surface (AB-14).
+    """
+    record = await CDomainService(session).get_public_term(entity_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="c-domain term not published")
+    return api_response(data=record)
+
+
+@public_router.get("/heritage/{entity_id}")
+async def public_heritage(session: SessionDep, entity_id: str) -> dict[str, Any]:
+    """P1-06: public heritage project — PUBLISHED, evidenced lineage only."""
+    record = await HeritageService(session).get_public_project(entity_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="heritage project not published")
     return api_response(data=record)
 
 
@@ -364,6 +399,93 @@ async def research_get_work(
     return api_response(data=await LiteratureService(session).get_research_work(work_id))
 
 
+# ------------------------------------------- P1-05 C-domain (research)
+@research_router.post("/c-terms", dependencies=[Depends(require_authenticated)])
+async def research_create_c_term(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a canonical C-domain term (assertion:create; no publication)."""
+    term = await CDomainService(session).create_term(
+        principal=principal,
+        term_type=str(body.get("term_type", "")),
+        term_name=str(body.get("term_name", "")),
+        canonical_passage_id=body.get("canonical_passage_id"),
+        description=body.get("description"),
+    )
+    return api_response(data={"entity_id": term.entity_id})
+
+
+@research_router.post(
+    "/c-terms/{entity_id}/relations", dependencies=[Depends(require_authenticated)]
+)
+async def research_create_c_relation(
+    session: SessionDep, principal: PrincipalDep, entity_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a structured historical relation between two C terms."""
+    relation = await CDomainService(session).create_relation(
+        principal=principal,
+        source_term_entity_id=entity_id,
+        target_term_entity_id=str(body.get("target_term_entity_id", "")),
+        relation_type=str(body.get("relation_type", "")),
+        evidence_id=body.get("evidence_id"),
+        description=body.get("description"),
+    )
+    return api_response(data={"relation_id": relation.id, "relation_type": relation.relation_type})
+
+
+@research_router.get("/c-terms/{entity_id}", dependencies=[Depends(require_authenticated)])
+async def research_get_c_term(
+    session: SessionDep, principal: PrincipalDep, entity_id: str
+) -> dict[str, Any]:
+    """Research C-domain term record: relations + source/version context."""
+    return api_response(data=await CDomainService(session).get_research_term(entity_id))
+
+
+# ------------------------------------------- P1-06 D-domain (research)
+@research_router.post("/heritage", dependencies=[Depends(require_authenticated)])
+async def research_create_heritage_project(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a canonical heritage project (assertion:create; no publication)."""
+    project = await HeritageService(session).create_project(
+        principal=principal,
+        project_name=str(body.get("project_name", "")),
+        official_name=body.get("official_name"),
+        category=body.get("category"),
+        description=body.get("description"),
+    )
+    return api_response(data={"entity_id": project.entity_id})
+
+
+@research_router.post(
+    "/heritage/{entity_id}/relations", dependencies=[Depends(require_authenticated)]
+)
+async def research_create_heritage_relation(
+    session: SessionDep, principal: PrincipalDep, entity_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create an evidenced lineage relation (official-name carried)."""
+    relation = await HeritageService(session).create_relation(
+        principal=principal,
+        project_entity_id=entity_id,
+        subject_entity_id=str(body.get("subject_entity_id", "")),
+        relation_role=str(body.get("relation_role", "")),
+        official_name=body.get("official_name"),
+        start_year=_to_year(body.get("start_year")),
+        end_year=_to_year(body.get("end_year")),
+        evidence_id=body.get("evidence_id"),
+        description=body.get("description"),
+    )
+    return api_response(data={"relation_id": relation.id, "relation_role": relation.relation_role})
+
+
+@research_router.get("/heritage/{entity_id}", dependencies=[Depends(require_authenticated)])
+async def research_get_heritage_project(
+    session: SessionDep, principal: PrincipalDep, entity_id: str
+) -> dict[str, Any]:
+    """Research heritage project record: lineage + official-name + state."""
+    return api_response(data=await HeritageService(session).get_research_project(entity_id))
+
+
 @research_router.post("/artifacts", dependencies=[Depends(require_authenticated)])
 async def research_submit_artifact(
     session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
@@ -399,8 +521,33 @@ async def research_submit_artifact(
             format=body.get("format"),
             version_id=body.get("version_id"),
         )
+    elif subject_kind == "c_term":
+        artifact = await CDomainService(session).admit_term_artifact(
+            principal=principal,
+            term_entity_id=subject_id,
+            source_id=source_id,
+            content=content,
+            rights_status=rights,
+            provenance_status=provenance,
+            format=body.get("format"),
+            version_id=body.get("version_id"),
+        )
+    elif subject_kind == "heritage":
+        artifact = await HeritageService(session).admit_project_artifact(
+            principal=principal,
+            project_entity_id=subject_id,
+            source_id=source_id,
+            content=content,
+            rights_status=rights,
+            provenance_status=provenance,
+            format=body.get("format"),
+            version_id=body.get("version_id"),
+        )
     else:
-        raise HTTPException(status_code=400, detail="subject_kind must be person or work")
+        raise HTTPException(
+            status_code=400,
+            detail="subject_kind must be person, work, c_term or heritage",
+        )
     return api_response(
         data={
             "artifact_id": artifact.id,
