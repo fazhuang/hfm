@@ -25,6 +25,7 @@ from hfm.phase1.heritage import HeritageService
 from hfm.phase1.literature import LiteratureService
 from hfm.phase1.person import PersonService
 from hfm.phase1.publication import PublicationService
+from hfm.phase1.reader import ReaderService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
 from hfm.utils.response import api_response
@@ -189,6 +190,22 @@ async def public_c_term(session: SessionDep, entity_id: str) -> dict[str, Any]:
     return api_response(data=record)
 
 
+@public_router.get("/reader/resolve")
+async def public_reader_resolve(
+    session: SessionDep, locator: str = "", passage_id: str = ""
+) -> dict[str, Any]:
+    """P1-07: public versioned source reader — PUBLISHED projection only.
+
+    Resolves a passage locator (or passage id) to quotation + source
+    context + citation context + rights display (AB-09/E-07). Draft and
+    withdrawn material resolves to 404 (fail closed — no leak).
+    """
+    view = await ReaderService(session).resolve_public(locator=locator, passage_id=passage_id)
+    if view is None:
+        raise HTTPException(status_code=404, detail="passage not published")
+    return api_response(data=view)
+
+
 @public_router.get("/heritage/{entity_id}")
 async def public_heritage(session: SessionDep, entity_id: str) -> dict[str, Any]:
     """P1-06: public heritage project — PUBLISHED, evidenced lineage only."""
@@ -199,6 +216,25 @@ async def public_heritage(session: SessionDep, entity_id: str) -> dict[str, Any]
 
 
 # ---------------------------------------------------------------- research
+@research_router.get("/reader/resolve", dependencies=[Depends(require_authenticated)])
+async def research_reader_resolve(
+    session: SessionDep,
+    principal: PrincipalDep,
+    locator: str = "",
+    passage_id: str = "",
+) -> dict[str, Any]:
+    """P1-07: research versioned source reader — authenticated, richer
+    evidence-chain context (Source→SourceRef→Evidence + citation targets).
+    """
+    try:
+        view = await ReaderService(session).resolve_research(
+            principal=principal, locator=locator, passage_id=passage_id
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return api_response(data=view)
+
+
 @research_router.get("/search", dependencies=[Depends(require_authenticated)])
 async def research_search(
     session: SessionDep, principal: PrincipalDep, q: str = ""
