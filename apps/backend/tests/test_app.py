@@ -7,7 +7,7 @@ from hfm.main import app
 
 def test_app_importable() -> None:
     assert app.title == "HFM"
-    assert app.version == "0.1.0"
+    assert app.version == "0.2.0"  # Phase 1 API surface added
 
 
 def test_no_business_routes() -> None:

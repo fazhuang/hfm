@@ -415,3 +415,18 @@ def test_migration_0009_content_artifacts(tmp_path: Path) -> None:
     result = _alembic(db_file, "downgrade", "0008")
     assert result.returncode == 0, result.stderr
     assert "content_artifacts" not in _tables(db_file)
+
+
+def test_migration_0010_frontier2(tmp_path: Path) -> None:
+    """0010 adds identity/publication tables + evidences.artifact_id; downgrade."""
+    db_file = tmp_path / "p1-frontier2.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {"users", "roles", "user_roles", "role_permissions", "publication_records"} <= tables
+    assert "artifact_id" in _columns(db_file, "evidences")
+    result = _alembic(db_file, "downgrade", "0009")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "publication_records" not in tables
+    assert "users" not in tables
+    assert "artifact_id" not in _columns(db_file, "evidences")

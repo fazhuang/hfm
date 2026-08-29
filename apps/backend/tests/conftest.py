@@ -24,9 +24,11 @@ import hfm.models.entity  # noqa: F401
 import hfm.models.event  # noqa: F401
 import hfm.models.event_relation  # noqa: F401
 import hfm.models.evidence  # noqa: F401
+import hfm.models.identity  # noqa: F401
 import hfm.models.institution  # noqa: F401
 import hfm.models.passage  # noqa: F401
 import hfm.models.person  # noqa: F401
+import hfm.models.publication  # noqa: F401
 import hfm.models.source  # noqa: F401
 import hfm.models.source_ref  # noqa: F401
 import hfm.models.version  # noqa: F401
