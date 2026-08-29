@@ -56,9 +56,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.ForeignKeyConstraint(["entity_id"], ["entities.id"], ondelete="RESTRICT"),
-        sa.ForeignKeyConstraint(
-            ["canonical_passage_id"], ["passages.id"], ondelete="SET NULL"
-        ),
+        sa.ForeignKeyConstraint(["canonical_passage_id"], ["passages.id"], ondelete="SET NULL"),
         sa.UniqueConstraint("entity_id", name="uq_c_domain_terms_entity_id"),
         sa.CheckConstraint(
             "term_type IN ('disease_symptom', 'acupoint', 'meridian', 'technique',"
@@ -93,16 +91,11 @@ def upgrade() -> None:
             server_default=sa.func.now(),
             nullable=False,
         ),
-        sa.ForeignKeyConstraint(
-            ["source_term_entity_id"], ["entities.id"], ondelete="RESTRICT"
-        ),
-        sa.ForeignKeyConstraint(
-            ["target_term_entity_id"], ["entities.id"], ondelete="RESTRICT"
-        ),
+        sa.ForeignKeyConstraint(["source_term_entity_id"], ["entities.id"], ondelete="RESTRICT"),
+        sa.ForeignKeyConstraint(["target_term_entity_id"], ["entities.id"], ondelete="RESTRICT"),
         sa.ForeignKeyConstraint(["evidence_id"], ["evidences.id"], ondelete="RESTRICT"),
         sa.CheckConstraint(
-            "relation_type IN ('located_in', 'recorded_in', 'associated_with',"
-            " 'cross_reference')",
+            "relation_type IN ('located_in', 'recorded_in', 'associated_with', 'cross_reference')",
             name="ck_c_domain_relations_relation_type",
         ),
         sa.CheckConstraint(

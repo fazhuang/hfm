@@ -79,7 +79,8 @@ PUBLISHED 且带证据的传承关系；创建/准入绝不产生发布记录；
 
 ```text
 pytest: 346 passed / 0 failed / 1 warning（Starlette 既有弃用提示）
-mypy: PASS（138 source files）· Ruff: PASS · Ruff Format: PASS（138 files）
+mypy: PASS（138 source files）· Ruff: PASS
+Ruff Format: 原始候选 FAIL（0012 一处格式化缺陷；修复记录见文末 Remediation）
 Pyright (CLI, src tests): 0 errors / 0 warnings / 0 informations
 Alembic: 0012 (head)（0001→0012 链 + upgrade/downgrade 门禁测试 PASS）
 API 冒烟（SQLite 迁移库）：public c-terms/heritage 未发布 404 · public search 200 ·
@@ -111,6 +112,72 @@ P1-05 = PASS · P1-06 = PASS（各自独立证据）
 P1-05（test_phase1_c_domain.py）: 11 passed
 P1-06（test_phase1_heritage.py）: 10 passed
 P1-02 evidence-chain / P1-03 person / P1-04 literature / P1-08 search /
-P1-09 publication / P1-10 rbac / P1-13 version-audit / migrations: 102 passed
-合计: 聚焦回归 123 passed（包含在完整 346 passed 内）
+P1-09 publication / P1-10 rbac / P1-13 version-audit: 61 passed
+migrations（test_migrations.py）: 20 passed
+合计: 聚焦回归 102 passed（包含在完整 346 passed 内）
 ```
+
+## Remediation — Frontier-4 修正记录（RC-1 / RC-2）
+
+### 追溯（traceability）
+
+```text
+abf1d57b89806abac0b18a472a39ab7e2f4a38af = REJECTED FRONTIER-4 candidate
+reason = RC-1: alembic/versions/0012_p1_frontier4.py 未通过独立 ruff format --check
+       + RC-2: 实施证据声称 Ruff Format PASS 与独立检查结果不一致
+new candidate = correction successor（本记录后的修正提交）
+```
+
+### A. 原始候选验证状态（original candidate verification state）
+
+```text
+ruff check                       = PASS
+ruff format --check（独立接受门禁）= FAIL（1 file would be reformatted）
+mypy                             = PASS（138 source files）
+functional focused tests         = PASS（P1-05 11 / P1-06 10）
+full pytest                      = PASS（346 passed / 0 failed）
+migration topology               = PASS（0012 single head）
+scope violations                 = 0
+clinical recommendation behavior = 0
+HFB runtime dependency           = 0
+
+唯一格式缺陷文件: alembic/versions/0012_p1_frontier4.py
+（3 处 ForeignKeyConstraint/CheckConstraint 换行折叠，纯布局差异，无逻辑改动）
+```
+
+### B. 修复状态（remediation state）
+
+```text
+0012 迁移使用仓库权威格式器修复（仅 FORMAT_ONLY）:
+  cd apps/backend && uv run ruff format alembic/versions/0012_p1_frontier4.py
+
+pre-format  SHA-256 = e59855d3b2c18ed5fd71b75b1811861bf3978946cd54212cdf9e039279365635
+post-format SHA-256 = bc8aed0a3c2bd34a81aafa79a86a2ab895489f8e13d1b6cc64b27d0172413796
+
+语义一致性（AST 规范比较: python ast.dump 去 attributes）:
+  AST_IDENTICAL = True
+  AST_SHA       = 4c0ae53bc22ed440fcb7b3489b9c5091e706f553a5c1062bf09919d119caac43
+  → MIGRATION_SEMANTIC_DELTA = 0
+
+未变更: revision（0012）/ down_revision（0011）/ 表名 / 列名 / 类型 /
+约束（FK 名与 ondelete 相同）/ upgrade 语义 / downgrade 语义 / 数据行为
+```
+
+### C. 修复后命令与结果（post-remediation results）
+
+```text
+ruff check          = PASS（All checks passed!）
+ruff format --check = PASS（151 files already formatted）
+mypy                = PASS
+  命令: cd apps/backend && ../../.venv/bin/mypy src tests
+  实际输出: Success: no issues found in 138 source files
+P1-05 focused       = 11 passed（tests/test_phase1_c_domain.py）
+P1-06 focused       = 10 passed（tests/test_phase1_heritage.py）
+migration gates     = 20 passed（tests/test_migrations.py: 0012 single head、
+                      0011 → 0012、0001→0012 链、upgrade/downgrade 门禁）
+聚焦回归            = 61 passed（P1-02/03/04/08/09/10/13 相关 7 个 phase1 测试文件）
+full pytest         = 346 passed / 0 failed / 1 warning（Starlette 既有弃用提示）
+```
+
+接受权声明：本记录仅报告实施验证 PASS。P1-05 / P1-06 正式 ACCEPTED 判定权属 Codex，
+Pi 不在此处标记 ACCEPTED。
