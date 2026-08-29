@@ -20,8 +20,11 @@ from hfm.api.v1.deps import (
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import hash_password, issue_token, verify_password
 from hfm.phase1.evidence_chain import EvidenceChainService
+from hfm.phase1.literature import LiteratureService
+from hfm.phase1.person import PersonService
 from hfm.phase1.publication import PublicationService
 from hfm.phase1.search import SearchService
+from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
 from hfm.utils.response import api_response
 
 PrincipalDep = Annotated[Any, Depends(current_principal)]
@@ -31,6 +34,14 @@ auth_router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 admin_router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 public_router = APIRouter(prefix="/api/v1/public", tags=["public"])
 research_router = APIRouter(prefix="/api/v1/research", tags=["research"])
+
+
+def _to_int(value: object, default: int = 0) -> int:
+    """Coerce an API body value to int; malformed input fails closed."""
+    try:
+        return int(str(value))
+    except (ValueError, TypeError):
+        return default
 
 
 # ---------------------------------------------------------------- auth
@@ -134,6 +145,24 @@ async def public_search(
     )
 
 
+@public_router.get("/persons/{entity_id}")
+async def public_person(session: SessionDep, entity_id: str) -> dict[str, Any]:
+    """P1-03: public person projection — PUBLISHED only (404 otherwise)."""
+    record = await PersonService(session).get_public_person(entity_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="person not published")
+    return api_response(data=record)
+
+
+@public_router.get("/works/{work_id}")
+async def public_work(session: SessionDep, work_id: str) -> dict[str, Any]:
+    """P1-04: public work projection — PUBLISHED lineage only (404 otherwise)."""
+    record = await LiteratureService(session).get_public_work(work_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="work not published")
+    return api_response(data=record)
+
+
 # ---------------------------------------------------------------- research
 @research_router.get("/search", dependencies=[Depends(require_authenticated)])
 async def research_search(
@@ -160,6 +189,239 @@ async def evidence_chain(session: SessionDep, citation_id: str) -> dict[str, Any
             "source_ref_ids": list(chain.source_ref_ids),
             "source_ids": list(chain.source_ids),
         }
+    )
+
+
+# ------------------------------------------------- P1-03 A-domain (research)
+@research_router.post("/persons", dependencies=[Depends(require_authenticated)])
+async def research_create_person(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a canonical person record (assertion:create; no publication)."""
+    person = await PersonService(session).create_person(
+        principal=principal,
+        name_zh=body.get("name_zh"),
+        name_pinyin=body.get("name_pinyin"),
+        courtesy_name=body.get("courtesy_name"),
+        pseudonym=body.get("pseudonym"),
+        dynasty=body.get("dynasty"),
+    )
+    return api_response(data={"entity_id": person.entity_id})
+
+
+@research_router.post(
+    "/persons/{entity_id}/assertions", dependencies=[Depends(require_authenticated)]
+)
+async def research_add_assertion(
+    session: SessionDep, principal: PrincipalDep, entity_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Add an evidenced biographical assertion about the person."""
+    assertion = await PersonService(session).add_biographical_assertion(
+        principal=principal,
+        person_entity_id=entity_id,
+        predicate=str(body.get("predicate", "")),
+        value=body.get("value"),
+        object_entity_id=body.get("object_entity_id"),
+        evidence_ids=tuple(str(e) for e in (body.get("evidence_ids") or [])),
+        confidence=str(body.get("confidence", "medium")),
+        assertion_type=str(body.get("assertion_type", "biographical")),
+    )
+    return api_response(data={"id": assertion.id, "subject_entity_id": assertion.subject_entity_id})
+
+
+@research_router.post("/persons/{entity_id}/events", dependencies=[Depends(require_authenticated)])
+async def research_add_event(
+    session: SessionDep, principal: PrincipalDep, entity_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a 生平事件 for the person (CD-6 Event + relation)."""
+    event = await PersonService(session).create_event(
+        principal=principal,
+        person_entity_id=entity_id,
+        event_type=str(body.get("event_type", "other")),
+        start_year=body.get("start_year"),
+        start_month=body.get("start_month"),
+        start_day=body.get("start_day"),
+        start_precision=str(body.get("start_precision", "unknown")),
+        start_approximate=bool(body.get("start_approximate", False)),
+        end_year=body.get("end_year"),
+        end_month=body.get("end_month"),
+        end_day=body.get("end_day"),
+        end_precision=str(body.get("end_precision", "unknown")),
+        end_approximate=bool(body.get("end_approximate", False)),
+        role=str(body.get("role", "actor")),
+    )
+    return api_response(data={"event_id": event.entity_id})
+
+
+@research_router.get("/persons/{entity_id}", dependencies=[Depends(require_authenticated)])
+async def research_get_person(
+    session: SessionDep, principal: PrincipalDep, entity_id: str
+) -> dict[str, Any]:
+    """Research person record: evidence + publication state (auth required)."""
+    return api_response(data=await PersonService(session).get_research_person(entity_id))
+
+
+# ------------------------------------------------- P1-04 B-domain (research)
+@research_router.post("/works", dependencies=[Depends(require_authenticated)])
+async def research_create_work(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Create a canonical Work (typed-Entity identity; no publication)."""
+    work = await LiteratureService(session).create_work(
+        principal=principal,
+        title=str(body.get("title", "")),
+        author_entity_id=body.get("author_entity_id"),
+        dynasty=body.get("dynasty"),
+        category=body.get("category"),
+        description=body.get("description"),
+        is_extant=bool(body.get("is_extant", True)),
+    )
+    return api_response(data={"work_id": work.id, "entity_id": work.entity_id})
+
+
+@research_router.post("/works/{work_id}/editions", dependencies=[Depends(require_authenticated)])
+async def research_create_edition(
+    session: SessionDep, principal: PrincipalDep, work_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    edition = await LiteratureService(session).create_edition(
+        principal=principal,
+        work_id=work_id,
+        edition_name=str(body.get("edition_name", "")),
+        era=body.get("era"),
+        publisher_block=body.get("publisher_block"),
+        preface_postscript=body.get("preface_postscript"),
+        lineage_parent_edition_id=body.get("lineage_parent_edition_id"),
+    )
+    return api_response(data={"edition_id": edition.id})
+
+
+@research_router.post(
+    "/works/{work_id}/editions/{edition_id}/versions",
+    dependencies=[Depends(require_authenticated)],
+)
+async def research_create_version(
+    session: SessionDep,
+    principal: PrincipalDep,
+    work_id: str,
+    edition_id: str,
+    body: dict[str, Any],
+) -> dict[str, Any]:
+    edition = await LiteratureService(session).create_version(
+        principal=principal,
+        edition_id=edition_id,
+        version_name=str(body.get("version_name", "")),
+        era=body.get("era"),
+        year=body.get("year"),
+        repository=body.get("repository"),
+        shelf_mark=body.get("shelf_mark"),
+        editor=body.get("editor"),
+        description=body.get("description"),
+        is_formal_source=bool(body.get("is_formal_source", False)),
+        parent_version_id=body.get("parent_version_id"),
+    )
+    return api_response(data={"version_id": edition.id})
+
+
+@research_router.post("/works/{work_id}/chapters", dependencies=[Depends(require_authenticated)])
+async def research_create_chapter(
+    session: SessionDep, principal: PrincipalDep, work_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    chapter = await LiteratureService(session).create_chapter(
+        principal=principal,
+        work_id=work_id,
+        title=str(body.get("title", "")),
+        order=_to_int(body.get("order", 0)),
+        parent_id=body.get("parent_id"),
+    )
+    return api_response(data={"chapter_id": chapter.id})
+
+
+@research_router.post(
+    "/chapters/{chapter_id}/passages", dependencies=[Depends(require_authenticated)]
+)
+async def research_create_passage(
+    session: SessionDep, principal: PrincipalDep, chapter_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    passage = await LiteratureService(session).create_passage(
+        principal=principal,
+        chapter_id=chapter_id,
+        content_text=str(body.get("content_text", "")),
+        order=_to_int(body.get("order", 0)),
+        version_id=body.get("version_id"),
+        translation=body.get("translation"),
+        notes=body.get("notes"),
+        tags=body.get("tags"),
+    )
+    locator = await LiteratureService(session).passage_locator(passage.id)
+    return api_response(data={"passage_id": passage.id, "locator": locator.to_locator_string()})
+
+
+@research_router.get("/works/{work_id}", dependencies=[Depends(require_authenticated)])
+async def research_get_work(
+    session: SessionDep, principal: PrincipalDep, work_id: str
+) -> dict[str, Any]:
+    """Research work record: lineage + rights + publication state."""
+    return api_response(data=await LiteratureService(session).get_research_work(work_id))
+
+
+@research_router.post("/artifacts", dependencies=[Depends(require_authenticated)])
+async def research_submit_artifact(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Admission (P1-01) with domain-entity binding for A/B records."""
+    from hfm.models.content_artifact import ProvenanceStatus, RightsStatus
+
+    subject_kind = str(body.get("subject_kind", "person"))
+    subject_id = str(body.get("subject_id", ""))
+    content = str(body.get("content", "")).encode("utf-8")
+    source_id = str(body.get("source_id", ""))
+    rights = RightsStatus(str(body.get("rights_status", "unknown")))
+    provenance = ProvenanceStatus(str(body.get("provenance_status", "pending")))
+    if subject_kind == "person":
+        artifact = await PersonService(session).admit_person_artifact(
+            principal=principal,
+            person_entity_id=subject_id,
+            source_id=source_id,
+            content=content,
+            rights_status=rights,
+            provenance_status=provenance,
+            format=body.get("format"),
+            version_id=body.get("version_id"),
+        )
+    elif subject_kind == "work":
+        artifact = await LiteratureService(session).admit_work_artifact(
+            principal=principal,
+            work_id=subject_id,
+            source_id=source_id,
+            content=content,
+            rights_status=rights,
+            provenance_status=provenance,
+            format=body.get("format"),
+            version_id=body.get("version_id"),
+        )
+    else:
+        raise HTTPException(status_code=400, detail="subject_kind must be person or work")
+    return api_response(
+        data={
+            "artifact_id": artifact.id,
+            "admission_state": artifact.admission_state,
+            "rejection_reason": artifact.rejection_reason,
+        }
+    )
+
+
+@research_router.post(
+    "/artifacts/{artifact_id}/submit", dependencies=[Depends(require_authenticated)]
+)
+async def research_submit_for_review(
+    session: SessionDep, principal: PrincipalDep, artifact_id: str
+) -> dict[str, Any]:
+    """Creator submits an ADMITTED artifact for publication review (P1-09)."""
+    record = await PublicationService(session).submit_for_review(
+        artifact_id=artifact_id, creator=principal
+    )
+    return api_response(
+        data={"artifact_id": record.artifact_id, "status": record.publication_status}
     )
 
 
@@ -212,3 +474,68 @@ async def publication_withdraw(
 async def admin_search(session: SessionDep, principal: PrincipalDep, q: str = "") -> dict[str, Any]:
     result = await SearchService(session).admin_search(query=q, principal=principal)
     return api_response(data={"total": result.total, "hits": [h.id for h in result.hits]})
+
+
+# ------------------------------------------------- P1-13 audit/reconciliation
+@admin_router.post("/reconciliation", dependencies=[Depends(require_permission("content:review"))])
+async def admin_reconciliation(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """Run a governed reconciliation (E-13); mismatch fails closed (recorded FAIL)."""
+    run = await ReconciliationService(session).reconcile(
+        scope=str(body.get("scope", "")),
+        expected_count=_to_int(body.get("expected_count", 0)),
+        expected_hash=str(body.get("expected_hash", "")),
+        created_by=principal.user_id,
+    )
+    return api_response(
+        data={
+            "run_id": run.id,
+            "scope": run.scope,
+            "expected_count": run.expected_count,
+            "actual_count": run.actual_count,
+            "status": run.status,
+        }
+    )
+
+
+@admin_router.get("/audit-log", dependencies=[Depends(require_permission("audit:read"))])
+async def admin_audit_log(session: SessionDep, limit: int = 50) -> dict[str, Any]:
+    """Append-only governed-state journal (P1-13 auditability)."""
+    entries = await AuditService(session).list_recent(limit=limit)
+    return api_response(
+        data=[
+            {
+                "id": e.id,
+                "actor_id": e.actor_id,
+                "action": e.action,
+                "target_type": e.target_type,
+                "target_id": e.target_id,
+                "detail": e.detail,
+                "created_at": e.created_at.isoformat(),
+            }
+            for e in entries
+        ]
+    )
+
+
+@admin_router.get("/lineage/{version_id}", dependencies=[Depends(require_permission("audit:read"))])
+async def admin_lineage(session: SessionDep, version_id: str) -> dict[str, Any]:
+    """Deterministic version lineage + digest (P1-13; fail-closed on breakage)."""
+    service = VersionLineageService(session)
+    chain = await service.lineage(version_id)
+    return api_response(
+        data={
+            "version_id": version_id,
+            "lineage_hash": await service.lineage_hash(version_id),
+            "chain": [
+                {
+                    "version_id": node.version_id,
+                    "version_name": node.version_name,
+                    "edition_id": node.edition_id,
+                    "parent_version_id": node.parent_version_id,
+                }
+                for node in chain
+            ],
+        }
+    )

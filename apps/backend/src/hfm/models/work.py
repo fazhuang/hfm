@@ -3,13 +3,18 @@
 REUSE of HFB `models/bibliographic.py::Work` @ `03755b5` (title, dynasty,
 composition years, category, is_extant, description). ADAPT: author is an
 HFM Entity (author_entity_id FK → entities.id, CD-1) instead of the HFB
-person FK.
+person FK. P1-04 (frontier-3): optional typed-Entity stable identity
+(entity_id 1:1 → entities.id, EntityType.work, I5) matching the
+persons/events backbone — the canonical publication projection for a Work
+binds to this identity through an admitted ContentArtifact (AB-07).
 """
 
 from __future__ import annotations
 
-from sqlalchemy import Boolean, ForeignKey, Integer, String, Text
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import ClassVar
+
+from sqlalchemy import Boolean, ForeignKey, Integer, String, Text, UniqueConstraint
+from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
 
@@ -18,8 +23,26 @@ class Work(BaseModel):
     """A FRBR work (《针灸甲乙经》《玄晏春秋》...)."""
 
     __tablename__ = "works"
+    __table_args__ = (UniqueConstraint("entity_id", name="uq_works_entity_id"),)
+
+    #: structural identity binding is protected (I5/I4).
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "entity_id"})
+
+    @validates("entity_id")
+    def _validate_entity_id(self, key: str, value: object) -> object:
+        current = getattr(self, key, None)
+        if self.id is not None and value != current:
+            raise ValueError("entity_id is immutable (I4): create a new work")
+        return value
 
     title: Mapped[str] = mapped_column(String(500), nullable=False, comment="著作标题")
+    entity_id: Mapped[str | None] = mapped_column(
+        ForeignKey("entities.id", ondelete="SET NULL"),
+        nullable=True,
+        unique=True,
+        index=True,
+        comment="P1-04: 稳定标识（= entities.id，1:1 UNIQUE；EntityType.work，I5）",
+    )
     author_entity_id: Mapped[str | None] = mapped_column(
         ForeignKey("entities.id", ondelete="SET NULL"),
         nullable=True,

@@ -24,6 +24,7 @@ from hfm.models.publication import (
     PublicationStatus,
 )
 from hfm.phase1.auth import Principal
+from hfm.phase1.version_audit import AuditService
 
 PERMISSION_REVIEW = "content:review"
 PERMISSION_PUBLISH = "content:publish"
@@ -59,6 +60,13 @@ class PublicationService:
         )
         self.session.add(record)
         await self.session.flush()
+        await AuditService(self.session).record(
+            actor_id=creator.user_id,
+            action="publication.submit",
+            target_type="publication_record",
+            target_id=artifact_id,
+            detail="status=PENDING_REVIEW",
+        )
         return record
 
     async def _record(self, artifact_id: str) -> PublicationRecord:
@@ -86,6 +94,13 @@ class PublicationService:
         record.review_decision = "approve" if approve else "reject"
         record.reviewed_at = datetime.now(UTC)
         await self.session.flush()
+        await AuditService(self.session).record(
+            actor_id=reviewer.user_id,
+            action="publication.review",
+            target_type="publication_record",
+            target_id=artifact_id,
+            detail=f"decision={record.review_decision} status={record.publication_status}",
+        )
         return record
 
     async def publish(self, *, artifact_id: str, actor: Principal) -> PublicationRecord:
@@ -95,6 +110,13 @@ class PublicationService:
         self._transition(record, PublicationStatus.PUBLISHED)
         record.published_at = datetime.now(UTC)
         await self.session.flush()
+        await AuditService(self.session).record(
+            actor_id=actor.user_id,
+            action="publication.publish",
+            target_type="publication_record",
+            target_id=artifact_id,
+            detail=f"status={record.publication_status}",
+        )
         return record
 
     async def withdraw(self, *, artifact_id: str, actor: Principal) -> PublicationRecord:
@@ -104,6 +126,13 @@ class PublicationService:
         self._transition(record, PublicationStatus.WITHDRAWN)
         record.withdrawn_at = datetime.now(UTC)
         await self.session.flush()
+        await AuditService(self.session).record(
+            actor_id=actor.user_id,
+            action="publication.withdraw",
+            target_type="publication_record",
+            target_id=artifact_id,
+            detail=f"status={record.publication_status}",
+        )
         return record
 
     async def rollback(self, *, artifact_id: str, actor: Principal) -> PublicationRecord:
@@ -114,6 +143,13 @@ class PublicationService:
         record.withdrawn_at = None
         record.published_at = datetime.now(UTC)
         await self.session.flush()
+        await AuditService(self.session).record(
+            actor_id=actor.user_id,
+            action="publication.rollback",
+            target_type="publication_record",
+            target_id=artifact_id,
+            detail=f"status={record.publication_status}",
+        )
         return record
 
     async def is_public(self, artifact_id: str) -> bool:

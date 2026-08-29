@@ -139,6 +139,7 @@ async def test_all_invalid_cases_have_known_reasons() -> None:
         "invalid_provenance",
         "unknown_rights",
         "invalid_version_binding",
+        "invalid_subject_entity_binding",  # P1-03/P1-04 domain binding gate
     }
 
 

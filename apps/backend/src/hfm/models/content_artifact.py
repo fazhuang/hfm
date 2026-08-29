@@ -116,6 +116,7 @@ class ContentArtifact(BaseModel):
             "admission_state",
             "rejection_reason",
             "version_id",
+            "subject_entity_id",
             "created_by",
         }
     )
@@ -126,6 +127,7 @@ class ContentArtifact(BaseModel):
         "admission_state",
         "rejection_reason",
         "version_id",
+        "subject_entity_id",
         "created_by",
     )
     def _validate_immutable(self, key: str, value: object) -> object:
@@ -184,6 +186,13 @@ class ContentArtifact(BaseModel):
         nullable=True,
         index=True,
         comment="版本绑定（admitted content 的 version state — 可选）",
+    )
+    subject_entity_id: Mapped[str | None] = mapped_column(
+        ForeignKey("entities.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+        comment="P1-03/P1-04: 领域实体绑定（person/work 的 Entity 身份）—"
+        "该工件承载的发布状态即领域记录的规范化发布真值（AB-03/AB-07）",
     )
     created_by: Mapped[str | None] = mapped_column(
         String(36),

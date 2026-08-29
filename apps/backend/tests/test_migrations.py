@@ -430,3 +430,34 @@ def test_migration_0010_frontier2(tmp_path: Path) -> None:
     assert "publication_records" not in tables
     assert "users" not in tables
     assert "artifact_id" not in _columns(db_file, "evidences")
+
+
+def test_migration_0011_frontier3(tmp_path: Path) -> None:
+    """0011 adds A/B domain binding + audit/reconciliation tables; downgrade."""
+    db_file = tmp_path / "p1-frontier3.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {"audit_log", "reconciliation_runs"} <= tables
+    assert "subject_entity_id" in _columns(db_file, "content_artifacts")
+    assert "entity_id" in _columns(db_file, "works")
+    assert "id" in _columns(db_file, "persons")  # CD-1 schema-drift alignment
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        audit_checks = {c["name"] for c in inspector.get_check_constraints("audit_log")}
+        assert "ck_audit_log_action_present" in audit_checks
+        rec_checks = {c["name"] for c in inspector.get_check_constraints("reconciliation_runs")}
+        assert "ck_reconciliation_runs_status" in rec_checks
+        assert "ck_reconciliation_runs_hashes" in rec_checks
+        work_uniques = {c["name"] for c in inspector.get_unique_constraints("works")}
+        assert "uq_works_entity_id" in work_uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0010")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "audit_log" not in tables
+    assert "reconciliation_runs" not in tables
+    assert "subject_entity_id" not in _columns(db_file, "content_artifacts")
+    assert "entity_id" not in _columns(db_file, "works")
+    assert "id" not in _columns(db_file, "persons")

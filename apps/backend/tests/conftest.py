@@ -16,6 +16,7 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.pool import StaticPool
 
 import hfm.models.assertion  # noqa: F401 — register models on Base.metadata
+import hfm.models.audit  # noqa: F401
 import hfm.models.chapter  # noqa: F401
 import hfm.models.citation  # noqa: F401
 import hfm.models.content_artifact  # noqa: F401
@@ -29,6 +30,7 @@ import hfm.models.institution  # noqa: F401
 import hfm.models.passage  # noqa: F401
 import hfm.models.person  # noqa: F401
 import hfm.models.publication  # noqa: F401
+import hfm.models.reconciliation  # noqa: F401
 import hfm.models.source  # noqa: F401
 import hfm.models.source_ref  # noqa: F401
 import hfm.models.version  # noqa: F401

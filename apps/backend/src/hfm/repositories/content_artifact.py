@@ -22,6 +22,7 @@ from hfm.models.content_artifact import (
     RightsStatus,
     ValidationResult,
 )
+from hfm.models.entity import Entity
 from hfm.models.source import Source
 from hfm.models.version import Version
 from hfm.repositories.base import BaseRepository
@@ -32,6 +33,7 @@ ADMISSION_REJECTION_REASONS = (
     "invalid_provenance",
     "unknown_rights",
     "invalid_version_binding",
+    "invalid_subject_entity_binding",
 )
 
 
@@ -58,6 +60,7 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
         rights_status: RightsStatus = RightsStatus.UNKNOWN,
         validation_result: ValidationResult = ValidationResult.PENDING,
         version_id: str | None = None,
+        subject_entity_id: str | None = None,
         created_by: str | None = None,
     ) -> ContentArtifact:
         """Submit a content item for admission (fail-closed gate).
@@ -78,6 +81,9 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
             # the attempted Version reference cannot be persisted (FK), so the
             # rejection records the reason with a NULL binding (E-01 log)
             version_id = None
+        subject_reason = await self._subject_entity_reason(subject_entity_id)
+        if subject_reason is not None:
+            subject_entity_id = None
         reason = self._gate_reason(
             source_id=source_id,
             content_hash=content_hash,
@@ -86,6 +92,8 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
         )
         if reason is None and version_reason is not None:
             reason = version_reason
+        if reason is None and subject_reason is not None:
+            reason = subject_reason
         state = (
             ContentAdmissionState.REJECTED if reason is not None else ContentAdmissionState.ADMITTED
         )
@@ -99,6 +107,7 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
             admission_state=state.value,
             rejection_reason=reason,
             version_id=version_id,
+            subject_entity_id=subject_entity_id,
             created_by=created_by,
         )
         self.session.add(artifact)
@@ -115,6 +124,7 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
         rights_status: RightsStatus = RightsStatus.UNKNOWN,
         validation_result: ValidationResult = ValidationResult.PENDING,
         version_id: str | None = None,
+        subject_entity_id: str | None = None,
         created_by: str | None = None,
     ) -> ContentArtifact:
         """Canonical admission entry: verifies the Source row exists first.
@@ -138,6 +148,7 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
                 admission_state=ContentAdmissionState.REJECTED.value,
                 rejection_reason="missing_source_provenance",
                 version_id=None,
+                subject_entity_id=None,
                 created_by=created_by,
             )
             self.session.add(artifact)
@@ -151,6 +162,7 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
             rights_status=rights_status,
             validation_result=validation_result,
             version_id=version_id,
+            subject_entity_id=subject_entity_id,
             created_by=created_by,
         )
 
@@ -162,6 +174,29 @@ class ContentArtifactRepository(BaseRepository[ContentArtifact]):
         if version is None:
             return "invalid_version_binding"
         return None
+
+    async def _subject_entity_reason(self, subject_entity_id: str | None) -> str | None:
+        """'invalid_subject_entity_binding' when the bound Entity does not exist.
+
+        Fail-closed (P1-03/P1-04): an admitted artifact may only project a
+        canonical domain entity — an unresolvable subject binding is rejected.
+        """
+        if subject_entity_id is None:
+            return None
+        entity = await self.session.get(Entity, str(subject_entity_id))
+        if entity is None:
+            return "invalid_subject_entity_binding"
+        return None
+
+    async def get_by_subject_entity(self, subject_entity_id: str) -> list[ContentArtifact]:
+        """Artifacts bound to a domain entity (publication projection inputs)."""
+        stmt = (
+            select(ContentArtifact)
+            .where(ContentArtifact.subject_entity_id == subject_entity_id)
+            .order_by(ContentArtifact.created_at)
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
 
     def _gate_reason(
         self,
