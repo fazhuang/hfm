@@ -24,3 +24,24 @@ Every DoD below is required for Phase-2 closure. No DoD is kept for padding; eac
 
 - DoD total = 14 (DOD-P2-01 … DOD-P2-14)
 - Each DoD maps to ≥1 WP and ≥1 evidence row (machine-checkable)
+
+## Invariant supersession rule (minimal, governance amendment)
+
+When a candidate involves a legitimately authorized state evolution (for
+example a schema migration authorized by a frozen WP contract) that renders a
+historical CLASS H snapshot assertion no longer current-applicable, the
+following are REQUIRED for that candidate's closure (per
+HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md):
+
+- valid supersession registration = REQUIRED;
+- historical replay binding = REQUIRED (the historical acceptance must remain
+  reproducible at its bound baseline);
+- current replacement assertion = REQUIRED (a real current-state assertion
+  exists in the candidate's own test surface);
+- supersession verifier = PASS (scripts/verify-invariant-supersessions.py).
+
+The canonical current suite is `CURRENT_APPLICABLE_TESTS` = all currently
+active assertions + all active replacement assertions + all permanent safety
+invariants + all boundary invariants, and it must PASS with exit code 0.
+CLASS P and CLASS B assertions are never superseded. This rule adds a closure
+condition; it lowers no other DoD.

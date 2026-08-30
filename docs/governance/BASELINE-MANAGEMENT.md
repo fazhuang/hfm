@@ -630,3 +630,47 @@ this commit
 - `docs/domain/HFM-CORE-DOMAIN-SCOPE-v0.1.md` + `HFM-ASSERTION-CONTRACT-v0.1.md` + `HFM-EVIDENCE-LINEAGE-CONTRACT-v0.1.md` + `HFM-CANONICAL-DOMAIN-MODEL-v0.1.md`（Core Domain 契约集，2026-08-27）
 - `docs/migration/hfb/HFM-PHASE0.4-CORE-ASSET-INVENTORY.md` + `HFM-CORE-DATA-MIGRATION-STRATEGY-v0.1.md` + `HFM-PHASE0.4-CORE-MIGRATION-DAG.md`（Core 迁移规划，2026-08-27）
 - `docs/governance/HFM-CORE-DOMAIN-DEFINITION-OF-DONE.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-RISK-REGISTER.md` + `docs/audit/HFM-PHASE0.4-CORE-DOMAIN-CONTRACT-AUDIT.md`（DoD/风险/审计，2026-08-27）
+
+## Phase 2 Amendment — Assertion Applicability Lifecycle（2026-08-30）
+
+Status: GOVERNANCE AMENDMENT CANDIDATE（HFM Phase 2 minimal amendment）· NOT FROZEN
+
+### 不可变（immutable，任何情况下不得编辑/改写）
+
+- accepted Git history 不可变；不得 amend/rebase/squash/rewrite/force-push。
+- accepted acceptance archive 不可变；不得改写已接受验收记录。
+- historical evidence（implementation/evidence/acceptance artifacts）不可变。
+- historical accepted test bytes 不可变；不得为追踪新状态而编辑历史验收测试。
+
+### Assertion applicability lifecycle（断言适用性生命周期）
+
+历史断言与当前断言分离：
+
+- CLASS H（historical snapshot）断言描述其绑定基线的快照事实（例如
+  "acceptance-time migration head == 0013"）。其历史真实性永久保持，并可通过
+  绑定基线的 historical replay 复现。
+- 一个显式授权的后代演进（例如被 frozen WP contract 授权的 schema migration）
+  可以按 Invariant Supersession Registry 契约使特定 CLASS H 断言不再
+  current-applicable —— 这改变的是“适用性”，不是历史事实。
+- CLASS P（permanent safety）与 CLASS B（boundary）断言不可被普通 schema
+  evolution supersede：single migration head、HFB runtime zero-coupling、
+  clinical REJECTED、credential DO_NOT_MIGRATE、authorization boundaries、
+  rights fail-closed 等始终 ACTIVE。
+
+### 防误读条款
+
+本 Amendment 不授权任何形式的：
+
+- 编辑 accepted baseline files；
+- 追溯改写 accepted semantics；
+- 把 "P2-00 accepted 0014" 之类表述写成事实。
+
+事实保持不变：
+
+```text
+P2-00 acceptance-time migration head = 0013
+P2-05 later authorized migration 0014
+```
+
+Amendment 只解决 descendant applicability，不修改 historical truth。完整机制见
+`docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md`。

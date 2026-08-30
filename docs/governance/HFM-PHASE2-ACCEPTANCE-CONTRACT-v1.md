@@ -51,3 +51,21 @@ Every AC is machine-verifiable where possible, binary PASS/FAIL, bound to a conc
 - AC total = 39 (P2-00:3, P2-01:5, P2-02:4, P2-03:4, P2-04:3, P2-05:4, P2-06:3, P2-07:4, P2-08:3, P2-09:3, P2-10:3)
 - WP without AC = 0
 - Missing AC = 0
+
+## Invariant supersession principles (governance amendment)
+
+Adopted by the minimal governance amendment defining the invariant-supersession
+lifecycle (HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md):
+
+1. Historical accepted artifact immutability does not imply perpetual current
+   applicability of every literal historical snapshot assertion. An accepted
+   artifact's bytes and its acceptance-time meaning remain immutable; whether
+   a literal assertion about a snapshot state still applies to the CURRENT
+   tree is a separate question governed by the supersession registry.
+2. No historical assertion loses current applicability unless it is formally
+   superseded under the registry contract (valid class, valid authority,
+   complete fields, machine-verified). The default for every assertion is
+   `ACTIVE`; supersession is the exception, never the default.
+3. Only CLASS H (historical snapshot) assertions are eligible for
+   supersession. CLASS P (permanent safety) and CLASS B (boundary) assertions
+   are never eligible and remain permanently active.
