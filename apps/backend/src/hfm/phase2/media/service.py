@@ -20,7 +20,8 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime
+from typing import Protocol
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +29,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from hfm.phase2.media.models import MediaAsset, MediaAssetState
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+class ObjectStore(Protocol):
+    """S3-compatible object storage abstraction (ADR-P2-01)."""
+
+    async def get_bytes(self, object_key: str) -> bytes: ...
 
 
 class MediaRightsError(ValueError):
@@ -111,8 +118,12 @@ class MediaService:
         original = await self.get(original_object_key)
         if original is None:
             raise MediaRightsError(f"original media not found: {original_object_key}")
+        if object_key == original_object_key:
+            raise MediaRightsError("a derivative cannot reference itself")
         if not _SHA256_RE.match(sha256):
             raise ValueError(f"invalid sha256 binding: {sha256}")
+        if sha256 == original.sha256:
+            raise MediaRightsError("a derivative must differ in bytes from its original")
         derivative = MediaAsset(
             object_key=object_key,
             original_object_key=original.object_key,
@@ -137,12 +148,12 @@ class MediaService:
             return None
         return await self.get(asset.original_object_key)
 
-    async def publish(self, object_key: str) -> MediaAsset:
+    async def publish(self, object_key: str, *, today: date | None = None) -> MediaAsset:
         """Publish an asset — fail-closed without sufficient rights (AC-01)."""
         asset = await self.get(object_key)
         if asset is None:
             raise MediaRightsError(f"media not found: {object_key}")
-        if not rights_sufficient(asset):
+        if not rights_sufficient(asset, today=today):
             raise MediaRightsError("media cannot be published without sufficient rights metadata")
         if asset.publication_state == MediaAssetState.WITHDRAWN:
             raise MediaRightsError("withdrawn media cannot be re-published")
@@ -169,16 +180,43 @@ class MediaService:
         return list((await self.session.execute(stmt)).scalars().all())
 
 
-def rights_sufficient(asset: MediaAsset) -> bool:
-    """Fail-closed eligibility: explicit rights metadata + permission."""
+def rights_sufficient(asset: MediaAsset, *, today: date | None = None) -> bool:
+    """Fail-closed eligibility: explicit rights metadata + permission, and
+    rights not expired (P1-04). ``today`` makes the time comparison
+    deterministic and timezone-safe (UTC date by default). Expiry is
+    inclusive: an asset is eligible on its expiry date and denied from the
+    next day onward."""
+    reference = today or datetime.now(UTC).date()
     return bool(
-        asset.publication_permission and asset.rights_holder.strip() and asset.license_basis.strip()
+        asset.publication_permission
+        and asset.rights_holder.strip()
+        and asset.license_basis.strip()
+        and (asset.rights_expiry is None or asset.rights_expiry >= reference)
     )
+
+
+def compute_sha256(data: bytes) -> str:
+    """Canonical hash of actual artifact bytes."""
+    return hashlib.sha256(data).hexdigest()
 
 
 def hash_matches(asset: MediaAsset, sha256: str) -> bool:
     """Byte-hash binding check (P2-05-AC-02)."""
     return asset.sha256 == sha256
+
+
+async def verify_asset_bytes(asset: MediaAsset, store: ObjectStore) -> bool:
+    """Verify the ACTUAL artifact bytes against the bound hash (P1-05).
+
+    Fetches the real bytes from the object store, computes the canonical
+    hash, and fails closed on any mismatch. The caller-supplied hash is
+    never trusted on its own.
+    """
+    try:
+        actual = await store.get_bytes(asset.object_key)
+    except OSError:
+        return False
+    return compute_sha256(actual) == asset.sha256
 
 
 def redaction_token(object_key: str, sha256: str, rule: str) -> str:

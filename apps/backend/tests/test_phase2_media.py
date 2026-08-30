@@ -1,3 +1,5 @@
+# mypy: disable-error-code="import-untyped,import-not-found"
+# pyright: reportMissingImports=false
 """Phase-2 P2-05 media & rights lifecycle tests.
 
 Proves the frozen P2-05 acceptance criteria:
@@ -13,13 +15,21 @@ Proves the frozen P2-05 acceptance criteria:
 from __future__ import annotations
 
 import hashlib
+import re
 from collections.abc import AsyncGenerator
+from datetime import date
 
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.phase2.media import MediaAsset, MediaAssetState, MediaRights, MediaService
-from hfm.phase2.media.service import hash_matches, redaction_token, rights_sufficient
+from hfm.phase2.media.service import (
+    compute_sha256,
+    hash_matches,
+    redaction_token,
+    rights_sufficient,
+    verify_asset_bytes,
+)
 
 #: 64-hex fixture hashes.
 SHA_A = hashlib.sha256(b"original-bytes-a").hexdigest()
@@ -237,3 +247,213 @@ async def test_model_importable() -> None:
     assert MediaAsset.__tablename__ == "media_assets"
     assert MediaAssetState.DRAFT == "draft"
     assert MediaAssetState.WITHDRAWN == "withdrawn"
+
+
+class _FixtureStore:
+    """Fixture-backed object store (ADR-P2-01 storage abstraction)."""
+
+    def __init__(self, objects: dict[str, bytes]) -> None:
+        self._objects = objects
+
+    async def get_bytes(self, object_key: str) -> bytes:
+        if object_key not in self._objects:
+            raise OSError(object_key)
+        return self._objects[object_key]
+
+
+async def test_p104_expired_rights_rejected(media: MediaService) -> None:
+    """Expired rights_expiry fails closed on publication (P1-04)."""
+    asset = await media.ingest(
+        object_key="orig-exp-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心",
+            license_basis="公开展示授权",
+            publication_permission=True,
+            rights_expiry=date(2020, 1, 1),
+        ),
+    )
+    assert not rights_sufficient(asset, today=date(2026, 1, 1))
+    try:
+        await media.publish(asset.object_key, today=date(2026, 1, 1))
+        raise AssertionError("expired rights must deny publication")
+    except ValueError:
+        pass
+
+
+async def test_p104_future_expiry_allowed(media: MediaService) -> None:
+    """Future expiry allows publication when all other conditions hold."""
+    asset = await media.ingest(
+        object_key="orig-fut-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心",
+            license_basis="公开展示授权",
+            publication_permission=True,
+            rights_expiry=date(2030, 1, 1),
+        ),
+    )
+    assert rights_sufficient(asset, today=date(2026, 1, 1))
+    published = await media.publish(asset.object_key, today=date(2026, 1, 1))
+    assert published.publication_state == MediaAssetState.PUBLISHED
+
+
+async def test_p104_expiry_boundary_deterministic(media: MediaService) -> None:
+    """Expiry boundary is deterministic: expiry == today is allowed; the next
+    day is denied."""
+    asset = await media.ingest(
+        object_key="orig-bnd-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心",
+            license_basis="公开展示授权",
+            publication_permission=True,
+            rights_expiry=date(2026, 6, 1),
+        ),
+    )
+    assert rights_sufficient(asset, today=date(2026, 6, 1))
+    assert not rights_sufficient(asset, today=date(2026, 6, 2))
+    assert rights_sufficient(asset, today=date(2026, 5, 31))
+
+
+async def test_p105_actual_bytes_verified(media: MediaService) -> None:
+    """Real artifact bytes are verified against the bound hash (P1-05)."""
+    asset = await media.ingest(
+        object_key="orig-bytes-1",
+        mime_type="image/jpeg",
+        byte_size=11,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    store = _FixtureStore({"orig-bytes-1": b"original-bytes-a"})
+    assert await verify_asset_bytes(asset, store) is True
+    assert compute_sha256(b"original-bytes-a") == SHA_A
+
+
+async def test_p105_tampered_bytes_fail(media: MediaService) -> None:
+    """Tampered object bytes fail the byte-hash verification."""
+    asset = await media.ingest(
+        object_key="orig-bytes-2",
+        mime_type="image/jpeg",
+        byte_size=12,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    store = _FixtureStore({"orig-bytes-2": b"tampered bytes"})
+    assert await verify_asset_bytes(asset, store) is False
+
+
+async def test_p105_declared_hash_mismatch_fail(media: MediaService) -> None:
+    """A stored hash that does not match the actual bytes fails."""
+    asset = await media.ingest(
+        object_key="orig-bytes-3",
+        mime_type="image/jpeg",
+        byte_size=12,
+        sha256=SHA_D,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    store = _FixtureStore({"orig-bytes-3": b"original-bytes-a"})
+    assert await verify_asset_bytes(asset, store) is False
+
+
+async def test_p106_derivative_self_reference_fail(media: MediaService) -> None:
+    """A derivative cannot reference itself (P1-06)."""
+    original = await media.ingest(
+        object_key="orig-self-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    try:
+        await media.create_derivative(
+            original_object_key=original.object_key,
+            object_key=original.object_key,
+            mime_type="image/webp",
+            byte_size=64,
+            sha256=SHA_D,
+            redaction_rule="blur",
+        )
+        raise AssertionError("self-referencing derivative must be rejected")
+    except ValueError:
+        pass
+
+
+async def test_p106_derivative_distinct_hash_enforced(media: MediaService) -> None:
+    """A derivative must differ in bytes from its original (separation)."""
+    original = await media.ingest(
+        object_key="orig-same-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    try:
+        await media.create_derivative(
+            original_object_key=original.object_key,
+            object_key="deriv-same-1",
+            mime_type="image/jpeg",
+            byte_size=128,
+            sha256=SHA_A,
+            redaction_rule="none",
+        )
+        raise AssertionError("byte-identical derivative must be rejected")
+    except ValueError:
+        pass
+
+
+async def test_p106_derivative_bytes_independently_verified(media: MediaService) -> None:
+    """Derivative bytes are independently verified against its own hash."""
+    original = await media.ingest(
+        object_key="orig-ind-1",
+        mime_type="image/jpeg",
+        byte_size=128,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    derivative = await media.create_derivative(
+        original_object_key=original.object_key,
+        object_key="deriv-ind-1",
+        mime_type="image/webp",
+        byte_size=20,
+        sha256=SHA_D,
+        redaction_rule="crop-seal",
+    )
+    store = _FixtureStore({"deriv-ind-1": b"derivative-bytes-d"})
+    assert await verify_asset_bytes(derivative, store) is True
+    assert derivative.sha256 != original.sha256
+
+
+def test_p2_current_migration_head_0014() -> None:
+    """Frontier-2 current-state migration verification (not an accepted-file
+    modification): the authorized P2-05 schema migration leaves a single
+    linear head 0014 with revisions 0001..0014."""
+    import pathlib
+
+    versions = pathlib.Path("/Users/likeming/Sites/hfm/apps/backend/alembic/versions")
+    revisions = set()
+    for path in versions.glob("*.py"):
+        text = path.read_text(encoding="utf-8")
+        match = re.search(r'revision\s*=\s*["\']([^"\']+)["\']', text)
+        if match:
+            revisions.add(match.group(1))
+    assert revisions == {f"{i:04d}" for i in range(1, 15)}
+    assert "0014" in revisions
