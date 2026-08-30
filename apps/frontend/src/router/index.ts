@@ -1,14 +1,21 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import PublicLayout from '../layouts/PublicLayout.vue'
+import ResearchLayout from '../layouts/ResearchLayout.vue'
+import AdminLayout from '../layouts/AdminLayout.vue'
 import HomeView from '../views/HomeView.vue'
+import LoginView from '../views/LoginView.vue'
+import DeniedView from '../views/DeniedView.vue'
+import ResearchHomeView from '../views/research/ResearchHomeView.vue'
+import AdminHomeView from '../views/admin/AdminHomeView.vue'
+import { useAuthStore } from '../stores/auth'
+import { ADMIN_ROLES, RESEARCH_ROLES } from '../types/auth'
+import { requireAnyRole } from './guards'
 
 /**
- * Public-only router (P2-01 public frontend foundation).
- *
- * Anonymous-first: every route is public and read-only; no research/admin
- * route is registered here (P2-02 adds them behind guards). The global guard
- * enforces that public routes never require authentication and that unknown
- * guarded namespaces are unreachable (P2-01-AC-01/03).
+ * Router (shared file: P2-01 created the public-only shell; P2-02 extends it
+ * with the guarded research/admin surfaces). Public routes stay anonymous
+ * and read-only; research/admin routes require authentication plus the
+ * matching role (deny-by-default — P2-02-AC-01/02).
  */
 export const routes: RouteRecordRaw[] = [
   {
@@ -16,12 +23,24 @@ export const routes: RouteRecordRaw[] = [
     component: PublicLayout,
     meta: { publicOnly: true },
     children: [
-      {
-        path: '',
-        name: 'home',
-        component: HomeView,
-      },
+      { path: '', name: 'home', component: HomeView },
+      { path: 'login', name: 'login', component: LoginView },
+      { path: 'denied', name: 'denied', component: DeniedView },
     ],
+  },
+  {
+    path: '/research',
+    component: ResearchLayout,
+    meta: { requiresAuth: true, roles: RESEARCH_ROLES },
+    beforeEnter: [requireAnyRole(RESEARCH_ROLES)],
+    children: [{ path: '', name: 'research-home', component: ResearchHomeView }],
+  },
+  {
+    path: '/admin',
+    component: AdminLayout,
+    meta: { requiresAuth: true, roles: ADMIN_ROLES },
+    beforeEnter: [requireAnyRole(ADMIN_ROLES)],
+    children: [{ path: '', name: 'admin-home', component: AdminHomeView }],
   },
 ]
 
@@ -31,12 +50,14 @@ export const router = createRouter({
 })
 
 router.beforeEach((to) => {
-  // Public surfaces are anonymous and read-only: never require auth, and
-  // fail-closed on any route that is not explicitly public.
+  const store = useAuthStore()
   if (to.meta.publicOnly === true) {
     return true
   }
-  return { name: 'home' }
+  if (to.meta.requiresAuth === true && store.isAuthenticated) {
+    return true
+  }
+  return { name: 'login', query: { redirect: to.fullPath } }
 })
 
 export default router
