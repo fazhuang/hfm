@@ -60,10 +60,10 @@ def test_adr_gates_satisfied(guardrails: GuardrailReport) -> None:
 
 
 def test_migration_invariant(guardrails: GuardrailReport) -> None:
-    # Single head 0014 (P2-05 authorized migration); exactly 14 revisions; no 0015.
+    # Single head 0013; exactly 13 revisions; no 0014.
     assert guardrails.migration_ok
-    assert "0014" in guardrails.migration_heads  # P2-05 authorized migration
-    assert "0015" not in guardrails.migration_revisions
+    assert "0013" in guardrails.migration_heads
+    assert "0014" not in guardrails.migration_revisions
     assert len(guardrails.migration_heads) == 1
 
 

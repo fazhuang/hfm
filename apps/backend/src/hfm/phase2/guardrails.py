@@ -109,7 +109,7 @@ class GuardrailReport:
 
     @property
     def migration_ok(self) -> bool:
-        expected = {f"{i:04d}" for i in range(1, 15)}  # 0001..0014 (P2-05 authorized migration)
+        expected = {f"{i:04d}" for i in range(1, 14)}
         return set(self.migration_revisions) == expected and len(self.migration_heads) == 1
 
     @property
