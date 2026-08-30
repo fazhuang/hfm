@@ -123,9 +123,9 @@ BASELINE_ROLES: dict[str, str] = {
     "FRONTIER2_CORRECTED_CANDIDATE": "d38f871a230ca56713737b7de82f9111e7e73650",
 }
 
-_SECTION_RE = re.compile(r"^### (ASN-[A-Z0-9-]+)$", re.M)
+_SECTION_RE = re.compile(r"^### (ASN-[A-Z0-9-]+)$", re.MULTILINE)
 _FIELD_RE = re.compile(r"^([A-Z_]+): (.*)$")
-_DECLARED_RE = re.compile(r"^(DECLARED_[A-Z_0-9]+): (\d+)$", re.M)
+_DECLARED_RE = re.compile(r"^(DECLARED_[A-Z_0-9]+): (\d+)$", re.MULTILINE)
 _GIT_OBJECT_RE = re.compile(r"^[0-9a-f]{40}$")
 _SAFE_TEST_RE = re.compile(r"^tests/[A-Za-z0-9_./-]+(?:::[A-Za-z0-9_]+)?$")
 
@@ -180,7 +180,7 @@ def git(
     )
 
 
-_SECTION_HEADING_RE = re.compile(r"^#{2,3} (.+)$", re.M)
+_SECTION_HEADING_RE = re.compile(r"^#{2,3} (.+)$", re.MULTILINE)
 
 
 def resolve_locator(doc_path: Path, locator: str) -> tuple[str | None, bool]:
@@ -253,7 +253,7 @@ def parse_register(path: Path) -> tuple[dict[str, Entry], list[str], dict[str, i
     sections = list(_SECTION_RE.finditer(text))
     entries: dict[str, Entry] = {}
     duplicates: list[str] = []
-    heading_re = re.compile(r"^#{2,3} ", re.M)
+    heading_re = re.compile(r"^#{2,3} ", re.MULTILINE)
     for i, match in enumerate(sections):
         start = match.end()
         end = len(text)
