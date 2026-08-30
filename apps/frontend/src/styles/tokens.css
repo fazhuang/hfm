@@ -1,0 +1,40 @@
+/* HFM public design tokens (P2-01 public frontend foundation).
+ * Token scales per HFM conventions: constrained spacing/typography/radius
+ * scales; breakpoint tokens drive responsive behavior (P2-01-AC-05).
+ */
+:root {
+  /* color */
+  --hfm-color-bg: #fafaf9;
+  --hfm-color-surface: #ffffff;
+  --hfm-color-border: #e7e5e4;
+  --hfm-color-text: #1c1917;
+  --hfm-color-text-muted: #78716c;
+  --hfm-color-accent: #7c3aed;
+  --hfm-color-danger: #b91c1c;
+
+  /* typography */
+  --hfm-font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --hfm-text-xs: 0.75rem;
+  --hfm-text-sm: 0.875rem;
+  --hfm-text-base: 1rem;
+  --hfm-text-lg: 1.125rem;
+  --hfm-text-xl: 1.5rem;
+
+  /* spacing scale */
+  --hfm-space-1: 0.25rem;
+  --hfm-space-2: 0.5rem;
+  --hfm-space-3: 0.75rem;
+  --hfm-space-4: 1rem;
+  --hfm-space-6: 1.5rem;
+  --hfm-space-8: 2rem;
+
+  /* radius */
+  --hfm-radius-sm: 0.25rem;
+  --hfm-radius-md: 0.5rem;
+  --hfm-radius-lg: 0.75rem;
+
+  /* breakpoint tokens (responsive matrix, P2-01-AC-05) */
+  --hfm-bp-sm: 480px;
+  --hfm-bp-md: 768px;
+  --hfm-bp-lg: 1024px;
+}
