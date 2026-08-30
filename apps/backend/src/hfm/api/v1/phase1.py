@@ -6,7 +6,7 @@ model serialization in public responses.
 
 from __future__ import annotations
 
-from typing import Annotated, Any
+from typing import Annotated, Any, NoReturn
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
@@ -24,8 +24,10 @@ from hfm.phase1.evidence_chain import EvidenceChainService
 from hfm.phase1.heritage import HeritageService
 from hfm.phase1.literature import LiteratureService
 from hfm.phase1.person import PersonService
+from hfm.phase1.portal import PortalService
 from hfm.phase1.publication import PublicationService
 from hfm.phase1.reader import ReaderService
+from hfm.phase1.research_workspace import ResearchWorkspaceService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
 from hfm.utils.response import api_response
@@ -55,6 +57,13 @@ def _to_year(value: object) -> int | None:
         return int(str(value))
     except (ValueError, TypeError):
         return None
+
+
+def _raise_workspace_error(exc: Exception) -> NoReturn:
+    """Map workspace failures: KeyError → 404 (no existence leak), else 400."""
+    if isinstance(exc, KeyError):
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 # ---------------------------------------------------------------- auth
@@ -213,6 +222,32 @@ async def public_heritage(session: SessionDep, entity_id: str) -> dict[str, Any]
     if record is None:
         raise HTTPException(status_code=404, detail="heritage project not published")
     return api_response(data=record)
+
+
+# ------------------------------------------------- P1-11 public portal
+@public_router.get("/home")
+async def public_home(session: SessionDep) -> dict[str, Any]:
+    """P1-11: anonymous portal home — approved publication projection only.
+
+    Published Works + published counts per domain. No auth required;
+    unpublished/draft/withdrawn content is never returned (E-11).
+    """
+    return api_response(data=await PortalService(session).home())
+
+
+@public_router.get("/works")
+async def public_works(session: SessionDep, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    """P1-11: published works list — deterministic, PUBLISHED only."""
+    return api_response(data=await PortalService(session).works(page=page, page_size=page_size))
+
+
+@public_router.get("/works/{work_id}/editions")
+async def public_work_editions(session: SessionDep, work_id: str) -> dict[str, Any]:
+    """P1-11: editions of a published Work (404 when not published)."""
+    editions = await PortalService(session).work_editions(work_id)
+    if editions is None:
+        raise HTTPException(status_code=404, detail="work not published")
+    return api_response(data={"work_id": work_id, "editions": editions})
 
 
 # ---------------------------------------------------------------- research
@@ -606,6 +641,182 @@ async def research_submit_for_review(
     return api_response(
         data={"artifact_id": record.artifact_id, "status": record.publication_status}
     )
+
+
+# ------------------------------------------- P1-12 research workspace
+# Owner-scoped projects + notes (ADR-05 research namespace; ADR-07 §4.1
+# role matrix). Permission checks are capability-matched canonical RBAC
+# codes: projects → research:project:* (SCHOLAR_RESEARCHER only); notes →
+# research:note:* (STUDENT + SCHOLAR). Deny by default; ownership is
+# enforced per object in the service — client-supplied owner_id is never
+# accepted (E-12).
+@research_router.get(
+    "/projects", dependencies=[Depends(require_permission("research:project:read"))]
+)
+async def research_list_projects(
+    session: SessionDep, principal: PrincipalDep, page: int = 1, page_size: int = 20
+) -> dict[str, Any]:
+    """P1-12: projects owned by the authenticated researcher."""
+    data = await ResearchWorkspaceService(session).list_projects(
+        principal=principal, page=page, page_size=page_size
+    )
+    return api_response(data=data)
+
+
+@research_router.post(
+    "/projects", dependencies=[Depends(require_permission("research:project:create"))]
+)
+async def research_create_project(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P1-12: create an owner-scoped research project."""
+    try:
+        data = await ResearchWorkspaceService(session).create_project(
+            principal=principal,
+            title=str(body.get("title", "")),
+            description=body.get("description"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.get(
+    "/projects/{project_id}", dependencies=[Depends(require_permission("research:project:read"))]
+)
+async def research_get_project(
+    session: SessionDep, principal: PrincipalDep, project_id: str
+) -> dict[str, Any]:
+    """P1-12: owner-scoped project read (cross-user → 404)."""
+    try:
+        data = await ResearchWorkspaceService(session).get_project(
+            principal=principal, project_id=project_id
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.patch(
+    "/projects/{project_id}", dependencies=[Depends(require_permission("research:project:update"))]
+)
+async def research_update_project(
+    session: SessionDep, principal: PrincipalDep, project_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P1-12: owner-scoped project update."""
+    try:
+        data = await ResearchWorkspaceService(session).update_project(
+            principal=principal,
+            project_id=project_id,
+            title=body.get("title"),
+            description=body.get("description"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.delete(
+    "/projects/{project_id}", dependencies=[Depends(require_permission("research:project:delete"))]
+)
+async def research_delete_project(
+    session: SessionDep, principal: PrincipalDep, project_id: str
+) -> dict[str, Any]:
+    """P1-12: owner-scoped project delete (notes cascade)."""
+    try:
+        await ResearchWorkspaceService(session).delete_project(
+            principal=principal, project_id=project_id
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data={"ok": True})
+
+
+@research_router.get("/notes", dependencies=[Depends(require_permission("research:note:read"))])
+async def research_list_notes(
+    session: SessionDep,
+    principal: PrincipalDep,
+    project_id: str = "",
+    page: int = 1,
+    page_size: int = 20,
+) -> dict[str, Any]:
+    """P1-12: notes owned by the researcher (optional owner-scoped filter)."""
+    try:
+        data = await ResearchWorkspaceService(session).list_notes(
+            principal=principal,
+            project_id=project_id or None,
+            page=page,
+            page_size=page_size,
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.post("/notes", dependencies=[Depends(require_permission("research:note:create"))])
+async def research_create_note(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P1-12: create an owner-scoped personal note."""
+    try:
+        data = await ResearchWorkspaceService(session).create_note(
+            principal=principal,
+            content=str(body.get("content", "")),
+            project_id=body.get("project_id"),
+            title=body.get("title"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.get(
+    "/notes/{note_id}", dependencies=[Depends(require_permission("research:note:read"))]
+)
+async def research_get_note(
+    session: SessionDep, principal: PrincipalDep, note_id: str
+) -> dict[str, Any]:
+    """P1-12: owner-scoped note read (cross-user → 404)."""
+    try:
+        data = await ResearchWorkspaceService(session).get_note(
+            principal=principal, note_id=note_id
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.patch(
+    "/notes/{note_id}", dependencies=[Depends(require_permission("research:note:update"))]
+)
+async def research_update_note(
+    session: SessionDep, principal: PrincipalDep, note_id: str, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P1-12: owner-scoped note update."""
+    try:
+        data = await ResearchWorkspaceService(session).update_note(
+            principal=principal,
+            note_id=note_id,
+            content=body.get("content"),
+            title=body.get("title"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.delete(
+    "/notes/{note_id}", dependencies=[Depends(require_permission("research:note:delete"))]
+)
+async def research_delete_note(
+    session: SessionDep, principal: PrincipalDep, note_id: str
+) -> dict[str, Any]:
+    """P1-12: owner-scoped note delete."""
+    try:
+        await ResearchWorkspaceService(session).delete_note(principal=principal, note_id=note_id)
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data={"ok": True})
 
 
 # ---------------------------------------------------------------- admin

@@ -49,13 +49,48 @@ PERMISSION_CODES: tuple[str, ...] = (
     "content:withdraw",
     "user:manage",
     "audit:read",
+    # P1-12 research workspace (ADR-07 §4.1 role matrix: student personal
+    # notes/bookmarks; scholar research projects — capability-matched codes).
+    "research:project:create",
+    "research:project:read",
+    "research:project:update",
+    "research:project:delete",
+    "research:note:create",
+    "research:note:read",
+    "research:note:update",
+    "research:note:delete",
 )
 
 #: role → permissions (default deny: a role has exactly these permissions).
 ROLE_PERMISSIONS: dict[UserRoleCode, frozenset[str]] = {
     UserRoleCode.ANONYMOUS_VISITOR: frozenset(),
-    UserRoleCode.STUDENT_RESEARCHER: frozenset({"assertion:create", "project:create"}),
-    UserRoleCode.SCHOLAR_RESEARCHER: frozenset({"assertion:create", "project:create"}),
+    UserRoleCode.STUDENT_RESEARCHER: frozenset(
+        {
+            "assertion:create",
+            "project:create",
+            # ADR-07 §4.1: student personal workspace — notes/bookmarks only.
+            # Scholarly project capability is NOT granted to students.
+            "research:note:create",
+            "research:note:read",
+            "research:note:update",
+            "research:note:delete",
+        }
+    ),
+    UserRoleCode.SCHOLAR_RESEARCHER: frozenset(
+        {
+            "assertion:create",
+            "project:create",
+            # ADR-07 §4.1: scholar research projects (+ personal notes).
+            "research:project:create",
+            "research:project:read",
+            "research:project:update",
+            "research:project:delete",
+            "research:note:create",
+            "research:note:read",
+            "research:note:update",
+            "research:note:delete",
+        }
+    ),
     UserRoleCode.CONTENT_REVIEWER: frozenset(
         {"content:review", "content:publish", "content:withdraw"}
     ),
