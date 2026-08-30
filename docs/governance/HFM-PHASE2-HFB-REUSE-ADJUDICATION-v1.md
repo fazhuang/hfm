@@ -14,7 +14,7 @@ Adjudication is reuse classification — never migration execution (M0–M7 NOT 
 | ADJ-01 | HFB Authentication (JWT+token_version) | REJECT | HFM-native identity (ADR-07, P1-10); no HFB credential/auth porting | 0 | 0 (MC-12 DO_NOT_MIGRATE) | 0 (no shared auth) | none — HFM-native | Reuse Matrix: Authentication; ADR-07 |
 | ADJ-02 | HFB RBAC (8 roles × 21 resources) | REJECT | HFM-native role matrix (ADR-07, P1-10); HFB roles tightly coupled | 0 | 0 | 0 (deny-by-default HFM) | none — HFM-native | Reuse Matrix: RBAC; ADR-07 |
 | ADJ-03 | HFB Person model/service/API | REFERENCE_ONLY | HFM canonical Person native (P1-03); semantics informed only | 0 | 0 | 0 | HFM models/person | Reuse Matrix: Person |
-| ADJ-04 | HFB Ancient Text FRBR lineage | REFERENCE_ONLY | HFM Work/Edition/Version native (P1-04); informed only | 0 | 0 | 0 | HFM models/work | edition | version | Reuse Matrix: Ancient Text |
+| ADJ-04 | HFB Ancient Text FRBR lineage | REFERENCE_ONLY | HFM Work/Edition/Version native (P1-04); informed only | 0 | 0 | 0 | HFM models/work/edition/version | Reuse Matrix: Ancient Text |
 | ADJ-05 | HFB Source admission | REFERENCE_ONLY | HFM Source/admission native (P1-01/P1-02) | 0 | 0 | 0 | HFM models/source | Reuse Matrix: Source |
 | ADJ-06 | HFB Evidence (Level 1-4 + taint) | REFERENCE_ONLY | HFM Evidence chain native (P1-02) | 0 | 0 | 0 | HFM models/evidence | Reuse Matrix: Evidence |
 | ADJ-07 | HFB Citation persistence | REFERENCE_ONLY | HFM Citation native (P1-02) | 0 | 0 | 0 | HFM models/citation | Reuse Matrix: Citation |
