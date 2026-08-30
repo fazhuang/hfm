@@ -59,6 +59,9 @@ def _entry(
         "AUTHORITY_TYPE": authority_type,
         "AUTHORITY_ID": authority_id,
         "AUTHORITY_DOCUMENT": authority_doc,
+        "AUTHORITY_LOCATOR": "## P2-05 Media & Rights Lifecycle",
+        "AUTHORITY_RULE": "ALLOWED_MODULE",
+        "AUTHORITY_VALUE": "apps/backend/alembic/versions/00XX_p2_*",
         "EFFECTIVE_FROM": effective,
         "CURRENT_REPLACEMENT_TEST": replacement,
         "REPLAY_BASELINE": replay_base,
@@ -67,7 +70,13 @@ def _entry(
         "REPLAY_TEST": "tests/test_phase2_guardrails.py",
         "RATIONALE": "test rationale",
     }
-    fields.update(overrides)
+    base_lower = {key.lower(): key for key in fields}
+    for key, value in overrides.items():
+        target = base_lower.get(key.lower())
+        if target is not None:
+            fields[target] = value
+        else:
+            fields[key] = value
     return fields
 
 
@@ -86,6 +95,9 @@ def _active_c(
         "AUTHORITY_TYPE": "N/A",
         "AUTHORITY_ID": "N/A",
         "AUTHORITY_DOCUMENT": "N/A",
+        "AUTHORITY_LOCATOR": "N/A",
+        "AUTHORITY_RULE": "N/A",
+        "AUTHORITY_VALUE": "N/A",
         "EFFECTIVE_FROM": P205,
         "CURRENT_REPLACEMENT_TEST": replacement,
         "REPLAY_BASELINE": "N/A",
@@ -234,7 +246,10 @@ def test_authority_unrelated_document_fails(tmp_path: Path) -> None:
         )
     )
     assert not report.ok
-    assert any("authority id 'P2-05' not present" in e for e in report.errors)
+    assert any(
+        ("locator does not resolve" in e) or ("authority id 'P2-05' not present" in e)
+        for e in report.errors
+    )
 
 
 def test_authority_disallowed_type_fails(tmp_path: Path) -> None:
@@ -413,6 +428,151 @@ def test_replacement_test_failure_detected(tmp_path: Path) -> None:
     report = AnyReport()
     verifier.execute_replacements(REPO_ROOT, report, register)
     assert any("REPLACEMENT_TEST_FAILURE" in e for e in report.errors)
+
+
+# ---- P1-02 Round 2: exact clause binding --------------------------------------
+
+
+def test_authority_exact_clause_passes(tmp_path: Path) -> None:
+    """Correct document + correct ID + correct clause (real P2-05 locator)."""
+    report = _run(_pair(tmp_path))
+    assert report.ok, report.errors
+    assert report.authority_bindings_validated == 1
+
+
+def test_authority_wrong_clause_fails(tmp_path: Path) -> None:
+    """Correct doc+ID but locator to a clause that does not authorize the rule."""
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## Accounting"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority rule" in e and "not satisfied" in e for e in report.errors)
+
+
+def test_authority_token_elsewhere_fails(tmp_path: Path) -> None:
+    """P2-05 token appears in the Accounting prose but no authorized clause there."""
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## Accounting"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    # token presence alone must not validate the authority
+    assert not report.ok
+
+
+def test_authority_unrelated_section_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-10 HFB Reuse Adjudication"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("not present inside" in e for e in report.errors)
+
+
+def test_authority_ambiguous_locator_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-"  # matches every WP section
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("ambiguous authority locator" in e for e in report.errors)
+
+
+def test_authority_missing_locator_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "N/A"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("supersession field AUTHORITY_LOCATOR missing or N/A" in e for e in report.errors)
+
+
+def test_authority_wrong_value_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_VALUE"] = "apps/frontend/src"  # not authorized by P2-05
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority rule" in e and "not satisfied" in e for e in report.errors)
+
+
+# ---- P1-04 Round 2: portable archive replay ------------------------------------
+
+
+def test_replay_uses_git_archive_no_worktree(tmp_path: Path) -> None:
+    """The replay mechanism must not invoke git worktree (prohibition)."""
+    entry = _entry(assertion_id="ASN-PORT", superseded_by="ASN-PORT-T", replay_base=P200)
+    register = _register_file(tmp_path, [entry, _active_c(assertion_id="ASN-PORT-T")])
+
+    original_run = verifier.subprocess.run
+    calls: list[list[str]] = []
+
+    def spy(args: list[str], **kwargs: Any) -> Any:
+        calls.append(args)
+        return original_run(args, **kwargs)
+
+    verifier.subprocess.run = spy
+    try:
+        report = AnyReport()
+        verifier.execute_replays(REPO_ROOT, report, register)
+    finally:
+        verifier.subprocess.run = original_run
+    assert report.errors == []
+    for argv in calls:
+        assert "worktree" not in argv, f"git worktree invoked: {argv}"
+
+
+def test_archive_replay_byte_identity_passes(tmp_path: Path) -> None:
+    """Exported bytes match git show <baseline>:<path> (historical byte identity)."""
+    import tempfile as _tf
+
+    with _tf.TemporaryDirectory(prefix="hfm-bytes-") as tmp:
+        dest = Path(tmp) / "tree"
+        dest.mkdir()
+        assert verifier.export_baseline(REPO_ROOT, P200, dest)
+        test_file = dest / "apps" / "backend" / "tests" / "test_phase2_guardrails.py"
+        assert test_file.is_file()
+        assert verifier.verify_byte_identity(
+            REPO_ROOT, P200, "apps/backend/tests/test_phase2_guardrails.py", test_file
+        )
+
+
+def test_archive_replay_byte_mismatch_fails(tmp_path: Path) -> None:
+    import tempfile as _tf
+
+    with _tf.TemporaryDirectory(prefix="hfm-bytes-") as tmp:
+        dest = Path(tmp) / "tree"
+        dest.mkdir()
+        assert verifier.export_baseline(REPO_ROOT, P200, dest)
+        test_file = dest / "apps" / "backend" / "tests" / "test_phase2_guardrails.py"
+        tampered = tmp_path / "tampered.py"
+        tampered.write_bytes(b"# tampered" + test_file.read_bytes())
+        assert not verifier.verify_byte_identity(
+            REPO_ROOT, P200, "apps/backend/tests/test_phase2_guardrails.py", tampered
+        )
+
+
+def test_historical_test_missing_detected(tmp_path: Path) -> None:
+    """A replay test not present in the historical export must FAIL."""
+    entry = _entry(
+        assertion_id="ASN-MISS-TEST",
+        superseded_by="ASN-MISS-T",
+        replay_base=P200,
+        replay_test="tests/test_phase2_media.py",  # does not exist at bd0d39e
+    )
+    register = _register_file(tmp_path, [entry, _active_c(assertion_id="ASN-MISS-T")])
+    report = AnyReport()
+    verifier.execute_replays(REPO_ROOT, report, register)
+    assert any("historical test missing" in e for e in report.errors)
+
+
+def test_replay_cleanup_no_leftovers(tmp_path: Path) -> None:
+    """Replay temporary directories are removed (no /tmp/hfm-replay-* residue)."""
+    import glob
+
+    before = set(glob.glob("/tmp/hfm-replay-*"))
+    entry = _entry(assertion_id="ASN-CLEAN", superseded_by="ASN-CLEAN-T", replay_base=P200)
+    register = _register_file(tmp_path, [entry, _active_c(assertion_id="ASN-CLEAN-T")])
+    report = AnyReport()
+    verifier.execute_replays(REPO_ROOT, report, register)
+    after = set(glob.glob("/tmp/hfm-replay-*"))
+    assert report.errors == []
+    assert after == before
 
 
 # ---- helpers -------------------------------------------------------------------

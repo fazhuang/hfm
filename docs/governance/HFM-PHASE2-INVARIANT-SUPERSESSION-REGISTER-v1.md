@@ -35,6 +35,9 @@ required with real values for superseded Class H entries and must be `N/A` other
 | AUTHORITY_TYPE | superseded-only | WP_CONTRACT / ADR / ACCEPTED_AMENDMENT |
 | AUTHORITY_ID | superseded-only | exact authority id inside the document (e.g. P2-05) |
 | AUTHORITY_DOCUMENT | superseded-only | repo-relative governance document |
+| AUTHORITY_LOCATOR | superseded-only | exact unique clause locator (section heading with stable id, e.g. `## P2-05 Media & Rights Lifecycle`) |
+| AUTHORITY_RULE | superseded-only | structured rule validated inside the locator (e.g. ALLOWED_MODULE) |
+| AUTHORITY_VALUE | superseded-only | expected value of the rule inside the locator (e.g. apps/backend/alembic/versions/00XX_p2_*) |
 | EFFECTIVE_FROM | superseded-only | commit where the authorized evolution became effective |
 | CURRENT_REPLACEMENT_TEST | superseded-only + Class C | repo-relative pytest node id/path |
 | REPLAY_BASELINE | superseded-only | baseline used for historical replay |
@@ -63,6 +66,9 @@ SUPERSEDED_BY_ASSERTION_ID: ASN-P205-MIG-0014-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
+AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
+AUTHORITY_RULE: ALLOWED_MODULE
+AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
 CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0014
 REPLAY_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
@@ -86,6 +92,9 @@ SUPERSEDED_BY_ASSERTION_ID: ASN-P205-MIG-0014-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
+AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
+AUTHORITY_RULE: ALLOWED_MODULE
+AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
 CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0014
 REPLAY_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
@@ -109,6 +118,9 @@ SUPERSEDED_BY_ASSERTION_ID: ASN-P205-MIG-0014-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
+AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
+AUTHORITY_RULE: ALLOWED_MODULE
+AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
 CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0014
 REPLAY_BASELINE: c17be40be6f055498fde11c0042e71d3a1056a7c

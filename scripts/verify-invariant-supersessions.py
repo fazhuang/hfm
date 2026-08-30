@@ -18,8 +18,9 @@ Validates docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md:
   - supersession graph: unique ids, no self/cycles, every SUPERSEDED
     assertion resolves to exactly one ACTIVE terminal assertion whose
     current replacement test exists;
-  - historical replay: machine-executed in an isolated temporary worktree
-    (pytest only, argv subprocess, shell=False);
+  - historical replay: machine-executed via git archive into an isolated
+    temporary directory (no .git writes, pytest only, argv subprocess,
+    shell=False);
   - current replacement tests: machine-executed (pytest only).
 
 Migration-agnostic: no 0013/0014 literals — the framework generalizes to any
@@ -28,9 +29,12 @@ future authorized evolution (0014 -> 0015 -> ...).
 
 from __future__ import annotations
 
+import hashlib
+import io
 import re
 import subprocess
 import sys
+import tarfile
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -48,6 +52,9 @@ KNOWN_FIELDS: tuple[str, ...] = (
     "AUTHORITY_TYPE",
     "AUTHORITY_ID",
     "AUTHORITY_DOCUMENT",
+    "AUTHORITY_LOCATOR",
+    "AUTHORITY_RULE",
+    "AUTHORITY_VALUE",
     "EFFECTIVE_FROM",
     "CURRENT_REPLACEMENT_TEST",
     "REPLAY_BASELINE",
@@ -81,6 +88,9 @@ SUPERSEDED_REQUIRED: tuple[str, ...] = (
     "AUTHORITY_TYPE",
     "AUTHORITY_ID",
     "AUTHORITY_DOCUMENT",
+    "AUTHORITY_LOCATOR",
+    "AUTHORITY_RULE",
+    "AUTHORITY_VALUE",
     "EFFECTIVE_FROM",
     "CURRENT_REPLACEMENT_TEST",
     "REPLAY_BASELINE",
@@ -95,6 +105,9 @@ NON_SUPERSEDED_NA: tuple[str, ...] = (
     "AUTHORITY_TYPE",
     "AUTHORITY_ID",
     "AUTHORITY_DOCUMENT",
+    "AUTHORITY_LOCATOR",
+    "AUTHORITY_RULE",
+    "AUTHORITY_VALUE",
     "REPLAY_BASELINE",
     "REPLAY_BASELINE_ROLE",
     "REPLAY_KIND",
@@ -146,6 +159,8 @@ class VerificationReport:
     entries: dict[str, Entry] = field(default_factory=dict)
     replays_executed: int = 0
     replacements_executed: int = 0
+    authority_bindings_validated: int = 0
+    baseline_bindings_validated: int = 0
 
     @property
     def ok(self) -> bool:
@@ -163,6 +178,41 @@ def git(
         cwd=str(cwd) if cwd else None,
         check=False,
     )
+
+
+_SECTION_HEADING_RE = re.compile(r"^#{2,3} (.+)$", re.M)
+
+
+def resolve_locator(doc_path: Path, locator: str) -> tuple[str | None, bool]:
+    """Resolve an exact clause locator to its block.
+
+    The locator is a stable section identifier (e.g. `## P2-05 Media & Rights
+    Lifecycle`). Returns (block, ambiguous); block is None when the locator
+    does not resolve to exactly one section.
+    """
+    text = doc_path.read_text(encoding="utf-8", errors="replace")
+    headings = list(_SECTION_HEADING_RE.finditer(text))
+    blocks: list[str] = []
+    for i, match in enumerate(headings):
+        heading_line = match.group(0).strip()
+        if heading_line == locator.strip() or heading_line.startswith(locator.strip()):
+            start = match.end()
+            end = headings[i + 1].start() if i + 1 < len(headings) else len(text)
+            blocks.append(text[start:end])
+    if len(blocks) == 1:
+        return blocks[0], False
+    if len(blocks) > 1:
+        return blocks[0], True
+    return None, False
+
+
+def rule_holds_in_block(block: str, rule: str, value: str) -> bool:
+    """Deterministic rule check inside a locator block. ALLOWED_MODULE requires
+    the block to carry an allowed-modules statement that contains the value."""
+    if rule == "ALLOWED_MODULE":
+        allowed = re.search(r"(?i)allowed modules?:?[^\n]*", block)
+        return bool(allowed and value in allowed.group(0))
+    return False
 
 
 def git_object_exists(repo_root: Path, sha: str) -> bool:
@@ -325,24 +375,42 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
     if sum(status_counts.values()) != actual_total:
         report.errors.append("status sum != total")
 
-    # ---- authority semantic validation (P1-02) ----
+    # ---- authority semantic validation (P1-02): exact clause binding ----
     for entry in entries.values():
         if not entry.superseded:
             continue
         a_type = entry.field("AUTHORITY_TYPE")
         a_id = entry.field("AUTHORITY_ID")
         a_doc = entry.field("AUTHORITY_DOCUMENT")
+        a_locator = entry.field("AUTHORITY_LOCATOR")
+        a_rule = entry.field("AUTHORITY_RULE")
+        a_value = entry.field("AUTHORITY_VALUE")
         if a_type not in ALLOWED_AUTHORITY_TYPES:
             report.errors.append(f"{entry.assertion_id}: disallowed authority type {a_type!r}")
         doc_path = repo_root / a_doc
         if not doc_path.is_file():
             report.errors.append(f"{entry.assertion_id}: authority document not found: {a_doc}")
+            continue
+        block, ambiguous = resolve_locator(doc_path, a_locator)
+        if block is None:
+            report.errors.append(
+                f"{entry.assertion_id}: authority locator does not resolve: {a_locator!r}"
+            )
+            continue
+        if ambiguous:
+            report.errors.append(
+                f"{entry.assertion_id}: ambiguous authority locator: {a_locator!r}"
+            )
+            continue
+        if not re.search(rf"\b{re.escape(a_id)}\b", block):
+            report.errors.append(f"{entry.assertion_id}: authority id {a_id!r} not present inside")
+        if not rule_holds_in_block(block, a_rule, a_value):
+            report.errors.append(
+                f"{entry.assertion_id}: authority rule {a_rule!r} value {a_value!r} "
+                f"not satisfied inside locator {a_locator!r}"
+            )
         else:
-            doc_text = doc_path.read_text(encoding="utf-8", errors="replace")
-            if not re.search(rf"\b{re.escape(a_id)}\b", doc_text):
-                report.errors.append(
-                    f"{entry.assertion_id}: authority id {a_id!r} not present in {a_doc}"
-                )
+            report.authority_bindings_validated += 1
 
     # ---- baseline identity/ancestry (P1-03) ----
     for entry in entries.values():
@@ -377,6 +445,8 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
                 report.errors.append(
                     f"{entry.assertion_id}: replay role {replay_role} bound to wrong commit"
                 )
+            else:
+                report.baseline_bindings_validated += 1
 
     # ---- supersession graph + active terminal (P1-05) ----
     chain: dict[str, str] = {}
@@ -454,8 +524,43 @@ def _run_pytest(
     )
 
 
+def export_baseline(repo_root: Path, baseline: str, dest: Path) -> bool:
+    """Export a baseline commit into dest via git archive.
+
+    Reads only (no .git metadata writes, no worktree registration). Uses
+    Python tarfile with the data filter for safe extraction; no shell.
+    """
+    proc = subprocess.run(
+        ["git", "-C", str(repo_root), "archive", "--format=tar", baseline],
+        capture_output=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        return False
+    with tarfile.open(fileobj=io.BytesIO(proc.stdout), mode="r:") as tar:
+        tar.extractall(dest, filter="data")
+    return True
+
+
+def verify_byte_identity(repo_root: Path, baseline: str, rel_path: str, exported: Path) -> bool:
+    """Prove the exported bytes equal git show <baseline>:<rel_path>."""
+    show = subprocess.run(
+        ["git", "-C", str(repo_root), "show", f"{baseline}:{rel_path}"],
+        capture_output=True,
+        check=False,
+    )
+    if show.returncode != 0:
+        return False
+    return hashlib.sha256(exported.read_bytes()).digest() == hashlib.sha256(show.stdout).digest()
+
+
 def execute_replays(repo_root: Path, report: VerificationReport, register_path: Path) -> None:
-    """Machine-execute every registered historical replay in an isolated worktree."""
+    """Machine-execute every registered historical replay via git archive.
+
+    No git worktree, no git checkout mutation, no .git writes: the baseline
+    is exported into an isolated temporary directory (outside the repo),
+    pytest runs against the exported tree, and the directory is removed.
+    """
     entries, _, _ = parse_register(register_path)
     for entry in entries.values():
         if not entry.superseded:
@@ -466,20 +571,32 @@ def execute_replays(repo_root: Path, report: VerificationReport, register_path: 
             report.errors.append(f"{entry.assertion_id}: replay not executable")
             continue
         with tempfile.TemporaryDirectory(prefix="hfm-replay-") as tmp:
-            worktree = Path(tmp) / "wt"
-            add = git(["worktree", "add", "--detach", str(worktree), baseline], repo_root)
-            if add.returncode != 0:
-                report.errors.append(f"{entry.assertion_id}: replay worktree creation failed")
+            dest = Path(tmp) / "tree"
+            dest.mkdir()
+            if not export_baseline(repo_root, baseline, dest):
+                report.errors.append(
+                    f"{entry.assertion_id}: historical export failed for {baseline}"
+                )
                 continue
-            try:
-                result = _run_pytest(repo_root, worktree / "apps" / "backend", node)
-                report.replays_executed += 1
-                if result.returncode != 0:
-                    report.errors.append(
-                        f"HISTORICAL_REPLAY_FAILURE {entry.assertion_id}: exit {result.returncode}"
-                    )
-            finally:
-                git(["worktree", "remove", "--force", str(worktree)], repo_root)
+            test_file = node.split("::", 1)[0]
+            exported_test = dest / "apps" / "backend" / test_file
+            if not exported_test.is_file():
+                report.errors.append(f"{entry.assertion_id}: historical test missing: {test_file}")
+                continue
+            if not verify_byte_identity(
+                repo_root, baseline, f"apps/backend/{test_file}", exported_test
+            ):
+                report.errors.append(
+                    f"HISTORICAL_BYTE_MISMATCH {entry.assertion_id}: exported tree does not "
+                    f"match {baseline}:{test_file}"
+                )
+                continue
+            result = _run_pytest(repo_root, dest / "apps" / "backend", node)
+            report.replays_executed += 1
+            if result.returncode != 0:
+                report.errors.append(
+                    f"HISTORICAL_REPLAY_FAILURE {entry.assertion_id}: exit {result.returncode}"
+                )
 
 
 def execute_replacements(repo_root: Path, report: VerificationReport, register_path: Path) -> None:
