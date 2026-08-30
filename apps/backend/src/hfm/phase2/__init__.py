@@ -1,3 +1,5 @@
+# mypy: disable-error-code="import-untyped,import-not-found"
+# pyright: reportMissingImports=false
 """HFM Phase 2 engineering controls (P2-00 contract verifier)."""
 
 from __future__ import annotations

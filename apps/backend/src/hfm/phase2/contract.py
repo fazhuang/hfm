@@ -1,3 +1,5 @@
+# mypy: disable-error-code="import-untyped,import-not-found"
+# pyright: reportMissingImports=false
 """Phase-2 contract verifier orchestrator (P2-00).
 
 Ties the scope taxonomy, cross-document traceability, DAG structure,

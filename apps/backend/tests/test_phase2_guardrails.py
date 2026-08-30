@@ -1,3 +1,5 @@
+# mypy: disable-error-code="import-untyped,import-not-found"
+# pyright: reportMissingImports=false
 """Phase-2 P2-00 negative-boundary guardrail tests.
 
 Proves P2-00-AC-02 (deferred/rejected leakage = 0, HFB runtime dependency =

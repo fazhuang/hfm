@@ -1,7 +1,7 @@
 # HFM Phase 2 Fixture-Based Acceptance Policy v1
 
-Status: P2-00 IMPLEMENTATION-GENERATED GOVERNANCE ARTIFACT · BINDS TO THE FROZEN PHASE-2 CONTRACTS  
-Scope: `docs/governance/HFM-PHASE2-*` (allowed module per frozen P2-00 contract, in-scope deliverable "fixture-based acceptance policy")  
+Status: P2-00 IMPLEMENTATION-GENERATED GOVERNANCE ARTIFACT · BINDS TO THE FROZEN PHASE-2 CONTRACTS
+Scope: `docs/governance/HFM-PHASE2-*` (allowed module per frozen P2-00 contract, in-scope deliverable "fixture-based acceptance policy")
 Authority: HFM-PHASE2-ACCEPTANCE-CONTRACT-v1.md, P2-00-AC-03; frozen contract text takes precedence over this policy.
 
 ## 1. Policy statement

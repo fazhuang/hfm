@@ -1,3 +1,5 @@
+# mypy: disable-error-code="import-untyped,import-not-found"
+# pyright: reportMissingImports=false
 """Phase-2 P2-00 contract-verifier tests (contract harness).
 
 Proves the frozen P2-00 acceptance criteria:
