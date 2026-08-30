@@ -223,14 +223,17 @@ def git_object_exists(repo_root: Path, sha: str) -> bool:
         return False
     return (
         git(
-            ["-c", "core.quotePath=false", "cat-file", "-e", f"{sha}^{{commit}}"], repo_root
+            ["-c", "core.quotePath=false", "cat-file", "-e", f"{sha}^{{commit}}"],
+            repo_root,
         ).returncode
         == 0
     )
 
 
 def is_ancestor(repo_root: Path, ancestor: str, descendant: str) -> bool:
-    if not git_object_exists(repo_root, ancestor) or not git_object_exists(repo_root, descendant):
+    if not git_object_exists(repo_root, ancestor) or not git_object_exists(
+        repo_root, descendant
+    ):
         return False
     result = git(["merge-base", "--is-ancestor", ancestor, descendant], repo_root)
     return result.returncode == 0
@@ -304,7 +307,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
         report.errors.append("register contains no assertions")
         return report
     if duplicates:
-        report.errors.append(f"duplicate ASSERTION_ID present: {sorted(set(duplicates))}")
+        report.errors.append(
+            f"duplicate ASSERTION_ID present: {sorted(set(duplicates))}"
+        )
 
     # ---- strict schema + mechanical counts ----
     class_counts: dict[str, int] = {}
@@ -312,7 +317,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
     for entry in entries.values():
         for req in COMMON_REQUIRED:
             if req not in entry.fields or not entry.field(req):
-                report.errors.append(f"{entry.assertion_id}: missing required field {req}")
+                report.errors.append(
+                    f"{entry.assertion_id}: missing required field {req}"
+                )
         if entry.duplicate_fields:
             report.errors.append(
                 f"{entry.assertion_id}: duplicate fields {sorted(set(entry.duplicate_fields))}"
@@ -329,7 +336,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
         else:
             class_counts[entry.cls] = class_counts.get(entry.cls, 0) + 1
         if entry.status not in VALID_STATUSES:
-            report.errors.append(f"{entry.assertion_id}: unknown STATUS {entry.status!r}")
+            report.errors.append(
+                f"{entry.assertion_id}: unknown STATUS {entry.status!r}"
+            )
         else:
             status_counts[entry.status] = status_counts.get(entry.status, 0) + 1
 
@@ -389,10 +398,14 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
         a_rule = entry.field("AUTHORITY_RULE")
         a_value = entry.field("AUTHORITY_VALUE")
         if a_type not in ALLOWED_AUTHORITY_TYPES:
-            report.errors.append(f"{entry.assertion_id}: disallowed authority type {a_type!r}")
+            report.errors.append(
+                f"{entry.assertion_id}: disallowed authority type {a_type!r}"
+            )
         doc_path = repo_root / a_doc
         if not doc_path.is_file():
-            report.errors.append(f"{entry.assertion_id}: authority document not found: {a_doc}")
+            report.errors.append(
+                f"{entry.assertion_id}: authority document not found: {a_doc}"
+            )
             continue
         block, ambiguous = resolve_locator(doc_path, a_locator)
         if block is None:
@@ -406,7 +419,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
             )
             continue
         if not re.search(rf"\b{re.escape(a_id)}\b", block):
-            report.errors.append(f"{entry.assertion_id}: authority id {a_id!r} not present inside")
+            report.errors.append(
+                f"{entry.assertion_id}: authority id {a_id!r} not present inside"
+            )
         if not rule_holds_in_block(block, a_rule, a_value):
             report.errors.append(
                 f"{entry.assertion_id}: authority rule {a_rule!r} value {a_value!r} "
@@ -419,7 +434,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
     for entry in entries.values():
         intro = entry.field("INTRODUCED_AT_BASELINE")
         if not intro or intro == "N/A":
-            report.errors.append(f"{entry.assertion_id}: INTRODUCED_AT_BASELINE required")
+            report.errors.append(
+                f"{entry.assertion_id}: INTRODUCED_AT_BASELINE required"
+            )
         elif not git_object_exists(repo_root, intro):
             report.errors.append(
                 f"{entry.assertion_id}: introduced-at baseline {intro} does not exist"
@@ -439,12 +456,19 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
                 )
             else:
                 for label, base in (("introduced-at", intro), ("replay", replay_base)):
-                    if base and base != "N/A" and not is_ancestor(repo_root, base, effective):
+                    if (
+                        base
+                        and base != "N/A"
+                        and not is_ancestor(repo_root, base, effective)
+                    ):
                         report.errors.append(
                             f"{entry.assertion_id}: {label} baseline {base} not an ancestor"
                             f" of effective {effective}"
                         )
-            if replay_role in BASELINE_ROLES and BASELINE_ROLES[replay_role] != replay_base:
+            if (
+                replay_role in BASELINE_ROLES
+                and BASELINE_ROLES[replay_role] != replay_base
+            ):
                 report.errors.append(
                     f"{entry.assertion_id}: replay role {replay_role} bound to wrong commit"
                 )
@@ -484,7 +508,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
             else:
                 replacement = terminal.field("CURRENT_REPLACEMENT_TEST")
                 if not replacement or replacement == "N/A":
-                    report.errors.append(f"{start}: terminal {current} lacks replacement test")
+                    report.errors.append(
+                        f"{start}: terminal {current} lacks replacement test"
+                    )
                 elif not safe_test_node(repo_root, replacement):
                     report.errors.append(
                         f"{start}: terminal {current} replacement test invalid: {replacement}"
@@ -502,7 +528,9 @@ def validate(repo_root: Path, register_path: Path) -> VerificationReport:
             )
         if not safe_test_node(repo_root, entry.field("CURRENT_REPLACEMENT_TEST")):
             node = entry.field("CURRENT_REPLACEMENT_TEST")
-            report.errors.append(f"{entry.assertion_id}: unsafe replacement test node {node!r}")
+            report.errors.append(
+                f"{entry.assertion_id}: unsafe replacement test node {node!r}"
+            )
     return report
 
 
@@ -545,7 +573,9 @@ def export_baseline(repo_root: Path, baseline: str, dest: Path) -> bool:
     return True
 
 
-def verify_byte_identity(repo_root: Path, baseline: str, rel_path: str, exported: Path) -> bool:
+def verify_byte_identity(
+    repo_root: Path, baseline: str, rel_path: str, exported: Path
+) -> bool:
     """Prove the exported bytes equal git show <baseline>:<rel_path>."""
     show = subprocess.run(
         ["git", "-C", str(repo_root), "show", f"{baseline}:{rel_path}"],
@@ -554,10 +584,15 @@ def verify_byte_identity(repo_root: Path, baseline: str, rel_path: str, exported
     )
     if show.returncode != 0:
         return False
-    return hashlib.sha256(exported.read_bytes()).digest() == hashlib.sha256(show.stdout).digest()
+    return (
+        hashlib.sha256(exported.read_bytes()).digest()
+        == hashlib.sha256(show.stdout).digest()
+    )
 
 
-def execute_replays(repo_root: Path, report: VerificationReport, register_path: Path) -> None:
+def execute_replays(
+    repo_root: Path, report: VerificationReport, register_path: Path
+) -> None:
     """Machine-execute every registered historical replay via git archive.
 
     No git worktree, no git checkout mutation, no .git writes: the baseline
@@ -570,7 +605,9 @@ def execute_replays(repo_root: Path, report: VerificationReport, register_path: 
             continue
         baseline = entry.field("REPLAY_BASELINE")
         node = entry.field("REPLAY_TEST")
-        if not git_object_exists(repo_root, baseline) or not safe_test_node(repo_root, node):
+        if not git_object_exists(repo_root, baseline) or not safe_test_node(
+            repo_root, node
+        ):
             report.errors.append(f"{entry.assertion_id}: replay not executable")
             continue
         with tempfile.TemporaryDirectory(prefix="hfm-replay-") as tmp:
@@ -584,7 +621,9 @@ def execute_replays(repo_root: Path, report: VerificationReport, register_path: 
             test_file = node.split("::", 1)[0]
             exported_test = dest / "apps" / "backend" / test_file
             if not exported_test.is_file():
-                report.errors.append(f"{entry.assertion_id}: historical test missing: {test_file}")
+                report.errors.append(
+                    f"{entry.assertion_id}: historical test missing: {test_file}"
+                )
                 continue
             if not verify_byte_identity(
                 repo_root, baseline, f"apps/backend/{test_file}", exported_test
@@ -602,7 +641,9 @@ def execute_replays(repo_root: Path, report: VerificationReport, register_path: 
                 )
 
 
-def execute_replacements(repo_root: Path, report: VerificationReport, register_path: Path) -> None:
+def execute_replacements(
+    repo_root: Path, report: VerificationReport, register_path: Path
+) -> None:
     """Machine-execute the current replacement tests of active terminals."""
     backend = repo_root / "apps" / "backend"
     entries, _, _ = parse_register(register_path)
@@ -626,7 +667,10 @@ def execute_replacements(repo_root: Path, report: VerificationReport, register_p
 def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
     register = (
-        repo_root / "docs" / "governance" / "HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md"
+        repo_root
+        / "docs"
+        / "governance"
+        / "HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md"
     )
     report = validate(repo_root, register)
     if report.errors:
