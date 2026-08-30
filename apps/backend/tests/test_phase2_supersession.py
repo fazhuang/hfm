@@ -468,11 +468,12 @@ def test_authority_unrelated_section_fails(tmp_path: Path) -> None:
 
 
 def test_authority_ambiguous_locator_fails(tmp_path: Path) -> None:
+    """A locator that no longer resolves exactly must FAIL (no prefix match)."""
     entry = _entry()
-    entry["AUTHORITY_LOCATOR"] = "## P2-"  # matches every WP section
+    entry["AUTHORITY_LOCATOR"] = "## P2-"  # no heading equals this exactly
     report = _run(_register_file(tmp_path, [entry, _active_c()]))
     assert not report.ok
-    assert any("ambiguous authority locator" in e for e in report.errors)
+    assert any("authority locator does not resolve" in e for e in report.errors)
 
 
 def test_authority_missing_locator_fails(tmp_path: Path) -> None:
@@ -573,6 +574,68 @@ def test_replay_cleanup_no_leftovers(tmp_path: Path) -> None:
     after = set(glob.glob("/tmp/hfm-replay-*"))
     assert report.errors == []
     assert after == before
+
+
+# ---- P1-02 Round 3: exact locator matching (Codex finding) ---------------------
+
+
+def test_locator_exact_match_passes(tmp_path: Path) -> None:
+    """Exact authoritative heading resolves; register locator equals the heading."""
+    report = _run(_pair(tmp_path))
+    assert report.ok, report.errors
+
+
+def test_locator_prefix_fails(tmp_path: Path) -> None:
+    """Locator `## P2-05` must NOT resolve `## P2-05 Media & Rights Lifecycle`."""
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-05"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority locator does not resolve" in e for e in report.errors)
+
+
+def test_locator_similar_shorter_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-05 Media"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority locator does not resolve" in e for e in report.errors)
+
+
+def test_locator_similar_longer_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-05 Media & Rights Lifecycle Extra"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority locator does not resolve" in e for e in report.errors)
+
+
+def test_locator_missing_fails(tmp_path: Path) -> None:
+    entry = _entry()
+    entry["AUTHORITY_LOCATOR"] = "## P2-99 Nonexistent Section"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("authority locator does not resolve" in e for e in report.errors)
+
+
+def test_locator_duplicate_exact_fails(tmp_path: Path) -> None:
+    """Two identical authoritative headings make the locator ambiguous -> FAIL."""
+    doc = tmp_path / "doc.md"
+    doc.write_text(
+        "# Synthetic\n"
+        "## P2-05 Media & Rights Lifecycle\nAllowed Modules: x\n"
+        "## P2-05 Media & Rights Lifecycle\nAllowed Modules: y\n",
+        encoding="utf-8",
+    )
+    block, ambiguous = verifier.resolve_locator(doc, "## P2-05 Media & Rights Lifecycle")
+    assert ambiguous is True
+    # through validate() the duplicate exact locator must FAIL
+    entry = _entry()
+    entry["AUTHORITY_DOCUMENT"] = str(doc)
+    entry["AUTHORITY_LOCATOR"] = "## P2-05 Media & Rights Lifecycle"
+    report = _run(_register_file(tmp_path, [entry, _active_c()]))
+    assert not report.ok
+    assert any("ambiguous authority locator" in e for e in report.errors)
 
 
 # ---- helpers -------------------------------------------------------------------

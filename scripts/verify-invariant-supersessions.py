@@ -184,18 +184,21 @@ _SECTION_HEADING_RE = re.compile(r"^#{2,3} (.+)$", re.M)
 
 
 def resolve_locator(doc_path: Path, locator: str) -> tuple[str | None, bool]:
-    """Resolve an exact clause locator to its block.
+    """Resolve an EXACT clause locator to its block.
 
     The locator is a stable section identifier (e.g. `## P2-05 Media & Rights
-    Lifecycle`). Returns (block, ambiguous); block is None when the locator
-    does not resolve to exactly one section.
+    Lifecycle`). The authoritative heading must match EXACTLY: no prefix, no
+    substring, no fuzzy, no normalized partial-heading matching. Returns
+    (block, ambiguous); block is None when the locator does not resolve to
+    exactly one section.
     """
     text = doc_path.read_text(encoding="utf-8", errors="replace")
     headings = list(_SECTION_HEADING_RE.finditer(text))
+    target = locator.strip()
     blocks: list[str] = []
     for i, match in enumerate(headings):
         heading_line = match.group(0).strip()
-        if heading_line == locator.strip() or heading_line.startswith(locator.strip()):
+        if heading_line == target:
             start = match.end()
             end = headings[i + 1].start() if i + 1 < len(headings) else len(text)
             blocks.append(text[start:end])
