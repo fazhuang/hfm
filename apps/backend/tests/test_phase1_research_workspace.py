@@ -505,15 +505,16 @@ def _tables(db_file: Path) -> set[str]:
         engine.dispose()
 
 
-def test_migration_0013_upgrade_downgrade_upgrade_single_head(tmp_path: Path) -> None:
-    """0013: upgrade head, downgrade to 0012, upgrade again, single head."""
+def test_migration_0014_upgrade_downgrade_upgrade_single_head(tmp_path: Path) -> None:
+    """0014: upgrade head (P2-05 authorized migration), downgrade to 0013,
+    upgrade again, single head."""
     db_file = tmp_path / "p12.db"
     # upgrade head from empty: research tables exist; single head
     assert _alembic(db_file, "upgrade", "head").returncode == 0
     tables = _tables(db_file)
     assert {"research_projects", "research_notes"} <= tables
     heads = _alembic(db_file, "heads").stdout.strip()
-    assert heads == "0013 (head)", heads  # single Alembic head
+    assert heads == "0014 (head)", heads  # single Alembic head (P2-05 migration 0014)
 
     # downgrade to 0012: research tables gone, accepted tables intact
     assert _alembic(db_file, "downgrade", "0012").returncode == 0
@@ -524,7 +525,7 @@ def test_migration_0013_upgrade_downgrade_upgrade_single_head(tmp_path: Path) ->
     # upgrade again to head: tables restored
     assert _alembic(db_file, "upgrade", "head").returncode == 0
     assert {"research_projects", "research_notes"} <= _tables(db_file)
-    assert _alembic(db_file, "heads").stdout.strip() == "0013 (head)"
+    assert _alembic(db_file, "heads").stdout.strip() == "0014 (head)"
 
 
 def test_migration_0013_fk_and_checks(tmp_path: Path) -> None:
