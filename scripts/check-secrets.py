@@ -18,12 +18,21 @@ from pathlib import Path
 
 #: Explicitly safe placeholder values (allowed by the environment contract).
 SAFE_VALUES: tuple[re.Pattern[str], ...] = (
-    re.compile(r"change-?me", re.I),
-    re.compile(r"changeme", re.I),
-    re.compile(r"example", re.I),
-    re.compile(r"your[-_]?token[-_]?here", re.I),
-    re.compile(r"xxx+", re.I),
+    re.compile(r"change-?me", re.IGNORECASE),
+    re.compile(r"changeme", re.IGNORECASE),
+    re.compile(r"example", re.IGNORECASE),
+    re.compile(r"your[-_]?token[-_]?here", re.IGNORECASE),
+    re.compile(r"xxx+", re.IGNORECASE),
     re.compile(r"hfm"),  # local dev default password (hfm) is a contract default
+)
+
+#: Exact tracked secret-scanner test-fixture paths (P1-07 synthetic harness).
+#: These files deliberately embed synthetic detection fixtures to prove the
+#: scanner detects each secret class. The exemption is EXACT-PATH and
+#: fixture-scoped: scan_file() is never weakened, no broad exclusion, and
+#: every other tracked file remains fail-closed.
+EXEMPT_TRACKED_SECRET_FIXTURE_PATHS: frozenset[str] = frozenset(
+    {"scripts/test-check-secrets.sh"}
 )
 
 #: Detection classes: (name, pattern). The literal is a *value* that looks
@@ -38,11 +47,15 @@ CLASSES: tuple[tuple[str, re.Pattern[str]], ...] = (
     ),
     (
         "literal-secret-token",
-        re.compile(r"""(?i)(?:secret|api[_-]?key|token)\s*"?\s*[=:]\s*["'][A-Za-z0-9._-]{12,}["']"""),
+        re.compile(
+            r"""(?i)(?:secret|api[_-]?key|token)\s*"?\s*[=:]\s*["'][A-Za-z0-9._-]{12,}["']"""
+        ),
     ),
     (
         "url-embedded-credentials",
-        re.compile(r"[a-z][a-z0-9+.-]*://[^:@/ ]+:(?!change-?me@|changeme@|CHANGEME@|example@)[^:@/ ]+@"),
+        re.compile(
+            r"[a-z][a-z0-9+.-]*://[^:@/ ]+:(?!change-?me@|changeme@|CHANGEME@|example@)[^:@/ ]+@"
+        ),
     ),
 )
 
@@ -86,6 +99,19 @@ def scan_file(path: Path) -> list[Finding]:
     return findings
 
 
+def is_exempt_tracked_fixture(repo_root: Path, file: Path) -> bool:
+    """Exact-path exemption: only the named tracked fixture path is exempt.
+
+    Adversarial semantics: a similarly named file, a nested path, or a
+    renamed file are NOT exempt; membership is an exact repo-relative match.
+    """
+    try:
+        rel = file.relative_to(repo_root).as_posix()
+    except ValueError:
+        return False
+    return rel in EXEMPT_TRACKED_SECRET_FIXTURE_PATHS
+
+
 def tracked_files(repo_root: Path) -> list[Path]:
     out = subprocess.run(
         ["git", "-C", str(repo_root), "ls-files"],
@@ -102,12 +128,16 @@ def main() -> int:
     for file in tracked_files(repo_root):
         if not file.is_file():
             continue
+        if is_exempt_tracked_fixture(repo_root, file):
+            continue  # exact-path secret-scanner test fixture (synthetic only)
         if file.name.endswith(".env.example"):
             continue  # placeholder contracts only
         findings.extend(scan_file(file))
 
     for finding in findings:
-        print(f"SECRET FOUND: {finding.path} (class={finding.cls}, line={finding.line})")
+        print(
+            f"SECRET FOUND: {finding.path} (class={finding.cls}, line={finding.line})"
+        )
     if findings:
         print(f"SECRET_BOUNDARY=FAIL ({len(findings)} finding(s))")
         return 1

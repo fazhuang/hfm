@@ -79,4 +79,51 @@ if ! run_scan "$TMP/safe" >/dev/null 2>&1; then
 fi
 echo "P1-07 synthetic: safe placeholders -> allowed (PASS path) OK"
 
+
+# --- P1-01 adversarial exemption tests (exact-path fixture exemption) ----
+
+# A. exact fixture path exempt
+python3 - "$SCANNER" "$ROOT" <<'PY' >/dev/null 2>&1
+import sys
+from pathlib import Path
+import importlib.util
+spec = importlib.util.spec_from_file_location("cs", sys.argv[1])
+sys.modules["cs"] = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(sys.modules["cs"])
+mod = sys.modules["cs"]
+root = Path(sys.argv[2])
+checks = [
+    (True,  "scripts/test-check-secrets.sh", "exact fixture path"),
+    (False, "scripts/test-check-secrets2.sh", "similarly named file"),
+    (False, "scripts/sub/test-check-secrets.sh", "nested different path"),
+    (False, "scripts/renamed-check-secrets.sh", "renamed fixture"),
+    (False, "scripts/test-check-secrets.sh.bak", "extension-variant fixture"),
+]
+for expected, rel, label in checks:
+    got = mod.is_exempt_tracked_fixture(root, root / rel)
+    if got != expected:
+        print(f"FAIL: {label} exempt={got} (expected {expected})")
+        raise SystemExit(1)
+print("PASS")
+PY
+adv_exit=$?
+if [ "$adv_exit" -ne 0 ]; then
+  echo "FAIL: adversarial exemption semantics"
+  exit 1
+fi
+echo "P1-01 adversarial: exact-path exemption (similar/nested/renamed NOT exempt) OK"
+
+# B. non-exempt synthetic secret still detected (fail-closed retained)
+mkdir -p "$TMP/other"
+cat > "$TMP/other/app.py" <<'PY'
+secret = "AKIA1234567890ABCDEF"
+PY
+if run_scan "$TMP/other" >/dev/null 2>&1; then
+  echo "FAIL: non-exempt secret fixture was not detected"
+  exit 1
+fi
+echo "P1-01 adversarial: non-exempt secret still detected (fail-closed) OK"
+
+echo "SECRET_SCANNER_ADVERSARIAL=PASS"
+
 echo "SECRET_SCANNER_SYNTHETIC=PASS"
