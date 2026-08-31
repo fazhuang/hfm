@@ -255,6 +255,22 @@ async def public_work_editions(session: SessionDep, work_id: str) -> dict[str, A
     return api_response(data={"work_id": work_id, "editions": editions})
 
 
+@public_router.get("/works/{work_id}/structure")
+async def public_work_structure(session: SessionDep, work_id: str) -> dict[str, Any]:
+    """Pre-acceptance demo: published work reader structure (404 when not published)."""
+    structure = await PortalService(session).work_structure(work_id)
+    if structure is None:
+        raise HTTPException(status_code=404, detail="work not published")
+    return api_response(data=structure)
+
+
+@public_router.get("/heritage")
+async def public_heritage_projects(session: SessionDep) -> dict[str, Any]:
+    """Pre-acceptance demo: published heritage projects list."""
+    projects = await HeritageService(session).list_public_projects()
+    return api_response(data={"projects": projects, "total": len(projects)})
+
+
 @public_router.get("/persons")
 async def public_persons(session: SessionDep, page: int = 1, page_size: int = 20) -> dict[str, Any]:
     """Pre-acceptance demo: published persons list."""

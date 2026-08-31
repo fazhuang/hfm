@@ -36,14 +36,23 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.models.c_domain import CDomainTerm
+from hfm.models.chapter import Chapter
 from hfm.models.content_artifact import ContentArtifact
 from hfm.models.edition import Edition
 from hfm.models.heritage import HeritageProject
+from hfm.models.passage import Passage
 from hfm.models.person import Person
 from hfm.models.publication import PublicationRecord, PublicationStatus
+from hfm.models.version import Version
 from hfm.models.work import Work
 
 _PAGE_SIZE_MAX = 100
+
+
+def _clip_passage(text: str, limit: int = 80) -> str:
+    """Clipped passage preview for the reader structure tree."""
+    flat = " ".join(str(text).split())
+    return flat if len(flat) <= limit else flat[:limit] + "…"
 
 
 def _count_result(result: Any) -> int:
@@ -216,6 +225,91 @@ class PortalService:
             "total": total,
             "page": page,
         }
+
+    async def work_structure(self, work_id: str) -> dict[str, Any] | None:
+        """Pre-acceptance demo: published work structure tree for the reader.
+
+        editions -> versions, plus work chapters -> passages (published work
+        only; passage preview clipped). Returns None when not published.
+        """
+        work = await self.session.get(Work, work_id)
+        if work is None or work.entity_id not in await self._published_subject_entities():
+            return None
+        edition_rows = (
+            (
+                await self.session.execute(
+                    select(Edition)
+                    .where(Edition.work_id == work.id)
+                    .order_by(Edition.edition_name, Edition.id)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        editions = []
+        for e in edition_rows:
+            versions = (
+                (
+                    await self.session.execute(
+                        select(Version)
+                        .where(Version.edition_id == e.id)
+                        .order_by(Version.version_name, Version.id)
+                    )
+                )
+                .scalars()
+                .all()
+            )
+            editions.append(
+                {
+                    "edition_id": e.id,
+                    "edition_name": e.edition_name,
+                    "versions": [
+                        {"version_id": v.id, "version_name": v.version_name, "era": v.era}
+                        for v in versions
+                    ],
+                }
+            )
+        chapters = []
+        for ch in (
+            (
+                await self.session.execute(
+                    select(Chapter)
+                    .where(Chapter.work_id == work.id)
+                    .order_by(Chapter.order, Chapter.id)
+                )
+            )
+            .scalars()
+            .all()
+        ):
+            passages = (
+                (
+                    await self.session.execute(
+                        select(Passage)
+                        .where(Passage.chapter_id == ch.id)
+                        .order_by(Passage.order, Passage.id)
+                        .limit(200)
+                    )
+                )
+                .scalars()
+                .all()
+            )
+            chapters.append(
+                {
+                    "chapter_id": ch.id,
+                    "title": ch.title,
+                    "order": ch.order,
+                    "passages": [
+                        {
+                            "passage_id": p.id,
+                            "order": p.order,
+                            "version_id": p.version_id,
+                            "preview": _clip_passage(p.content_text),
+                        }
+                        for p in passages
+                    ],
+                }
+            )
+        return {"work_id": work.id, "title": work.title, "editions": editions, "chapters": chapters}
 
     async def work_editions(self, work_id: str) -> list[dict[str, Any]] | None:
         """Editions of a published Work; None when the Work is not published."""
