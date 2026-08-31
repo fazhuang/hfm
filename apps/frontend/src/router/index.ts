@@ -10,6 +10,7 @@ import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
 import AdminHomeView from '../views/admin/AdminHomeView.vue'
+import AuditLogView from '../views/admin/AuditLogView.vue'
 import { useAuthStore } from '../stores/auth'
 import { ADMIN_ROLES, RESEARCH_ROLES } from '../types/auth'
 import { requireAnyRole } from './guards'
@@ -46,7 +47,10 @@ export const routes: RouteRecordRaw[] = [
     component: AdminLayout,
     meta: { requiresAuth: true, roles: ADMIN_ROLES },
     beforeEnter: [requireAnyRole(ADMIN_ROLES)],
-    children: [{ path: '', name: 'admin-home', component: AdminHomeView }],
+    children: [
+      { path: '', name: 'admin-home', component: AdminHomeView },
+      { path: 'audit', name: 'admin-audit', component: AuditLogView },
+    ],
   },
 ]
 
