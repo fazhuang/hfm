@@ -19,16 +19,23 @@ echo "== backend mypy =="
 (cd "$ROOT/apps/backend" && source .venv/bin/activate && python -m mypy src tests) || FAILURES=$((FAILURES + 1))
 
 echo "== backend pytest (current-applicable) =="
-# The three deselected assertions are governed SUPERSEDED Class H entries in
-# HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md (ASN-P200-MIG-0013-HEAD,
-# ASN-P200-MIG-NO0014, ASN-P1RW-MIG-0013-HEAD). Their current replacement
-# (ASN-P205-MIG-0014-HEAD -> test_p2_current_migration_head_0014) runs in the
-# suite; historical replay is verified by the supersession verifier. Exact
-# node-id deselection only — no blanket or filename-based exclusion.
+# Governance fail-closed precheck (P0-01): the canonical supersession verifier
+# must PASS and every governed deselection must be formally authorized by the
+# supersession register BEFORE any deselection is applied. No governed
+# deselection may proceed without GOVERNANCE_PRECHECK=PASS.
+DESELECT_NODES=(
+  tests/test_phase1_research_workspace.py::test_migration_0013_upgrade_downgrade_upgrade_single_head
+  tests/test_phase2_guardrails.py::test_frozen_boundary_states
+  tests/test_phase2_guardrails.py::test_migration_invariant
+)
+if ! "$ROOT/infra/scripts/verify-governance-precheck.sh" "${DESELECT_NODES[@]}"; then
+  echo "RELEASE_GATE=FAIL (governance fail-closed precheck failed; governed deselection aborted)"
+  exit 1
+fi
 (cd "$ROOT/apps/backend" && source .venv/bin/activate && python -m pytest -q \
-  --deselect tests/test_phase1_research_workspace.py::test_migration_0013_upgrade_downgrade_upgrade_single_head \
-  --deselect tests/test_phase2_guardrails.py::test_frozen_boundary_states \
-  --deselect tests/test_phase2_guardrails.py::test_migration_invariant) || FAILURES=$((FAILURES + 1))
+  --deselect "${DESELECT_NODES[0]}" \
+  --deselect "${DESELECT_NODES[1]}" \
+  --deselect "${DESELECT_NODES[2]}") || FAILURES=$((FAILURES + 1))
 
 echo "== frontend lint =="
 (cd "$ROOT/apps/frontend" && pnpm lint) || FAILURES=$((FAILURES + 1))
