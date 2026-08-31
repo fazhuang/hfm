@@ -3,6 +3,8 @@ import PublicLayout from '../layouts/PublicLayout.vue'
 import ResearchLayout from '../layouts/ResearchLayout.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import HomeView from '../views/HomeView.vue'
+import ReaderView from '../views/reader/ReaderView.vue'
+import SearchView from '../views/search/SearchView.vue'
 import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
@@ -24,6 +26,8 @@ export const routes: RouteRecordRaw[] = [
     meta: { publicOnly: true },
     children: [
       { path: '', name: 'home', component: HomeView },
+      { path: 'reader', name: 'reader', component: ReaderView },
+      { path: 'search', name: 'search', component: SearchView },
       { path: 'login', name: 'login', component: LoginView },
       { path: 'denied', name: 'denied', component: DeniedView },
     ],
