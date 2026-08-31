@@ -11,10 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 #: Historical-research disclaimer (G9) — retained in every export output.
-DISCLAIMER = (
-    "本文为历史文献研究内容，仅供学术研究；不构成任何诊断、治疗、"
-    "用药或穴位操作建议。"
-)
+DISCLAIMER = "本文为历史文献研究内容，仅供学术研究；不构成任何诊断、治疗、用药或穴位操作建议。"
 
 #: Publication states that may never be exported.
 BLOCKED_STATES: frozenset[str] = frozenset({"withdrawn", "draft"})
@@ -35,9 +32,7 @@ class ExportError(ValueError):
 
 def _assert_exportable(record: ExportRecord) -> None:
     if record.publication_state in BLOCKED_STATES:
-        raise ExportError(
-            f"cannot export {record.publication_state} content: {record.title}"
-        )
+        raise ExportError(f"cannot export {record.publication_state} content: {record.title}")
 
 
 def export_markdown(record: ExportRecord) -> str:
