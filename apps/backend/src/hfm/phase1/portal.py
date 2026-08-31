@@ -179,6 +179,44 @@ class PortalService:
         works = [self._serialize_work(w, counts.get(w.id, 0)) for w in rows]
         return {"works": works, "total": total, "page": page}
 
+    @staticmethod
+    def _serialize_person(person: Person) -> dict[str, Any]:
+        """Strict public whitelist for the persons list."""
+        return {
+            "entity_id": person.entity_id,
+            "name_zh": person.name_zh,
+            "name_pinyin": person.name_pinyin,
+            "dynasty": person.dynasty,
+            "publication_status": PublicationStatus.PUBLISHED.value,
+        }
+
+    async def persons(self, *, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+        """Deterministic paginated list of published Persons (pre-acceptance demo)."""
+        self._validate_paging(page, page_size)
+        subjects = await self._published_subject_entities()
+        if not subjects:
+            return {"persons": [], "total": 0, "page": page}
+        base = select(Person).where(Person.entity_id.in_(subjects))
+        total = _count_result(
+            await self.session.execute(select(func.count()).select_from(base.subquery()))
+        )
+        rows = (
+            (
+                await self.session.execute(
+                    base.order_by(Person.created_at.desc(), Person.id)
+                    .limit(page_size)
+                    .offset((page - 1) * page_size)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return {
+            "persons": [self._serialize_person(p) for p in rows],
+            "total": total,
+            "page": page,
+        }
+
     async def work_editions(self, work_id: str) -> list[dict[str, Any]] | None:
         """Editions of a published Work; None when the Work is not published."""
         work = await self.session.get(Work, work_id)

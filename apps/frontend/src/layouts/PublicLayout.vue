@@ -10,6 +10,11 @@ defineOptions({ name: 'PublicLayout' })
       <a class="public-shell__brand" href="/">HFM · 皇甫谧人文数字平台</a>
       <nav class="public-shell__nav" aria-label="Public navigation">
         <a href="/">首页</a>
+        <a href="/reader">阅读</a>
+        <a href="/search">检索</a>
+        <a href="/heritage">传承</a>
+        <a href="/library">资料库</a>
+        <a href="/login">登录</a>
       </nav>
     </header>
     <main class="public-shell__main">

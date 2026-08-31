@@ -6,9 +6,11 @@ model serialization in public responses.
 
 from __future__ import annotations
 
+import os
 from typing import Annotated, Any, NoReturn
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import FileResponse
 from sqlalchemy import select
 
 from hfm.api.v1.deps import (
@@ -17,6 +19,7 @@ from hfm.api.v1.deps import (
     require_authenticated,
     require_permission,
 )
+from hfm.core.config import MEDIA_ROOT
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import hash_password, issue_token, verify_password
 from hfm.phase1.c_domain import CDomainService
@@ -30,6 +33,8 @@ from hfm.phase1.reader import ReaderService
 from hfm.phase1.research_workspace import ResearchWorkspaceService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
+from hfm.phase2.media.models import MediaAsset, MediaAssetState
+from hfm.phase2.media.service import MediaService
 from hfm.utils.response import api_response
 
 PrincipalDep = Annotated[Any, Depends(current_principal)]
@@ -248,6 +253,78 @@ async def public_work_editions(session: SessionDep, work_id: str) -> dict[str, A
     if editions is None:
         raise HTTPException(status_code=404, detail="work not published")
     return api_response(data={"work_id": work_id, "editions": editions})
+
+
+@public_router.get("/persons")
+async def public_persons(session: SessionDep, page: int = 1, page_size: int = 20) -> dict[str, Any]:
+    """Pre-acceptance demo: published persons list."""
+    return api_response(data=await PortalService(session).persons(page=page, page_size=page_size))
+
+
+@public_router.get("/media")
+async def public_media(session: SessionDep, kind: str = "") -> dict[str, Any]:
+    """Pre-acceptance demo: published media assets (papers/classics/movies).
+
+    Optional ``kind`` filter: paper | classic | movie (derived from the
+    object key path); fail-closed: published assets only.
+    """
+    assets = await MediaService(session).public_projection()
+    items = []
+    for a in assets:
+        key = str(a.object_key)
+        if "论文" in key:
+            cat = "paper"
+        elif "电影" in key:
+            cat = "movie"
+        elif "论著" in key or "版本" in key:
+            cat = "classic"
+        else:
+            cat = "other"
+        if kind and cat != kind:
+            continue
+        items.append(
+            {
+                "id": a.id,
+                "name": key.rsplit("/", 1)[-1],
+                "object_key": key,
+                "mime_type": a.mime_type,
+                "byte_size": a.byte_size,
+                "rights_holder": a.rights_holder,
+                "license_basis": a.license_basis,
+                "restriction": a.restriction,
+                "category": cat,
+                "publication_state": a.publication_state,
+            }
+        )
+    return api_response(data={"items": items, "total": len(items)})
+
+
+def _resolve_media_file(object_key: str) -> str:
+    """Resolve an object key under MEDIA_ROOT with traversal protection (sync)."""
+    root = os.path.realpath(MEDIA_ROOT)
+    target = os.path.realpath(os.path.join(root, object_key))
+    if os.path.commonpath([root, target]) != root or not os.path.isfile(target):
+        raise HTTPException(status_code=403, detail="media path outside media root")
+    return target
+
+
+@public_router.get("/media/{asset_id}/bytes")
+async def public_media_bytes(session: SessionDep, asset_id: str) -> FileResponse:
+    """Pre-acceptance demo: stream bytes of a PUBLISHED media asset.
+
+    Local-dev serving only (HFM_MEDIA_ROOT); path traversal is blocked;
+    unpublished assets 404. Production would serve from S3 (ADR-P2-01).
+    """
+    asset = await session.get(MediaAsset, asset_id)
+    if asset is None or asset.publication_state != MediaAssetState.PUBLISHED:
+        raise HTTPException(status_code=404, detail="media not found or not published")
+    target = _resolve_media_file(str(asset.object_key))
+    return FileResponse(
+        str(target),
+        media_type=asset.mime_type,
+        filename=str(asset.object_key.rsplit("/", 1)[-1]),
+        content_disposition_type="inline",
+    )
 
 
 # ---------------------------------------------------------------- research

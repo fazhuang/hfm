@@ -33,6 +33,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.models.c_domain import CDomainTerm
 from hfm.models.content_artifact import ContentArtifact
+from hfm.models.edition import Edition
 from hfm.models.entity import Entity, EntityType
 from hfm.models.evidence import Evidence
 from hfm.models.heritage import HeritageProject
@@ -40,6 +41,7 @@ from hfm.models.passage import Passage
 from hfm.models.publication import PublicationRecord, PublicationStatus
 from hfm.models.work import Work
 from hfm.phase1.auth import Principal
+from hfm.phase2.media.models import MediaAsset, MediaAssetState
 
 
 @dataclass(frozen=True)
@@ -213,6 +215,53 @@ class SearchService:
             )
             for h in heritage_rows
         ]
+        # Pre-acceptance demo: public Editions of published Works.
+        edition_rows = (
+            await self.session.execute(
+                select(Edition.id, Edition.edition_name, Work.title)
+                .join(Work, Work.id == Edition.work_id)
+                .where(
+                    Edition.edition_name.ilike(pattern),
+                    Work.entity_id.in_(published_subjects),
+                )
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="edition",
+                id=str(e.id),
+                title=str(e.edition_name),
+                snippet=str(e.title or ""),
+                version_id=None,
+                publication_status=published,
+            )
+            for e in edition_rows
+        ]
+        # Pre-acceptance demo: published media assets (papers/classics/movies).
+        media_rows = (
+            await self.session.execute(
+                select(MediaAsset.id, MediaAsset.object_key, MediaAsset.mime_type)
+                .where(
+                    MediaAsset.publication_state == MediaAssetState.PUBLISHED,
+                    MediaAsset.object_key.ilike(pattern),
+                )
+                .limit(10)
+            )
+        ).all()
+        hits += [
+            SearchHit(
+                kind="media",
+                id=str(m.id),
+                title=str(m.object_key.rsplit("/", 1)[-1]),
+                snippet=str(m.mime_type),
+                version_id=None,
+                publication_status=published,
+            )
+            for m in media_rows
+        ]
+        # Total reflects all hit kinds (passage total may undercount metadata).
+        total = max(total, len(hits))
         return SearchResult(hits=tuple(hits), total=total, page=page, page_size=page_size)
 
     async def research_search(

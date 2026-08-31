@@ -6,6 +6,9 @@ import HomeView from '../views/HomeView.vue'
 import ReaderView from '../views/reader/ReaderView.vue'
 import SearchView from '../views/search/SearchView.vue'
 import HeritageView from '../views/heritage/HeritageView.vue'
+import MediaLibraryView from '../views/library/MediaLibraryView.vue'
+import PersonDetailView from '../views/persons/PersonDetailView.vue'
+import WorkDetailView from '../views/works/WorkDetailView.vue'
 import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
@@ -31,6 +34,9 @@ export const routes: RouteRecordRaw[] = [
       { path: 'reader', name: 'reader', component: ReaderView },
       { path: 'search', name: 'search', component: SearchView },
       { path: 'heritage', name: 'heritage', component: HeritageView },
+      { path: 'library', name: 'library', component: MediaLibraryView },
+      { path: 'persons/:id', name: 'person', component: PersonDetailView },
+      { path: 'works/:id', name: 'work', component: WorkDetailView },
       { path: 'login', name: 'login', component: LoginView },
       { path: 'denied', name: 'denied', component: DeniedView },
     ],
