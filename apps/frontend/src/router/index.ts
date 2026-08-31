@@ -5,6 +5,7 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 import HomeView from '../views/HomeView.vue'
 import ReaderView from '../views/reader/ReaderView.vue'
 import SearchView from '../views/search/SearchView.vue'
+import HeritageView from '../views/heritage/HeritageView.vue'
 import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
@@ -28,6 +29,7 @@ export const routes: RouteRecordRaw[] = [
       { path: '', name: 'home', component: HomeView },
       { path: 'reader', name: 'reader', component: ReaderView },
       { path: 'search', name: 'search', component: SearchView },
+      { path: 'heritage', name: 'heritage', component: HeritageView },
       { path: 'login', name: 'login', component: LoginView },
       { path: 'denied', name: 'denied', component: DeniedView },
     ],
