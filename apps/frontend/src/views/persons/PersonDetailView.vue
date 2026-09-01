@@ -103,7 +103,9 @@ const houlunState = computed(() =>
 )
 const houlunLabel = computed(() => presentationLabel(houlunState.value, { reader: true }))
 
-/** 后论 论其人 citation count — derived from readerDocuments (12 条). */
+/** 后论 论其人 citation count — mechanically derived from readerDocuments
+ *  (all counted citations are the 论其人 paragraphs; the aggregate is NEVER
+ *  attributed to a single source — P0-02 provenance correction). */
 const houlunCitationCount = computed(() =>
   (houlun?.sections ?? []).reduce(
     (n, s) => n + (s.paragraphs ?? []).filter((p) => p.citation).length,
@@ -137,12 +139,18 @@ interface ObjectEvidenceItem {
   href?: string
 }
 
-/** Evidence — traces to readerDocuments citations + archiveInventory docx records. */
+/** Evidence — traces to readerDocuments citations + archiveInventory docx records.
+ *  Provenance rule (P0-02): one displayed provenance statement = one
+ *  mechanically defensible source attribution. The 论其人 citations are
+ *  HETEROGENEOUS (房玄龄等/司马炎/李巨来/钱熙祚/后世综合评价/国际影响), so the
+ *  aggregate count is stated generically with per-citation provenance left to
+ *  the reader document — never aggregated under 《晋书》. */
 const objectEvidence = computed<ObjectEvidenceItem[]>(() => [
   {
     type: 'Source',
-    label: `《晋书》房玄龄等（后论引文 ${houlunCitationCount.value} 条）`,
+    label: `后论 · 论其人（历代评价引文 ${houlunCitationCount.value} 条 · 出处逐条标注）`,
     affordance: 'citation available',
+    href: houlunArchive?.href,
   },
   {
     type: 'Archive',

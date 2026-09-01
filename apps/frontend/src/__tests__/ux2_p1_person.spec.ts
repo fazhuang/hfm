@@ -12,6 +12,8 @@ import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import axe from 'axe-core'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
+import { ARCHIVE_RECORDS } from '../data/archiveInventory'
+import { INVENTORY_MOVIES } from '../data/contentInventory'
 
 const PERSON = {
   entity_id: 'person-huangfu-mi',
@@ -25,11 +27,15 @@ const PERSON = {
   events: [],
 }
 
+/** Deterministic projection of the AUTHORITATIVE archiveInventory a-movies
+ *  record (客户提供：皇甫谧电影资料 → 《皇甫谧一》《针灸鼻祖皇甫谧》第 1 集
+ *  大器晚成; INVENTORY_MOVIES = 2). The F-5 test explicitly binds this fixture
+ *  to that source — no arbitrary test-only MEDIA objects are accepted as proof. */
 const MEDIA = {
   items: [
     {
       id: 'm1',
-      name: '《针灸鼻祖皇甫谧》第1集 大器晚成',
+      name: '《皇甫谧一》',
       category: 'movie',
       mime_type: 'video/mp4',
       byte_size: 1024,
@@ -37,8 +43,18 @@ const MEDIA = {
       restriction: null,
       object_key: 'movies/huangfu-mi-1.mpg',
     },
+    {
+      id: 'm2',
+      name: '《针灸鼻祖皇甫谧》第 1 集 大器晚成',
+      category: 'movie',
+      mime_type: 'video/mp4',
+      byte_size: 2048,
+      license_basis: '客户提供资料（已授权公开）',
+      restriction: null,
+      object_key: 'movies/huangfu-mi-2.mpg',
+    },
   ],
-  total: 1,
+  total: 2,
 }
 
 function stubFetch(): void {
@@ -125,15 +141,20 @@ describe('UX2-P1 — DHObjectLayout regions & slot states', () => {
     expect(rows.some((r) => r.includes('其传（史料来源整理）'))).toBe(true)
   })
 
-  it('evidence slot renders the 晋书 citation count and the docx archive items', async () => {
+  it('evidence slot renders the generic 后论 aggregate (no 《晋书》 misattribution) and the docx archive items', async () => {
     const wrapper = await mountPerson()
     const items = wrapper.findAll('.object-evidence__item')
     expect(items).toHaveLength(3)
     const text = items.map((i) => i.text()).join(' ')
-    expect(text).toContain('《晋书》房玄龄等（后论引文 12 条）')
+    expect(text).toContain('后论 · 论其人（历代评价引文 12 条')
+    expect(text).toContain('出处逐条标注')
     expect(text).toContain('citation available')
     expect(text).toContain('其传文稿')
     expect(text).toContain('后论文稿')
+    // P0-02 fail-on-defective: the aggregate 12-条 count must never be
+    // attributed to 《晋书》 (the 论其人 citations are heterogeneous)
+    expect(text).not.toMatch(/《晋书》[^（]*（[^）]*12[^）]*条）/)
+    expect(text).not.toMatch(/《晋书》[^（]*（后论引文 \d+ 条）/)
   })
 
   it('relations region renders explicit semantics (no connector markup)', async () => {
@@ -179,7 +200,34 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
 
   it('Archival Media: 影像资料 renders movies from the media projection', async () => {
     const wrapper = await mountPerson()
-    expect(wrapper.find('.movie-card__title').text()).toContain('针灸鼻祖皇甫谧')
+    const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
+    expect(titles.some((t) => t.includes('针灸鼻祖皇甫谧'))).toBe(true)
+  })
+
+  it('F-5 Archival Media — authoritative record exists with traceable provenance', () => {
+    const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
+    expect(archive).toBeDefined()
+    expect(archive?.status).toBe('AVAILABLE')
+    expect(archive?.sourceName).toContain('客户提供：皇甫谧电影资料')
+    expect(INVENTORY_MOVIES).toBe(2)
+    expect(archive?.count).toBe(INVENTORY_MOVIES)
+  })
+
+  it('F-5 Archival Media — the media projection is bound to the authoritative record (no synthetic fixture)', () => {
+    const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
+    expect(archive).toBeDefined()
+    const strip = (s: string) => s.replace(/\s+/g, '')
+    expect(MEDIA.items).toHaveLength(INVENTORY_MOVIES)
+    for (const item of MEDIA.items) {
+      expect(strip(archive!.description)).toContain(strip(item.name))
+    }
+  })
+
+  it('F-5 Archival Media — projection reaches the person archive surface with correct presentation', async () => {
+    const wrapper = await mountPerson()
+    const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
+    expect(titles).toEqual(['《皇甫谧一》', '《针灸鼻祖皇甫谧》第 1 集 大器晚成'])
+    expect(wrapper.find('.movie-card__meta').text()).toContain('影视资料')
   })
 
   it('F-5 Later Scholarship is NOT added (DEFERRED)', async () => {
