@@ -1,8 +1,8 @@
-# HFM-UX2-P1 Implementation Evidence v1 (Fourth Corrective · V5)
+# HFM-UX2-P1 Implementation Evidence v1 (F-5 Contract Amendment Applied)
 
-Status: UX2-P1 GOVERNANCE_BLOCKED · scope restored · F-5 contract satisfiability
-escalated (rejected V1 `7f603d3…`, V2 `af337eb…`, V3 `c5fb206…`,
-V4 `87a316d…`)
+Status: UX2-P1 GOVERNANCE_RECONCILED_IMPLEMENTATION_REVALIDATION_REQUIRED
+(governance blocker resolved by OPTION_C; F-5 acceptance semantics amended;
+post-amendment implementation/audit pass required — F5 final PASS NOT claimed)
 
 ## 1. WP Identity
 
@@ -16,7 +16,47 @@ REJECTED_V4 = 87a316d5240174fcda91cc24a40e65954f2a61bb
 CORRECTIVE_BASIS = rejected V4 (linear successor; no amend/squash)
 ```
 
-## 2. This Corrective Pass — Scope Restoration & F-5 Contract Satisfiability
+## 2. Governance Reconciliation History
+
+```text
+V1 = 7f603d385e258e62afab7dca6eba5210ed8a2d68  REJECTED
+V2 = af337ebc00f210ce1ef331503e8a95ae25b701dd  REJECTED
+V3 = c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee  REJECTED
+V4 = 87a316d5240174fcda91cc24a40e65954f2a61bb  REJECTED_SCOPE_ARCHITECTURE
+V5 = 5c03574ba16cd4265cb31b46db4604bc09eb18eb  GOVERNANCE_BLOCKED
+
+BLOCKER = UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH
+RECONCILIATION_DECISION = OPTION_C
+```
+
+```text
+REAL_MEDIA_FILES_EXIST = YES
+PRODUCTION_MEDIAASSET_RECORDS = ABSENT
+PUBLIC_MEDIA_RUNTIME_RESULT = EMPTY
+P1_SCOPE_PERMITS_MEDIA_ADMISSION = NO
+F5_ACCEPTANCE_NOW = PRESENTATION_CONTRACT_PLUS_TRUTHFUL_PRODUCTION_EMPTY_STATE
+END_TO_END_REAL_MEDIA_OWNER = Phase 2 Content Admission / P2-05
+```
+
+The F-5 acceptance semantics are amended per the reconciled production
+implementation contract §6 F-5A/B/C (see HFM-UX2-G4-PRODUCTION-IMPLEMENTATION-
+CONTRACT-v1.md §6 and WORK-PACKAGE-DAG-v1.md UX2-P1 note):
+
+- **F-5A** production truth: runtime `fetchPublicMedia('movie')` = `[]` →
+  PersonDetailView must render a truthful empty state (暂无影像资料。);
+  `NO_FAKE_MEDIA = YES` · `NO_FALSE_RESOURCE_READY = YES`.
+- **F-5B** presentation capability: deterministic PRESENTATION-CONTRACT
+  fixture proves MediaAssetItem rendering/metadata/labels/player-link
+  DOM/a11y/responsive — explicitly NOT evidence of real-media admission.
+- **F-5C** deferred integration: `REAL_CUSTOMER_MEDIA_END_TO_END_ADMISSION =
+  DEFERRED`, owner Phase 2 Content Admission / P2-05; UX2-P1 acceptance MUST
+  NOT claim the end-to-end chain.
+
+F5 final PASS is NOT claimed by this document. UX2-P1 requires a
+post-amendment implementation/audit pass (NEXT_GOVERNANCE_OPERATION =
+UX2-P1_POST_RECONCILIATION_IMPLEMENTATION_ALIGNMENT).
+
+## 3. Scope Restoration
 
 Two audit blockers were addressed:
 
@@ -25,7 +65,7 @@ Two audit blockers were addressed:
 | P0-03 FORBIDDEN_PRODUCTION_DATA_ARCHITECTURE | CLOSED — V4 production data architecture fully reverted (§3) |
 | P1-01 F5_REAL_MEDIA_RUNTIME_CHAIN | BLOCKED_BY_FROZEN_CONTRACT — F-5 is UNSATISFIABLE within the frozen P1 allowlist (§4–§7) |
 
-## 3. P0-03 Closure — Forbidden V4 Production Delta Reverted
+## 4. P0-03 Closure — Forbidden V4 Production Delta Reverted
 
 The V4 corrective introduced production data architecture outside the frozen
 P1 allowlist. All of it is removed:
@@ -47,7 +87,7 @@ valid earlier P1 fixes (P0-01/P0-02/P1-02 + PersonDetailView corrections) are
 preserved. Real customer media files (`hfmzl/皇甫谧/皇甫谧电影/`) are NOT
 deleted and their bytes are NOT modified.
 
-## 4. F-5 Contract Satisfiability Determination
+## 5. F-5 Contract Satisfiability Determination
 
 ### Frozen P1 allowlist (exact, from governance)
 
@@ -127,7 +167,7 @@ rejected as P0-03 FORBIDDEN_PRODUCTION_DATA_ARCHITECTURE. Therefore F-5 cannot
 be satisfied within the frozen P1 scope. No fake PASS, no new fixture, no new
 frontend registry, no backend change were made in this pass.
 
-## 5. Governance Blocker Evidence (P1-authorized evidence path)
+## 6. Governance Blocker Evidence (P1-authorized evidence path)
 
 ```text
 F5_CONTRACT_SATISFIABILITY = FAIL
@@ -166,7 +206,7 @@ This is a governance escalation. The F-5 media runtime chain is not an ordinary
 code defect; it requires a governance decision on which capability layer may be
 authorized.
 
-## 6. Test / Quality Results (independently reproduced)
+## 7. Test / Quality Results (independently reproduced)
 
 ```text
 TARGETED_TESTS      = 14/14 PASS (ux2_p1_person.spec.ts — media-proof tests
@@ -184,30 +224,33 @@ READER_QICHUAN_NAVIGATION = PASS · READER_HOULUN_NAVIGATION = PASS
 KEYBOARD = PASS · FOCUS = PASS · RESPONSIVE_375/1280/1920 = PASS
 ```
 
-## 7. Preserved Guarantees
+## 8. Preserved Guarantees
 
 ```text
-P0-01 = CLOSED · P0-02 = CLOSED · P1-02 = CLOSED · P2-02 = CLOSED
+P0-01 = CLOSED · P0-02 = CLOSED · P0-03 = CLOSED · P1-02 = CLOSED · P2-02 = CLOSED
 PROVENANCE = PASS · ACCESSIBILITY = PASS · RESPONSIVE = PASS
 P0_REGRESSION = NONE · P0_PRIMITIVE_IMPLEMENTATION_DELTA = ZERO
 P0-1 = OPEN_P2_NON_BLOCKING_REVERIFY_AT_P6 (role="status" untouched)
 P2-01 = OPEN_DOCUMENTATION_ONLY_CLOSE_AT_ACCEPTANCE_ARCHIVE
+
+F5_ARCHIVAL_MEDIA_REAL_DATA_PROOF = NOT_CLAIMED (post-amendment; F-5A/B/C
+semantics require a revalidation implementation/audit pass)
 ```
 
-## 8. Worktree Status
+## 9. Worktree Status
 
 ```text
 git status --short → CLEAN (local .git/info/exclude isolates pre-existing
 unrelated untracked material)
 ```
 
-## 9. Rollback
+## 10. Rollback
 
 ```text
 ROLLBACK_TARGET = 2b315795e43faf92e03cd3db2c74b18c47c0927e (PRE_WP_BASELINE)
 ```
 
-## 10. Commit
+## 11. Commit
 
 ```text
 UX2_P1_CORRECTED_CANDIDATE_V5 = <commit SHA recorded at delivery>

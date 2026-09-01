@@ -258,7 +258,7 @@ vocabulary is withdrawn in production. No falsy-value ambiguity is preserved.
 This is a contract decision in G4 preparation only; it grants no permission to
 modify production code yet.
 
-## 6. F-5 Deferred Person Coverage — Determinations
+## 6. F-5 Deferred Person Coverage — Determinations (AMENDED — F-5 Reconciliation OPTION_C)
 
 Authorization requires existing authoritative production data. No section is
 created for visual completeness.
@@ -268,7 +268,68 @@ created for visual completeness.
 | Life Events | AUTHORIZE | `CORE_PERSON_LIFE_PHASES` (config/corePerson.ts) + `PersonEvent[]` via `fetchPublicPerson` — production already renders 生平 timeline |
 | Historical Assessments | AUTHORIZE | `readerDocuments.ts` 后论 FULL_TEXT + 12 citations — existing authoritative content |
 | Later Scholarship | DEFER | no confirmed person-scholarship authoritative projection (`JIAYI_MODERN_SCHOLARS` is edition-collation-focused, not person scholarship) |
-| Archival Media | AUTHORIZE | `fetchPublicMedia('movie')` + `archiveInventory.ts` a-movies — production already renders 影像资料 |
+| Archival Media | AUTHORIZE — presentation contract + truthful production empty state (F-5A/B/C below) | `fetchPublicMedia('movie')` + `archiveInventory.ts` a-movies — production renders 影像资料; runtime currently returns `[]` (no admitted MediaAsset records) |
+
+### F-5 Amended Semantics (Reconciliation OPTION_C · BLOCKER UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH)
+
+UX2-P1 is a PRESENTATION CONTRACT. The real customer media end-to-end
+admission chain is explicitly out of UX2-P1 scope. Three independent
+responsibilities:
+
+**F-5A — Production truth / empty-state behavior**
+
+Given the existing production runtime returns `fetchPublicMedia('movie')` = `[]`
+(no admitted MediaAsset records exist), UX2-P1 acceptance requires
+PersonDetailView to render a truthful compliant empty/degraded state:
+
+```text
+NO_FAKE_MEDIA = YES
+NO_FALSE_RESOURCE_READY = YES
+EMPTY_STATE = 暂无影像资料。 (or equivalent already-authorized wording)
+```
+
+The UI must not imply that NOT_ADMITTED / absent runtime media are playable or
+published.
+
+**F-5B — Presentation capability contract**
+
+UX2-P1 must prove PersonDetailView can correctly render valid media objects
+conforming to the frozen `MediaAssetItem` / public-media contract. A controlled
+deterministic test fixture is permitted and is explicitly a
+PRESENTATION-CONTRACT fixture — NOT evidence that the two customer movies have
+been admitted to production. Required proof areas:
+
+```text
+media item rendering · metadata rendering · format/state labels
+player/link DOM where contractually applicable · accessibility · responsive
+```
+
+**F-5C — Explicit deferred integration guarantee**
+
+```text
+REAL_CUSTOMER_MEDIA_END_TO_END_ADMISSION = DEFERRED
+OWNER = Phase 2 Content Admission / P2-05 Media & Rights domain
+```
+
+Deferred capability: customer media bytes → governed per-media admission →
+`MediaAsset` → publication/import lifecycle → public API projection → runtime
+retrieval → streaming/distribution. UX2-P1 acceptance MUST NOT claim this
+end-to-end chain exists.
+
+### Reconciliation rationale
+
+```text
+CONTRACT_CAPABILITY_MISMATCH = CONFIRMED
+F5_CURRENT_REQUIREMENT_CROSSED_WP_BOUNDARY = YES
+RESOLUTION = PRESENTATION_ACCEPTANCE_AND_RUNTIME_TRUTH_SEPARATED_FROM_MEDIA_ADMISSION
+```
+
+The prior requirement — real customer file → admitted MediaAsset → real
+production API result → runtime media render — is REMOVED from UX2-P1 scope
+because the frozen P1 allowlist forbids creating that capability
+(`data/**`, `services/**`, `backend/**`). F-5 end-to-end media admission is
+owned by Phase 2 Content Admission / P2-05 (external/deferred; not in the UX2
+DAG; not a new UX2 WP).
 
 ## 7. Implementation Strategy
 

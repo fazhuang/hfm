@@ -61,7 +61,7 @@ surfaces; P7 accepts the integration as a whole.
 | Field | Value |
 | --- | --- |
 | WP ID | UX2-P1 |
-| Objective | Adopt DHObjectLayout + G1-C states on PersonDetailView; F-5 Life Events / Historical Assessments / Archival Media; correct heading hierarchy. |
+| Objective | Adopt DHObjectLayout + G1-C states on PersonDetailView; F-5 Life Events / Historical Assessments from real data; F-5 Archival Media per the amended presentation contract (F-5A truthful production empty state + F-5B presentation-capability fixture proof; F-5C end-to-end media admission deferred); correct heading hierarchy. |
 | Production Files Allowed | MODIFY: `views/persons/PersonDetailView.vue`. CREATE: `__tests__/ux2_p1_*.spec.ts`, `e2e/ux2-p1-*.spec.ts`. |
 | Production Files Forbidden | data/types/router/services/api modifications; Later Scholarship section (DEFERRED); new fields |
 | Dependencies | UX2-P0 |
@@ -69,9 +69,17 @@ surfaces; P7 accepts the integration as a whole.
 | Presentation States | RESOURCE_READY (identities/definition), SCHOLARLY_UNCERTAIN (生卒年 dispute note), METADATA_ONLY (其传/后论 文稿), ABSENT_OPTIONAL (portrait/holding) |
 | Negative Boundaries | NB-01 (no fabrication), NB-07 (uncertainty ≠ incompleteness), NB-05 (clinical), F-5 Later Scholarship NOT added |
 | Tests | unit/component per ui04 style; NB patterns; axe; responsive |
-| Definition of Done | person page renders DHObjectLayout regions + states; heading order correct; F-5 authorized sections from real data; suite green |
+| Definition of Done | person page renders DHObjectLayout regions + states; heading order correct; F-5 Life Events / Historical Assessments from real data; F-5 Archival Media = truthful empty state when runtime returns `[]` (F-5A) + deterministic presentation-capability fixture proof of MediaAssetItem rendering (F-5B); F-5C end-to-end real-media admission explicitly deferred to Phase 2 Content Admission / P2-05 (NOT claimed); suite green |
 | Rollback Boundary | view-only change; route unchanged; revert = restore view |
 | Expected Evidence | changed-file list, test results, axe result, data provenance samples |
+
+> F-5 AMENDMENT (Reconciliation OPTION_C · `UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH`):
+> UX2-P1 Archival Media acceptance follows the amended production implementation
+> contract §6 F-5A/B/C — presentation contract + truthful production empty state;
+> end-to-end real-media admission is DEFERRED to the external owner Phase 2
+> Content Admission / P2-05 (not in the UX2 DAG; no new WP). DAG edges and
+> dependencies are UNCHANGED (`DAG_CHANGE = NONE` · `DEPENDENCY_IMPACT = NONE`).
+> P1 remains dependent only on the frozen P0 baseline.
 
 ### UX2-P2 — Jiayi Work / Edition
 
