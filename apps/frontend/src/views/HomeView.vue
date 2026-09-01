@@ -20,11 +20,28 @@ import {
   HOME_QUOTATION,
   HOME_RESEARCH_STEPS,
 } from '../data/homeProjection'
+import {
+  presentationStatusLabel,
+  resolvePresentationState,
+  type PresentationState,
+} from '../presentation/stateMapping'
 
 defineOptions({ name: 'HomeView' })
 
 const router = useRouter()
 const searchInput = ref('')
+
+/* UX2-P5 P1-01 correction — surfaced lineage/relation states route through
+ * the shared P0 G1-C mapping. The data-status is the resolver output (the
+ * fail-closed default for the unstructured rows, per the resolver contract:
+ * rows 8/9/11 → UNSTRUCTURED_OR_INCOMPLETE); the public label flows through
+ * the shared badge-label helper with the G1-C surface label (row 9
+ * 版本关系整理中 / row 8 谱系整理中). No local mapping is duplicated; no
+ * template literals for data-status or label. */
+const jiayiLineageState: PresentationState = resolvePresentationState({ contentStatus: 'DATA_GAP' })
+const heritageLineageState: PresentationState = resolvePresentationState({ contentStatus: 'DATA_GAP' })
+const jiayiLineageLabel = presentationStatusLabel(jiayiLineageState, '版本关系整理中')
+const heritageLineageLabel = presentationStatusLabel(heritageLineageState, '谱系整理中')
 
 function onSearch(): void {
   const q = searchInput.value.trim()
@@ -102,7 +119,7 @@ function onSearch(): void {
       <figure class="home-lineage">
         <img :src="HOME_JIAYI.lineage.src" :alt="HOME_JIAYI.lineage.alt" />
         <figcaption>
-          <span class="hfm-status" data-status="UNSTRUCTURED_OR_INCOMPLETE">版本关系整理中</span>
+          <span class="hfm-status" :data-status="jiayiLineageState">{{ jiayiLineageLabel }}</span>
           <span class="home-lineage__caption">版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）</span>
         </figcaption>
       </figure>
@@ -153,7 +170,7 @@ function onSearch(): void {
       <h2 id="feature-heritage-heading" class="home-section__title">{{ HOME_HERITAGE.heading }}</h2>
       <p class="home-section__lede">{{ HOME_HERITAGE.lede }}</p>
       <p class="home-state-line">
-        <span class="hfm-status" data-status="UNSTRUCTURED_OR_INCOMPLETE">谱系整理中</span>
+        <span class="hfm-status" :data-status="heritageLineageState">{{ heritageLineageLabel }}</span>
       </p>
       <ul class="home-links">
         <li v-for="item in HOME_HERITAGE.items" :key="item.title">
