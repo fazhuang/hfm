@@ -139,8 +139,17 @@ forbidden areas           → NO delta (router/data/types/services/backend/packa
 ## 13. Commit
 
 ```text
-UX2_P0_IMPLEMENTATION_CANDIDATE = <commit SHA recorded at delivery>
+UX2_P0_IMPLEMENTATION_CANDIDATE = 797e33f9b4b29f2e8c8c35a5137b3f08b94cf03c
 PRE_WP_BASELINE = 2a7fc468896f8a19d8129353164a8f463f635426
 PRODUCTION_SCOPE = UX2-P0_ONLY
 P1-P7_EXECUTION = NOT_STARTED
 ```
+
+```text
+P0-2 = CLOSED_DOCUMENTATION_ONLY
+```
+
+G4-P0 audit observation P0-2 (documentation placeholder): closed by replacing
+the placeholder with the actual candidate SHA. No production code change.
+P0-1 (`role="status"` observation) remains OPEN (P2 / NON_BLOCKING /
+REVERIFY_AT_UX2-P6) — not modified during archive.
