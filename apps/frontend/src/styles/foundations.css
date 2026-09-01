@@ -94,6 +94,48 @@ h4 {
   color: var(--hfm-color-on-accent);
 }
 
+/* ===== UX2 presentation-state vocabulary (G1-C) =====
+ * Presentation-only states; each carries a text label plus token color
+ * (never color-only). Existing tokens only — no new palette. */
+.hfm-status[data-status='RESOURCE_READY'] {
+  background: var(--hfm-color-success-surface);
+  color: var(--hfm-color-success);
+}
+
+.hfm-status[data-status='SCHOLARLY_UNCERTAIN'] {
+  background: var(--hfm-color-warning);
+  color: var(--hfm-color-on-accent);
+}
+
+.hfm-status[data-status='HISTORICAL_ABSENCE'] {
+  background: var(--hfm-color-danger);
+  color: var(--hfm-color-on-accent);
+}
+
+.hfm-status[data-status='UNSTRUCTURED_OR_INCOMPLETE'] {
+  background: var(--hfm-color-warning);
+  color: var(--hfm-color-on-accent);
+}
+
+/* ===== UX2 semantic surface roles (G1-B) =====
+ * Role → existing-token mapping: surface-paper / surface-archive /
+ * surface-evidence. No new palette, no parallel token system. */
+.ux2-surface-paper {
+  background-color: var(--hfm-color-surface);
+  color: var(--hfm-color-text);
+}
+
+.ux2-surface-archive {
+  background-color: var(--hfm-color-canvas);
+  color: var(--hfm-color-text);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-md);
+}
+
+.ux2-surface-evidence {
+  border-left: 3px solid var(--hfm-color-evidence);
+}
+
 /* 链接：朱砂交互色 + 可见悬停（P10） */
 a {
   color: var(--hfm-color-interactive);
