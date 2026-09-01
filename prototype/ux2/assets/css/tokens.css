@@ -1,0 +1,125 @@
+/* ==========================================================================
+   UX2-G2 PROTOTYPE TOKEN SHEET — isolated prototype copy
+   ==========================================================================
+   PROVENANCE: VALUE-IDENTICAL TOKEN PROJECTION of the frozen UI baseline
+   apps/frontend/src/styles/tokens.css @ ae55abc606c419f27259fc80bb8bee258d595ce9
+   (UI-01 Design Foundations). The prototype sheet carries the same 35
+   values as the frozen source — comments and file organization are not
+   reproduced byte-for-byte, so this is a value-identical projection, not
+   a byte-for-byte copy. No new palette; no value drift (35/35 match).
+   The prototype consumes these values directly; production tokens remain
+   authoritative.
+   ========================================================================== */
+
+:root {
+  /* Primitive */
+  --hfm-pr-ink-900: #1f1a16;
+  --hfm-pr-ink-700: #4b4238;
+  --hfm-pr-ink-500: #6f6557;
+  --hfm-pr-warm-50: #f7f4ef;
+  --hfm-pr-warm-0: #ffffff;
+  --hfm-pr-warm-200: #e2dcd2;
+  --hfm-pr-warm-300: #c9bfae;
+  --hfm-pr-cinnabar-600: #a0402a;
+  --hfm-pr-cinnabar-700: #8a3522;
+  --hfm-pr-bronze-600: #8a6a2f;
+  --hfm-pr-azure-500: #5c6b6f;
+  --hfm-pr-verdigris-700: #2f5d50;
+  --hfm-pr-indigo-700: #4a5a8a;
+  --hfm-pr-danger-700: #b3261e;
+  --hfm-pr-danger-100: #fbe3e1;
+  --hfm-pr-warning-700: #8a5a00;
+  --hfm-pr-success-700: #1e6b3c;
+  --hfm-pr-success-100: #e2f0e6;
+  --hfm-pr-white: #ffffff;
+
+  /* Semantic (light) */
+  --hfm-color-canvas: var(--hfm-pr-warm-50);
+  --hfm-color-surface: var(--hfm-pr-warm-0);
+  --hfm-color-elevated: var(--hfm-pr-warm-0);
+  --hfm-color-text: var(--hfm-pr-ink-900);
+  --hfm-color-text-secondary: var(--hfm-pr-ink-700);
+  --hfm-color-text-muted: var(--hfm-pr-ink-500);
+  --hfm-color-border: var(--hfm-pr-warm-200);
+  --hfm-color-border-strong: var(--hfm-pr-warm-300);
+  --hfm-color-accent: var(--hfm-pr-cinnabar-600);
+  --hfm-color-accent-hover: var(--hfm-pr-cinnabar-700);
+  --hfm-color-heritage: var(--hfm-pr-bronze-600);
+  --hfm-color-azure: var(--hfm-pr-azure-500);
+  --hfm-color-evidence: var(--hfm-pr-verdigris-700);
+  --hfm-color-citation: var(--hfm-pr-indigo-700);
+  --hfm-color-interactive: var(--hfm-pr-cinnabar-600);
+  --hfm-color-danger: var(--hfm-pr-danger-700);
+  --hfm-color-danger-surface: var(--hfm-pr-danger-100);
+  --hfm-color-warning: var(--hfm-pr-warning-700);
+  --hfm-color-success: var(--hfm-pr-success-700);
+  --hfm-color-success-surface: var(--hfm-pr-success-100);
+  --hfm-color-on-accent: var(--hfm-pr-white);
+  --hfm-color-on-heritage: var(--hfm-pr-white);
+
+  /* Typography */
+  --hfm-font-sans: system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --hfm-font-serif: 'Songti SC', 'SimSun', 'Noto Serif CJK SC', serif;
+  --hfm-font-heading: var(--hfm-font-serif);
+  --hfm-font-ancient: var(--hfm-font-serif);
+  --hfm-font-numeric: var(--hfm-font-serif);
+  --hfm-text-xs: 0.75rem;
+  --hfm-text-sm: 0.8125rem;
+  --hfm-text-base: 1rem;
+  --hfm-text-lg: 1.125rem;
+  --hfm-text-xl: 1.375rem;
+  --hfm-text-2xl: 1.75rem;
+  --hfm-text-3xl: 2.5rem;
+  --hfm-text-4xl: 3.5rem;
+  --hfm-leading-tight: 1.3;
+  --hfm-leading-normal: 1.6;
+  --hfm-leading-reading: 1.9;
+  --hfm-tracking-display: 0.02em;
+
+  /* Spacing */
+  --hfm-space-1: 0.25rem;
+  --hfm-space-2: 0.5rem;
+  --hfm-space-3: 0.75rem;
+  --hfm-space-4: 1rem;
+  --hfm-space-5: 1.25rem;
+  --hfm-space-6: 1.5rem;
+  --hfm-space-8: 2rem;
+  --hfm-space-12: 3rem;
+  --hfm-space-16: 4rem;
+
+  /* Radius / Shadow */
+  --hfm-radius-none: 0;
+  --hfm-radius-sm: 0.25rem;
+  --hfm-radius-md: 0.5rem;
+  --hfm-radius-lg: 0.625rem;
+  --hfm-shadow-none: none;
+  --hfm-shadow-focus: 0 0 0 3px rgba(160, 64, 42, 0.25);
+
+  /* Layout */
+  --hfm-content-max: 1200px;
+  --hfm-reader-max: 720px;
+}
+
+.dark {
+  --hfm-pr-ink-900: #f2ece1;
+  --hfm-pr-ink-700: #c9bfae;
+  --hfm-pr-ink-500: #9c9284;
+  --hfm-pr-warm-50: #16130f;
+  --hfm-pr-warm-0: #1e1a15;
+  --hfm-pr-warm-200: #3a342b;
+  --hfm-pr-warm-300: #4a4236;
+  --hfm-pr-cinnabar-600: #cf6a4a;
+  --hfm-pr-cinnabar-700: #e07f5e;
+  --hfm-pr-bronze-600: #c9a24b;
+  --hfm-pr-azure-500: #8a9ba0;
+  --hfm-pr-verdigris-700: #8fc4b0;
+  --hfm-pr-indigo-700: #9fb2e0;
+  --hfm-pr-danger-700: #e0605a;
+  --hfm-pr-danger-100: #4a2421;
+  --hfm-pr-warning-700: #d9a441;
+  --hfm-pr-success-700: #7fbf8f;
+  --hfm-pr-success-100: #1f3a28;
+  --hfm-pr-white: #f2ece1;
+  --hfm-color-on-accent: #1f1a16;
+  --hfm-color-on-heritage: #16130f;
+}

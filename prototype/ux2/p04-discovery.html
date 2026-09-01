@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 · P4 学术发现</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">UX2-G2 · P-G2-04</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a><a href="p01-person.html">P1 人物</a><a href="p02-jiayi.html">P2 甲乙经</a><a href="p03-heritage.html">P3 非遗</a><a href="p04-discovery.html">P4 检索</a><a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型</span>
+    </header>
+
+    <main class="proto-shell">
+      <p class="proto-eyebrow">P-G2-04 · Scholarly Discovery</p>
+      <h1>研究检索</h1>
+      <p class="lede">
+        审计收录论文 <strong>515</strong> 篇；已结构化题录 <strong>5</strong> 条。
+        论文不做 UI 自行重分类；facet 来自既有元数据与已批准确定性分类。
+      </p>
+
+      <h2>Facets（搜索索引类型计数）</h2>
+      <p class="lede" style="font-size: var(--hfm-text-sm); color: var(--hfm-color-text-muted)">
+        计数口径：searchIndex 按类型计数（档案 = 档案类索引条目 16：非遗项目/师承/工作室/媒体报道 8 条 + 档案库存 8 条）。
+      </p>
+      <ul id="facets" class="relation-list" style="display: flex; flex-wrap: wrap; gap: var(--hfm-space-2)"></ul>
+
+      <h2>结果（BibliographicRecord）</h2>
+      <div id="results"></div>
+
+      <h2>CitationLocator 原型（缺失页码折叠）</h2>
+      <div class="context-band context-band--contemporary">
+        <p class="hfm-reading">「皇甫谧素履幽贞，闲居养疾，留情笔削，敦悦丘坟，轩冕未足为荣，贫贱不以为耻，确乎不拔，斯固有晋之高人者欤！」</p>
+        <p style="font-size: var(--hfm-text-sm); color: var(--hfm-color-text-muted)">
+          出处：唐代·房玄龄等《晋书》（后论·论其人）。<span data-citation-level="document">引用定位粒度：文献级（U-04 页码级定位未解决，折叠）。</span>
+        </p>
+      </div>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const D = window.UX2.DISCOVERY
+        const f = document.getElementById('facets')
+        D.facets.forEach((x) => {
+          const li = document.createElement('li')
+          li.className = 'relation-item'
+          li.appendChild(badge('METADATA_ONLY', x.label + ' ' + x.count))
+          f.appendChild(li)
+        })
+        const r = document.getElementById('results')
+        D.results.forEach((res) => {
+          const wrap = document.createElement('div')
+          renderBibRecord(wrap, {
+            title: res.title,
+            meta: [
+              { label: '作者/整理', value: res.author },
+              { label: '年份/时期', value: res.year },
+              { label: '来源', value: res.source },
+            ],
+            status: res.state,
+            statusLabel: res.stateLabel,
+          })
+          r.appendChild(wrap)
+        })
+      })
+    </script>
+  </body>
+</html>

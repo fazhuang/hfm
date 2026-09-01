@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 · P3 非遗活态档案</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">UX2-G2 · P-G2-03</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a><a href="p01-person.html">P1 人物</a><a href="p02-jiayi.html">P2 甲乙经</a><a href="p03-heritage.html">P3 非遗</a><a href="p04-discovery.html">P4 检索</a><a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型</span>
+    </header>
+
+    <main class="proto-shell">
+      <p class="proto-eyebrow">P-G2-03 · Living Heritage Scholarly Archive</p>
+      <h1>皇甫谧针灸非遗 · 活态传承档案</h1>
+      <p class="lede">
+        传承人物：<strong>第六代名医 · 刘君奇</strong>（皇甫谧针灸市级非物质文化遗产代表性传承人 · 皇甫谧针灸学院院长）。
+        谱系中间代整理中（PARTIAL），不虚构连续传承链。
+      </p>
+
+      <h2>HISTORICAL_TEXTUAL_CONTEXT · 历史文献语境</h2>
+      <div class="context-band context-band--historical">
+        <ul id="historical" class="relation-list"></ul>
+      </div>
+
+      <h2>CONTEMPORARY_LIVING_ARCHIVE_CONTEXT · 当代活态档案语境</h2>
+      <div class="context-band context-band--contemporary">
+        <ul id="contemporary" class="relation-list"></ul>
+      </div>
+
+      <h2>认定与荣誉（结构化档案，非荣誉墙）</h2>
+      <ul id="recognition" class="relation-list"></ul>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const H = window.UX2.HERITAGE
+        const fill = (id, list) => {
+          const ul = document.getElementById(id)
+          list.forEach((x) => {
+            const li = document.createElement('li')
+            li.className = 'relation-item'
+            const b = document.createElement('b')
+            b.textContent = x.label + '：'
+            li.appendChild(b)
+            li.appendChild(document.createTextNode(x.value + ' '))
+            if (x.status) li.appendChild(badge(x.status, x.status === 'PARTIAL' ? '谱系整理中' : '已展示'))
+            ul.appendChild(li)
+          })
+        }
+        fill('historical', H.historical)
+        fill('contemporary', H.contemporary)
+        fill('recognition', H.recognition.map((r) => ({ label: '记录', value: r, status: 'AVAILABLE' })))
+      })
+    </script>
+  </body>
+</html>

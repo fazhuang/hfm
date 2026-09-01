@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 · P1 皇甫谧人物档案</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">UX2-G2 · P-G2-01</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a><a href="p01-person.html">P1 人物</a><a href="p02-jiayi.html">P2 甲乙经</a><a href="p03-heritage.html">P3 非遗</a><a href="p04-discovery.html">P4 检索</a><a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型</span>
+    </header>
+
+    <main class="proto-shell">
+      <p class="proto-eyebrow">P-G2-01 · DHObjectLayout — Person Archive</p>
+      <h1>皇甫谧人物档案</h1>
+      <div id="person-layout"></div>
+
+      <h2>语境 · 证据 · 关联</h2>
+      <div id="person-extra"></div>
+
+      <p class="proto-eyebrow" style="margin-top: var(--hfm-space-8)">Evidence-bearing incomplete states</p>
+      <div id="person-incomplete"></div>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const P = window.UX2.PERSON
+
+        renderDHObjectLayout(document.getElementById('person-layout'), {
+          header: {
+            state: 'PRESENT',
+            /* presentation-only: object title at H2 — document outline is
+               H1 (page) → H2 (皇甫谧) → H2 (语境·证据·关联). No level skip. */
+            titleTag: 2,
+            build: () => [
+              (() => {
+                const row = document.createElement('div')
+                row.className = 'dh-object__header'
+                const h = dhObjectTitle(2, P.object.title)
+                row.appendChild(h)
+                const d = document.createElement('span')
+                d.className = 'dh-object__dates'
+                d.textContent = P.object.dates
+                row.appendChild(d)
+                const t = document.createElement('span')
+                t.className = 'dh-object__type'
+                t.textContent = P.object.type
+                row.appendChild(t)
+                return row
+              })(),
+            ],
+          },
+          context: {
+            state: 'PRESENT',
+            build: () => [
+              tag(P.object.identity, 'dh-tags'),
+              p(P.object.definition),
+            ],
+          },
+          evidence: {
+            state: 'PRESENT',
+            build: () =>
+              P.evidence.map((e) => {
+                const row = document.createElement('div')
+                row.className = 'evidence-item'
+                const s = document.createElement('span')
+                s.className = 'src'
+                s.textContent = e.type + ' · ' + e.label
+                const a = document.createElement('span')
+                a.className = 'afford'
+                a.textContent = e.afford
+                row.appendChild(s)
+                row.appendChild(a)
+                return row
+              }),
+          },
+          relations: {
+            state: 'PRESENT',
+            build: () =>
+              P.relations.map((r) => {
+                const row = document.createElement('div')
+                row.className = 'relation-item'
+                const a = document.createElement('a')
+                a.href = r.href
+                a.textContent = r.label
+                const sem = document.createElement('span')
+                sem.className = 'sem'
+                sem.textContent = r.sem
+                row.appendChild(a)
+                row.appendChild(sem)
+                return row
+              }),
+          },
+        })
+
+        /* optional slots collapse: portrait + holding institution */
+        renderDHObjectLayout(document.getElementById('person-extra'), {
+          context: {
+            state: 'PRESENT',
+            build: () => [p('其传 · 后论 已整理为 Reader 全文（2 篇 FULL_TEXT）。')],
+          },
+          relations: { state: 'ABSENT_OPTIONAL', note: P.optional.portrait.note },
+        })
+
+        /* incomplete states */
+        const box = document.getElementById('person-incomplete')
+        P.incomplete.forEach((ic) => {
+          const note = document.createElement('div')
+          note.className = 'incomplete-note'
+          note.setAttribute('role', 'status')
+          note.appendChild(badge(ic.status, ic.label))
+          note.appendChild(document.createTextNode(ic.note))
+          box.appendChild(note)
+        })
+
+        function p(t) {
+          const n = document.createElement('p')
+          n.textContent = t
+          return n
+        }
+        function tag(list, cls) {
+          const ul = document.createElement('ul')
+          ul.className = cls
+          list.forEach((x) => {
+            const li = document.createElement('li')
+            li.textContent = x
+            ul.appendChild(li)
+          })
+          return ul
+        }
+      })
+    </script>
+    <style>
+      .dh-tags { list-style: none; margin: 0 0 var(--hfm-space-3); padding: 0; display: flex; gap: var(--hfm-space-2); flex-wrap: wrap; }
+      .dh-tags li { padding: var(--hfm-space-1) var(--hfm-space-3); border: 1px solid var(--hfm-color-border-strong); border-radius: var(--hfm-radius-sm); font-size: var(--hfm-text-sm); }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 原型 · 原语演示</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">HFM UX2 · G2 Prototype</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a>
+        <a href="p01-person.html">P1 人物</a>
+        <a href="p02-jiayi.html">P2 甲乙经</a>
+        <a href="p03-heritage.html">P3 非遗</a>
+        <a href="p04-discovery.html">P4 检索</a>
+        <a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型 · 非生产页面</span>
+    </header>
+
+    <main class="proto-shell">
+      <p class="proto-eyebrow">UX2-G2 · Core Primitives</p>
+      <h1>核心原语原型</h1>
+      <p>DHObjectLayout 三种 slot 呈现状态 + BibliographicRecord 五类记录。</p>
+
+      <h2>DHObjectLayout — Header/Context/Evidence/Relations</h2>
+      <div id="dh-demo"></div>
+
+      <h2>DHObjectLayout — ABSENT_OPTIONAL 槽位折叠</h2>
+      <div id="dh-optional"></div>
+
+      <h2>DHObjectLayout — INCOMPLETE_WITH_EVIDENCE_STATE</h2>
+      <div id="dh-incomplete"></div>
+
+      <h2>BibliographicRecord — 五类记录</h2>
+      <div id="bib-demo"></div>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const F = window.UX2
+
+        /* full PRESENT layout — Huangfu Mi header/context/evidence/relations */
+        renderDHObjectLayout(document.getElementById('dh-demo'), {
+          header: {
+            state: 'PRESENT',
+            /* presentation-only: object title at H3 — sits under the H2
+               demo section (H1 → H2 → H3, no skip; G2 F-1 contract). */
+            titleTag: 3,
+            build: () => [
+              headerRow(F.PERSON.object.title, F.PERSON.object.dates, F.PERSON.object.type),
+            ],
+          },
+          context: {
+            state: 'PRESENT',
+            build: () =>
+              F.PERSON.context.map((c) => elText(c.label + '：' + c.value)),
+          },
+          evidence: {
+            state: 'PRESENT',
+            build: () =>
+              F.PERSON.evidence.map((e) =>
+                el('div', 'evidence-item', e.label + ' · ' + e.afford),
+              ),
+          },
+          relations: {
+            state: 'PRESENT',
+            build: () =>
+              F.PERSON.relations.map((r) => {
+                const row = el('div', 'relation-item', r.label)
+                const sem = el('span', 'sem', r.sem)
+                row.appendChild(sem)
+                return row
+              }),
+          },
+        })
+
+        /* ABSENT_OPTIONAL — holding institution & portrait collapse fully */
+        renderDHObjectLayout(document.getElementById('dh-optional'), {
+          header: { state: 'PRESENT', build: () => [elText('《高士传》')] },
+          context: { state: 'ABSENT_OPTIONAL' },
+          evidence: { state: 'ABSENT_OPTIONAL' },
+          relations: { state: 'ABSENT_OPTIONAL' },
+        })
+
+        /* INCOMPLETE_WITH_EVIDENCE_STATE — 四论全文 + 生卒年争议 */
+        renderDHObjectLayout(document.getElementById('dh-incomplete'), {
+          header: { state: 'PRESENT', build: () => [elText('《玄守论》（其言）')] },
+          context: { state: 'PRESENT', build: () => [elText('皇甫谧言论与文字选编 · 整理说明可读')] },
+          evidence: {
+            state: 'INCOMPLETE_WITH_EVIDENCE_STATE',
+            status: 'METADATA_ONLY',
+            label: '仅题录（原典全文未收录）',
+            note: '古典全文未见于客户材料；整理说明已可读（G1-C row 5）',
+            build: () => [elText('整理说明：自述安贫乐道、拒绝出仕的论说文。')],
+          },
+          relations: { state: 'ABSENT_OPTIONAL' },
+        })
+
+        /* BibliographicRecord — five kinds */
+        const bib = document.getElementById('bib-demo')
+        renderBibRecord(bib, {
+          title: '《针灸甲乙经》',
+          meta: [
+            { label: '撰', value: '皇甫谧' },
+            { label: '时期', value: '西晋' },
+            { label: '类型', value: '针灸学专著' },
+          ],
+          status: 'AVAILABLE',
+          statusLabel: '数字资源可阅',
+        })
+        const bib2 = document.createElement('div')
+        document.getElementById('bib-demo').appendChild(bib2)
+        renderBibRecord(bib2, {
+          title: '《针灸甲乙经》医统正脉全书本',
+          meta: [
+            { label: '版本', value: '明万历 29 年（1601）' },
+            { label: '刊刻', value: '吴勉学刊' },
+            { label: '状态', value: '存目' },
+          ],
+          status: 'METADATA_ONLY',
+          statusLabel: '存目',
+        })
+      })
+
+      /* tiny helpers */
+      function el(tag, cls, text) {
+        const n = document.createElement(tag)
+        if (cls) n.className = cls
+        if (text !== undefined) n.textContent = text
+        return n
+      }
+      function elText(t) {
+        return el('p', null, t)
+      }
+      function headerRow(title, dates, type) {
+        const row = el('div', 'dh-object__header')
+        row.appendChild(dhObjectTitle(3, title))
+        row.appendChild(el('span', 'dh-object__dates', dates))
+        row.appendChild(el('span', 'dh-object__type', type))
+        return row
+      }
+    </script>
+  </body>
+</html>

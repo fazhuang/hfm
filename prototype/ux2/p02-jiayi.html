@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 · P2 甲乙经 作品与版本</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">UX2-G2 · P-G2-02</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a><a href="p01-person.html">P1 人物</a><a href="p02-jiayi.html">P2 甲乙经</a><a href="p03-heritage.html">P3 非遗</a><a href="p04-discovery.html">P4 检索</a><a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型</span>
+    </header>
+
+    <main class="proto-shell">
+      <p class="proto-eyebrow">P-G2-02 · Work → Edition → Digital Resource</p>
+      <h1>《针灸甲乙经》</h1>
+      <p class="lede">皇甫谧撰 · 西晋 · 针灸学专著。版本记录 19 种；全文整理 2 篇；版本关系整理中（DATA-GAP）。</p>
+      <div id="work-header"></div>
+
+      <h2>版本记录（BibliographicRecord · 存目）</h2>
+      <p class="lede" style="font-size: var(--hfm-text-sm); color: var(--hfm-color-text-muted)">
+        全部版本目前为元数据已录状态（U-05 逐版本数字化标志未解决）；无虚构馆藏机构、无虚构刊刻信息、无虚构数字化状态。
+      </p>
+      <div id="editions"></div>
+
+      <h2>全文整理</h2>
+      <div id="fulltext"></div>
+
+      <h2>版本脉络状态</h2>
+      <div id="datagap"></div>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const J = window.UX2.JIAYI
+        const inv = document.createElement('p')
+        inv.className = 'lede'
+        inv.appendChild(badge('AVAILABLE', 'EDITION_COUNT ' + J.invariants.EDITION_COUNT))
+        inv.appendChild(document.createTextNode(' · '))
+        inv.appendChild(badge('AVAILABLE', 'FULL_TEXT ' + J.invariants.FULL_TEXT_COUNT))
+        inv.appendChild(document.createTextNode(' · '))
+        inv.appendChild(badge('DATA_GAP', 'JIAYI_DATA_STATE ' + J.invariants.JIAYI_DATA_STATE))
+        document.getElementById('work-header').appendChild(inv)
+
+        const ed = document.getElementById('editions')
+        J.editions.forEach((e) => {
+          const wrap = document.createElement('div')
+          renderBibRecord(wrap, {
+            title: e.title,
+            meta: [
+              { label: '版本', value: e.period },
+              { label: '刊刻/整理', value: e.imprint || '—' },
+              { label: '类型', value: e.kind === 'ancient' ? '古代版本' : '近现代整理' },
+            ],
+            status: 'METADATA_ONLY',
+            statusLabel: '存目',
+          })
+          ed.appendChild(wrap)
+        })
+
+        const ft = document.getElementById('fulltext')
+        J.fullText.forEach((t) => {
+          const wrap = document.createElement('div')
+          renderBibRecord(wrap, {
+            title: t,
+            meta: [{ label: '状态', value: '全文已整理（FULL_TEXT）' }],
+            status: 'AVAILABLE',
+            statusLabel: '全文已整理',
+          })
+          ft.appendChild(wrap)
+        })
+
+        const dg = document.getElementById('datagap')
+        const note = document.createElement('div')
+        note.className = 'incomplete-note'
+        note.setAttribute('role', 'status')
+        note.appendChild(badge('DATA_GAP', J.dataGap.label))
+        note.appendChild(document.createTextNode(J.dataGap.note))
+        dg.appendChild(note)
+      })
+    </script>
+  </body>
+</html>

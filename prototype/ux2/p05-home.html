@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UX2-G2 · P5 首页展览叙事</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/ux2.css" />
+    <script src="assets/data/fixtures.js" defer></script>
+    <script src="assets/js/ux2.js" defer></script>
+  </head>
+  <body>
+    <header class="proto-topbar">
+      <span class="brand">UX2-G2 · P-G2-05</span>
+      <nav aria-label="原型导航">
+        <a href="index.html">原语</a><a href="p01-person.html">P1 人物</a><a href="p02-jiayi.html">P2 甲乙经</a><a href="p03-heritage.html">P3 非遗</a><a href="p04-discovery.html">P4 检索</a><a href="p05-home.html">P5 首页</a>
+      </nav>
+      <span class="isolation-note">隔离原型</span>
+    </header>
+
+    <main class="proto-shell">
+      <header class="editorial-hero">
+        <p class="proto-eyebrow">当代东方数字人文门户</p>
+        <h1>皇甫谧人文数字平台</h1>
+        <p class="sub">权威数字人文资料 · 古籍与研究 · 非遗活态传承</p>
+        <p style="color: var(--hfm-color-heritage); font-family: var(--hfm-font-numeric)">皇甫谧 215—282</p>
+        <p class="hfm-reading">西晋著名医学家、文学家、史学家，针灸学专著《针灸甲乙经》的编纂者。</p>
+        <div class="cta-row">
+          <a class="cta" href="p01-person.html">探索皇甫谧</a>
+          <a class="cta cta--alt" href="p02-jiayi.html">进入《针灸甲乙经》</a>
+          <a style="align-self: center" href="p04-discovery.html">检索文献</a>
+        </div>
+      </header>
+
+      <section id="narrative"></section>
+
+      <section class="editorial-section">
+        <p class="proto-eyebrow">研究能力（弱入口）</p>
+        <h2>从资料到研究</h2>
+        <ol class="relation-list">
+          <li class="relation-item">检索 → 阅读 → 来源 → 引用</li>
+        </ol>
+      </section>
+    </main>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        const H = window.UX2.HOME
+        const sec = document.getElementById('narrative')
+        H.narrative.forEach((n) => {
+          const s = document.createElement('section')
+          s.className = 'editorial-section'
+          s.setAttribute('data-narrative', n.n)
+          const h = document.createElement('h2')
+          h.textContent = n.n + ' · ' + n.title
+          s.appendChild(h)
+          const d = document.createElement('p')
+          d.className = 'lede'
+          d.textContent = n.desc
+          s.appendChild(d)
+          const a = document.createElement('a')
+          a.href = n.href
+          a.textContent = '进入 →'
+          s.appendChild(a)
+          sec.appendChild(s)
+        })
+      })
+    </script>
+  </body>
+</html>
