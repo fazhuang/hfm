@@ -79,7 +79,19 @@ test.describe('UX2-P1 person archive surface', () => {
     // heading hierarchy: exactly one h1
     await expect(page.locator('h1')).toHaveCount(1)
 
-    // F-5 Archival Media real-data runtime chain is NOT claimed (V5 blocker).
+    // F-5A production truth (amended contract): the real runtime media API
+    // returns [] (no admitted MediaAsset records) — the 影像资料 section must
+    // degrade truthfully: empty state, no fake movie, no player, no false
+    // RESOURCE_READY claim.
+    const mediaSection = page.locator('[aria-labelledby="media-heading"]')
+    await expect(mediaSection).toContainText('暂无影像资料。')
+    await expect(mediaSection.locator('.movie-card')).toHaveCount(0)
+    await expect(mediaSection.locator('video')).toHaveCount(0)
+    await expect(mediaSection.locator('.hfm-status[data-status="RESOURCE_READY"]')).toHaveCount(0)
+    await expect(mediaSection).not.toContainText('皇甫谧一')
+
+    // F-5C: real-media end-to-end admission is deferred to Phase 2 / P2-05
+    // (not claimed here). F-5B presentation capability is proven at unit level.
   })
 
   test('reader navigation: person → 其传 reader → back → 后论 reader (no dead routes)', async ({ page }) => {

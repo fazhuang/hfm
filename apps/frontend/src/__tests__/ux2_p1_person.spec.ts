@@ -22,8 +22,10 @@ import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import axe from 'axe-core'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
+import type { MediaAssetItem } from '../types/media'
 import { ARCHIVE_RECORDS } from '../data/archiveInventory'
 import { INVENTORY_MOVIES } from '../data/contentInventory'
+import { formatBytes } from '../services/media'
 
 const PERSON = {
   entity_id: 'person-huangfu-mi',
@@ -41,7 +43,31 @@ const PERSON = {
  *  frozen state; the person page renders its absent state (暂无影像资料). */
 const MEDIA_EMPTY = { items: [], total: 0 }
 
-function stubFetch(): void {
+/**
+ * F-5B PRESENTATION-CONTRACT fixture (amended F-5 contract §6).
+ * A controlled, contract-valid MediaAssetItem used ONLY to prove
+ * PersonDetailView's presentation capability. It is explicitly NOT real
+ * admitted media, NOT a production media record, NOT runtime proof, and NOT
+ * evidence that the two customer movies are admitted. It uses only fields
+ * valid under the frozen MediaAssetItem / public-media contract; no provenance
+ * is derived from the customer .mpg files.
+ */
+const PRESENTATION_CONTRACT_FIXTURE: MediaAssetItem[] = [
+  {
+    id: 'pres-contract-1',
+    name: '呈现契约样例影像',
+    object_key: 'fixture/presentation-contract-1.mp4',
+    mime_type: 'video/mp4',
+    byte_size: 2621440,
+    rights_holder: '样例',
+    license_basis: '样例（呈现契约演示）',
+    restriction: null,
+    category: 'movie',
+    publication_state: 'published',
+  },
+]
+
+function stubFetch(mediaPayload: unknown = MEDIA_EMPTY): void {
   vi.stubGlobal(
     'fetch',
     vi.fn().mockImplementation((url: string) => {
@@ -51,7 +77,7 @@ function stubFetch(): void {
         json: async () => ({ success: true, data }),
       })
       if (String(url).includes('/persons/')) return Promise.resolve(envelope(PERSON))
-      if (String(url).includes('/media')) return Promise.resolve(envelope(MEDIA_EMPTY))
+      if (String(url).includes('/media')) return Promise.resolve(envelope(mediaPayload))
       return Promise.resolve(envelope(null))
     }),
   )
@@ -67,7 +93,15 @@ afterEach(() => {
 })
 
 async function mountPerson(attach = false): Promise<ReturnType<typeof mount>> {
-  stubFetch()
+  return mountPersonWithMedia(MEDIA_EMPTY, attach)
+}
+
+/** Mount with a given media payload (used by the F-5A / F-5B tests). */
+async function mountPersonWithMedia(
+  mediaPayload: unknown,
+  attach = false,
+): Promise<ReturnType<typeof mount>> {
+  stubFetch(mediaPayload)
   const router = createRouter({
     history: createMemoryHistory(),
     routes: [{ path: '/persons/:id', component: PersonDetailView, children: [] }],
@@ -217,6 +251,65 @@ describe('UX2-P1 — heading hierarchy & negative boundaries', () => {
 
   it('passes axe assertions on the person page', async () => {
     const wrapper = await mountPerson(true)
+    const results = await axe.run(wrapper.element as HTMLElement)
+    expect(results.violations).toHaveLength(0)
+  })
+})
+
+describe('UX2-P1 — F-5A production truth (empty runtime media state)', () => {
+  it('runtime media = [] → 影像资料 renders the compliant empty state with no fake media', async () => {
+    const wrapper = await mountPerson()
+    const section = wrapper.find('[aria-labelledby="media-heading"]')
+    // truthful empty state (contract-authorized wording)
+    expect(section.text()).toContain('暂无影像资料。')
+    // no fake media title / no movie cards / no player
+    expect(wrapper.find('.movie-card').exists()).toBe(false)
+    expect(section.find('video').exists()).toBe(false)
+    expect(section.find('a[href]').exists()).toBe(false)
+    // no false RESOURCE_READY / playable / published claim in the media section
+    expect(section.find('.hfm-status[data-status="RESOURCE_READY"]').exists()).toBe(false)
+    expect(section.text()).not.toContain('可播放')
+    expect(section.text()).not.toContain('已发布')
+  })
+
+  it('empty runtime media never implies admission or playability', async () => {
+    const wrapper = await mountPerson()
+    const section = wrapper.find('[aria-labelledby="media-heading"]')
+    const sectionText = section.text()
+    expect(sectionText).not.toMatch(/皇甫谧一|针灸鼻祖皇甫谧/) // no fake movie titles
+    expect(section.find('video').exists()).toBe(false) // no false playable resource
+  })
+})
+
+describe('UX2-P1 — F-5B presentation capability (PRESENTATION_CONTRACT_FIXTURE)', () => {
+  it('renders a valid MediaAssetItem: title, metadata, category label, player DOM', async () => {
+    const wrapper = await mountPersonWithMedia({ items: PRESENTATION_CONTRACT_FIXTURE, total: 1 })
+    const card = wrapper.find('.movie-card')
+    expect(card.exists()).toBe(true)
+    // media title rendered
+    expect(card.find('.movie-card__title').text()).toBe('呈现契约样例影像')
+    // metadata rendered (category label + formatted size)
+    const meta = card.find('.movie-card__meta').text()
+    expect(meta).toContain('影视资料')
+    expect(meta).toContain(formatBytes(2621440))
+    // rights/license basis rendered
+    expect(card.find('.movie-card__rights').text()).toBe('样例（呈现契约演示）')
+    // player DOM present only when the contract permits (video/* mime)
+    expect(card.find('video').exists()).toBe(true)
+    // no unsupported metadata invented (only name · category+size · rights)
+    expect(card.text()).not.toContain('页')
+    expect(card.text()).not.toContain('卷')
+  })
+
+  it('fixture is a presentation-contract fixture, not admission evidence', () => {
+    // the fixture carries no provenance from the customer media files
+    expect(PRESENTATION_CONTRACT_FIXTURE[0].object_key.startsWith('fixture/')).toBe(true)
+    expect(PRESENTATION_CONTRACT_FIXTURE[0].id).toBe('pres-contract-1')
+    expect(PRESENTATION_CONTRACT_FIXTURE[0].name).not.toMatch(/皇甫谧一|针灸鼻祖皇甫谧/)
+  })
+
+  it('rendering the presentation fixture stays axe-clean', async () => {
+    const wrapper = await mountPersonWithMedia({ items: PRESENTATION_CONTRACT_FIXTURE, total: 1 }, true)
     const results = await axe.run(wrapper.element as HTMLElement)
     expect(results.violations).toHaveLength(0)
   })

@@ -1,8 +1,7 @@
-# HFM-UX2-P1 Implementation Evidence v1 (F-5 Contract Amendment Applied)
+# HFM-UX2-P1 Implementation Evidence v1 (Post-Reconciliation Alignment)
 
-Status: UX2-P1 GOVERNANCE_RECONCILED_IMPLEMENTATION_REVALIDATION_REQUIRED
-(governance blocker resolved by OPTION_C; F-5 acceptance semantics amended;
-post-amendment implementation/audit pass required — F5 final PASS NOT claimed)
+Status: UX2-P1 POST_RECONCILIATION IMPLEMENTATION CANDIDATE · ready for final
+independent re-audit (F-5 amended to OPTION_C; F-5A/B/C aligned)
 
 ## 1. WP Identity
 
@@ -13,7 +12,9 @@ REJECTED_V1 = 7f603d385e258e62afab7dca6eba5210ed8a2d68
 REJECTED_V2 = af337ebc00f210ce1ef331503e8a95ae25b701dd
 REJECTED_V3 = c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee
 REJECTED_V4 = 87a316d5240174fcda91cc24a40e65954f2a61bb
-CORRECTIVE_BASIS = rejected V4 (linear successor; no amend/squash)
+REJECTED_V5 = 5c03574ba16cd4265cb31b46db4604bc09eb18eb
+CONTRACT_AMENDMENT_BASELINE = 07da206044bb7498867c65dae7dbee9cea07b53a
+RECONCILIATION_DECISION = OPTION_C
 ```
 
 ## 2. Governance Reconciliation History
@@ -206,13 +207,12 @@ This is a governance escalation. The F-5 media runtime chain is not an ordinary
 code defect; it requires a governance decision on which capability layer may be
 authorized.
 
-## 7. Test / Quality Results (independently reproduced)
+## 7. Test / Quality Results (independently reproduced — post-reconciliation)
 
 ```text
-TARGETED_TESTS      = 14/14 PASS (ux2_p1_person.spec.ts — media-proof tests
-                      removed; valid P0-02 / reader / heading / axe tests kept)
+TARGETED_TESTS      = 19/19 PASS (ux2_p1_person.spec.ts)
 P0_REGRESSION_TESTS = 58/58 PASS (ux2_p0_* — P0_REGRESSION = NONE)
-FULL_VITEST         = 267/267 PASS (30 files)
+FULL_VITEST         = 272/272 PASS (30 files)
 VUE_TSC             = PASS (0 errors)
 ESLINT              = 0_ERRORS_965_WARNINGS (actual reproduction; repo-wide
                       pre-existing style-warning baseline; gate is errors)
@@ -222,7 +222,37 @@ BROWSER_AXE         = 0 (real browser, full rule set)
 P0_PRIMITIVE_DELTA  = ZERO
 READER_QICHUAN_NAVIGATION = PASS · READER_HOULUN_NAVIGATION = PASS
 KEYBOARD = PASS · FOCUS = PASS · RESPONSIVE_375/1280/1920 = PASS
+HORIZONTAL_OVERFLOW = NONE
 ```
+
+### F-5 post-reconciliation acceptance (amended contract §6 F-5A/B/C)
+
+```text
+F5A_PRODUCTION_TRUTH = PASS
+  F5A_RUNTIME_MEDIA_RESULT = EMPTY (fetchPublicMedia('movie') → [])
+  F5A_EMPTY_STATE = PASS (暂无影像资料。)
+  NO_FAKE_MEDIA = YES
+  NO_FALSE_RESOURCE_READY = YES
+  NO_FALSE_PLAYABILITY = YES
+  NO_FALSE_PUBLISHED_STATE = YES
+  (unit F-5A tests + e2e real-runtime empty-state assertions)
+
+F5B_PRESENTATION_CAPABILITY = PASS
+  F5B_FIXTURE_CLASS = PRESENTATION_CONTRACT_ONLY
+  PRESENTATION_FIXTURE_IS_ADMISSION_EVIDENCE = NO
+  (title/metadata/category-label/player-DOM rendering + axe-clean;
+   fixture carries no customer-media provenance)
+
+F5C_REAL_MEDIA_END_TO_END = DEFERRED
+  F5C_OWNER = Phase 2 Content Admission / P2-05
+
+F-5 = PASS_UNDER_AMENDED_CONTRACT
+REAL_MEDIA_RUNTIME_CHAIN = NOT_CLAIMED (deferred)
+F5_ARCHIVAL_MEDIA_REAL_DATA_PROOF = NOT_CLAIMED under the old meaning
+```
+
+PersonDetailView was NOT modified in this alignment (F-5A empty state already
+conformed). Delta = tests + e2e + this evidence record only.
 
 ## 8. Preserved Guarantees
 
@@ -233,8 +263,9 @@ P0_REGRESSION = NONE · P0_PRIMITIVE_IMPLEMENTATION_DELTA = ZERO
 P0-1 = OPEN_P2_NON_BLOCKING_REVERIFY_AT_P6 (role="status" untouched)
 P2-01 = OPEN_DOCUMENTATION_ONLY_CLOSE_AT_ACCEPTANCE_ARCHIVE
 
-F5_ARCHIVAL_MEDIA_REAL_DATA_PROOF = NOT_CLAIMED (post-amendment; F-5A/B/C
-semantics require a revalidation implementation/audit pass)
+F-5 = PASS_UNDER_AMENDED_CONTRACT (F-5A/B/C)
+REAL_MEDIA_RUNTIME_CHAIN / F5_ARCHIVAL_MEDIA_REAL_DATA_PROOF = NOT_CLAIMED
+(deferred to Phase 2 Content Admission / P2-05)
 ```
 
 ## 9. Worktree Status
@@ -253,8 +284,9 @@ ROLLBACK_TARGET = 2b315795e43faf92e03cd3db2c74b18c47c0927e (PRE_WP_BASELINE)
 ## 11. Commit
 
 ```text
-UX2_P1_CORRECTED_CANDIDATE_V5 = <commit SHA recorded at delivery>
-CANDIDATE_PARENT = 87a316d5240174fcda91cc24a40e65954f2a61bb (rejected V4)
+UX2_P1_POST_RECONCILIATION_CANDIDATE = <commit SHA recorded at delivery>
+CANDIDATE_PARENT = 07da206044bb7498867c65dae7dbee9cea07b53a
 FORBIDDEN_PRODUCTION_PATH_DELTA = ZERO
+DATA/SERVICES/BACKEND/TYPES/ROUTER_DELTA = ZERO
 OUT_OF_SCOPE_CONFIRMED = YES (UX2-P2..P7 delta ZERO; P0 primitive delta ZERO)
 ```
