@@ -59,8 +59,11 @@ describe('DHObjectLayout — slot presence', () => {
     const evidence = wrapper.find('[data-slot="evidence"]')
     expect(evidence.exists()).toBe(true)
     expect(evidence.attributes('data-slot-state')).toBe('INCOMPLETE_WITH_EVIDENCE_STATE')
-    const note = evidence.find('.incomplete-note[role="status"]')
+    // P0-1: the static incomplete note is VISIBLE and programmatically available
+    // as text, but carries NO live-region role (role="status" removed at UX2-P6)
+    const note = evidence.find('.incomplete-note')
     expect(note.exists()).toBe(true)
+    expect(note.attributes('role')).toBeUndefined()
     const badge = note.find('.hfm-status')
     expect(badge.attributes('data-status')).toBe('METADATA_ONLY')
     expect(badge.text()).toBe('仅题录')

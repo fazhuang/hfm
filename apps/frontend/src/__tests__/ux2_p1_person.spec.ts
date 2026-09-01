@@ -134,19 +134,22 @@ describe('UX2-P1 — DHObjectLayout regions & slot states', () => {
     expect(wrapper.find('[data-slot="relations"]').attributes('data-slot-state')).toBe('PRESENT')
   })
 
-  it('context region renders the SCHOLARLY_UNCERTAIN note (生卒年争议) with role=status', async () => {
+  it('context region renders the SCHOLARLY_UNCERTAIN note (生卒年争议) as visible static text', async () => {
     const wrapper = await mountPerson()
-    const note = wrapper.find('[data-slot="context"] .incomplete-note[role="status"]')
+    // P0-1: static incomplete note is visible without a live-region role
+    const note = wrapper.find('[data-slot="context"] .incomplete-note')
     expect(note.exists()).toBe(true)
+    expect(note.attributes('role')).toBeUndefined()
     expect(note.find('.hfm-status').attributes('data-status')).toBe('SCHOLARLY_UNCERTAIN')
     expect(note.find('.hfm-status').text()).toBe('尚有争议')
     expect(note.text()).toContain('建安/正始')
   })
 
-  it('evidence region renders the METADATA_ONLY note (四论原典全文未收录)', async () => {
+  it('evidence region renders the METADATA_ONLY note (四论原典全文未收录) as visible static text', async () => {
     const wrapper = await mountPerson()
-    const note = wrapper.find('[data-slot="evidence"] .incomplete-note[role="status"]')
+    const note = wrapper.find('[data-slot="evidence"] .incomplete-note')
     expect(note.exists()).toBe(true)
+    expect(note.attributes('role')).toBeUndefined()
     expect(note.find('.hfm-status').attributes('data-status')).toBe('METADATA_ONLY')
     expect(note.text()).toContain('原典全文未收录')
   })

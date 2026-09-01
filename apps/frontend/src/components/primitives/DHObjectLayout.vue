@@ -9,7 +9,8 @@
  *   ABSENT_OPTIONAL           → collapse completely: no empty card, no
  *                               placeholder, no reserved spacing, no fake CTA.
  *   INCOMPLETE_WITH_EVIDENCE_STATE → stay visible with a meaningful
- *                               incompleteness note (role="status").
+ *                               incompleteness note (static text; no live-region
+ *                               role — P0-1 closed at UX2-P6).
  *
  * Object title heading level follows the frozen N-F-1 production contract
  * (titleTag → resolveTitleTag in presentation/stateMapping.ts).
@@ -132,7 +133,6 @@ function badgeLabel(slot: DHObjectSlot): string {
       <div
         v-if="r.slot.state === 'INCOMPLETE_WITH_EVIDENCE_STATE'"
         class="incomplete-note"
-        role="status"
       >
         <span
           class="hfm-status"
