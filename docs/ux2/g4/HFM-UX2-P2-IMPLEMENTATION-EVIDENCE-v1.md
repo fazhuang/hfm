@@ -119,7 +119,7 @@ Rollback boundary = view-only; revert = restore JiayiView + drop P2 test files
 ## 11. Commit
 
 ```text
-UX2_P2_IMPLEMENTATION_CANDIDATE = <commit SHA recorded at delivery>
+UX2_P2_IMPLEMENTATION_CANDIDATE = f973412629edd34e37b74a02e8aaa5a003bb6074 (ACCEPTED)
 CANDIDATE_PARENT = 8b1bd83adc4a478c3e6f848ba9a67a412dd13d0c
 P0-1 = OPEN_P2_NON_BLOCKING_REVERIFY_AT_P6 (untouched — no DHObjectLayout change)
 ```
