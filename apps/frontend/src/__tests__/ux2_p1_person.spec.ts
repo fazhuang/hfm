@@ -12,76 +12,58 @@ import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import axe from 'axe-core'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
-import { ARCHIVE_RECORDS } from '../data/archiveInventory'
+import { ARCHIVE_RECORDS, ARCHIVE_MEDIA_RECORDS } from '../data/archiveInventory'
+import { projectPublicMedia } from '../data/mediaProjection'
 import { INVENTORY_MOVIES } from '../data/contentInventory'
 import { formatBytes } from '../services/media'
 
 /**
- * F-5 Archival Media — real-data proof (P1-01 corrective).
- * MEDIA_SOURCE_OF_TRUTH = the two real customer media files
- *   hfmzl/皇甫谧/皇甫谧电影/皇甫谧一.mpg
- *   hfmzl/皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
- * recorded in the governance asset map docs/design/HFM-CONTENT-ASSET-MAP.md
- * (row 31: filenames + count 2; row 57: license policy 授权公开-存在文件才可播放)
- * and archiveInventory.ts a-movies. Every per-media field is either the real
- * filename, the real file byte size (stat), a deterministic extension→MIME
- * rule, or the governance license policy — nothing is test-authored.
+ * F-5 Archival Media — production chain proof (P1-01 V4 closure).
+ *
+ * Chain under test (all production code/data paths):
+ *   real customer media bytes (hfmzl/皇甫谧/皇甫谧电影/)
+ *     → governed per-media source record (archiveInventory ARCHIVE_MEDIA_RECORDS)
+ *     → production media projection (data/mediaProjection.projectPublicMedia)
+ *     → runtime readback (PersonDetailView → fetchPublicMedia transport)
+ *     → rendered archival media
+ *
+ * fsModule/MEDIA_SOURCE_DIR are used ONLY for fail-closed SOURCE-DRIFT
+ * detection (the governed record's captured byte_size/sha256/filename must
+ * still match the real files) — the projection itself is never test-derived.
  */
 const fsModule = (await import('node:fs' as string)) as unknown as {
   readdirSync(path: string): string[]
   statSync(path: string): { size: number }
+  createReadStream(path: string): NodeReadStream
 }
 const MEDIA_SOURCE_DIR = `${(globalThis as { process?: { cwd(): string } }).process?.cwd() ?? '.'}/../../hfmzl/皇甫谧/皇甫谧电影`
-const MEDIA_LICENSE_BASIS = '授权公开（存在文件才可播放）'
-const MIME_BY_EXTENSION: Record<string, string> = {
-  '.mpg': 'video/mpeg',
-  '.mpeg': 'video/mpeg',
-  '.mp4': 'video/mp4',
+
+interface NodeReadStream {
+  on(event: 'data', cb: (chunk: Uint8Array) => void): NodeReadStream
+  on(event: 'end', cb: () => void): NodeReadStream
+  on(event: 'error', cb: (err: Error) => void): NodeReadStream
 }
 
-interface DerivedMediaRecord {
-  id: string
-  name: string
-  object_key: string
-  mime_type: string
-  byte_size: number
-  rights_holder: string
-  license_basis: string
-  restriction: null
-  category: 'movie'
-  publication_state: string
-}
-
-/** Deterministic domain projection derived from the authoritative media files. */
-function deriveMediaProjection(): DerivedMediaRecord[] {
-  const files = fsModule
-    .readdirSync(MEDIA_SOURCE_DIR)
-    .filter((f) => f.endsWith('.mpg') || f.endsWith('.mp4'))
-    .sort()
-  if (files.length === 0) {
-    throw new Error(`F-5 media source of truth missing: ${MEDIA_SOURCE_DIR}`)
+/** SHA-256 of a real file (streamed; used only for source-drift detection). */
+async function hashFileSha256(path: string): Promise<string> {
+  const cryptoModule = (await import('node:crypto' as string)) as unknown as {
+    createHash(algorithm: string): { update(data: Uint8Array): void; digest(encoding: string): string }
   }
-  return files.map((objectKey) => {
-    const dot = objectKey.lastIndexOf('.')
-    const stem = dot > 0 ? objectKey.slice(0, dot) : objectKey
-    const ext = dot > 0 ? objectKey.slice(dot) : ''
-    return {
-      id: stem,
-      name: stem,
-      object_key: objectKey,
-      mime_type: MIME_BY_EXTENSION[ext] ?? 'application/octet-stream',
-      byte_size: fsModule.statSync(`${MEDIA_SOURCE_DIR}/${objectKey}`).size,
-      rights_holder: '客户提供',
-      license_basis: MEDIA_LICENSE_BASIS,
-      restriction: null,
-      category: 'movie',
-      publication_state: 'published',
-    }
+  const hash = cryptoModule.createHash('sha256')
+  await new Promise<void>((resolve, reject) => {
+    const stream = fsModule.createReadStream(path)
+    stream.on('data', (chunk: Uint8Array) => {
+      hash.update(chunk)
+    })
+    stream.on('end', () => resolve())
+    stream.on('error', reject)
   })
+  return hash.digest('hex')
 }
 
-const MEDIA = deriveMediaProjection()
-const MEDIA_ENVELOPE = { items: MEDIA, total: MEDIA.length }
+/** Production projection output (the same module the E2E imports). */
+const MEDIA = projectPublicMedia('movie')
+const MEDIA_ENVELOPE = { items: projectPublicMedia(), total: projectPublicMedia().length }
 
 const PERSON = {
   entity_id: 'person-huangfu-mi',
@@ -252,44 +234,72 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
     expect(archive?.count).toBe(INVENTORY_MOVIES)
   })
 
-  it('F-5 Archival Media — per-media projection derives from the authoritative source files (no synthetic fixture)', () => {
+  it('F-5 Archival Media — governed per-media source records exist with mechanically captured fields', () => {
     const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
     expect(archive).toBeDefined()
+    expect(ARCHIVE_MEDIA_RECORDS).toHaveLength(INVENTORY_MOVIES)
     const strip = (s: string) => s.replace(/\s+/g, '')
-    // count matches the authoritative inventory and the source directory
-    expect(MEDIA).toHaveLength(INVENTORY_MOVIES)
-    const realFiles = fsModule.readdirSync(MEDIA_SOURCE_DIR)
-    for (const rec of MEDIA) {
-      // the real file exists and its name is recorded in the authoritative
-      // archiveInventory a-movies description (asset-map row 31 filenames)
-      expect(realFiles).toContain(rec.object_key)
-      expect(strip(archive!.description)).toContain(strip(rec.name))
+    for (const rec of ARCHIVE_MEDIA_RECORDS) {
+      // source identity (object_key) + real filename + governed title
+      expect(rec.id).toBe(rec.objectKey)
+      expect(rec.objectKey).toContain('皇甫谧/皇甫谧电影/')
+      expect(rec.filename).toMatch(/\.mpg$/)
+      // governed title recorded in a-movies description / asset map
+      expect(strip(archive!.description)).toContain(strip(rec.title))
+      // mechanically captured bytes + checksum + MIME
+      expect(rec.byteSize).toBeGreaterThan(0)
+      expect(rec.sha256).toMatch(/^[0-9a-f]{64}$/)
+      expect(rec.mimeType).toMatch(/^video\//)
+      // governance license policy (asset-map row 57)
+      expect(rec.licenseBasis).toBe('授权公开（存在文件才可播放）')
+      // not yet imported into governed object storage (admission pending)
+      expect(rec.importState).toBe('NOT_IMPORTED')
     }
   })
 
-  it('F-5 Archival Media — field-level lineage: every projected field derives from a real source or a deterministic rule', () => {
-    for (const rec of MEDIA) {
-      const dot = rec.object_key.lastIndexOf('.')
-      const stem = dot > 0 ? rec.object_key.slice(0, dot) : rec.object_key
-      const ext = dot > 0 ? rec.object_key.slice(dot) : ''
-      // id/title ← deterministic filename stem (real filename)
-      expect(rec.id).toBe(stem)
-      expect(rec.name).toBe(stem)
-      // object_key ← real filename
-      expect(fsModule.readdirSync(MEDIA_SOURCE_DIR)).toContain(rec.object_key)
-      // mime_type ← deterministic extension→MIME rule (.mpg → video/mpeg)
-      expect(rec.mime_type).toBe(MIME_BY_EXTENSION[ext])
-      // byte_size ← real file stat (actual bytes)
-      expect(rec.byte_size).toBe(fsModule.statSync(`${MEDIA_SOURCE_DIR}/${rec.object_key}`).size)
-      expect(rec.byte_size).toBeGreaterThan(0)
-      // license_basis ← governance policy (asset-map row 57)
-      expect(rec.license_basis).toBe(MEDIA_LICENSE_BASIS)
-      // category ← archiveInventory a-movies category
-      expect(rec.category).toBe('movie')
+  it('F-5 Archival Media — production projection maps governed records to MediaAsset items (test-production equivalence)', () => {
+    const projected = projectPublicMedia()
+    expect(projected).toHaveLength(ARCHIVE_MEDIA_RECORDS.length)
+    for (const rec of ARCHIVE_MEDIA_RECORDS) {
+      const item = projected.find((p) => p.object_key === rec.objectKey)
+      expect(item).toBeDefined()
+      // every projected field traces to the governed record (no test-authored values)
+      expect(item!.id).toBe(rec.id)
+      expect(item!.name).toBe(rec.title)
+      expect(item!.object_key).toBe(rec.objectKey)
+      expect(item!.mime_type).toBe(rec.mimeType)
+      expect(item!.byte_size).toBe(rec.byteSize)
+      expect(item!.rights_holder).toBe(rec.rightsHolder)
+      expect(item!.license_basis).toBe(rec.licenseBasis)
+      expect(item!.category).toBe('movie')
+      expect(item!.publication_state).toBe('published')
     }
+    // backend category rule: object-key path containing 电影 → movie
+    expect(projectPublicMedia('movie')).toHaveLength(ARCHIVE_MEDIA_RECORDS.length)
   })
 
-  it('F-5 Archival Media — runtime readback: rendered metadata matches the derived projection', async () => {
+  it(
+    'F-5 Archival Media — fail-closed source-drift detection against the real media files',
+    async () => {
+      const realFiles = fsModule
+        .readdirSync(MEDIA_SOURCE_DIR)
+        .filter((f) => f.endsWith('.mpg') || f.endsWith('.mp4'))
+      expect(realFiles).toHaveLength(INVENTORY_MOVIES)
+      for (const rec of ARCHIVE_MEDIA_RECORDS) {
+        const realPath = `${MEDIA_SOURCE_DIR}/${rec.filename}`
+        // real file exists and the governed filename matches
+        expect(realFiles).toContain(rec.filename)
+        // byte size still matches the real file stat
+        expect(fsModule.statSync(realPath).size).toBe(rec.byteSize)
+        // checksum still matches the real file bytes
+        const hash = await hashFileSha256(realPath)
+        expect(hash).toBe(rec.sha256)
+      }
+    },
+    120000,
+  )
+
+  it('F-5 Archival Media — runtime readback: rendered metadata matches the production projection', async () => {
     const wrapper = await mountPerson()
     const cards = wrapper.findAll('.movie-card')
     expect(cards).toHaveLength(MEDIA.length)
@@ -300,7 +310,7 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
     for (let i = 0; i < MEDIA.length; i += 1) {
       expect(metas[i]).toContain('影视资料') // category label
       expect(metas[i]).toContain(formatBytes(MEDIA[i].byte_size)) // real size → formatBytes
-      expect(rights[i]).toBe(MEDIA_LICENSE_BASIS) // governance license policy
+      expect(rights[i]).toBe(MEDIA[i].license_basis) // governed license policy
     }
   })
 

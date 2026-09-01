@@ -1,8 +1,8 @@
-# HFM-UX2-P1 Implementation Evidence v1 (Second Corrective)
+# HFM-UX2-P1 Implementation Evidence v1 (Third Corrective · V4)
 
-Status: UX2-P1 CORRECTED_V3 IMPLEMENTATION CANDIDATE · ready for independent
-re-audit (rejected V1 `7f603d385e258e62afab7dca6eba5210ed8a2d68`, rejected V2
-`af337ebc00f210ce1ef331503e8a95ae25b701dd` superseded)
+Status: UX2-P1 CORRECTED_V4 IMPLEMENTATION CANDIDATE · ready for independent
+re-audit (rejected V1 `7f603d385e258e62afab7dca6eba5210ed8a2d68`, V2
+`af337ebc00f210ce1ef331503e8a95ae25b701dd`, V3 `c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee`)
 
 ## 1. WP Identity
 
@@ -11,89 +11,132 @@ WP = UX2-P1 · Person Archive
 PRE_WP_BASELINE = 2b315795e43faf92e03cd3db2c74b18c47c0927e
 REJECTED_V1 = 7f603d385e258e62afab7dca6eba5210ed8a2d68
 REJECTED_V2 = af337ebc00f210ce1ef331503e8a95ae25b701dd
-CORRECTIVE_BASIS = rejected V2 (linear successor; no amend/squash)
+REJECTED_V3 = c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee
+CORRECTIVE_BASIS = rejected V3 (linear successor; no amend/squash)
 ```
 
-## 2. This Corrective Pass — P1-01 F-5 Archival Media Provenance Closure
+## 2. This Corrective Pass — P1-01 Production Media Source-of-Truth / Projection Closure
 
-Prior passes closed P0-01 / P0-02 / P1-02 / P2-02. This pass closes P1-01
-only: the F-5 archival media acceptance proof now derives from the
-AUTHORITATIVE per-media source instead of a test-authored fixture.
+Prior passes closed P0-01 / P0-02 / P1-02 / P2-02. This pass closes P1-01 by
+moving the F-5 archival media proof from test-derived media to a TRACKED
+GOVERNED PER-MEDIA SOURCE RECORD + a PRODUCTION MEDIA PROJECTION consumed
+through the same runtime path as production.
+
+### Production chain (all production code/data paths)
+
+```text
+REAL CUSTOMER MEDIA BYTES
+  hfmzl/皇甫谧/皇甫谧电影/皇甫谧一.mpg                     (1,009,262,592 B)
+  hfmzl/皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg (718,133,252 B)
+    ↓
+TRACKED GOVERNED PER-MEDIA SOURCE RECORD
+  apps/frontend/src/data/archiveInventory.ts → ARCHIVE_MEDIA_RECORDS
+  (per-media: id/objectKey/filename/title/category/mimeType/byteSize/sha256/
+   rightsHolder/licenseBasis/sourceName/provenanceRef/importState)
+    ↓
+PRODUCTION MEDIA PROJECTION
+  apps/frontend/src/data/mediaProjection.ts → projectPublicMedia()
+  (canonical equivalent of backend /api/v1/public/media rules: category from
+   object-key path 电影→movie; name from governed title; pass-through fields)
+    ↓
+PUBLIC MEDIA RUNTIME READBACK
+  fetchPublicMedia('movie') → PersonDetailView (unchanged production runtime)
+    ↓
+PERSON ARCHIVE RENDERING + ACCEPTANCE ASSERTIONS
+```
 
 ### MEDIA_SOURCE_OF_TRUTH
 
 ```text
-hfmzl/皇甫谧/皇甫谧电影/
-  皇甫谧一.mpg
-  《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
+hfmzl/皇甫谧/皇甫谧电影/ (raw customer files, outside tracked Git history)
 ```
 
-Tracked governance/domain records binding this source:
-
-- `docs/design/HFM-CONTENT-ASSET-MAP.md` row 31 (filenames + count 2) and
-  row 57 (license policy 授权公开（存在文件才可播放）)
-- `apps/frontend/src/data/archiveInventory.ts` `a-movies` (sourceName
-  客户提供：皇甫谧电影资料; description naming both movies; count
-  `INVENTORY_MOVIES = 2`; status AVAILABLE)
-- `apps/frontend/src/data/contentInventory.ts` `INVENTORY_MOVIES = 2`
-- backend `phase2/media/models.py` defines the domain `MediaAsset` shape
-  (schema only; no seed rows — per-media records exist as the real files)
-
-### MEDIA_FIELD_LINEAGE
-
-| Field | Source → projection |
-| --- | --- |
-| id | real filename stem (deterministic identity) |
-| name/title | real filename stem (asset-map row 31 filenames) |
-| object_key | real filename |
-| mime_type | deterministic extension→MIME rule (`.mpg` → `video/mpeg`) |
-| byte_size | real file stat (actual bytes) |
-| rights_holder | 客户提供 (a-movies sourceName policy) |
-| license_basis | governance policy 授权公开（存在文件才可播放）(asset-map row 57) |
-| restriction | null (no restriction recorded) |
-| category | movie (a-movies category: media) |
-| publication_state | published (a-movies status AVAILABLE → published projection) |
-
-No field is test-authored; the tests obtain values from the real files and
-recorded governance/domain sources, or apply the documented deterministic
-rules above.
-
-### Proof chain (tests)
+### GOVERNED_PER_MEDIA_RECORD
 
 ```text
-AUTHORITATIVE_SOURCE      = PASS (real files + a-movies + asset map)
-PER_MEDIA_SOURCE_RECORDS  = PASS (both real .mpg files enumerated)
-API_OR_DOMAIN_PROJECTION  = PASS (deterministic derivation rules tested)
-RUNTIME_READBACK          = PASS (fetchPublicMedia mock fed by derived values → page)
-RENDERED_METADATA         = PASS (titles/formatBytes sizes/license asserted)
-FIELD_LEVEL_PROVENANCE    = PASS (per-field lineage test)
-LICENSE_BASIS_PROVENANCE  = PASS (governance policy asserted)
-NO_SYNTHETIC_ACCEPTANCE_FIXTURE = YES (unit + e2e both derive from real files)
+apps/frontend/src/data/archiveInventory.ts → ARCHIVE_MEDIA_RECORDS (2 records)
+(extends the existing content-inventory system — no second inventory invented)
+```
+
+### PRODUCTION_PROJECTION
+
+```text
+apps/frontend/src/data/mediaProjection.ts → projectPublicMedia(kind?)
+```
+
+### RUNTIME_ENDPOINT_OR_READBACK
+
+```text
+fetchPublicMedia('movie') (services/api.ts) → PersonDetailView 影像资料
+```
+
+### FIELD_LINEAGE (every field mechanically traceable)
+
+| Field | Source → projection | Provenance |
+| --- | --- | --- |
+| id | governed record id = objectKey (MediaAsset unique identity; backend bytes endpoint + category rule key on object_key) | PASS |
+| name/title | governed record title (asset-map / a-movies recorded title) | PASS |
+| object_key | governed source register path (registerKey convention 皇甫谧/皇甫谧电影/ + filename; backend path-derived category rule) | PASS |
+| mime_type | captured from real file (MPEG program stream → video/mpeg), stored in governed record, pass-through | PASS |
+| byte_size | captured from real file stat (1,009,262,592 / 718,133,252), stored in governed record, pass-through | PASS |
+| sha256 | captured from real file bytes (streamed hash), stored in governed record, drift-checked | PASS |
+| license_basis | governance policy 授权公开（存在文件才可播放）(asset-map row 57), stored in governed record | PASS |
+| category | backend rule — object-key path containing 电影 → movie | PASS |
+| importState | NOT_IMPORTED (backend object-storage admission is a separate phase; no fabrication) | PASS |
+
+### Tests exercise the production transformation (not a reconstruction)
+
+- Unit: `projectPublicMedia()` imported from production; governed records
+  asserted field-by-field; TEST_PRODUCTION_EQUIVALENCE (governed record →
+  projection → MediaAssetItem); fail-closed source-drift detection re-verifies
+  real file existence / byte_size / SHA-256 against the governed record;
+  runtime readback renders the production-projection payload through the
+  fetchPublicMedia transport.
+- E2E: intercepted `/api/v1/public/media` response generated by importing
+  `projectPublicMedia()` — no media payload authored in the spec.
+
+```text
+RAW_MEDIA_BYTES = VERIFIED (2 files · sha256 captured · mime video/mpeg)
+PER_MEDIA_SOURCE_RECORDS = PASS
+PRODUCTION_MEDIA_PROJECTION = PASS
+API_OR_DOMAIN_PROJECTION = PASS
+RUNTIME_READBACK = PASS
+RENDERED_METADATA = PASS
+FIELD_LEVEL_PROVENANCE = PASS
+ID_PROVENANCE = PASS · TITLE_PROVENANCE = PASS · MIME_TYPE_PROVENANCE = PASS
+BYTE_SIZE_PROVENANCE = PASS · LICENSE_BASIS_PROVENANCE = PASS
+CATEGORY_PROVENANCE = PASS · OBJECT_KEY_PROVENANCE = PASS (register-path rule)
+CHECKSUM_PROVENANCE = PASS
+NO_SYNTHETIC_ACCEPTANCE_FIXTURE = YES
+SOURCE_DRIFT_DETECTION = PASS
+F5_ARCHIVAL_MEDIA_REAL_DATA_PROOF = PASS · F-5 = PASS
 ```
 
 ## 3. Corrective Scope
 
 | Finding | Disposition |
 | --- | --- |
-| P1-01 F-5 archival media real-data proof | CLOSED (this pass) |
+| P1-01 F-5 production media chain | CLOSED (this pass) |
 | P0-01 / P0-02 / P1-02 / P2-02 | CLOSED (prior passes, preserved) |
 | P2-01 candidate SHA placeholder | OPEN_DOCUMENTATION_ONLY — CLOSE_AT_UX2_P1_ACCEPTANCE_ARCHIVE |
 
-## 4. Changed Paths (V3 delta vs rejected V2)
+## 4. Changed Paths (V4 delta vs rejected V3)
 
 | Path | Change |
 | --- | --- |
-| `apps/frontend/src/__tests__/ux2_p1_person.spec.ts` | F-5 media tests derive from real files (source dir + stat + deterministic rules); field-lineage + runtime-readback tests added; no synthetic fixture |
-| `apps/frontend/e2e/ux2-p1-person.spec.ts` | intercepted media response generated from the real files + governance policy |
+| `apps/frontend/src/data/archiveInventory.ts` | governed per-media source records `ARCHIVE_MEDIA_RECORDS` (existing inventory system) |
+| `apps/frontend/src/data/mediaProjection.ts` | production media projection (backend-rule-equivalent) |
+| `apps/frontend/src/__tests__/ux2_p1_person.spec.ts` | tests import the production projection; governed-record + field-lineage + drift + readback tests |
+| `apps/frontend/e2e/ux2-p1-person.spec.ts` | intercepted response generated by the production projection |
 | `docs/ux2/g4/HFM-UX2-P1-IMPLEMENTATION-EVIDENCE-v1.md` | this record |
-| `apps/frontend/src/views/persons/PersonDetailView.vue` | UNCHANGED in V3 (runtime already renders the projection; P0-02 fix preserved) |
+| `apps/frontend/src/views/persons/PersonDetailView.vue` | UNCHANGED (runtime already consumes fetchPublicMedia) |
 
 ## 5. Test / Quality Results (independently reproduced)
 
 ```text
-TARGETED_TESTS      = 18/18 PASS (ux2_p1_person.spec.ts)
+TARGETED_TESTS      = 19/19 PASS (ux2_p1_person.spec.ts)
 P0_REGRESSION_TESTS = 58/58 PASS (ux2_p0_* — P0_REGRESSION = NONE)
-FULL_VITEST         = 271/271 PASS (30 files)
+FULL_VITEST         = 272/272 PASS (30 files)
 VUE_TSC             = PASS (0 errors)
 ESLINT              = 0_ERRORS_965_WARNINGS (actual reproduction; repo-wide
                       pre-existing style-warning baseline; gate is errors)
@@ -129,7 +172,7 @@ ROLLBACK_TARGET = 2b315795e43faf92e03cd3db2c74b18c47c0927e (PRE_WP_BASELINE)
 ## 9. Commit
 
 ```text
-UX2_P1_CORRECTED_CANDIDATE_V3 = <commit SHA recorded at delivery>
-CANDIDATE_PARENT = af337ebc00f210ce1ef331503e8a95ae25b701dd (rejected V2)
+UX2_P1_CORRECTED_CANDIDATE_V4 = <commit SHA recorded at delivery>
+CANDIDATE_PARENT = c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee (rejected V3)
 OUT_OF_SCOPE_CONFIRMED = YES (UX2-P2..P7 delta ZERO; P0 primitive delta ZERO)
 ```

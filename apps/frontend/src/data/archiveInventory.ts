@@ -100,6 +100,85 @@ export const ARCHIVE_RECORDS: ArchiveRecord[] = [
   },
 ]
 
+/* ==========================================================================
+   Governed per-media source records (UX2-P1 F-5 closure)
+   ==========================================================================
+   One record per real customer media file — MEDIA_SOURCE_OF_TRUTH:
+     hfmzl/皇甫谧/皇甫谧电影/皇甫谧一.mpg
+     hfmzl/皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
+   recorded in the governance asset map (docs/design/HFM-CONTENT-ASSET-MAP.md
+   rows 31/57: filenames + count 2 + license policy 授权公开（存在文件才可播放）)
+   and the aggregate archive record `a-movies` above.
+
+   Values are captured mechanically from the real files (byteSize = file stat,
+   sha256 = hash of the real bytes, mimeType = detected MPEG program stream,
+   title = governed asset-map title) or from frozen governance (licenseBasis).
+   The fail-closed source-drift test re-verifies them against the real files.
+
+   The media is NOT yet imported into backend object storage (importState
+   NOT_IMPORTED; backend content admission is a separate phase). objectKey
+   follows the existing registerKey source-path convention and the backend
+   category rule (path containing 电影 → movie) — it is the governed source
+   identity, not a fabricated storage key.
+   ========================================================================== */
+export interface MediaSourceRecord {
+  /** stable source identity — MediaAsset unique identity (object_key). */
+  id: string
+  /** governed source register path (registerKey-relative + filename). */
+  objectKey: string
+  /** real source filename. */
+  filename: string
+  /** governed display title (asset map / a-movies recorded title). */
+  title: string
+  category: 'movie'
+  /** captured from the real file (detected MPEG program stream). */
+  mimeType: string
+  /** captured from the real file stat. */
+  byteSize: number
+  /** captured from the real file bytes. */
+  sha256: string
+  rightsHolder: string
+  /** governing rule: asset-map row 57 授权公开（存在文件才可播放）. */
+  licenseBasis: string
+  sourceName: string
+  provenanceRef: string
+  /** backend object-storage import state (admission pending). */
+  importState: 'NOT_IMPORTED'
+}
+
+export const ARCHIVE_MEDIA_RECORDS: MediaSourceRecord[] = [
+  {
+    id: '皇甫谧/皇甫谧电影/皇甫谧一.mpg',
+    objectKey: '皇甫谧/皇甫谧电影/皇甫谧一.mpg',
+    filename: '皇甫谧一.mpg',
+    title: '《皇甫谧一》',
+    category: 'movie',
+    mimeType: 'video/mpeg',
+    byteSize: 1009262592,
+    sha256: '1395a8b57ee998f71979dd5ba47c4ff50dad8fd121b27567e561e9f93085e0c0',
+    rightsHolder: '客户提供',
+    licenseBasis: '授权公开（存在文件才可播放）',
+    sourceName: '客户提供：皇甫谧电影资料',
+    provenanceRef: 'docs/design/HFM-CONTENT-ASSET-MAP.md row 31/57 · archiveInventory a-movies',
+    importState: 'NOT_IMPORTED',
+  },
+  {
+    id: '皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg',
+    objectKey: '皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg',
+    filename: '《针灸鼻祖皇甫谧》第1集 大器晚成.mpg',
+    title: '《针灸鼻祖皇甫谧》第 1 集 大器晚成',
+    category: 'movie',
+    mimeType: 'video/mpeg',
+    byteSize: 718133252,
+    sha256: '14584639fef88bd95060e84fe4a80611385bf3b5fdbd6f0796470f0f350a97f1',
+    rightsHolder: '客户提供',
+    licenseBasis: '授权公开（存在文件才可播放）',
+    sourceName: '客户提供：皇甫谧电影资料',
+    provenanceRef: 'docs/design/HFM-CONTENT-ASSET-MAP.md row 31/57 · archiveInventory a-movies',
+    importState: 'NOT_IMPORTED',
+  },
+]
+
 export const ARCHIVE_GROUPS: ArchiveCategoryGroup[] = [
   {
     category: 'hfm-person',
