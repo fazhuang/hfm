@@ -1,0 +1,133 @@
+# HFM-UX2-P1 Acceptance Archive
+
+Status: UX2-P1 FROZEN · ACCEPTANCE_ARCHIVED_AND_FROZEN · immutable acceptance baseline
+Independent audit verdict: `UX2_P1_ACCEPTED`
+
+## 1. Archive Identity
+
+```text
+WP = UX2-P1
+WP_TITLE = Person Archive
+PRE_WP_BASELINE = 2b315795e43faf92e03cd3db2c74b18c47c0927e
+REJECTED_V1 = 7f603d385e258e62afab7dca6eba5210ed8a2d68
+REJECTED_V2 = af337ebc00f210ce1ef331503e8a95ae25b701dd
+REJECTED_V3 = c5fb2064c5b67b61eea9fa43dc5cc8dd706bd5ee
+REJECTED_V4 = 87a316d5240174fcda91cc24a40e65954f2a61bb
+GOVERNANCE_BLOCKED_V5 = 5c03574ba16cd4265cb31b46db4604bc09eb18eb
+F5_CONTRACT_AMENDMENT_BASELINE = 07da206044bb7498867c65dae7dbee9cea07b53a
+ACCEPTED_IMPLEMENTATION_CANDIDATE = 9eafcd5ef783e07402af0ba73ca1f18e44efba57
+FULL_LINEAGE = 2b315795 → 7f603d3 → af337eb → c5fb206 → 87a316d → 5c03574
+              → 07da206 → 9eafcd5
+```
+
+No amend · no squash · no history rewrite.
+
+## 2. Finding Disposition History
+
+```text
+P0-01 = CLOSED
+P0-02 = CLOSED
+P0-03 = CLOSED
+P1-01 = CLOSED_AFTER_F5_CONTRACT_RECONCILIATION
+P1-02 = CLOSED
+P2-01 = CLOSED_AT_ACCEPTANCE_ARCHIVE
+P2-02 = CLOSED
+P0-1 = OPEN_P2_NON_BLOCKING_REVERIFY_AT_P6   (preserved; not silently closed)
+```
+
+## 3. F-5 Governance Reconciliation (preserved history & final semantics)
+
+```text
+ORIGINAL_BLOCKER = UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH
+RECONCILIATION_DECISION = OPTION_C
+CONTRACT_CAPABILITY_MISMATCH = RESOLVED_BY_GOVERNANCE
+F5A = TRUTHFUL_PRODUCTION_EMPTY_STATE
+F5B = PRESENTATION_CAPABILITY_CONTRACT
+F5C = REAL_MEDIA_END_TO_END_DEFERRED_TO_PHASE2_P2-05
+DAG_CHANGE = NONE
+WP_SCOPE_CHANGE = NONE
+ALLOWLIST_CHANGE = NONE
+```
+
+Explicit statements:
+
+- UX2-P1 does NOT claim real customer media admission.
+- The current real production media runtime result is EMPTY
+  (`fetchPublicMedia('movie') → []`).
+- The truthful empty state (暂无影像资料。) is the accepted production behavior.
+- The presentation fixture proves UI capability only (PRESENTATION_CONTRACT_ONLY;
+  NOT admission evidence).
+- Real customer media admission / publication / streaming remains owned by
+  Phase 2 Content Admission / P2-05 (DEFERRED).
+
+## 4. Acceptance Test Results (Codex independently reproduced)
+
+```text
+TARGETED_TESTS = 19/19 passed
+P0_REGRESSION_TESTS = 58/58 passed
+FULL_VITEST = 272/272 passed
+VUE_TSC = PASS
+ESLINT = 0 errors / 965 warnings
+VITE_BUILD = PASS
+PLAYWRIGHT = 72/72 passed
+BROWSER_AXE = 0
+READER_QICHUAN_NAVIGATION = PASS
+READER_HOULUN_NAVIGATION = PASS
+KEYBOARD = PASS
+FOCUS = PASS
+ACCESSIBILITY = PASS
+RESPONSIVE = PASS
+P0_REGRESSION = NONE
+P0_PRIMITIVE_IMPLEMENTATION_DELTA = ZERO
+FORBIDDEN_PRODUCTION_PATH_DELTA = ZERO
+WORKTREE_AT_ACCEPTANCE = CLEAN
+```
+
+## 5. Accepted F-5 Semantics
+
+```text
+F-5 = PASS_UNDER_AMENDED_CONTRACT
+F5A_PRODUCTION_TRUTH = PASS
+  F5A_RUNTIME_MEDIA_RESULT = EMPTY
+  F5A_EMPTY_STATE = PASS
+  NO_FAKE_MEDIA = YES
+  NO_FALSE_RESOURCE_READY = YES
+  NO_FALSE_PLAYABILITY = YES
+  NO_FALSE_PUBLISHED_STATE = YES
+F5B_PRESENTATION_CAPABILITY = PASS
+  FIXTURE_CLASS = PRESENTATION_CONTRACT_ONLY
+  PRESENTATION_FIXTURE_IS_ADMISSION_EVIDENCE = NO
+F5C_REAL_MEDIA_END_TO_END = DEFERRED
+  F5C_OWNER = Phase_2_Content_Admission_P2-05
+```
+
+## 6. Archive Verdict
+
+```text
+INDEPENDENT_AUDIT_VERDICT = UX2_P1_ACCEPTED
+FINAL_ARCHIVE_VERDICT = UX2_P1_ACCEPTANCE_ARCHIVED_AND_FROZEN
+```
+
+## 7. Archive Scope & Integrity
+
+```text
+ARCHIVE_DELTA = documentation only:
+  docs/ux2/g4/HFM-UX2-P1-IMPLEMENTATION-EVIDENCE-v1.md  (P2-01 closure)
+  docs/ux2/g4/HFM-UX2-P1-ACCEPTANCE-ARCHIVE.md          (this record)
+PRODUCTION_CODE_DELTA_IN_ARCHIVE = ZERO
+(tested: git diff <accepted candidate> HEAD -- apps/frontend apps/backend
+ packages migrations schema server = EMPTY)
+WORKTREE = CLEAN
+```
+
+## 8. Frozen State
+
+```text
+UX2-P1 = FROZEN
+NEXT_EXECUTION_WP = UX2-P2
+UX2-P3 = READY_NOT_STARTED
+UX2-P4 = READY_NOT_STARTED
+UX2-P5 = BLOCKED
+UX2-P6 = BLOCKED
+UX2-P7 = BLOCKED
+```
