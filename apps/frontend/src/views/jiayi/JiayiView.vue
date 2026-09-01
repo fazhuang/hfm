@@ -23,13 +23,35 @@ import {
   JIAYI_PUBLIC_SOURCES,
   JIAYI_RELATED_WORKS,
 } from '../../data/jiayiView'
+import type { EditionRecord } from '../../types/jiayi'
+import { presentationLabel, resolvePresentationState } from '../../presentation/stateMapping'
 import type { TimelineEvent } from '../../types/timeline'
+import BibliographicRecord from '../../components/primitives/BibliographicRecord.vue'
 import EditionLineageImage from '../../components/jiayi/EditionLineageImage.vue'
 import Timeline from '../../components/Timeline.vue'
 
 defineOptions({ name: 'JiayiView' })
 
 const editionCount = computed(() => JIAYI_ANCIENT_EDITIONS.length + JIAYI_MODERN_EDITIONS.length)
+
+/* ---- UX2-P2: edition → BibliographicRecord props via the G1-C state mapping ----
+ * Every edition is METADATA_ONLY (存目) per the U-05 disposition (no digitized
+ * resource flag exists; no fake 阅读 CTA). The source label is the public
+ * source projection (JIAYI_PUBLIC_SOURCES.lunzhu) — internal register paths
+ * are never rendered. No genealogy edges are introduced (NB-03). */
+function toRecordProps(edition: EditionRecord) {
+  const state = resolvePresentationState({ contentStatus: edition.status, hasMetadata: true })
+  return {
+    title: edition.title,
+    year: edition.period,
+    edition: edition.imprint,
+    kind: edition.editionType === 'ancient' ? '古代版本' : '近现代整理',
+    source: JIAYI_PUBLIC_SOURCES.lunzhu,
+    status: state,
+    statusLabel: presentationLabel(state, { excerpt: true }),
+    description: edition.description,
+  }
+}
 
 /** Chronology only: year-sorted editions (no lineage implication). */
 const editionTimeline = computed<TimelineEvent[]>(() =>
@@ -109,6 +131,9 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
         客户提供的版本脉络图（正式展示资产）。图中关系为资料示意；结构化版本关系未建模（DATA-GAP），
         不据此推断未经证据确认的版本继承关系。
       </p>
+      <p class="lineage-state">
+        <span class="hfm-status" data-status="UNSTRUCTURED_OR_INCOMPLETE">版本关系整理中</span>
+      </p>
       <EditionLineageImage />
     </section>
 
@@ -119,34 +144,14 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
       <h3 class="edition-group-title">古代版本</h3>
       <ul class="edition-collection">
         <li v-for="edition in JIAYI_ANCIENT_EDITIONS" :key="edition.id" class="edition-card">
-          <p class="edition-card__title">{{ edition.title }}</p>
-          <p class="edition-card__period">
-            {{ edition.period }}<span v-if="edition.imprint"> · {{ edition.imprint }}</span>
-          </p>
-          <p class="edition-card__desc">{{ edition.description }}</p>
-          <p class="edition-card__meta">
-            <span class="edition-card__type">古代版本</span>
-            <span class="edition-card__status" title="元数据已录，数字化全文整理中"
-              >元数据已录</span
-            >
-          </p>
+          <BibliographicRecord v-bind="toRecordProps(edition)" />
         </li>
       </ul>
 
       <h3 class="edition-group-title">近现代整理版本</h3>
       <ul class="edition-collection">
         <li v-for="edition in JIAYI_MODERN_EDITIONS" :key="edition.id" class="edition-card">
-          <p class="edition-card__title">{{ edition.title }}</p>
-          <p class="edition-card__period">
-            {{ edition.period }}<span v-if="edition.imprint"> · {{ edition.imprint }}</span>
-          </p>
-          <p class="edition-card__desc">{{ edition.description }}</p>
-          <p class="edition-card__meta">
-            <span class="edition-card__type">近现代整理</span>
-            <span class="edition-card__status" title="元数据已录，数字化全文整理中"
-              >元数据已录</span
-            >
-          </p>
+          <BibliographicRecord v-bind="toRecordProps(edition)" />
         </li>
       </ul>
     </section>
@@ -338,54 +343,20 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
 }
 
 .edition-card {
-  display: grid;
-  gap: var(--hfm-space-1);
-  padding: var(--hfm-space-4) var(--hfm-space-5);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-md);
-  background: var(--hfm-color-surface);
-}
-
-.edition-card__title {
+  /* plain list wrapper — BibliographicRecord owns the record presentation */
+  list-style: none;
   margin: 0;
-  font-family: var(--hfm-font-serif);
-  font-weight: 600;
+  padding: var(--hfm-space-2) 0;
+  border-bottom: 1px solid var(--hfm-color-border);
 }
 
-.edition-card__period {
-  margin: 0;
-  color: var(--hfm-color-heritage);
-  font-size: var(--hfm-text-sm);
-  font-variant-numeric: tabular-nums;
+.edition-card:last-child {
+  border-bottom: none;
 }
 
-.edition-card__desc {
-  margin: 0;
-  color: var(--hfm-color-text-secondary);
-  font-size: var(--hfm-text-sm);
-}
-
-.edition-card__meta {
-  display: flex;
-  gap: var(--hfm-space-2);
-  margin: var(--hfm-space-1) 0 0;
-}
-
-.edition-card__type,
-.edition-card__status {
-  font-size: var(--hfm-text-xs);
-  padding: 2px var(--hfm-space-2);
-  border-radius: var(--hfm-radius-sm);
-}
-
-.edition-card__type {
-  background: var(--hfm-color-azure);
-  color: var(--hfm-color-on-accent);
-}
-
-.edition-card__status {
-  background: var(--hfm-color-success-surface);
-  color: var(--hfm-color-success);
+/* UX2-P2: DATA-GAP state (版本关系整理中) above the lineage visual */
+.lineage-state {
+  margin: 0 0 var(--hfm-space-3);
 }
 
 .related-list {
