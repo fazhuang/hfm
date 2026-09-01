@@ -10,7 +10,7 @@
  */
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { SearchType } from '../../types/search'
+import type { SearchIndexEntry, SearchType } from '../../types/search'
 import {
   AUDITED_PAPER_TOTAL,
   PAGE_SIZE,
@@ -20,8 +20,14 @@ import {
   searchTypeLabel,
 } from '../../data/searchIndex'
 import { parseSearchQuery, serializeSearchQuery } from '../../composables/useSearchQuery'
-import SearchHighlight from '../../components/search/SearchHighlight.vue'
+import {
+  presentationLabel,
+  resolvePresentationState,
+  type ContentStatus,
+} from '../../presentation/stateMapping'
+import BibliographicRecord from '../../components/primitives/BibliographicRecord.vue'
 import BibliographyEntry from '../../components/search/BibliographyEntry.vue'
+import SearchHighlight from '../../components/search/SearchHighlight.vue'
 
 defineOptions({ name: 'SearchView' })
 
@@ -54,6 +60,30 @@ syncInput()
 
 /** Results matching q (before type filter) — used for facet counts. */
 const qResults = computed(() => searchIndex(q.value, 'all'))
+
+/* ---- UX2-P4: search result → BibliographicRecord props ----
+ * Results render through the shared record primitive; presentation state is
+ * derived from the entry's governed ContentStatus via the P0 G1-C mapping
+ * (RESOURCE_READY / METADATA_ONLY / UNSTRUCTURED_OR_INCOMPLETE). No
+ * full-text/PDF/reader/download affordance is invented (discovery ≠ resource
+ * availability); no page/volume citation is synthesized (NB-06; U-04). */
+function toRecordProps(entry: SearchIndexEntry) {
+  const state = resolvePresentationState({
+    contentStatus: entry.status as ContentStatus | undefined,
+    hasMetadata: true,
+  })
+  return {
+    title: entry.title,
+    author: entry.authors?.length ? entry.authors.join('；') : undefined,
+    year: entry.year !== undefined ? String(entry.year) : undefined,
+    kind: searchTypeLabel(entry.type),
+    source: entry.sourceName,
+    status: state,
+    statusLabel: presentationLabel(state),
+    description: entry.subtitle,
+    href: entry.route,
+  }
+}
 
 /** Results after type filter — the actual result set. */
 const filteredResults = computed(() => searchIndex(q.value, type.value))
@@ -111,7 +141,7 @@ const SUGGESTIONS = [
       <p class="hfm-eyebrow">数字人文 · 学术检索</p>
       <h1 id="search-heading" class="search-hero__title">检索</h1>
 
-      <form class="search-form" role="search" @submit.prevent="onSubmit">
+      <form class="search-form" role="search" aria-label="平台内容检索" @submit.prevent="onSubmit">
         <label class="visually-hidden" for="search-input">检索平台内容</label>
         <input
           id="search-input"
@@ -213,39 +243,24 @@ const SUGGESTIONS = [
 
           <!-- Results -->
           <ol v-else class="result-list">
-            <template v-for="result in pagedResults" :key="result.entry.id">
-              <!-- PAPER → BibliographyEntry -->
-              <BibliographyEntry
-                v-if="result.entry.type === 'paper'"
-                :entry="result.entry"
-                :query="q"
-              />
-              <!-- others → generic scholarly row -->
-              <li v-else class="result-row">
-                <p class="result-row__type">{{ searchTypeLabel(result.entry.type) }}</p>
-                <p class="result-row__title">
-                  <a v-if="result.entry.route" :href="result.entry.route" class="result-row__link">
-                    <SearchHighlight :text="result.entry.title" :query="q" />
-                  </a>
-                  <template v-else
-                    ><SearchHighlight :text="result.entry.title" :query="q"
-                  /></template>
-                </p>
-                <p v-if="result.entry.subtitle" class="result-row__meta">
-                  <SearchHighlight :text="result.entry.subtitle" :query="q" />
-                </p>
-                <p
-                  v-if="result.entry.authors && result.entry.authors.length"
-                  class="result-row__authors"
-                >
-                  {{ result.entry.authors.join('；') }}
-                </p>
-                <p v-if="result.entry.sourceName" class="result-row__source">
-                  {{ result.entry.sourceName }}
-                </p>
-              </li>
-            </template>
-          </ol>
+              <template v-for="result in pagedResults" :key="result.entry.id">
+                <!-- PAPER → aligned BibliographyEntry (BibliographicRecord-based) -->
+                <BibliographyEntry v-if="result.entry.type === 'paper'" :entry="result.entry" />
+                <!-- others → BibliographicRecord shared primitive (highlighted
+                     result title preserved; record carries badge + metadata) -->
+                <li v-else class="result-item">
+                  <p class="result-item__title">
+                    <a v-if="result.entry.route" :href="result.entry.route" class="result-item__link">
+                      <SearchHighlight :text="result.entry.title" :query="q" />
+                    </a>
+                    <template v-else
+                      ><SearchHighlight :text="result.entry.title" :query="q"
+                    /></template>
+                  </p>
+                  <BibliographicRecord v-bind="toRecordProps(result.entry)" />
+                </li>
+              </template>
+            </ol>
 
           <!-- Pagination -->
           <nav v-if="totalPages > 1" class="pager" aria-label="结果分页">
@@ -470,42 +485,32 @@ const SUGGESTIONS = [
   padding: 0;
 }
 
-.result-row {
-  display: grid;
-  gap: var(--hfm-space-1);
-  padding: var(--hfm-space-3) var(--hfm-space-4);
+/* UX2-P4: BibliographicRecord result item — highlighted result title above
+ * the shared record primitive */
+.result-item {
+  list-style: none;
+  margin: 0;
+  padding: var(--hfm-space-2) 0;
   border-bottom: 1px solid var(--hfm-color-border);
 }
 
-.result-row__type {
-  margin: 0;
-  font-size: var(--hfm-text-xs);
-  color: var(--hfm-color-azure);
-  font-weight: 600;
+.result-item:last-child {
+  border-bottom: none;
 }
 
-.result-row__title {
-  margin: 0;
+.result-item__title {
+  margin: 0 0 var(--hfm-space-1);
   font-weight: 600;
   line-height: var(--hfm-leading-normal);
 }
 
-.result-row__link {
+.result-item__link {
   color: var(--hfm-color-text);
   text-decoration: none;
 }
 
-.result-row__link:hover {
+.result-item__link:hover {
   color: var(--hfm-color-accent);
-}
-
-.result-row__meta,
-.result-row__authors,
-.result-row__source {
-  margin: 0;
-  font-size: var(--hfm-text-sm);
-  color: var(--hfm-color-text-muted);
-  overflow-wrap: anywhere;
 }
 
 .empty-state {

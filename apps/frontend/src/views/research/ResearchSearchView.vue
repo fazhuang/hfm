@@ -16,6 +16,7 @@ import {
 } from '../../data/searchIndex'
 import { parseSearchQuery, serializeSearchQuery } from '../../composables/useSearchQuery'
 import type { SearchType } from '../../types/search'
+import { presentationLabel, resolvePresentationState, type ContentStatus } from '../../presentation/stateMapping'
 import SearchHighlight from '../../components/search/SearchHighlight.vue'
 
 defineOptions({ name: 'ResearchSearchView' })
@@ -62,6 +63,14 @@ function researchHref(entryType: string, id: string): string {
   if (entryType === 'archive') return `/research/entity/archive/${id}`
   if (entryType === 'paper') return `/research/entity/paper/${id}`
   return `/research/entity/${entryType}/${id}`
+}
+
+/* UX2-P4: presentation-state label via the shared P0 G1-C mapping — the local
+ * status ternary is removed (no local duplication of presentation-state logic). */
+function entryStateLabel(status: string): string {
+  return presentationLabel(
+    resolvePresentationState({ contentStatus: status as ContentStatus | undefined, hasMetadata: true }),
+  )
 }
 </script>
 
@@ -146,15 +155,7 @@ function researchHref(entryType: string, id: string): string {
               </template>
               <div>
                 <dt>状态</dt>
-                <dd>
-                  {{
-                    result.entry.status === 'AVAILABLE'
-                      ? '已展示'
-                      : result.entry.status === 'METADATA_ONLY'
-                        ? '元数据已录'
-                        : '整理中'
-                  }}
-                </dd>
+                <dd>{{ entryStateLabel(result.entry.status) }}</dd>
               </div>
               <template v-if="result.entry.sourceName">
                 <div>
