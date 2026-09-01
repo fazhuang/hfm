@@ -1,69 +1,29 @@
 /**
- * UX2-P1 Person Archive — DHObjectLayout + G1-C states + F-5 coverage tests.
+ * UX2-P1 Person Archive — DHObjectLayout + G1-C states + F-5 (non-media)
+ * coverage tests.
  *
  * Covers the UX2-P1 contract: DHObjectLayout regions/states render on the
  * person page; G1-C presentation states (RESOURCE_READY / SCHOLARLY_UNCERTAIN /
  * METADATA_ONLY / ABSENT_OPTIONAL); F-5 Life Events / Historical Assessments
- * (后论) / Archival Media from real data; heading hierarchy; negative
- * boundaries (no fabrication, no Later Scholarship, no synthesized facts).
+ * (后论) from real data; heading hierarchy; negative boundaries; the pre-existing
+ * archive aggregate `a-movies` traceability.
+ *
+ * NOTE (V5 scope restoration): F-5 Archival Media REAL-data runtime proof is
+ * NOT claimed here. The real production chain (governed per-media record →
+ * backend media_assets → public API → fetchPublicMedia) does not exist in the
+ * frozen production state, and the frozen P1 allowlist forbids creating it
+ * (data/** and services/** are READ_ONLY; backend/** is FORBIDDEN). Blocked by
+ * UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH (governance escalation; see
+ * docs/ux2/g4/HFM-UX2-P1-IMPLEMENTATION-EVIDENCE-v1.md). No synthetic media
+ * acceptance fixture is used.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import axe from 'axe-core'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
-import { ARCHIVE_RECORDS, ARCHIVE_MEDIA_RECORDS } from '../data/archiveInventory'
-import { projectPublicMedia } from '../data/mediaProjection'
+import { ARCHIVE_RECORDS } from '../data/archiveInventory'
 import { INVENTORY_MOVIES } from '../data/contentInventory'
-import { formatBytes } from '../services/media'
-
-/**
- * F-5 Archival Media — production chain proof (P1-01 V4 closure).
- *
- * Chain under test (all production code/data paths):
- *   real customer media bytes (hfmzl/皇甫谧/皇甫谧电影/)
- *     → governed per-media source record (archiveInventory ARCHIVE_MEDIA_RECORDS)
- *     → production media projection (data/mediaProjection.projectPublicMedia)
- *     → runtime readback (PersonDetailView → fetchPublicMedia transport)
- *     → rendered archival media
- *
- * fsModule/MEDIA_SOURCE_DIR are used ONLY for fail-closed SOURCE-DRIFT
- * detection (the governed record's captured byte_size/sha256/filename must
- * still match the real files) — the projection itself is never test-derived.
- */
-const fsModule = (await import('node:fs' as string)) as unknown as {
-  readdirSync(path: string): string[]
-  statSync(path: string): { size: number }
-  createReadStream(path: string): NodeReadStream
-}
-const MEDIA_SOURCE_DIR = `${(globalThis as { process?: { cwd(): string } }).process?.cwd() ?? '.'}/../../hfmzl/皇甫谧/皇甫谧电影`
-
-interface NodeReadStream {
-  on(event: 'data', cb: (chunk: Uint8Array) => void): NodeReadStream
-  on(event: 'end', cb: () => void): NodeReadStream
-  on(event: 'error', cb: (err: Error) => void): NodeReadStream
-}
-
-/** SHA-256 of a real file (streamed; used only for source-drift detection). */
-async function hashFileSha256(path: string): Promise<string> {
-  const cryptoModule = (await import('node:crypto' as string)) as unknown as {
-    createHash(algorithm: string): { update(data: Uint8Array): void; digest(encoding: string): string }
-  }
-  const hash = cryptoModule.createHash('sha256')
-  await new Promise<void>((resolve, reject) => {
-    const stream = fsModule.createReadStream(path)
-    stream.on('data', (chunk: Uint8Array) => {
-      hash.update(chunk)
-    })
-    stream.on('end', () => resolve())
-    stream.on('error', reject)
-  })
-  return hash.digest('hex')
-}
-
-/** Production projection output (the same module the E2E imports). */
-const MEDIA = projectPublicMedia('movie')
-const MEDIA_ENVELOPE = { items: projectPublicMedia(), total: projectPublicMedia().length }
 
 const PERSON = {
   entity_id: 'person-huangfu-mi',
@@ -77,6 +37,10 @@ const PERSON = {
   events: [],
 }
 
+/** Empty media projection — the real production chain is not present in the
+ *  frozen state; the person page renders its absent state (暂无影像资料). */
+const MEDIA_EMPTY = { items: [], total: 0 }
+
 function stubFetch(): void {
   vi.stubGlobal(
     'fetch',
@@ -87,7 +51,7 @@ function stubFetch(): void {
         json: async () => ({ success: true, data }),
       })
       if (String(url).includes('/persons/')) return Promise.resolve(envelope(PERSON))
-      if (String(url).includes('/media')) return Promise.resolve(envelope(MEDIA_ENVELOPE))
+      if (String(url).includes('/media')) return Promise.resolve(envelope(MEDIA_EMPTY))
       return Promise.resolve(envelope(null))
     }),
   )
@@ -126,7 +90,6 @@ describe('UX2-P1 — DHObjectLayout regions & slot states', () => {
     const wrapper = await mountPerson()
     const layout = wrapper.find('[data-primitive="dh-object"]')
     expect(layout.exists()).toBe(true)
-    // header ABSENT_OPTIONAL collapses completely (hero owns the object title)
     expect(wrapper.find('[data-slot="header"]').exists()).toBe(false)
     expect(wrapper.find('[data-slot="context"]').attributes('data-slot-state')).toBe(
       'INCOMPLETE_WITH_EVIDENCE_STATE',
@@ -183,14 +146,12 @@ describe('UX2-P1 — DHObjectLayout regions & slot states', () => {
     expect(sems).toContain('EXPLICIT_RELATION')
     expect(sems).toContain('ASSOCIATED_CONTEXT')
     expect(sems).not.toContain('lineage')
-    // relations are text labels only — no svg/connector/line markup (text
-    // arrows like “阅读全文 →” are legitimate affordances, not connectors)
     const html = wrapper.html()
     expect(html).not.toMatch(/<svg|connector|arrow/)
   })
 })
 
-describe('UX2-P1 — F-5 coverage from real data', () => {
+describe('UX2-P1 — F-5 coverage from real data (non-media)', () => {
   it('Life Events: 生平 timeline renders the four confirmed life phases', async () => {
     const wrapper = await mountPerson()
     const titles = wrapper.findAll('.timeline__title').map((t) => t.text())
@@ -218,100 +179,14 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
     expect(section.find('a[href="/reader/qichuan"]').exists()).toBe(true)
   })
 
-  it('Archival Media: 影像资料 renders movies from the real media projection', async () => {
-    const wrapper = await mountPerson()
-    const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
-    expect(titles).toEqual(MEDIA.map((m) => m.name))
-    expect(titles.some((t) => t.includes('针灸鼻祖皇甫谧'))).toBe(true)
-  })
-
-  it('F-5 Archival Media — authoritative record exists with traceable provenance', () => {
+  it('archival media aggregate a-movies is traceable (pre-existing inventory record)', () => {
     const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
     expect(archive).toBeDefined()
     expect(archive?.status).toBe('AVAILABLE')
     expect(archive?.sourceName).toContain('客户提供：皇甫谧电影资料')
-    expect(INVENTORY_MOVIES).toBe(2)
     expect(archive?.count).toBe(INVENTORY_MOVIES)
-  })
-
-  it('F-5 Archival Media — governed per-media source records exist with mechanically captured fields', () => {
-    const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
-    expect(archive).toBeDefined()
-    expect(ARCHIVE_MEDIA_RECORDS).toHaveLength(INVENTORY_MOVIES)
-    const strip = (s: string) => s.replace(/\s+/g, '')
-    for (const rec of ARCHIVE_MEDIA_RECORDS) {
-      // source identity (object_key) + real filename + governed title
-      expect(rec.id).toBe(rec.objectKey)
-      expect(rec.objectKey).toContain('皇甫谧/皇甫谧电影/')
-      expect(rec.filename).toMatch(/\.mpg$/)
-      // governed title recorded in a-movies description / asset map
-      expect(strip(archive!.description)).toContain(strip(rec.title))
-      // mechanically captured bytes + checksum + MIME
-      expect(rec.byteSize).toBeGreaterThan(0)
-      expect(rec.sha256).toMatch(/^[0-9a-f]{64}$/)
-      expect(rec.mimeType).toMatch(/^video\//)
-      // governance license policy (asset-map row 57)
-      expect(rec.licenseBasis).toBe('授权公开（存在文件才可播放）')
-      // not yet imported into governed object storage (admission pending)
-      expect(rec.importState).toBe('NOT_IMPORTED')
-    }
-  })
-
-  it('F-5 Archival Media — production projection maps governed records to MediaAsset items (test-production equivalence)', () => {
-    const projected = projectPublicMedia()
-    expect(projected).toHaveLength(ARCHIVE_MEDIA_RECORDS.length)
-    for (const rec of ARCHIVE_MEDIA_RECORDS) {
-      const item = projected.find((p) => p.object_key === rec.objectKey)
-      expect(item).toBeDefined()
-      // every projected field traces to the governed record (no test-authored values)
-      expect(item!.id).toBe(rec.id)
-      expect(item!.name).toBe(rec.title)
-      expect(item!.object_key).toBe(rec.objectKey)
-      expect(item!.mime_type).toBe(rec.mimeType)
-      expect(item!.byte_size).toBe(rec.byteSize)
-      expect(item!.rights_holder).toBe(rec.rightsHolder)
-      expect(item!.license_basis).toBe(rec.licenseBasis)
-      expect(item!.category).toBe('movie')
-      expect(item!.publication_state).toBe('published')
-    }
-    // backend category rule: object-key path containing 电影 → movie
-    expect(projectPublicMedia('movie')).toHaveLength(ARCHIVE_MEDIA_RECORDS.length)
-  })
-
-  it(
-    'F-5 Archival Media — fail-closed source-drift detection against the real media files',
-    async () => {
-      const realFiles = fsModule
-        .readdirSync(MEDIA_SOURCE_DIR)
-        .filter((f) => f.endsWith('.mpg') || f.endsWith('.mp4'))
-      expect(realFiles).toHaveLength(INVENTORY_MOVIES)
-      for (const rec of ARCHIVE_MEDIA_RECORDS) {
-        const realPath = `${MEDIA_SOURCE_DIR}/${rec.filename}`
-        // real file exists and the governed filename matches
-        expect(realFiles).toContain(rec.filename)
-        // byte size still matches the real file stat
-        expect(fsModule.statSync(realPath).size).toBe(rec.byteSize)
-        // checksum still matches the real file bytes
-        const hash = await hashFileSha256(realPath)
-        expect(hash).toBe(rec.sha256)
-      }
-    },
-    120000,
-  )
-
-  it('F-5 Archival Media — runtime readback: rendered metadata matches the production projection', async () => {
-    const wrapper = await mountPerson()
-    const cards = wrapper.findAll('.movie-card')
-    expect(cards).toHaveLength(MEDIA.length)
-    const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
-    expect(titles).toEqual(MEDIA.map((m) => m.name))
-    const metas = wrapper.findAll('.movie-card__meta').map((n) => n.text())
-    const rights = wrapper.findAll('.movie-card__rights').map((n) => n.text())
-    for (let i = 0; i < MEDIA.length; i += 1) {
-      expect(metas[i]).toContain('影视资料') // category label
-      expect(metas[i]).toContain(formatBytes(MEDIA[i].byte_size)) // real size → formatBytes
-      expect(rights[i]).toBe(MEDIA[i].license_basis) // governed license policy
-    }
+    // F-5 REAL per-media runtime chain is NOT claimed (see file header note —
+    // blocked by UX2-P1-F5-CONTRACT-CAPABILITY-MISMATCH).
   })
 
   it('F-5 Later Scholarship is NOT added (DEFERRED)', async () => {
@@ -335,7 +210,6 @@ describe('UX2-P1 — heading hierarchy & negative boundaries', () => {
   it('no fabricated historical facts or synthesized bibliographic values', async () => {
     const wrapper = await mountPerson()
     const text = wrapper.text()
-    // synthesized citation locators (卷/页/章节 numbers) — never invented
     expect(text).not.toMatch(/第\s*\d+\s*(卷|页|章|节)/)
     expect(text).not.toContain('版本号')
     expect(text).not.toContain('馆藏')
