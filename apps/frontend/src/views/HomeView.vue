@@ -51,7 +51,7 @@ function onSearch(): void {
         <a class="home-hero__link" href="/search">检索文献</a>
       </div>
 
-      <form class="home-search" role="search" @submit.prevent="onSearch">
+      <form class="home-search" role="search" aria-label="平台内容检索" @submit.prevent="onSearch">
         <label class="visually-hidden" for="home-search-input">检索平台内容</label>
         <input
           id="home-search-input"
@@ -101,7 +101,10 @@ function onSearch(): void {
 
       <figure class="home-lineage">
         <img :src="HOME_JIAYI.lineage.src" :alt="HOME_JIAYI.lineage.alt" />
-        <figcaption>版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）</figcaption>
+        <figcaption>
+          <span class="hfm-status" data-status="UNSTRUCTURED_OR_INCOMPLETE">版本关系整理中</span>
+          <span class="home-lineage__caption">版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）</span>
+        </figcaption>
       </figure>
 
       <ul class="home-editions" aria-label="代表版本">
@@ -149,6 +152,9 @@ function onSearch(): void {
       <p class="hfm-eyebrow">非遗活态传承</p>
       <h2 id="feature-heritage-heading" class="home-section__title">{{ HOME_HERITAGE.heading }}</h2>
       <p class="home-section__lede">{{ HOME_HERITAGE.lede }}</p>
+      <p class="home-state-line">
+        <span class="hfm-status" data-status="UNSTRUCTURED_OR_INCOMPLETE">谱系整理中</span>
+      </p>
       <ul class="home-links">
         <li v-for="item in HOME_HERITAGE.items" :key="item.title">
           <a :href="item.href" class="home-links__title">{{ item.title }}</a>
@@ -397,6 +403,19 @@ function onSearch(): void {
   margin-top: var(--hfm-space-2);
   font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2);
+  align-items: baseline;
+}
+
+.home-lineage__caption {
+  margin: 0;
+}
+
+/* UX2-P5: surfaced presentation-state line (heritage PARTIAL lineage) */
+.home-state-line {
+  margin: 0 0 var(--hfm-space-4);
 }
 
 .home-editions {
