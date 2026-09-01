@@ -13,38 +13,70 @@
  *  - P1-02D responsive: no horizontal overflow at 375 / 1280 / 1920.
  */
 import { expect, test, type Page } from '@playwright/test'
+import { readdirSync, statSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { ARCHIVE_RECORDS } from '../src/data/archiveInventory'
 import { INVENTORY_MOVIES } from '../src/data/contentInventory'
 
 const ARCHIVE_MOVIES = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
 
-/** Deterministic projection of the authoritative a-movies record
- *  (客户提供：皇甫谧电影资料 → 《皇甫谧一》《针灸鼻祖皇甫谧》第 1 集 大器晚成;
- *  INVENTORY_MOVIES = 2). Bound to that record below — not a synthetic fixture. */
+/**
+ * MEDIA_SOURCE_OF_TRUTH — the two real customer media files
+ *   hfmzl/皇甫谧/皇甫谧电影/皇甫谧一.mpg
+ *   hfmzl/皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
+ * recorded in the governance asset map docs/design/HFM-CONTENT-ASSET-MAP.md
+ * (rows 31/57) and archiveInventory.ts a-movies. The intercepted API response
+ * is GENERATED from the real files (name/object_key/byte_size) + the
+ * governance license policy — never a manually duplicated fixture.
+ */
+const MEDIA_SOURCE_DIR = fileURLToPath(new URL('../../../hfmzl/皇甫谧/皇甫谧电影/', import.meta.url))
+const MEDIA_LICENSE_BASIS = '授权公开（存在文件才可播放）'
+const MIME_BY_EXTENSION: Record<string, string> = {
+  '.mpg': 'video/mpeg',
+  '.mpeg': 'video/mpeg',
+  '.mp4': 'video/mp4',
+}
+
+function deriveMediaProjection(): Array<{
+  id: string
+  name: string
+  object_key: string
+  mime_type: string
+  byte_size: number
+  rights_holder: string
+  license_basis: string
+  restriction: null
+  category: 'movie'
+  publication_state: string
+}> {
+  const files = readdirSync(MEDIA_SOURCE_DIR)
+    .filter((f) => f.endsWith('.mpg') || f.endsWith('.mp4'))
+    .sort()
+  if (files.length === 0) {
+    throw new Error(`F-5 media source of truth missing: ${MEDIA_SOURCE_DIR}`)
+  }
+  return files.map((objectKey) => {
+    const dot = objectKey.lastIndexOf('.')
+    const stem = dot > 0 ? objectKey.slice(0, dot) : objectKey
+    const ext = dot > 0 ? objectKey.slice(dot) : ''
+    return {
+      id: stem,
+      name: stem,
+      object_key: objectKey,
+      mime_type: MIME_BY_EXTENSION[ext] ?? 'application/octet-stream',
+      byte_size: statSync(`${MEDIA_SOURCE_DIR}/${objectKey}`).size,
+      rights_holder: '客户提供',
+      license_basis: MEDIA_LICENSE_BASIS,
+      restriction: null,
+      category: 'movie',
+      publication_state: 'published',
+    }
+  })
+}
+
 const MEDIA_PROJECTION = {
-  items: [
-    {
-      id: 'm1',
-      name: '《皇甫谧一》',
-      category: 'movie',
-      mime_type: 'video/mp4',
-      byte_size: 1024,
-      license_basis: '客户提供资料（已授权公开）',
-      restriction: null,
-      object_key: 'movies/huangfu-mi-1.mpg',
-    },
-    {
-      id: 'm2',
-      name: '《针灸鼻祖皇甫谧》第 1 集 大器晚成',
-      category: 'movie',
-      mime_type: 'video/mp4',
-      byte_size: 2048,
-      license_basis: '客户提供资料（已授权公开）',
-      restriction: null,
-      object_key: 'movies/huangfu-mi-2.mpg',
-    },
-  ],
-  total: 2,
+  items: deriveMediaProjection(),
+  total: INVENTORY_MOVIES,
 }
 
 async function mockPublicApi(page: Page): Promise<void> {
@@ -110,9 +142,9 @@ test.describe('UX2-P1 corrective — person archive surface', () => {
     for (const item of MEDIA_PROJECTION.items) {
       expect(strip(ARCHIVE_MOVIES!.description)).toContain(strip(item.name))
     }
-    await expect(page.locator('.movie-card__title')).toHaveCount(2)
+    await expect(page.locator('.movie-card__title')).toHaveCount(MEDIA_PROJECTION.items.length)
     const movieTitles = await page.locator('.movie-card__title').allTextContents()
-    expect(movieTitles).toEqual(['《皇甫谧一》', '《针灸鼻祖皇甫谧》第 1 集 大器晚成'])
+    expect(movieTitles).toEqual(MEDIA_PROJECTION.items.map((m) => m.name))
 
     // heading hierarchy: exactly one h1
     await expect(page.locator('h1')).toHaveCount(1)

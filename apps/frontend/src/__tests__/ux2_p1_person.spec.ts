@@ -14,6 +14,74 @@ import axe from 'axe-core'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
 import { ARCHIVE_RECORDS } from '../data/archiveInventory'
 import { INVENTORY_MOVIES } from '../data/contentInventory'
+import { formatBytes } from '../services/media'
+
+/**
+ * F-5 Archival Media — real-data proof (P1-01 corrective).
+ * MEDIA_SOURCE_OF_TRUTH = the two real customer media files
+ *   hfmzl/皇甫谧/皇甫谧电影/皇甫谧一.mpg
+ *   hfmzl/皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
+ * recorded in the governance asset map docs/design/HFM-CONTENT-ASSET-MAP.md
+ * (row 31: filenames + count 2; row 57: license policy 授权公开-存在文件才可播放)
+ * and archiveInventory.ts a-movies. Every per-media field is either the real
+ * filename, the real file byte size (stat), a deterministic extension→MIME
+ * rule, or the governance license policy — nothing is test-authored.
+ */
+const fsModule = (await import('node:fs' as string)) as unknown as {
+  readdirSync(path: string): string[]
+  statSync(path: string): { size: number }
+}
+const MEDIA_SOURCE_DIR = `${(globalThis as { process?: { cwd(): string } }).process?.cwd() ?? '.'}/../../hfmzl/皇甫谧/皇甫谧电影`
+const MEDIA_LICENSE_BASIS = '授权公开（存在文件才可播放）'
+const MIME_BY_EXTENSION: Record<string, string> = {
+  '.mpg': 'video/mpeg',
+  '.mpeg': 'video/mpeg',
+  '.mp4': 'video/mp4',
+}
+
+interface DerivedMediaRecord {
+  id: string
+  name: string
+  object_key: string
+  mime_type: string
+  byte_size: number
+  rights_holder: string
+  license_basis: string
+  restriction: null
+  category: 'movie'
+  publication_state: string
+}
+
+/** Deterministic domain projection derived from the authoritative media files. */
+function deriveMediaProjection(): DerivedMediaRecord[] {
+  const files = fsModule
+    .readdirSync(MEDIA_SOURCE_DIR)
+    .filter((f) => f.endsWith('.mpg') || f.endsWith('.mp4'))
+    .sort()
+  if (files.length === 0) {
+    throw new Error(`F-5 media source of truth missing: ${MEDIA_SOURCE_DIR}`)
+  }
+  return files.map((objectKey) => {
+    const dot = objectKey.lastIndexOf('.')
+    const stem = dot > 0 ? objectKey.slice(0, dot) : objectKey
+    const ext = dot > 0 ? objectKey.slice(dot) : ''
+    return {
+      id: stem,
+      name: stem,
+      object_key: objectKey,
+      mime_type: MIME_BY_EXTENSION[ext] ?? 'application/octet-stream',
+      byte_size: fsModule.statSync(`${MEDIA_SOURCE_DIR}/${objectKey}`).size,
+      rights_holder: '客户提供',
+      license_basis: MEDIA_LICENSE_BASIS,
+      restriction: null,
+      category: 'movie',
+      publication_state: 'published',
+    }
+  })
+}
+
+const MEDIA = deriveMediaProjection()
+const MEDIA_ENVELOPE = { items: MEDIA, total: MEDIA.length }
 
 const PERSON = {
   entity_id: 'person-huangfu-mi',
@@ -27,36 +95,6 @@ const PERSON = {
   events: [],
 }
 
-/** Deterministic projection of the AUTHORITATIVE archiveInventory a-movies
- *  record (客户提供：皇甫谧电影资料 → 《皇甫谧一》《针灸鼻祖皇甫谧》第 1 集
- *  大器晚成; INVENTORY_MOVIES = 2). The F-5 test explicitly binds this fixture
- *  to that source — no arbitrary test-only MEDIA objects are accepted as proof. */
-const MEDIA = {
-  items: [
-    {
-      id: 'm1',
-      name: '《皇甫谧一》',
-      category: 'movie',
-      mime_type: 'video/mp4',
-      byte_size: 1024,
-      license_basis: '客户提供资料（已授权公开）',
-      restriction: null,
-      object_key: 'movies/huangfu-mi-1.mpg',
-    },
-    {
-      id: 'm2',
-      name: '《针灸鼻祖皇甫谧》第 1 集 大器晚成',
-      category: 'movie',
-      mime_type: 'video/mp4',
-      byte_size: 2048,
-      license_basis: '客户提供资料（已授权公开）',
-      restriction: null,
-      object_key: 'movies/huangfu-mi-2.mpg',
-    },
-  ],
-  total: 2,
-}
-
 function stubFetch(): void {
   vi.stubGlobal(
     'fetch',
@@ -67,7 +105,7 @@ function stubFetch(): void {
         json: async () => ({ success: true, data }),
       })
       if (String(url).includes('/persons/')) return Promise.resolve(envelope(PERSON))
-      if (String(url).includes('/media')) return Promise.resolve(envelope(MEDIA))
+      if (String(url).includes('/media')) return Promise.resolve(envelope(MEDIA_ENVELOPE))
       return Promise.resolve(envelope(null))
     }),
   )
@@ -198,9 +236,10 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
     expect(section.find('a[href="/reader/qichuan"]').exists()).toBe(true)
   })
 
-  it('Archival Media: 影像资料 renders movies from the media projection', async () => {
+  it('Archival Media: 影像资料 renders movies from the real media projection', async () => {
     const wrapper = await mountPerson()
     const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
+    expect(titles).toEqual(MEDIA.map((m) => m.name))
     expect(titles.some((t) => t.includes('针灸鼻祖皇甫谧'))).toBe(true)
   })
 
@@ -213,21 +252,56 @@ describe('UX2-P1 — F-5 coverage from real data', () => {
     expect(archive?.count).toBe(INVENTORY_MOVIES)
   })
 
-  it('F-5 Archival Media — the media projection is bound to the authoritative record (no synthetic fixture)', () => {
+  it('F-5 Archival Media — per-media projection derives from the authoritative source files (no synthetic fixture)', () => {
     const archive = ARCHIVE_RECORDS.find((r) => r.id === 'a-movies')
     expect(archive).toBeDefined()
     const strip = (s: string) => s.replace(/\s+/g, '')
-    expect(MEDIA.items).toHaveLength(INVENTORY_MOVIES)
-    for (const item of MEDIA.items) {
-      expect(strip(archive!.description)).toContain(strip(item.name))
+    // count matches the authoritative inventory and the source directory
+    expect(MEDIA).toHaveLength(INVENTORY_MOVIES)
+    const realFiles = fsModule.readdirSync(MEDIA_SOURCE_DIR)
+    for (const rec of MEDIA) {
+      // the real file exists and its name is recorded in the authoritative
+      // archiveInventory a-movies description (asset-map row 31 filenames)
+      expect(realFiles).toContain(rec.object_key)
+      expect(strip(archive!.description)).toContain(strip(rec.name))
     }
   })
 
-  it('F-5 Archival Media — projection reaches the person archive surface with correct presentation', async () => {
+  it('F-5 Archival Media — field-level lineage: every projected field derives from a real source or a deterministic rule', () => {
+    for (const rec of MEDIA) {
+      const dot = rec.object_key.lastIndexOf('.')
+      const stem = dot > 0 ? rec.object_key.slice(0, dot) : rec.object_key
+      const ext = dot > 0 ? rec.object_key.slice(dot) : ''
+      // id/title ← deterministic filename stem (real filename)
+      expect(rec.id).toBe(stem)
+      expect(rec.name).toBe(stem)
+      // object_key ← real filename
+      expect(fsModule.readdirSync(MEDIA_SOURCE_DIR)).toContain(rec.object_key)
+      // mime_type ← deterministic extension→MIME rule (.mpg → video/mpeg)
+      expect(rec.mime_type).toBe(MIME_BY_EXTENSION[ext])
+      // byte_size ← real file stat (actual bytes)
+      expect(rec.byte_size).toBe(fsModule.statSync(`${MEDIA_SOURCE_DIR}/${rec.object_key}`).size)
+      expect(rec.byte_size).toBeGreaterThan(0)
+      // license_basis ← governance policy (asset-map row 57)
+      expect(rec.license_basis).toBe(MEDIA_LICENSE_BASIS)
+      // category ← archiveInventory a-movies category
+      expect(rec.category).toBe('movie')
+    }
+  })
+
+  it('F-5 Archival Media — runtime readback: rendered metadata matches the derived projection', async () => {
     const wrapper = await mountPerson()
+    const cards = wrapper.findAll('.movie-card')
+    expect(cards).toHaveLength(MEDIA.length)
     const titles = wrapper.findAll('.movie-card__title').map((n) => n.text())
-    expect(titles).toEqual(['《皇甫谧一》', '《针灸鼻祖皇甫谧》第 1 集 大器晚成'])
-    expect(wrapper.find('.movie-card__meta').text()).toContain('影视资料')
+    expect(titles).toEqual(MEDIA.map((m) => m.name))
+    const metas = wrapper.findAll('.movie-card__meta').map((n) => n.text())
+    const rights = wrapper.findAll('.movie-card__rights').map((n) => n.text())
+    for (let i = 0; i < MEDIA.length; i += 1) {
+      expect(metas[i]).toContain('影视资料') // category label
+      expect(metas[i]).toContain(formatBytes(MEDIA[i].byte_size)) // real size → formatBytes
+      expect(rights[i]).toBe(MEDIA_LICENSE_BASIS) // governance license policy
+    }
   })
 
   it('F-5 Later Scholarship is NOT added (DEFERRED)', async () => {

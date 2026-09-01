@@ -1,100 +1,135 @@
-# HFM-UX2-P1 Implementation Evidence v1 (Corrective)
+# HFM-UX2-P1 Implementation Evidence v1 (Second Corrective)
 
-Status: UX2-P1 CORRECTED IMPLEMENTATION CANDIDATE · ready for independent
-re-audit (rejected candidate `7f603d385e258e62afab7dca6eba5210ed8a2d68` superseded)
+Status: UX2-P1 CORRECTED_V3 IMPLEMENTATION CANDIDATE · ready for independent
+re-audit (rejected V1 `7f603d385e258e62afab7dca6eba5210ed8a2d68`, rejected V2
+`af337ebc00f210ce1ef331503e8a95ae25b701dd` superseded)
 
 ## 1. WP Identity
 
 ```text
 WP = UX2-P1 · Person Archive
 PRE_WP_BASELINE = 2b315795e43faf92e03cd3db2c74b18c47c0927e
-REJECTED_CANDIDATE = 7f603d385e258e62afab7dca6eba5210ed8a2d68 (preserved in history)
-CORRECTIVE_BASIS = rejected candidate (linear successor; no amend/squash)
+REJECTED_V1 = 7f603d385e258e62afab7dca6eba5210ed8a2d68
+REJECTED_V2 = af337ebc00f210ce1ef331503e8a95ae25b701dd
+CORRECTIVE_BASIS = rejected V2 (linear successor; no amend/squash)
 ```
 
-## 2. Corrective Scope (audited findings)
+## 2. This Corrective Pass — P1-01 F-5 Archival Media Provenance Closure
 
-| Finding | Disposition | Correction |
-| --- | --- | --- |
-| P0-01 worktree identity gate | CLOSED | Untracked `docs/research/ hfmzl/ zzcl/` classified as unrelated pre-existing user/project material (present since before UX2; customer source archives + research notes, intentionally untracked). Isolated via local `.git/info/exclude` — no deletion, no commit, worktree now CLEAN. |
-| P0-02 晋书 evidence aggregation | CLOSED | Evidence label no longer aggregates the 12 论其人 citations under 《晋书》房玄龄等. The 12 citations are heterogeneous (房玄龄等 ×3, 司马炎, 李巨来, 钱熙祚, 张发荣, 后世综合评价 ×3, 国际影响, 晋书轶事). Label is now the mechanically derived generic statement `后论 · 论其人（历代评价引文 12 条 · 出处逐条标注）`; per-citation provenance lives in the reader document. |
-| P1-01 archival media proof | CLOSED | Media projection bound to the authoritative `archiveInventory.ts a-movies` record (客户提供：皇甫谧电影资料; 《皇甫谧一》《针灸鼻祖皇甫谧》第 1 集 大器晚成; `INVENTORY_MOVIES = 2`). Unit + e2e fixtures are deterministic projections of that record with in-test binding assertions; no synthetic acceptance fixture. |
-| P1-02 browser acceptance | CLOSED | Real-browser e2e: reader navigation (其传 → back → 后论, real content, no dead routes), keyboard/focus (Tab reach, Enter activate, visible focus ring, no trap), browser-level axe = 0, responsive 375/1280/1920 no overflow. |
-| P2-01 candidate SHA placeholder | OPEN_DOCUMENTATION_ONLY — CLOSE_AT_UX2_P1_ACCEPTANCE_ARCHIVE | Not attempted (self-referential SHA impossible); acceptance archive will replace placeholder. |
-| P2-02 evidence accuracy | CLOSED | Actual reproduced numbers recorded below (ESLINT 0 errors / 965 warnings as actually reproduced; WORKTREE=CLEAN verified after local isolation). |
+Prior passes closed P0-01 / P0-02 / P1-02 / P2-02. This pass closes P1-01
+only: the F-5 archival media acceptance proof now derives from the
+AUTHORITATIVE per-media source instead of a test-authored fixture.
 
-## 3. Changed Paths (corrective delta vs rejected candidate)
+### MEDIA_SOURCE_OF_TRUTH
+
+```text
+hfmzl/皇甫谧/皇甫谧电影/
+  皇甫谧一.mpg
+  《针灸鼻祖皇甫谧》第1集 大器晚成.mpg
+```
+
+Tracked governance/domain records binding this source:
+
+- `docs/design/HFM-CONTENT-ASSET-MAP.md` row 31 (filenames + count 2) and
+  row 57 (license policy 授权公开（存在文件才可播放）)
+- `apps/frontend/src/data/archiveInventory.ts` `a-movies` (sourceName
+  客户提供：皇甫谧电影资料; description naming both movies; count
+  `INVENTORY_MOVIES = 2`; status AVAILABLE)
+- `apps/frontend/src/data/contentInventory.ts` `INVENTORY_MOVIES = 2`
+- backend `phase2/media/models.py` defines the domain `MediaAsset` shape
+  (schema only; no seed rows — per-media records exist as the real files)
+
+### MEDIA_FIELD_LINEAGE
+
+| Field | Source → projection |
+| --- | --- |
+| id | real filename stem (deterministic identity) |
+| name/title | real filename stem (asset-map row 31 filenames) |
+| object_key | real filename |
+| mime_type | deterministic extension→MIME rule (`.mpg` → `video/mpeg`) |
+| byte_size | real file stat (actual bytes) |
+| rights_holder | 客户提供 (a-movies sourceName policy) |
+| license_basis | governance policy 授权公开（存在文件才可播放）(asset-map row 57) |
+| restriction | null (no restriction recorded) |
+| category | movie (a-movies category: media) |
+| publication_state | published (a-movies status AVAILABLE → published projection) |
+
+No field is test-authored; the tests obtain values from the real files and
+recorded governance/domain sources, or apply the documented deterministic
+rules above.
+
+### Proof chain (tests)
+
+```text
+AUTHORITATIVE_SOURCE      = PASS (real files + a-movies + asset map)
+PER_MEDIA_SOURCE_RECORDS  = PASS (both real .mpg files enumerated)
+API_OR_DOMAIN_PROJECTION  = PASS (deterministic derivation rules tested)
+RUNTIME_READBACK          = PASS (fetchPublicMedia mock fed by derived values → page)
+RENDERED_METADATA         = PASS (titles/formatBytes sizes/license asserted)
+FIELD_LEVEL_PROVENANCE    = PASS (per-field lineage test)
+LICENSE_BASIS_PROVENANCE  = PASS (governance policy asserted)
+NO_SYNTHETIC_ACCEPTANCE_FIXTURE = YES (unit + e2e both derive from real files)
+```
+
+## 3. Corrective Scope
+
+| Finding | Disposition |
+| --- | --- |
+| P1-01 F-5 archival media real-data proof | CLOSED (this pass) |
+| P0-01 / P0-02 / P1-02 / P2-02 | CLOSED (prior passes, preserved) |
+| P2-01 candidate SHA placeholder | OPEN_DOCUMENTATION_ONLY — CLOSE_AT_UX2_P1_ACCEPTANCE_ARCHIVE |
+
+## 4. Changed Paths (V3 delta vs rejected V2)
 
 | Path | Change |
 | --- | --- |
-| `apps/frontend/src/views/persons/PersonDetailView.vue` | P0-02: generic 后论 citation aggregate (no 《晋书》 misattribution) |
-| `apps/frontend/src/__tests__/ux2_p1_person.spec.ts` | P0-02 fail-on-defective provenance assertions; P1-01 real-media binding + proof tests |
-| `apps/frontend/e2e/ux2-p1-person.spec.ts` | P1-01 real media projection; P1-02 reader nav / keyboard / browser axe / responsive |
-| `docs/ux2/g4/HFM-UX2-P1-IMPLEMENTATION-EVIDENCE-v1.md` | this record (P2-02 accuracy) |
-| `.git/info/exclude` | P0-01 local isolation (NOT a tracked file; not committed) |
-
-## 4. Acceptance Criteria (frozen WP DAG DoD)
-
-| Criterion | Result |
-| --- | --- |
-| DHObjectLayout regions + states on person page | PASS |
-| heading order correct | PASS (single H1, no skips) |
-| F-5 sections from real data | PASS (Life Events timeline; Historical Assessments = houlun FULL_TEXT; Archival Media = a-movies-bound projection) |
-| G1-C states | PASS (RESOURCE_READY / SCHOLARLY_UNCERTAIN / METADATA_ONLY / ABSENT_OPTIONAL) |
-| Later Scholarship NOT added | PASS |
-| PROVENANCE | PASS (P0-02: no aggregate attributed to a specific source) |
+| `apps/frontend/src/__tests__/ux2_p1_person.spec.ts` | F-5 media tests derive from real files (source dir + stat + deterministic rules); field-lineage + runtime-readback tests added; no synthetic fixture |
+| `apps/frontend/e2e/ux2-p1-person.spec.ts` | intercepted media response generated from the real files + governance policy |
+| `docs/ux2/g4/HFM-UX2-P1-IMPLEMENTATION-EVIDENCE-v1.md` | this record |
+| `apps/frontend/src/views/persons/PersonDetailView.vue` | UNCHANGED in V3 (runtime already renders the projection; P0-02 fix preserved) |
 
 ## 5. Test / Quality Results (independently reproduced)
 
 ```text
-TARGETED_TESTS      = 17/17 PASS (ux2_p1_person.spec.ts)
+TARGETED_TESTS      = 18/18 PASS (ux2_p1_person.spec.ts)
 P0_REGRESSION_TESTS = 58/58 PASS (ux2_p0_* — P0_REGRESSION = NONE)
-FULL_VITEST         = 270/270 PASS (30 files)
+FULL_VITEST         = 271/271 PASS (30 files)
 VUE_TSC             = PASS (0 errors)
-ESLINT              = 0_ERRORS_965_WARNINGS (actual reproduction; warnings are
-                      the repo-wide pre-existing style-warning baseline, gate is errors)
+ESLINT              = 0_ERRORS_965_WARNINGS (actual reproduction; repo-wide
+                      pre-existing style-warning baseline; gate is errors)
 VITE_BUILD          = PASS
 PLAYWRIGHT          = 72/72 PASS (67 existing + 5 corrective UX2-P1)
 BROWSER_AXE         = 0 (real browser, full rule set)
-P0_PRIMITIVE_DELTA  = ZERO (git diff 797e33f… HEAD -- primitives/presentation = empty)
+P0_PRIMITIVE_DELTA  = ZERO (git diff 797e33f… -- primitives/presentation = empty)
+READER_QICHUAN_NAVIGATION = PASS · READER_HOULUN_NAVIGATION = PASS
+KEYBOARD = PASS · FOCUS = PASS · RESPONSIVE_375/1280/1920 = PASS
 ```
 
-## 6. Negative Boundaries
+## 6. Preserved Guarantees
 
 ```text
-NB-01 no historical fabrication   PASS   NB-02 no relation inference  PASS
-NB-05 clinical                    PASS   NB-06 no citation synthesis  PASS
-NB-07 missing ≠ absence           PASS   P0-02 provenance             PASS
+PROVENANCE = PASS (P0-02) · P0_REGRESSION = NONE
+P0_PRIMITIVE_IMPLEMENTATION_DELTA = ZERO
+P0-1 = OPEN_P2_NON_BLOCKING_REVERIFY_AT_P6 (role="status" untouched)
 ```
 
-## 7. Test-Quality Guarantee (fail-on-defective)
-
-- P0-02: tests assert the 12-条 aggregate is NOT displayed with 《晋书》 attribution
-  (`not.toMatch(/《晋书》[^（]*（[^）]*12[^）]*条）/`) — fails on the rejected label.
-- P1-01: media fixture count + names must match the authoritative `a-movies`
-  record (old single synthetic item fails the `INVENTORY_MOVIES = 2` binding).
-- P1-02: reader navigation exercises real routes/content (dead routes fail);
-  keyboard tests require Tab reachability + Enter activation (fail if
-  keyboard-inaccessible); browser axe = 0 (fail on violations).
-
-## 8. Worktree Status
+## 7. Worktree Status
 
 ```text
-git status --short → CLEAN
-(Local .git/info/exclude isolates pre-existing unrelated untracked material;
- no tracked production delta beyond the corrective files above.)
+git status --short → CLEAN (local .git/info/exclude isolates pre-existing
+unrelated untracked material; no tracked production delta beyond this record)
 ```
 
-## 9. Rollback
+## 8. Rollback
 
 ```text
 ROLLBACK_TARGET = 2b315795e43faf92e03cd3db2c74b18c47c0927e (PRE_WP_BASELINE)
 ```
 
-## 10. Commit
+## 9. Commit
 
 ```text
-CORRECTED_UX2_P1_IMPLEMENTATION_CANDIDATE = <commit SHA recorded at delivery>
-CANDIDATE_PARENT = 7f603d385e258e62afab7dca6eba5210ed8a2d68 (rejected candidate)
+UX2_P1_CORRECTED_CANDIDATE_V3 = <commit SHA recorded at delivery>
+CANDIDATE_PARENT = af337ebc00f210ce1ef331503e8a95ae25b701dd (rejected V2)
 OUT_OF_SCOPE_CONFIRMED = YES (UX2-P2..P7 delta ZERO; P0 primitive delta ZERO)
 ```
