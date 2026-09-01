@@ -33,6 +33,10 @@ import {
   CORE_PERSON_NAME,
   CORE_PERSON_WORKS,
 } from '../../config/corePerson'
+import { READER_DOCUMENTS } from '../../data/readerDocuments'
+import { ARCHIVE_RECORDS } from '../../data/archiveInventory'
+import { presentationLabel, resolvePresentationState } from '../../presentation/stateMapping'
+import DHObjectLayout from '../../components/primitives/DHObjectLayout.vue'
 import Timeline from '../../components/Timeline.vue'
 import EmptyState from '../../components/states/EmptyState.vue'
 import ErrorState from '../../components/states/ErrorState.vue'
@@ -68,6 +72,91 @@ const timelineEvents = computed<TimelineEvent[]>(() => {
 const evidencedAssertions = computed<PersonAssertion[]>(() =>
   (person.value?.assertions ?? []).filter((a) => a.evidence_ids.length > 0),
 )
+
+/* ---- UX2-P1: DHObjectLayout + G1-C presentation states (read-only data) ---- */
+/* Reader docs are authoritative (readerDocuments.ts): 其传/后论 are FULL_TEXT
+   → RESOURCE_READY 全文已整理 (G1-C row 1). Scholarly-uncertainty and
+   full-text-absent predicates are DERIVED_PRESENTATION_ONLY from verified
+   其传/其言 text. */
+const qichuan = READER_DOCUMENTS.find((d) => d.id === 'qichuan')
+const houlun = READER_DOCUMENTS.find((d) => d.id === 'houlun')
+const qichuanArchive = ARCHIVE_RECORDS.find((r) => r.id === 'a-qichuan')
+const houlunArchive = ARCHIVE_RECORDS.find((r) => r.id === 'a-houlun')
+
+const qichuanState = computed(() =>
+  qichuan
+    ? resolvePresentationState({
+        contentStatus: qichuan.contentStatus,
+        readingAvailability: qichuan.readingStatus,
+      })
+    : 'UNSTRUCTURED_OR_INCOMPLETE',
+)
+const qichuanLabel = computed(() => presentationLabel(qichuanState.value, { reader: true }))
+
+const houlunState = computed(() =>
+  houlun
+    ? resolvePresentationState({
+        contentStatus: houlun.contentStatus,
+        readingAvailability: houlun.readingStatus,
+      })
+    : 'UNSTRUCTURED_OR_INCOMPLETE',
+)
+const houlunLabel = computed(() => presentationLabel(houlunState.value, { reader: true }))
+
+/** 后论 论其人 citation count — derived from readerDocuments (12 条). */
+const houlunCitationCount = computed(() =>
+  (houlun?.sections ?? []).reduce(
+    (n, s) => n + (s.paragraphs ?? []).filter((p) => p.citation).length,
+    0,
+  ),
+)
+
+interface ObjectRelation {
+  label: string
+  href?: string
+  sem: 'EXPLICIT_RELATION' | 'ASSOCIATED_CONTEXT' | 'CO_PRESENTED_ONLY'
+}
+
+/** Relations — explicit semantics only; no inferred lineage (NB-02). */
+const objectRelations: ObjectRelation[] = [
+  { label: '作品《针灸甲乙经》', href: '/jiayi', sem: 'EXPLICIT_RELATION' },
+  { label: '其言四篇', href: '/yan', sem: 'EXPLICIT_RELATION' },
+  { label: '非遗传承（刘君奇）', href: '/heritage', sem: 'ASSOCIATED_CONTEXT' },
+]
+
+/** Context — curated from verified works/sources (corePerson + yanCollection supplement). */
+const objectContext = [
+  { label: '作品', value: '《针灸甲乙经》 · 其言四篇 · 《帝王世纪》 · 《高士传》' },
+  { label: '史料整理', value: '其传（史料来源整理） · 后论（历史评价汇编）' },
+]
+
+interface ObjectEvidenceItem {
+  type: string
+  label: string
+  affordance: string
+  href?: string
+}
+
+/** Evidence — traces to readerDocuments citations + archiveInventory docx records. */
+const objectEvidence = computed<ObjectEvidenceItem[]>(() => [
+  {
+    type: 'Source',
+    label: `《晋书》房玄龄等（后论引文 ${houlunCitationCount.value} 条）`,
+    affordance: 'citation available',
+  },
+  {
+    type: 'Archive',
+    label: '其传文稿（docx）',
+    affordance: '全文已整理',
+    href: qichuanArchive?.href,
+  },
+  {
+    type: 'Archive',
+    label: '后论文稿（docx）',
+    affordance: '全文已整理',
+    href: houlunArchive?.href,
+  },
+])
 
 onMounted(async () => {
   const entityId = String(route.params.id ?? '')
@@ -127,10 +216,17 @@ onMounted(async () => {
         <EmptyState v-else label="生平内容整理中。" />
       </section>
 
-      <!-- 其传 -->
+      <!-- 其传（readerDocuments qichuan · FULL_TEXT → 全文已整理） -->
       <section class="person-section" aria-labelledby="biography-heading">
         <h2 id="biography-heading" class="section-title">其传</h2>
-        <EmptyState label="其传全文整理中（客户资料：其传）。" />
+        <template v-if="qichuan">
+          <p class="reader-entry">
+            <span class="hfm-status" :data-status="qichuanState">{{ qichuanLabel }}</span>
+            <span class="reader-entry__title">{{ qichuan.title }}</span>
+          </p>
+          <p class="reader-entry__desc">{{ qichuan.description }}</p>
+          <p class="reader-entry__link"><a class="inline-link" href="/reader/qichuan">阅读全文 →</a></p>
+        </template>
       </section>
 
       <!-- 其言精选 -->
@@ -156,10 +252,59 @@ onMounted(async () => {
         <EmptyState v-else label="著作信息整理中。" />
       </section>
 
-      <!-- 后论 / 历史评价 -->
+      <!-- 语境 · 证据 · 关联（UX2-P1 · DHObjectLayout shared primitive） -->
+      <section class="person-section" aria-labelledby="object-layout-heading">
+        <h2 id="object-layout-heading" class="section-title">语境 · 证据 · 关联</h2>
+        <DHObjectLayout
+          :slots="{
+            header: { state: 'ABSENT_OPTIONAL' },
+            context: {
+              state: 'INCOMPLETE_WITH_EVIDENCE_STATE',
+              status: 'SCHOLARLY_UNCERTAIN',
+              statusLabel: '尚有争议',
+              note: '其传考据记载生卒年建安/正始两说；平台以客户确认值 215—282 为准并明示争议存在。',
+            },
+            evidence: {
+              state: 'INCOMPLETE_WITH_EVIDENCE_STATE',
+              status: 'METADATA_ONLY',
+              statusLabel: '仅题录（原典全文未收录）',
+              note: '四论古典全文未见于客户材料；整理说明已可读（其言）。',
+            },
+            relations: { state: 'PRESENT' },
+          }"
+          :relations="objectRelations"
+        >
+          <template #context>
+            <ul class="object-context">
+              <li v-for="c in objectContext" :key="c.label" class="object-context__row">
+                <b>{{ c.label }}</b>
+                <span>{{ c.value }}</span>
+              </li>
+            </ul>
+          </template>
+          <template #evidence>
+            <ul class="object-evidence">
+              <li v-for="e in objectEvidence" :key="e.label" class="object-evidence__item">
+                <a v-if="e.href" :href="e.href" class="object-evidence__label">{{ e.type }} · {{ e.label }}</a>
+                <span v-else class="object-evidence__label">{{ e.type }} · {{ e.label }}</span>
+                <span class="object-evidence__afford">{{ e.affordance }}</span>
+              </li>
+            </ul>
+          </template>
+        </DHObjectLayout>
+      </section>
+
+      <!-- 后论 / 历史评价（readerDocuments houlun · FULL_TEXT → 全文已整理） -->
       <section class="person-section" aria-labelledby="afterwords-heading">
         <h2 id="afterwords-heading" class="section-title">后论 / 历史评价</h2>
-        <EmptyState label="历史评价整理中（客户资料：后论）。" />
+        <template v-if="houlun">
+          <p class="reader-entry">
+            <span class="hfm-status" :data-status="houlunState">{{ houlunLabel }}</span>
+            <span class="reader-entry__title">{{ houlun.title }}</span>
+          </p>
+          <p class="reader-entry__desc">{{ houlun.description }}</p>
+          <p class="reader-entry__link"><a class="inline-link" href="/reader/houlun">阅读全文 →</a></p>
+        </template>
       </section>
 
       <!-- 相关史料（Evidence 可见） -->
@@ -429,5 +574,75 @@ onMounted(async () => {
   margin-top: var(--hfm-space-8);
   font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
+}
+
+/* UX2-P1: DHObjectLayout slot content */
+.object-context {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--hfm-space-1);
+}
+
+.object-context__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-4);
+  font-size: var(--hfm-text-sm);
+  padding: var(--hfm-space-1) 0;
+}
+
+.object-context__row b {
+  color: var(--hfm-color-text-secondary);
+  font-weight: 600;
+}
+
+.object-evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--hfm-space-1);
+}
+
+.object-evidence__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-4);
+  font-size: var(--hfm-text-sm);
+  padding: var(--hfm-space-1) 0;
+}
+
+.object-evidence__label {
+  font-weight: 600;
+}
+
+.object-evidence__afford {
+  color: var(--hfm-color-evidence);
+}
+
+/* UX2-P1: reader-document entries (其传/后论) */
+.reader-entry {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2);
+  align-items: baseline;
+  margin: 0 0 var(--hfm-space-1);
+}
+
+.reader-entry__title {
+  font-family: var(--hfm-font-serif);
+  font-weight: 600;
+}
+
+.reader-entry__desc {
+  margin: 0 0 var(--hfm-space-1);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-secondary);
+}
+
+.reader-entry__link {
+  margin: 0;
 }
 </style>
