@@ -68,13 +68,13 @@ onMounted(async () => {
 }
 
 .badge--pass {
-  background: #dcfce7;
-  color: #166534;
+  background: var(--hfm-color-success-surface);
+  color: var(--hfm-color-success);
 }
 
 .badge--fail {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--hfm-color-danger-surface);
+  color: var(--hfm-color-danger);
 }
 
 .reconciliation-list,

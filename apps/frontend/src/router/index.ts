@@ -4,14 +4,22 @@ import ResearchLayout from '../layouts/ResearchLayout.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import HomeView from '../views/HomeView.vue'
 import ReaderView from '../views/reader/ReaderView.vue'
+import ReaderDocView from '../views/reader/ReaderDocView.vue'
 import SearchView from '../views/search/SearchView.vue'
 import HeritageView from '../views/heritage/HeritageView.vue'
 import MediaLibraryView from '../views/library/MediaLibraryView.vue'
 import PersonDetailView from '../views/persons/PersonDetailView.vue'
 import WorkDetailView from '../views/works/WorkDetailView.vue'
+import YanView from '../views/yan/YanView.vue'
+import WorksView from '../views/works/WorksView.vue'
+import ArchiveView from '../views/archive/ArchiveView.vue'
+import JiayiView from '../views/jiayi/JiayiView.vue'
+import AboutView from '../views/AboutView.vue'
 import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
+import ResearchSearchView from '../views/research/ResearchSearchView.vue'
+import ResearchEntityView from '../views/research/ResearchEntityView.vue'
 import AdminHomeView from '../views/admin/AdminHomeView.vue'
 import AuditLogView from '../views/admin/AuditLogView.vue'
 import { useAuthStore } from '../stores/auth'
@@ -32,11 +40,17 @@ export const routes: RouteRecordRaw[] = [
     children: [
       { path: '', name: 'home', component: HomeView },
       { path: 'reader', name: 'reader', component: ReaderView },
+      { path: 'reader/:id', name: 'reader-doc', component: ReaderDocView },
       { path: 'search', name: 'search', component: SearchView },
       { path: 'heritage', name: 'heritage', component: HeritageView },
       { path: 'library', name: 'library', component: MediaLibraryView },
       { path: 'persons/:id', name: 'person', component: PersonDetailView },
       { path: 'works/:id', name: 'work', component: WorkDetailView },
+      { path: 'yan', name: 'yan', component: YanView },
+      { path: 'works', name: 'works', component: WorksView },
+      { path: 'archive', name: 'archive', component: ArchiveView },
+      { path: 'jiayi', name: 'jiayi', component: JiayiView },
+      { path: 'about', name: 'about', component: AboutView },
       { path: 'login', name: 'login', component: LoginView },
       { path: 'denied', name: 'denied', component: DeniedView },
     ],
@@ -46,7 +60,15 @@ export const routes: RouteRecordRaw[] = [
     component: ResearchLayout,
     meta: { requiresAuth: true, roles: RESEARCH_ROLES },
     beforeEnter: [requireAnyRole(RESEARCH_ROLES)],
-    children: [{ path: '', name: 'research-home', component: ResearchHomeView }],
+    children: [
+      { path: '', name: 'research-home', component: ResearchHomeView },
+      { path: 'search', name: 'research-search', component: ResearchSearchView },
+      {
+        path: 'entity/:type/:id',
+        name: 'research-entity',
+        component: ResearchEntityView,
+      },
+    ],
   },
   {
     path: '/admin',

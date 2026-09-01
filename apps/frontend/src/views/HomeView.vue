@@ -1,188 +1,533 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { ApiError, fetchPublicHome, fetchPublicPersons } from '../services/api'
-import EmptyState from '../components/states/EmptyState.vue'
-import ErrorState from '../components/states/ErrorState.vue'
-import LoadingState from '../components/states/LoadingState.vue'
-import type { HomeCounts, PersonSummary, PublishedItem, WorkSummary } from '../types/public'
-import { publishedOnly } from '../utils/publication'
+/**
+ * HomeView — UI-03 flagship homepage.
+ *
+ * CONTEMPORARY CHINESE DIGITAL HUMANITIES PORTAL — 叙事首页，非功能拼盘：
+ * Hero → 皇甫谧 → 《针灸甲乙经》 → 文献与史料 → 非遗活态传承 → 研究能力。
+ * 全部内容来自既有已验证数据（homeProjection 选取/排序，零新领域事实）。
+ * Search 连接 UI-10（/search?q=）；Research 为次级入口。
+ */
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import {
+  HOME_HERITAGE,
+  HOME_HUANGFU,
+  HOME_HUANGFU_DATE,
+  HOME_HUANGFU_IDENTITIES,
+  HOME_JIAYI,
+  HOME_LITERATURE,
+  HOME_METRICS,
+  HOME_QUOTATION,
+  HOME_RESEARCH_STEPS,
+} from '../data/homeProjection'
 
-const loading = ref(true)
-const error = ref<string | null>(null)
-const items = ref<PublishedItem[]>([])
-const works = ref<WorkSummary[]>([])
-const persons = ref<PersonSummary[]>([])
-const counts = ref<HomeCounts | null>(null)
+defineOptions({ name: 'HomeView' })
 
-onMounted(async () => {
-  try {
-    const projection = await fetchPublicHome()
-    items.value = publishedOnly(projection.items ?? [])
-    works.value = projection.works ?? []
-    counts.value = projection.counts ?? null
-    if (projection.works?.length) {
-      const personsData = await fetchPublicPersons().catch(() => null)
-      if (personsData) persons.value = personsData.persons
-    }
-  } catch (err) {
-    error.value = err instanceof ApiError ? err.message : 'Unable to load public content.'
-  } finally {
-    loading.value = false
-  }
-})
+const router = useRouter()
+const searchInput = ref('')
+
+function onSearch(): void {
+  const q = searchInput.value.trim()
+  void router.push({ path: '/search', query: q ? { q } : {} })
+}
 </script>
 
 <template>
-  <section aria-labelledby="portal-heading">
-    <div class="hero">
-      <h1 id="portal-heading">皇甫谧人文数字平台 · 公开门户</h1>
-      <p>
-        公开门户只展示已获准发布的内容；未发布或已撤回内容不会出现在这里。平台为非商业非盈利的
-        皇甫谧学术资料展示，仅供学术爱好者学习与宣传。
-      </p>
-      <a class="hero__cta" href="/library">进入资料库 →</a>
-    </div>
+  <div class="home">
+    <!-- Hero -->
+    <header class="home-hero" aria-labelledby="home-title">
+      <p class="hfm-eyebrow">当代东方数字人文门户</p>
+      <h1 id="home-title" class="home-hero__title">皇甫谧人文数字平台</h1>
+      <p class="home-hero__subtitle">权威数字人文资料 · 古籍与研究 · 非遗活态传承</p>
 
-    <LoadingState v-if="loading" />
-    <ErrorState v-else-if="error" :message="error" />
+      <div class="home-hero__person">
+        <span class="home-hero__dates">皇甫谧 {{ HOME_HUANGFU_DATE }}</span>
+      </div>
+      <p class="home-hero__definition">{{ HOME_HUANGFU.lede }}</p>
 
-    <template v-else>
-      <div v-if="counts" class="stats" aria-label="平台内容统计">
-        <div class="stats__card">
-          <strong>{{ counts.works }}</strong
-          ><span>已发布著作</span>
-        </div>
-        <div class="stats__card">
-          <strong>{{ counts.persons }}</strong
-          ><span>已发布人物</span>
-        </div>
-        <div class="stats__card">
-          <strong>{{ counts.heritage_projects }}</strong
-          ><span>传承谱系</span>
-        </div>
-        <div class="stats__card">
-          <strong>{{ counts.c_terms }}</strong
-          ><span>术语词条</span>
-        </div>
+      <div class="home-hero__actions">
+        <a class="home-hero__cta" href="/persons/person-huangfu-mi">探索皇甫谧</a>
+        <a class="home-hero__cta home-hero__cta--alt" href="/jiayi">进入《针灸甲乙经》</a>
+        <a class="home-hero__link" href="/search">检索文献</a>
       </div>
 
-      <h2 class="section-title">著作</h2>
-      <EmptyState v-if="works.length === 0" label="暂无已发布著作。" />
-      <ul v-else class="portal-list">
-        <li v-for="work in works" :key="work.work_id" class="portal-list__item">
-          <a :href="`/works/${work.work_id}`" class="portal-list__link">
-            <strong>{{ work.title }}</strong>
-            <span class="muted">
-              {{ work.dynasty || '—' }} · {{ work.category || '未分类' }} ·
-              {{ work.edition_count }} 个版本
-            </span>
+      <form class="home-search" role="search" @submit.prevent="onSearch">
+        <label class="visually-hidden" for="home-search-input">检索平台内容</label>
+        <input
+          id="home-search-input"
+          v-model="searchInput"
+          type="search"
+          placeholder="检索人物、作品、版本、文献与论文…"
+        />
+        <button type="submit">检索</button>
+      </form>
+    </header>
+
+    <!-- Metrics -->
+    <dl class="home-metrics" aria-label="平台内容规模">
+      <div v-for="metric in HOME_METRICS" :key="metric.label" class="home-metric">
+        <dt>{{ metric.label }}</dt>
+        <dd>
+          <strong>{{ metric.value }}</strong>
+          <span>{{ metric.note }}</span>
+        </dd>
+      </div>
+    </dl>
+
+    <!-- 皇甫谧 -->
+    <section class="home-section home-section--person" aria-labelledby="feature-hfm-heading">
+      <p class="hfm-eyebrow">人物档案</p>
+      <h2 id="feature-hfm-heading" class="home-section__title">{{ HOME_HUANGFU.heading }}</h2>
+      <ul class="home-tags" aria-label="多维身份">
+        <li v-for="identity in HOME_HUANGFU_IDENTITIES" :key="identity">{{ identity }}</li>
+      </ul>
+      <p class="home-section__lede">{{ HOME_HUANGFU.lede }}</p>
+      <ul class="home-links">
+        <li v-for="item in HOME_HUANGFU.items" :key="item.href">
+          <a :href="item.href" class="home-links__title">{{ item.title }}</a>
+          <span v-if="item.meta" class="home-links__meta">{{ item.meta }}</span>
+        </li>
+      </ul>
+      <p class="home-cta-row">
+        <a class="home-cta" href="/persons/person-huangfu-mi">人物档案 →</a>
+      </p>
+    </section>
+
+    <!-- 《针灸甲乙经》 -->
+    <section class="home-section home-section--jiayi" aria-labelledby="feature-jiayi-heading">
+      <p class="hfm-eyebrow">学术专题</p>
+      <h2 id="feature-jiayi-heading" class="home-section__title">{{ HOME_JIAYI.heading }}</h2>
+      <p class="home-section__lede">{{ HOME_JIAYI.lede }}</p>
+
+      <figure class="home-lineage">
+        <img :src="HOME_JIAYI.lineage.src" :alt="HOME_JIAYI.lineage.alt" />
+        <figcaption>版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）</figcaption>
+      </figure>
+
+      <ul class="home-editions" aria-label="代表版本">
+        <li v-for="edition in HOME_JIAYI.editions" :key="edition.title">
+          <span class="home-editions__title">{{ edition.title }}</span>
+          <span class="home-editions__period"
+            >{{ edition.period
+            }}<template v-if="edition.imprint"> · {{ edition.imprint }}</template></span
+          >
+        </li>
+      </ul>
+      <p class="home-cta-row">
+        <a class="home-cta" :href="HOME_JIAYI.cta.href">{{ HOME_JIAYI.cta.label }} →</a>
+      </p>
+    </section>
+
+    <!-- 文献与史料 -->
+    <section
+      class="home-section home-section--literature"
+      aria-labelledby="feature-literature-heading"
+    >
+      <p class="hfm-eyebrow">文献与史料</p>
+      <h2 id="feature-literature-heading" class="home-section__title">
+        {{ HOME_LITERATURE.heading }}
+      </h2>
+      <p class="home-section__lede">{{ HOME_LITERATURE.lede }}</p>
+
+      <blockquote class="home-quote">
+        <p>{{ HOME_QUOTATION.text }}</p>
+        <footer>
+          —— {{ HOME_QUOTATION.attribution }}《{{ HOME_QUOTATION.source }}》（后论 · 历史评价）
+        </footer>
+      </blockquote>
+
+      <ul class="home-links">
+        <li v-for="item in HOME_LITERATURE.items" :key="item.href">
+          <a :href="item.href" class="home-links__title">{{ item.title }}</a>
+          <span v-if="item.meta" class="home-links__meta">{{ item.meta }}</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- 非遗活态传承 -->
+    <section class="home-section home-section--heritage" aria-labelledby="feature-heritage-heading">
+      <p class="hfm-eyebrow">非遗活态传承</p>
+      <h2 id="feature-heritage-heading" class="home-section__title">{{ HOME_HERITAGE.heading }}</h2>
+      <p class="home-section__lede">{{ HOME_HERITAGE.lede }}</p>
+      <ul class="home-links">
+        <li v-for="item in HOME_HERITAGE.items" :key="item.title">
+          <a :href="item.href" class="home-links__title">{{ item.title }}</a>
+          <span v-if="item.meta" class="home-links__meta">{{ item.meta }}</span>
+        </li>
+      </ul>
+      <p class="home-cta-row">
+        <a class="home-cta" href="/heritage">非遗传承 →</a>
+      </p>
+    </section>
+
+    <!-- Research Discovery -->
+    <section
+      class="home-section home-section--research"
+      aria-labelledby="research-discovery-heading"
+    >
+      <p class="hfm-eyebrow">研究能力</p>
+      <h2 id="research-discovery-heading" class="home-section__title">从资料到研究</h2>
+      <ol class="home-steps">
+        <li v-for="step in HOME_RESEARCH_STEPS" :key="step.label">
+          <a :href="step.href">
+            <strong>{{ step.label }}</strong>
+            <span>{{ step.note }}</span>
           </a>
         </li>
-      </ul>
-
-      <h2 class="section-title">人物</h2>
-      <EmptyState v-if="persons.length === 0" label="暂无已发布人物。" />
-      <ul v-else class="portal-list">
-        <li v-for="person in persons" :key="person.entity_id" class="portal-list__item">
-          <a :href="`/persons/${person.entity_id}`" class="portal-list__link">
-            <strong>{{ person.name_zh || '未命名' }}</strong>
-            <span class="muted">{{ person.dynasty || '—' }}</span>
-          </a>
-        </li>
-      </ul>
-
-      <h2 class="section-title">公开内容</h2>
-      <EmptyState v-if="items.length === 0" label="暂无已发布条目。" />
-      <ul v-else class="portal-list">
-        <li v-for="item in items" :key="item.id" class="portal-list__item">
-          {{ item.title }}
-        </li>
-      </ul>
-    </template>
-  </section>
+      </ol>
+      <p class="home-cta-row">
+        <a class="home-cta" href="/research">进入研究工作台</a>
+        <a class="home-cta home-cta--alt" href="/search?q=针灸甲乙经">检索全部文献</a>
+      </p>
+    </section>
+  </div>
 </template>
 
 <style scoped>
-.hero {
-  padding: var(--hfm-space-6);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-lg);
+.home {
+  max-width: var(--hfm-content-max);
+  margin: 0 auto;
+}
+
+/* Hero */
+.home-hero {
+  padding: var(--hfm-space-12) 0 var(--hfm-space-8);
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+
+.home-hero__title {
+  font-size: var(--hfm-text-4xl);
+  margin: 0 0 var(--hfm-space-3);
+  letter-spacing: var(--hfm-tracking-display);
+}
+
+.home-hero__subtitle {
+  font-size: var(--hfm-text-lg);
+  color: var(--hfm-color-text-secondary);
+  margin: 0 0 var(--hfm-space-5);
+}
+
+.home-hero__dates {
+  font-family: var(--hfm-font-numeric);
+  font-variant-numeric: tabular-nums;
+  color: var(--hfm-color-heritage);
+}
+
+.home-hero__definition {
+  max-width: 52ch;
+  line-height: var(--hfm-leading-reading);
+  margin: var(--hfm-space-3) 0 var(--hfm-space-5);
+}
+
+.home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--hfm-space-3);
+}
+
+.home-hero__cta {
+  padding: var(--hfm-space-2) var(--hfm-space-5);
+  border: 1px solid var(--hfm-color-accent);
+  border-radius: var(--hfm-radius-sm);
+  background: var(--hfm-color-accent);
+  color: var(--hfm-color-on-accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.home-hero__cta--alt {
   background: var(--hfm-color-surface);
-  margin-bottom: var(--hfm-space-5);
+  color: var(--hfm-color-accent);
 }
 
-.hero h1 {
-  margin: 0 0 var(--hfm-space-2);
+.home-hero__link {
+  color: var(--hfm-color-interactive);
+  text-decoration: none;
 }
 
-.hero p {
+.home-hero__link:hover {
+  text-decoration: underline;
+}
+
+.home-search {
+  display: flex;
+  gap: var(--hfm-space-2);
+  max-width: 34rem;
+  margin-top: var(--hfm-space-6);
+}
+
+.home-search input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--hfm-space-2) var(--hfm-space-3);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
+}
+
+.home-search button {
+  padding: var(--hfm-space-2) var(--hfm-space-4);
+  border: 1px solid var(--hfm-color-accent);
+  border-radius: var(--hfm-radius-sm);
+  background: var(--hfm-color-surface);
+  color: var(--hfm-color-accent);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Metrics */
+.home-metrics {
+  margin: var(--hfm-space-8) 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--hfm-space-2);
+}
+
+.home-metric {
+  padding: var(--hfm-space-3);
+  border-left: 3px solid var(--hfm-color-border-strong);
+}
+
+.home-metric dt {
+  font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
-  max-width: 60ch;
 }
 
-.hero__cta {
+.home-metric dd {
+  margin: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.home-metric strong {
+  font-size: var(--hfm-text-2xl);
+  font-family: var(--hfm-font-numeric);
+  font-variant-numeric: tabular-nums;
+  color: var(--hfm-color-text);
+}
+
+.home-metric span {
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+
+/* Sections */
+.home-section {
+  padding: var(--hfm-space-12) 0;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+
+.home-section__title {
+  font-size: var(--hfm-text-3xl);
+  margin: 0 0 var(--hfm-space-3);
+}
+
+.home-section__lede {
+  max-width: 60ch;
+  line-height: var(--hfm-leading-reading);
+  color: var(--hfm-color-text-secondary);
+  margin: 0 0 var(--hfm-space-5);
+}
+
+.home-tags {
+  list-style: none;
+  margin: 0 0 var(--hfm-space-4);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2);
+}
+
+.home-tags li {
+  padding: var(--hfm-space-1) var(--hfm-space-3);
+  border: 1px solid var(--hfm-color-border-strong);
+  border-radius: var(--hfm-radius-sm);
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text-secondary);
+}
+
+.home-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--hfm-space-1);
+}
+
+.home-links li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-3);
+  align-items: baseline;
+  padding: var(--hfm-space-2) 0;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+
+.home-links__title {
+  color: var(--hfm-color-interactive);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.home-links__title:hover {
+  text-decoration: underline;
+}
+
+.home-links__meta {
+  color: var(--hfm-color-text-muted);
+  font-size: var(--hfm-text-sm);
+}
+
+.home-lineage {
+  margin: 0 0 var(--hfm-space-5);
+  padding: var(--hfm-space-3);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-md);
+  background: var(--hfm-color-surface);
+}
+
+.home-lineage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--hfm-radius-sm);
+}
+
+.home-lineage figcaption {
+  margin-top: var(--hfm-space-2);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+
+.home-editions {
+  list-style: none;
+  margin: 0 0 var(--hfm-space-5);
+  padding: 0;
+  display: grid;
+  gap: var(--hfm-space-1);
+}
+
+.home-editions li {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-3);
+  justify-content: space-between;
+  padding: var(--hfm-space-2) 0;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+
+.home-editions__title {
+  font-weight: 600;
+}
+
+.home-editions__period {
+  color: var(--hfm-color-heritage);
+  font-size: var(--hfm-text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.home-quote {
+  margin: 0 0 var(--hfm-space-5);
+  padding: var(--hfm-space-4) var(--hfm-space-5);
+  border-left: 3px solid var(--hfm-color-citation);
+  background: var(--hfm-color-surface);
+  border-radius: var(--hfm-radius-sm);
+}
+
+.home-quote p {
+  margin: 0 0 var(--hfm-space-2);
+  font-family: var(--hfm-font-serif);
+  line-height: var(--hfm-leading-reading);
+}
+
+.home-quote footer {
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+
+.home-steps {
+  list-style: none;
+  margin: 0 0 var(--hfm-space-5);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--hfm-space-2);
+}
+
+.home-steps a {
+  display: grid;
+  gap: var(--hfm-space-1);
+  padding: var(--hfm-space-3);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-md);
+  background: var(--hfm-color-surface);
+  color: var(--hfm-color-text);
+  text-decoration: none;
+}
+
+.home-steps a:hover {
+  border-color: var(--hfm-color-citation);
+}
+
+.home-steps strong {
+  color: var(--hfm-color-citation);
+}
+
+.home-steps span {
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text-muted);
+}
+
+.home-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-3);
+  margin: var(--hfm-space-5) 0 0;
+}
+
+.home-cta {
   display: inline-block;
-  margin-top: var(--hfm-space-3);
+  padding: var(--hfm-space-1) var(--hfm-space-4);
+  border: 1px solid var(--hfm-color-accent);
+  border-radius: var(--hfm-radius-sm);
   color: var(--hfm-color-accent);
   font-weight: 600;
   text-decoration: none;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: var(--hfm-space-3);
-  margin-bottom: var(--hfm-space-5);
+.home-cta--alt {
+  border-color: var(--hfm-color-border-strong);
+  color: var(--hfm-color-text-secondary);
 }
 
-.stats__card {
-  padding: var(--hfm-space-4);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-md);
-  background: var(--hfm-color-surface);
-  display: flex;
-  flex-direction: column;
-  gap: var(--hfm-space-1);
+.home-cta:hover {
+  background: var(--hfm-color-accent);
+  color: var(--hfm-color-on-accent);
 }
 
-.stats__card strong {
-  font-size: var(--hfm-text-xl);
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
-.stats__card span {
-  color: var(--hfm-color-text-muted);
-  font-size: var(--hfm-text-sm);
-}
+@media (max-width: 767px) {
+  .home-hero {
+    padding: var(--hfm-space-8) 0 var(--hfm-space-6);
+  }
 
-.section-title {
-  margin: var(--hfm-space-5) 0 var(--hfm-space-3);
-}
+  .home-hero__title {
+    font-size: var(--hfm-text-3xl);
+  }
 
-.portal-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--hfm-space-3);
-}
+  .home-section {
+    padding: var(--hfm-space-8) 0;
+  }
 
-.portal-list__item {
-  padding: var(--hfm-space-4);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-md);
-  background: var(--hfm-color-surface);
-}
-
-.portal-list__link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--hfm-space-1);
-  color: var(--hfm-color-text);
-  text-decoration: none;
-}
-
-.muted {
-  color: var(--hfm-color-text-muted);
-  font-size: var(--hfm-text-sm);
+  .home-section__title {
+    font-size: var(--hfm-text-2xl);
+  }
 }
 </style>

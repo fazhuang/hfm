@@ -1,40 +1,169 @@
-/* HFM public design tokens (P2-01 public frontend foundation).
- * Token scales per HFM conventions: constrained spacing/typography/radius
- * scales; breakpoint tokens drive responsive behavior (P2-01-AC-05).
- */
+/* ==========================================================================
+   HFM design tokens — UI-01 Design Foundations
+   ==========================================================================
+   Semantic direction: 当代东方数字人文 (Contemporary Chinese Digital Humanities)
+   典雅 · 克制 · 权威 · 可考
+
+   Layers: primitive → semantic (light) → semantic (.dark override)
+   Mechanism: CSS custom properties (mechanism KEEP from Phase-2 audit);
+   values REDESIGNED at UI-01 per HFM-DESIGN-TOKENS-PROPOSAL.
+
+   WCAG 2.1 AA contrast record (measured 2026-09-01, fg on surface/canvas):
+     text      #1f1a16  17.25 / 15.72  · secondary #4b4238 9.83 / 8.96
+     muted     #6f6557   5.71 /  5.21  · accent   #a0402a 6.44 / 5.87
+     accent-hover #8a3522 8.04         · danger   #b3261e 6.54
+     warning   #8a5a00   5.93          · success  #1e6b3c 6.51
+     evidence  #2f5d50   7.49          · citation #4a5a8a 6.73
+     on-accent #ffffff   6.44          · heritage #8a6a2f 5.02 (AA)
+     azure     #5c6b6f   5.54
+   Dark (fg on surface #1e1a15):
+     text 14.71 · secondary 9.51 · muted 5.65 · accent #cf6a4a 4.79
+     danger 4.94 · warning 7.69 · success 8.03 · evidence 8.81
+     citation 8.17 · heritage 7.21 · on-accent #1f1a16 on accent 4.77
+   All AA (>=4.5); no FAIL pairs in light or dark semantic usage.
+   ========================================================================== */
+
 :root {
-  /* color */
-  --hfm-color-bg: #fafaf9;
-  --hfm-color-surface: #ffffff;
-  --hfm-color-border: #e7e5e4;
-  --hfm-color-text: #1c1917;
-  --hfm-color-text-muted: #78716c;
-  --hfm-color-accent: #7c3aed;
-  --hfm-color-danger: #b91c1c;
+  /* ===== PRIMITIVE — 暖白 / 墨色 / 低饱和朱砂 / 土褐 / 铜金 / 青灰 ===== */
+  --hfm-pr-ink-900: #1f1a16; /* 墨黑（主文字） */
+  --hfm-pr-ink-700: #4b4238; /* 次级文字 */
+  --hfm-pr-ink-500: #6f6557; /* 弱化文字 */
+  --hfm-pr-warm-50: #f7f4ef; /* 暖米白（画布） */
+  --hfm-pr-warm-0: #ffffff; /* 表面 */
+  --hfm-pr-warm-200: #e2dcd2; /* 边框 */
+  --hfm-pr-warm-300: #c9bfae; /* 强调分隔线 */
+  --hfm-pr-cinnabar-600: #a0402a; /* 低饱和朱砂（交互强调） */
+  --hfm-pr-cinnabar-700: #8a3522; /* 朱砂悬停 */
+  --hfm-pr-bronze-600: #8a6a2f; /* 铜金（heritage 点缀） */
+  --hfm-pr-azure-500: #5c6b6f; /* 青灰（标签/图谱节点） */
+  --hfm-pr-verdigris-700: #2f5d50; /* 墨绿（证据） */
+  --hfm-pr-indigo-700: #4a5a8a; /* 靛青（Citation） */
+  --hfm-pr-danger-700: #b3261e; /* 错误/撤回 */
+  --hfm-pr-danger-100: #fbe3e1; /* 错误底 */
+  --hfm-pr-warning-700: #8a5a00; /* 警告（演示/未校对提示） */
+  --hfm-pr-success-700: #1e6b3c; /* 成功 */
+  --hfm-pr-success-100: #e2f0e6; /* 成功底 */
+  --hfm-pr-white: #ffffff;
 
-  /* typography */
-  --hfm-font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --hfm-text-xs: 0.75rem;
-  --hfm-text-sm: 0.875rem;
-  --hfm-text-base: 1rem;
-  --hfm-text-lg: 1.125rem;
-  --hfm-text-xl: 1.5rem;
+  /* ===== SEMANTIC — 浅色 ===== */
+  --hfm-color-canvas: var(--hfm-pr-warm-50);
+  --hfm-color-surface: var(--hfm-pr-warm-0);
+  --hfm-color-elevated: var(--hfm-pr-warm-0);
+  --hfm-color-text: var(--hfm-pr-ink-900);
+  --hfm-color-text-secondary: var(--hfm-pr-ink-700);
+  --hfm-color-text-muted: var(--hfm-pr-ink-500);
+  --hfm-color-border: var(--hfm-pr-warm-200);
+  --hfm-color-border-strong: var(--hfm-pr-warm-300);
+  --hfm-color-accent: var(--hfm-pr-cinnabar-600);
+  --hfm-color-accent-hover: var(--hfm-pr-cinnabar-700);
+  --hfm-color-heritage: var(--hfm-pr-bronze-600);
+  --hfm-color-azure: var(--hfm-pr-azure-500);
+  --hfm-color-evidence: var(--hfm-pr-verdigris-700);
+  --hfm-color-citation: var(--hfm-pr-indigo-700);
+  --hfm-color-interactive: var(--hfm-pr-cinnabar-600);
+  --hfm-color-danger: var(--hfm-pr-danger-700);
+  --hfm-color-danger-surface: var(--hfm-pr-danger-100);
+  --hfm-color-warning: var(--hfm-pr-warning-700);
+  --hfm-color-success: var(--hfm-pr-success-700);
+  --hfm-color-success-surface: var(--hfm-pr-success-100);
+  --hfm-color-on-accent: var(--hfm-pr-white);
+  --hfm-color-on-heritage: var(--hfm-pr-white);
 
-  /* spacing scale */
-  --hfm-space-1: 0.25rem;
-  --hfm-space-2: 0.5rem;
-  --hfm-space-3: 0.75rem;
-  --hfm-space-4: 1rem;
-  --hfm-space-6: 1.5rem;
-  --hfm-space-8: 2rem;
+  /* 兼容别名（Phase-2 组件使用；机制保留，值已重设计） */
+  --hfm-color-bg: var(--hfm-color-canvas);
 
-  /* radius */
-  --hfm-radius-sm: 0.25rem;
-  --hfm-radius-md: 0.5rem;
-  --hfm-radius-lg: 0.75rem;
+  /* ===== TYPOGRAPHY ===== */
+  --hfm-font-sans:
+    system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+  --hfm-font-serif: 'Songti SC', 'SimSun', 'Noto Serif CJK SC', serif;
+  --hfm-font-display: var(--hfm-font-serif);
+  --hfm-font-heading: var(--hfm-font-serif);
+  --hfm-font-ancient: var(--hfm-font-serif);
+  --hfm-font-numeric: var(--hfm-font-serif);
 
-  /* breakpoint tokens (responsive matrix, P2-01-AC-05) */
+  /* type scale (基准 16px) */
+  --hfm-text-xs: 0.75rem; /* 12 */
+  --hfm-text-sm: 0.8125rem; /* 13 · 元数据 */
+  --hfm-text-base: 1rem; /* 16 */
+  --hfm-text-lg: 1.125rem; /* 18 */
+  --hfm-text-xl: 1.375rem; /* 22 */
+  --hfm-text-2xl: 1.75rem; /* 28 */
+  --hfm-text-3xl: 2.5rem; /* 40 · Display */
+  --hfm-text-4xl: 3.5rem; /* 56 · Hero */
+
+  /* 行高 */
+  --hfm-leading-tight: 1.3;
+  --hfm-leading-normal: 1.6;
+  --hfm-leading-reading: 1.9;
+
+  /* 字距（中文标题/古籍） */
+  --hfm-tracking-display: 0.02em;
+  --hfm-tracking-ancient: 0.02em;
+
+  /* ===== SPACING（N×0.25rem 不变式；大节奏档位 12/16/24/32） ===== */
+  --hfm-space-0: 0;
+  --hfm-space-1: 0.25rem; /* 4 */
+  --hfm-space-2: 0.5rem; /* 8 */
+  --hfm-space-3: 0.75rem; /* 12 */
+  --hfm-space-4: 1rem; /* 16 */
+  --hfm-space-5: 1.25rem; /* 20（修复：此前被引用但未定义） */
+  --hfm-space-6: 1.5rem; /* 24 */
+  --hfm-space-7: 1.75rem; /* 28 */
+  --hfm-space-8: 2rem; /* 32 */
+  --hfm-space-12: 3rem; /* 48 · 区块节奏 */
+  --hfm-space-16: 4rem; /* 64 · 大区隔 */
+  --hfm-space-24: 6rem; /* 96 · 首页大区隔 */
+  --hfm-space-32: 8rem; /* 128 · 展厅级 */
+
+  /* ===== RADIUS（克制；不引入 >12px） ===== */
+  --hfm-radius-none: 0;
+  --hfm-radius-sm: 0.25rem; /* 4 */
+  --hfm-radius-md: 0.5rem; /* 8 */
+  --hfm-radius-lg: 0.625rem; /* 10（文化平台克制） */
+
+  /* ===== SHADOW（零浮起：卡片永不悬浮） ===== */
+  --hfm-shadow-none: none;
+  --hfm-shadow-overlay: 0 2px 8px rgba(31, 26, 22, 0.12);
+  --hfm-shadow-focus: 0 0 0 3px rgba(160, 64, 42, 0.25);
+
+  /* ===== BORDER ===== */
+  --hfm-border-1: 1px solid var(--hfm-color-border);
+  --hfm-border-strong: 1px solid var(--hfm-color-border-strong);
+  --hfm-divider: 1px solid var(--hfm-color-border);
+
+  /* ===== BREAKPOINTS / 容器 ===== */
   --hfm-bp-sm: 480px;
   --hfm-bp-md: 768px;
   --hfm-bp-lg: 1024px;
+  --hfm-bp-xl: 1440px;
+  --hfm-bp-2xl: 1920px;
+  --hfm-content-max: 1200px; /* 公共内容容器上限 */
+  --hfm-content-max-wide: 1400px; /* 研究端容器上限 */
+  --hfm-reader-max: 720px; /* 阅读列宽（约中文 36 字/行） */
+}
+
+/* ===== DARK（.dark 语义覆盖；useTheme 切换 documentElement class） ===== */
+.dark {
+  --hfm-pr-ink-900: #f2ece1; /* 暖白文字 */
+  --hfm-pr-ink-700: #c9bfae;
+  --hfm-pr-ink-500: #9c9284;
+  --hfm-pr-warm-50: #16130f; /* 墨黑画布 */
+  --hfm-pr-warm-0: #1e1a15; /* 表面 */
+  --hfm-pr-warm-200: #3a342b;
+  --hfm-pr-warm-300: #4a4236;
+  --hfm-pr-cinnabar-600: #cf6a4a; /* 提高明度朱砂 */
+  --hfm-pr-cinnabar-700: #e07f5e;
+  --hfm-pr-bronze-600: #c9a24b; /* 提高明度铜金 */
+  --hfm-pr-azure-500: #8a9ba0;
+  --hfm-pr-verdigris-700: #8fc4b0;
+  --hfm-pr-indigo-700: #9fb2e0;
+  --hfm-pr-danger-700: #e0605a;
+  --hfm-pr-danger-100: #4a2421;
+  --hfm-pr-warning-700: #d9a441;
+  --hfm-pr-success-700: #7fbf8f;
+  --hfm-pr-success-100: #1f3a28;
+  --hfm-pr-white: #f2ece1;
+  --hfm-color-on-accent: #1f1a16; /* 亮底用墨色文字 */
+  --hfm-color-on-heritage: #16130f;
+  --hfm-shadow-focus: 0 0 0 3px rgba(207, 106, 74, 0.35);
 }

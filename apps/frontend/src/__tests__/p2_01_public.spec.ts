@@ -112,9 +112,23 @@ describe('P2-01-AC-03 no research/admin routes anonymously', () => {
 
 describe('P2-01-AC-04 accessibility assertions', () => {
   it('public layout passes axe assertions with semantic landmarks', async () => {
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        {
+          path: '/',
+          component: PublicLayout,
+          meta: { publicOnly: true },
+          children: [{ path: '', name: 'home', component: { template: '<p>home</p>' } }],
+        },
+      ],
+    })
+    router.push('/')
+    await router.isReady()
     const wrapper = mount(PublicLayout, {
       attachTo: document.body,
       global: {
+        plugins: [router],
         stubs: { RouterView: { template: '<p>content</p>' } },
       },
     })
@@ -135,8 +149,8 @@ describe('P2-01-AC-04 accessibility assertions', () => {
 })
 
 describe('P2-01-AC-05 responsive breakpoint matrix', () => {
-  it('exposes the frozen breakpoint tokens', () => {
-    expect(BREAKPOINTS).toEqual({ sm: 480, md: 768, lg: 1024 })
+  it('exposes the frozen breakpoint tokens (extended at UI-01 with xl/2xl)', () => {
+    expect(BREAKPOINTS).toEqual({ sm: 480, md: 768, lg: 1024, xl: 1440, '2xl': 1920 })
   })
 
   it('reports the largest matching breakpoint', () => {
@@ -146,6 +160,16 @@ describe('P2-01-AC-05 responsive breakpoint matrix', () => {
       return mq(false) as MediaQueryList
     })
     expect(currentBreakpoint()).toBe('lg')
+    matchMedia.mockRestore()
+  })
+
+  it('reports xl at ≥1440px', () => {
+    const mq = (matches: boolean) => ({ matches, media: '', onchange: null })
+    const matchMedia = vi.spyOn(window, 'matchMedia').mockImplementation((query: string) => {
+      if (query.includes('1440')) return mq(true) as MediaQueryList
+      return mq(false) as MediaQueryList
+    })
+    expect(currentBreakpoint()).toBe('xl')
     matchMedia.mockRestore()
   })
 

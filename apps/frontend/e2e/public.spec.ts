@@ -37,28 +37,22 @@ test.describe('P2-01-AC-01 anonymous public traversal', () => {
     await mockPublicHome(page)
     const response = await page.goto('/')
     expect(response?.status()).toBe(200)
-    await expect(page.getByRole('heading', { name: /公开门户/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /皇甫谧人文数字平台/ })).toBeVisible()
     // No login wall: the page stays at home.
     expect(new URL(page.url()).pathname).toBe('/')
   })
 })
 
-test.describe('P2-01-AC-02 published projection only', () => {
-  test('published content is visible', async ({ page }) => {
+test.describe('P2-01-AC-02 published projection only (static homepage)', () => {
+  test('homepage renders the platform hero; mocked draft/withdrawn content never leaks', async ({
+    page,
+  }) => {
     await mockPublicHome(page)
     await page.goto('/')
-    await expect(page.getByText('已发布内容', { exact: true })).toBeVisible()
-  })
-
-  test('draft content is not visible', async ({ page }) => {
-    await mockPublicHome(page)
-    await page.goto('/')
+    // The homepage is a static verified-content projection: it renders real
+    // platform content and can never surface draft/withdrawn records.
+    await expect(page.getByRole('heading', { name: '皇甫谧人文数字平台' })).toBeVisible()
     await expect(page.getByText('未发布草稿', { exact: true })).not.toBeVisible()
-  })
-
-  test('withdrawn content is not visible', async ({ page }) => {
-    await mockPublicHome(page)
-    await page.goto('/')
     await expect(page.getByText('已撤回内容', { exact: true })).not.toBeVisible()
   })
 })
@@ -74,5 +68,23 @@ test.describe('P2-01-AC-03 research/admin unavailable anonymously', () => {
     await page.goto('/admin')
     await page.waitForURL(/\/(login|$)/)
     expect(new URL(page.url()).pathname).toBe('/login')
+  })
+})
+
+test.describe('UI-02 main navigation (customer 5 links)', () => {
+  test('main nav exposes exactly five links and header tools are separate', async ({ page }) => {
+    await mockPublicHome(page)
+    await page.goto('/')
+    const nav = page.getByRole('navigation', { name: 'Public navigation' })
+    const mainLinks = nav.locator('a.nav-link')
+    await expect(mainLinks).toHaveCount(5)
+    await expect(mainLinks.nth(0)).toHaveText('首页')
+    await expect(mainLinks.nth(1)).toHaveText('人物（皇甫谧）')
+    await expect(mainLinks.nth(2)).toHaveText('其言')
+    await expect(mainLinks.nth(3)).toHaveText('《针灸甲乙经》')
+    await expect(mainLinks.nth(4)).toHaveText('皇甫谧针灸非遗的传承')
+    // Search + login live outside the main nav (header utility area).
+    await expect(page.getByRole('banner').getByRole('search')).toBeVisible()
+    await expect(page.getByRole('link', { name: '登录' })).toBeVisible()
   })
 })

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import AppSkipLink from '../components/AppSkipLink.vue'
 
 defineOptions({ name: 'AdminLayout' })
 
@@ -15,6 +16,7 @@ async function onLogout(): Promise<void> {
 
 <template>
   <div class="admin-shell">
+    <AppSkipLink />
     <header class="admin-shell__header">
       <span class="admin-shell__brand">管理 / 发布控制台</span>
       <nav class="admin-shell__nav" aria-label="Admin navigation">
@@ -22,7 +24,7 @@ async function onLogout(): Promise<void> {
         <button type="button" @click="onLogout">退出登录</button>
       </nav>
     </header>
-    <main class="admin-shell__main">
+    <main id="main-content" class="admin-shell__main" tabindex="-1">
       <RouterView />
     </main>
   </div>

@@ -33,7 +33,7 @@ export function useFocusTrap() {
     }
   }
 
-  function deactivate(triggerEl?: HTMLElement | null) {
+  function deactivate(triggerEl?: { focus(): void } | null) {
     document.removeEventListener('keydown', onKeyDown)
     if (triggerEl && typeof triggerEl.focus === 'function') {
       triggerEl.focus()

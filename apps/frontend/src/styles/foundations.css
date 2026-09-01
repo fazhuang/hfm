@@ -1,0 +1,134 @@
+/* ==========================================================================
+   HFM global foundation styles — UI-01 Design Foundations
+   Typography baseline, color-scheme, focus-visible, reduced-motion.
+   Imported after tokens.css in main.ts.
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-base);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text);
+  background: var(--hfm-color-canvas);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 学术气质：标题默认衬线（P4/P6）；正文保持无衬线。
+ * UI-13: 统一字阶（h1 28 / h2 22 / h3 18 / h4 16）；页级 hero 标题用
+ * 视图内显式字号覆盖，不受此默认影响。 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--hfm-font-heading);
+  line-height: var(--hfm-leading-tight);
+  margin: 0 0 var(--hfm-space-3);
+  letter-spacing: var(--hfm-tracking-display);
+}
+
+h1 {
+  font-size: var(--hfm-text-2xl);
+}
+
+h2 {
+  font-size: var(--hfm-text-xl);
+}
+
+h3 {
+  font-size: var(--hfm-text-lg);
+}
+
+h4 {
+  font-size: var(--hfm-text-base);
+}
+
+/* ===== UI-13 shared presentation primitives ===== */
+
+/* SectionEyebrow — 页/区顶部眉题（heritage 色 · 小号 · 宽字距）。
+ * 跨页面统一节奏提示（Home/Jiayi/Yan/Works/Archive/Heritage/Search/Reader）。 */
+.hfm-eyebrow {
+  margin: 0 0 var(--hfm-space-2);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.12em;
+  color: var(--hfm-color-heritage);
+}
+
+/* StateLabel — 内容状态徽标（仅映射现有 ContentStatus，无虚构状态）。 */
+.hfm-status {
+  display: inline-block;
+  padding: 2px var(--hfm-space-2);
+  border-radius: var(--hfm-radius-sm);
+  font-size: var(--hfm-text-xs);
+  font-weight: 600;
+}
+
+.hfm-status[data-status='AVAILABLE'] {
+  background: var(--hfm-color-success-surface);
+  color: var(--hfm-color-success);
+}
+
+.hfm-status[data-status='METADATA_ONLY'] {
+  background: var(--hfm-color-azure);
+  color: var(--hfm-color-on-accent);
+}
+
+.hfm-status[data-status='DATA_GAP'] {
+  background: var(--hfm-color-warning);
+  color: var(--hfm-color-on-accent);
+}
+
+/* 链接：朱砂交互色 + 可见悬停（P10） */
+a {
+  color: var(--hfm-color-interactive);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--hfm-color-accent-hover);
+}
+
+/* 可见焦点环（P10；聚焦不依赖鼠标悬停） */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--hfm-shadow-focus);
+  border-radius: var(--hfm-radius-sm);
+}
+
+/* 尊重 reduced-motion：动效全部降级为无 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 阅读区辅助类（UI-07 Reader 消费；古籍正文） */
+.hfm-reading {
+  font-family: var(--hfm-font-ancient);
+  font-size: var(--hfm-text-lg);
+  line-height: var(--hfm-leading-reading);
+  letter-spacing: var(--hfm-tracking-ancient);
+  max-width: var(--hfm-reader-max);
+}

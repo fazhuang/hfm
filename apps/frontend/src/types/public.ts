@@ -86,8 +86,28 @@ export interface PublicPerson {
   pseudonym: string | null
   dynasty: string | null
   publication_status: string
-  assertions: unknown[]
-  events: unknown[]
+  /** Evidence-linked assertions (public projection: evidenced, non-withdrawn only). */
+  assertions: PersonAssertion[]
+  /** Person-related events (public projection). */
+  events: PersonEvent[]
+}
+
+/** Public person assertion (backend public projection shape). */
+export interface PersonAssertion {
+  id: string
+  predicate: string
+  value: string
+  object_entity_id: string | null
+  editorial_status: string
+  confidence: string
+  evidence_ids: string[]
+}
+
+/** Public person event (backend public projection: role + description only). */
+export interface PersonEvent {
+  event_id: string
+  role: string
+  description: string | null
 }
 
 /** Public search hit (kind-tagged; published only). */

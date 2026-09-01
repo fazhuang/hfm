@@ -16,6 +16,6 @@ describe('App skeleton smoke', () => {
     const wrapper = mount(App, { global: { plugins: [router] } })
 
     expect(wrapper.text()).toContain('皇甫谧人文数字平台')
-    expect(wrapper.text()).toContain('公开门户')
+    expect(wrapper.text()).toContain('探索皇甫谧')
   })
 })
