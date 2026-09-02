@@ -84,3 +84,17 @@ test('UI-03 responsive: 375–1920 no overflow, dark, 200% zoom', async ({ page 
   )
   expect(zoomOverflow).toBeLessThanOrEqual(0)
 })
+
+test('WP-03 home foundation is homepage-scoped (no leakage to other public routes)', async ({ page }) => {
+  // on the homepage, the foundation role classes are present
+  await page.goto('/')
+  await expect(page.locator('.home .home-eyebrow').first()).toBeVisible()
+  await expect(page.locator('.home > .home-section').first()).toBeVisible()
+
+  // on a non-homepage public route, the homepage foundation namespace must NOT leak
+  await page.goto('/about')
+  expect(await page.locator('.home-eyebrow').count()).toBe(0)
+  expect(await page.locator('.home-section').count()).toBe(0)
+  // unrelated route still renders its own unique h1 + footer (no foundation interference)
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+})

@@ -1,3 +1,88 @@
+/* ===== HFM homepage visual foundation (WP-03) — .home-scoped =====
+ * Shared homepage presentation roles established once for the accepted 8-section
+ * homepage. ALL selectors are .home-namespaced so they apply only to the homepage
+ * content (HomeView renders <div class="home">) and never change unrelated public
+ * routes. Reuses existing HFM tokens only — no new color/font/spacing system, no
+ * per-section final geometry (that is WP-04/WP-05). Reference: HFM_HOMEPAGE_STEP2_
+ * VISUAL_BASELINE_FINAL. */
+
+/* container — centre the 8 sections to the accepted content column */
+.home .home-section {
+  margin: 0 auto;
+  width: 100%;
+  max-width: var(--hfm-content-max);
+  box-sizing: border-box;
+}
+
+/* chapter eyebrow role (heritage accent · small caps · wide tracking) */
+.home .home-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  margin: 0 0 var(--hfm-space-2);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.32em;
+  color: var(--hfm-color-text-muted);
+}
+.home .home-eyebrow::before {
+  content: "";
+  width: 44px;
+  height: 1px;
+  background: var(--hfm-color-border-strong);
+  flex: none;
+}
+.home .home-eyebrow__no {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  color: var(--hfm-color-heritage);
+}
+
+/* homepage serif heading role (sections 02–07); H1 (hero) is view-scoped override */
+.home .home-section__title {
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-2xl);
+  font-weight: 500;
+  line-height: var(--hfm-leading-tight);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text);
+  margin: 0 0 var(--hfm-space-3);
+}
+
+/* lede / intro role (secondary tone · reading leading) */
+.home .home-section__lede {
+  margin: 0 0 var(--hfm-space-5);
+  font-size: var(--hfm-text-base);
+  line-height: var(--hfm-leading-reading);
+  color: var(--hfm-color-text-secondary);
+  max-width: 70ch;
+}
+
+/* editorial action role (real link · accent arrow · visible focus) */
+.home .home-cta-row {
+  margin: var(--hfm-space-5) 0 0;
+}
+.home .home-cta {
+  color: var(--hfm-color-interactive);
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  font-size: var(--hfm-text-sm);
+  border-bottom: 1px solid var(--hfm-color-border-strong);
+  padding-bottom: 2px;
+}
+.home .home-cta:hover {
+  color: var(--hfm-color-accent-hover);
+}
+
+/* responsive foundation — homepage-scoped only; keep no horizontal overflow */
+@media (max-width: 640px) {
+  .home .home-section {
+    margin: 0;
+  }
+  .home .home-section__title {
+    font-size: var(--hfm-text-xl);
+  }
+}
+
 /* ==========================================================================
    HFM global foundation styles — UI-01 Design Foundations
    Typography baseline, color-scheme, focus-visible, reduced-motion.
