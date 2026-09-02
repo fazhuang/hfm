@@ -17,6 +17,7 @@ import {
   CORE_PERSON_DATES,
   CORE_PERSON_DEFINITION,
   CORE_PERSON_IDENTITIES,
+  CORE_PERSON_LIFE_PHASES,
   CORE_PERSON_NAME,
 } from '../config/corePerson'
 import {
@@ -24,7 +25,7 @@ import {
   INVENTORY_LUNWEN_FILES,
   INVENTORY_LUNZHU_FILES,
 } from './contentInventory'
-import { SEARCHABLE_PAPER_TOTAL } from './searchIndex'
+import { SEARCH_INDEX, SEARCHABLE_PAPER_TOTAL } from './searchIndex'
 import { READER_DOCUMENTS } from './readerDocuments'
 import { HERITAGE_PERSON } from './heritageView'
 import {
@@ -149,3 +150,129 @@ export const HOME_RESEARCH_STEPS = [
 ] as const
 
 export const HOME_EDITIONS_TOTAL = JIAYI_ANCIENT_EDITIONS.length + JIAYI_MODERN_EDITIONS.length
+
+/* --------------------------------------------------------------------
+ * STEP 3 WP-02 — ADDITIVE presentation projections for the accepted
+ * 8-section homepage structure. These SELECT/derive existing
+ * authoritative data only; no new domain facts, no fabricated counts.
+ * -------------------------------------------------------------------- */
+
+/** Accepted homepage chapter labels (presentation microcopy only). */
+export const HOME_CHAPTERS = {
+  hero: { no: '01', label: '人物 · 史料在场' },
+  life: { no: '02', label: 'A LIFE' },
+  book: { no: '03', label: 'THE BOOK' },
+  knowledge: { no: '04', label: 'KNOWLEDGE' },
+  evidence: { no: '05', label: 'EVIDENCE' },
+  heritage: { no: '06', label: 'LIVING HERITAGE' },
+  domains: { no: '07', label: 'FOUR WORLDS' },
+  closing: { no: '08', label: 'CLOSING' },
+} as const
+
+/** Section 02 — 一生。Life stages derive from the verified life-phase model. */
+export const HOME_LIFE = {
+  headline: '生于乱世，终于著述。',
+  dates: CORE_PERSON_DATES,
+  stages: CORE_PERSON_LIFE_PHASES,
+  intro:
+    '皇甫谧的一生，录于后世整理的其传史料与《晋书》等本源记载。四个阶段彼此衔接——少时带经而农，壮岁屡征不仕，中年抱病研医，晚年著书传世——从一位农家子弟，走向针灸鼻祖。',
+  cta: { label: '进入人物档案', href: '/persons/person-huangfu-mi' },
+} as const
+
+/** Section 03 — 一部书。Book object + edition/lineage preview (existing data). */
+export const HOME_BOOK = {
+  headline: '一部书，成为历史中的物。',
+  book: HOME_JIAYI,
+  cta: { label: '进入古籍库', href: '/jiayi' },
+} as const
+
+/** Section 04 — 一套知识。Knowledge layer numbers derive from inventory/search. */
+export const HOME_KNOWLEDGE = {
+  headline: '从古籍文字，到可探索的知识。',
+  searchable: SEARCH_INDEX.length,
+  categories: 6,
+  editions: INVENTORY_EDITION_RECORDS,
+  lunzhu: INVENTORY_LUNZHU_FILES,
+  lunwen: INVENTORY_LUNWEN_FILES,
+  structured: SEARCHABLE_PAPER_TOTAL,
+  structure: [
+    { title: '篇章', role: '章目层级', note: '全书结构 · 文本与版本承载' },
+    { title: '腧穴', role: '针灸之体', note: '取穴知识 · 穴名与定位条目' },
+    { title: '经脉', role: '经络之网', note: '经络体系 · 气血循行的联系' },
+    { title: '病候', role: '病症之用', note: '病症与治则 · 临床的对应' },
+    { title: '史料依据', role: '出处之锚', note: '回到出处 · 证据回溯（见下节）' },
+  ],
+  cta: { label: '进入研究工作台', href: '/research/search' },
+} as const
+
+/** Section 05 — 史料证据。Authoritative quotation + source register. */
+export const HOME_EVIDENCE = {
+  headline: '每一个结论，都回到它的出处。',
+  quotation: HOME_QUOTATION,
+  sources: [
+    { title: '本源史料', note: '《晋书》等正史记载本传' },
+    { title: '地方志', note: '历代州县志所录乡贤事迹' },
+    { title: '类书', note: '类书所辑逸文与事迹' },
+    { title: '现代考据', note: '当代学者对生卒与史实的考证' },
+    { title: '谱系', note: '世系与传承关系的整理' },
+    { title: '图像遗存', note: '画像、碑刻等视觉史料' },
+  ],
+  claim: { number: '215—282', note: '客户确认值 · 其传 · 史证来源整理' },
+  dispute: '建安 / 正始 两说',
+  cta: { label: '阅读《后论》全文', href: '/reader/houlun' },
+} as const
+
+/** Section 06 — 活态传承。Living transmission (existing heritage data). */
+export const HOME_HERITAGE_LIVING = {
+  headline: '一千七百年之后，传承仍在继续。',
+  person: HERITAGE_PERSON,
+  project: '皇甫谧针灸 · 市级非物质文化遗产代表性项目',
+  cta: { label: '进入活态传承档案', href: '/heritage' },
+  lineageNote: '谱系中间代结构化整理中（PARTIAL），不虚构。',
+} as const
+
+/** Section 07 — 四域探索。Four domains map to existing routes/data. */
+export const HOME_DOMAINS = {
+  headline: '四域探索',
+  lede: '人物 · 文献 · 医学 · 传承 —— 四类知识，四个入口。',
+  domains: [
+    {
+      no: '01',
+      key: '人物档案',
+      label: 'THE PERSON',
+      title: '皇甫谧',
+      href: '/persons/person-huangfu-mi',
+      cta: '进入人物档案',
+    },
+    {
+      no: '02',
+      key: '文献史料',
+      label: 'TEXTS & ARCHIVE',
+      title: '文献史料',
+      href: '/archive',
+      cta: '进入文献库',
+    },
+    {
+      no: '03',
+      key: '医学知识',
+      label: 'THE BOOK',
+      title: '《针灸甲乙经》',
+      href: '/jiayi',
+      cta: '进入古籍库',
+    },
+    {
+      no: '04',
+      key: '活态传承',
+      label: 'LIVING HERITAGE',
+      title: '活态传承',
+      href: '/heritage',
+      cta: '进入传承档案',
+    },
+  ],
+} as const
+
+/** Section 08 — 结语。Platform closing identity (AppFooter owns global footer). */
+export const HOME_CLOSING = {
+  name: HOME_HERO.title,
+  subtitle: HOME_HERO.subtitle,
+} as const

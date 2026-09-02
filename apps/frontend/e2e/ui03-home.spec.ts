@@ -11,11 +11,15 @@ import { expect, test } from '@playwright/test'
 test('UI-03 homepage renders unique H1 and narrative sections', async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { name: '皇甫谧人文数字平台' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '皇甫谧', exact: true })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '《针灸甲乙经》' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '文献与史料' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '皇甫谧针灸非遗 · 活态传承' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '从资料到研究' })).toBeVisible()
+  /* WP-02 structural headings. Accepted visual section-heading copy (皇甫谧 / 《针灸甲乙经》 /
+     文献与史料 / 皇甫谧针灸非遗 · 活态传承 / 从资料到研究) is re-asserted in WP-03 when the
+     visual implementation lands; here we assert the structural 8-section chapter headings. */
+  await expect(page.getByRole('heading', { name: '生于乱世，终于著述。' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '一部书，成为历史中的物。' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '从古籍文字，到可探索的知识。' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '每一个结论，都回到它的出处。' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '一千七百年之后，传承仍在继续。' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '四域探索' })).toBeVisible()
 })
 
 test('UI-03 CTA targets are real routes', async ({ page }) => {
@@ -23,10 +27,10 @@ test('UI-03 CTA targets are real routes', async ({ page }) => {
   const targets = [
     '/persons/person-huangfu-mi',
     '/jiayi',
-    '/yan',
     '/archive',
     '/heritage',
-    '/research',
+    '/reader/houlun',
+    '/research/search',
   ]
   for (const target of targets) {
     const link = page.locator(`a[href="${target}"]`).first()

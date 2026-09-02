@@ -52,7 +52,10 @@ describe('UX2-P5 — surfaced states route through the shared P0 mapping (P1-01)
     )
     // label comes from the shared presentationStatusLabel helper
     expect(badge.text()).toBe(
-      presentationStatusLabel(resolvePresentationState({ contentStatus: 'DATA_GAP' }), '版本关系整理中'),
+      presentationStatusLabel(
+        resolvePresentationState({ contentStatus: 'DATA_GAP' }),
+        '版本关系整理中',
+      ),
     )
     // the shared functions were actually invoked by HomeView (no local bypass)
     expect(resolvePresentationState).toHaveBeenCalled()
@@ -66,7 +69,10 @@ describe('UX2-P5 — surfaced states route through the shared P0 mapping (P1-01)
     const badge = wrapper.find('.home-section--heritage .home-state-line .hfm-status')
     expect(badge.attributes('data-status')).toBe('UNSTRUCTURED_OR_INCOMPLETE')
     expect(badge.text()).toBe(
-      presentationStatusLabel(resolvePresentationState({ contentStatus: 'DATA_GAP' }), '谱系整理中'),
+      presentationStatusLabel(
+        resolvePresentationState({ contentStatus: 'DATA_GAP' }),
+        '谱系整理中',
+      ),
     )
     expect(resolvePresentationState).toHaveBeenCalled()
     expect(presentationStatusLabel).toHaveBeenCalled()
@@ -83,19 +89,29 @@ describe('UX2-P5 — surfaced states route through the shared P0 mapping (P1-01)
   it('a change in the shared resolver propagates to the data-status (no literal masking)', () => {
     vi.mocked(resolvePresentationState).mockReturnValue('HISTORICAL_ABSENCE')
     const wrapper = mountHome()
-    expect(wrapper.find('.home-section--heritage .home-state-line .hfm-status').attributes('data-status')).toBe(
-      'HISTORICAL_ABSENCE',
-    )
+    expect(
+      wrapper
+        .find('.home-section--heritage .home-state-line .hfm-status')
+        .attributes('data-status'),
+    ).toBe('HISTORICAL_ABSENCE')
   })
 })
 
 describe('UX2-P5 — narrative order & composition', () => {
-  it('narrative sections follow the frozen grammar order', () => {
+  it('narrative sections follow the frozen grammar order (accepted 01→08)', () => {
     const wrapper = mountHome()
     const headings = wrapper.findAll('h1, h2').map((h) => h.text().trim())
     expect(headings[0]).toBe('皇甫谧人文数字平台')
     const h2 = headings.slice(1)
-    const order = ['皇甫谧', '《针灸甲乙经》', '文献与史料', '皇甫谧针灸非遗 · 活态传承', '从资料到研究']
+    /* P1-01: closing platform identity is a non-heading <p>; the h2 sequence is 02–07. */
+    const order = [
+      '生于乱世，终于著述。',
+      '一部书，成为历史中的物。',
+      '从古籍文字，到可探索的知识。',
+      '每一个结论，都回到它的出处。',
+      '一千七百年之后，传承仍在继续。',
+      '四域探索',
+    ]
     const idxs = order.map((o) => h2.indexOf(o))
     for (const [i, expected] of order.entries()) {
       expect(idxs[i], `missing narrative section ${expected}`).toBeGreaterThanOrEqual(0)
@@ -103,6 +119,7 @@ describe('UX2-P5 — narrative order & composition', () => {
     for (let i = 1; i < idxs.length; i += 1) {
       expect(idxs[i]).toBeGreaterThan(idxs[i - 1])
     }
+    expect(wrapper.find('.home-closing__name').text()).toBe('皇甫谧人文数字平台')
   })
 
   it('narrative ordering is presentation only — no factual relationship claimed', () => {
@@ -120,10 +137,9 @@ describe('UX2-P5 — cross-links to implemented surfaces', () => {
       '/persons/person-huangfu-mi',
       '/jiayi',
       '/heritage',
-      '/search',
-      '/research',
-      '/yan',
+      '/research/search',
       '/archive',
+      '/reader/houlun',
     ]
     const hrefs = wrapper.findAll('a[href]').map((a) => a.attributes('href') ?? '')
     for (const target of expected) {
@@ -135,7 +151,7 @@ describe('UX2-P5 — cross-links to implemented surfaces', () => {
 describe('UX2-P5 — hero copy governed (no unsupported claims)', () => {
   it('hero copy comes from governed projection (no superlatives)', () => {
     const wrapper = mountHome()
-    const heroText = wrapper.find('.home-hero').text()
+    const heroText = wrapper.find('#home-hero').text()
     expect(HOME_HERO.definition).toContain('针灸甲乙经')
     expect(heroText).toContain('皇甫谧人文数字平台')
     expect(heroText).not.toMatch(/唯一|首个|权威唯一|国家级|全国第一/)
@@ -153,8 +169,12 @@ describe('UX2-P5 — cards / featured content truth', () => {
   })
 
   it('metrics derive from governed contentInventory (single source)', () => {
-    expect(HOME_METRICS.find((m) => m.label === '版本记录')?.value).toBe(String(INVENTORY_EDITION_RECORDS))
-    expect(HOME_METRICS.find((m) => m.label === '学术论文')?.value).toBe(String(INVENTORY_LUNWEN_FILES))
+    expect(HOME_METRICS.find((m) => m.label === '版本记录')?.value).toBe(
+      String(INVENTORY_EDITION_RECORDS),
+    )
+    expect(HOME_METRICS.find((m) => m.label === '学术论文')?.value).toBe(
+      String(INVENTORY_LUNWEN_FILES),
+    )
   })
 })
 
@@ -165,7 +185,7 @@ describe('UX2-P5 — P1–P4 domain truth preserved on the homepage', () => {
   })
 
   it('P2: no false digitization — editions remain summary only', () => {
-    const jiayi = mountHome().find('.home-section--jiayi').text()
+    const jiayi = mountHome().find('#home-book').text()
     expect(jiayi).not.toMatch(/阅读全文|下载|数字化完成/)
     expect(jiayi).toContain('版本脉络')
   })
@@ -178,7 +198,7 @@ describe('UX2-P5 — P1–P4 domain truth preserved on the homepage', () => {
   })
 
   it('P4: no fake search count / full-text claim', () => {
-    const research = mountHome().find('.home-section--research').text()
+    const research = mountHome().find('#home-knowledge').text()
     expect(research).not.toMatch(/全文可读|全部可阅|PDF/)
   })
 

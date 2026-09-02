@@ -14,11 +14,13 @@ test.describe('UX2-P5 Homepage surface', () => {
   test('renders narrative sections in order with truthful state labels', async ({ page }) => {
     await page.goto('/')
     await expect(page.getByRole('heading', { name: '皇甫谧人文数字平台' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '皇甫谧', exact: true })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '《针灸甲乙经》' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '文献与史料' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '皇甫谧针灸非遗 · 活态传承' })).toBeVisible()
-    await expect(page.getByRole('heading', { name: '从资料到研究' })).toBeVisible()
+    /* WP-02 structural headings (accepted visual heading copy re-asserted in WP-03). */
+    await expect(page.getByRole('heading', { name: '生于乱世，终于著述。' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '一部书，成为历史中的物。' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '从古籍文字，到可探索的知识。' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '每一个结论，都回到它的出处。' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '一千七百年之后，传承仍在继续。' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '四域探索' })).toBeVisible()
 
     // P0 state labels on surfaced data states
     await expect(page.locator('.home-lineage figcaption .hfm-status')).toHaveText('版本关系整理中')
@@ -37,11 +39,10 @@ test.describe('UX2-P5 Homepage surface', () => {
     const targets = [
       '/persons/person-huangfu-mi',
       '/jiayi',
-      '/yan',
       '/archive',
       '/heritage',
-      '/research',
-      '/search',
+      '/reader/houlun',
+      '/research/search',
     ]
     for (const target of targets) {
       const link = page.locator(`a[href^="${target}"]`).first()

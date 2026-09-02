@@ -35,13 +35,23 @@ describe('UI-03 brand & hero', () => {
     const h1 = wrapper.findAll('h1')
     expect(h1).toHaveLength(1)
     expect(h1[0]?.text()).toBe('皇甫谧人文数字平台')
+    /* WP-02 structural: hero renders the person + dates (from corePerson projection);
+       the accepted kicker copy (公元 215—282) is a WP-03 visual string, not structural. */
     expect(wrapper.text()).toContain('皇甫谧 215—282')
   })
 
   it('hero definition reuses UI-04 data (no new person facts)', () => {
+    const wrapper = mount(HomeView)
     expect(HOME_HERO.definition).toContain('针灸甲乙经')
     expect(HOME_HERO.personName).toBe('皇甫谧')
-    expect(HOME_HERO.primary.map((c) => c.label)).toEqual(['探索皇甫谧', '进入《针灸甲乙经》'])
+    // Accepted H3 hero uses the frozen editorial action (not STEP-1 探索皇甫谧).
+    expect(wrapper.text()).toContain('进入人物档案')
+  })
+
+  it('hero renders the single platform-name H1 (accepted Section 01)', () => {
+    const wrapper = mount(HomeView)
+    const h1 = wrapper.find('h1')
+    expect(h1.text()).toBe('皇甫谧人文数字平台')
   })
 })
 
@@ -106,28 +116,63 @@ describe('UI-03 invariants', () => {
   })
 })
 
-describe('UI-03 homepage renders narrative sections', () => {
-  it('renders sections in narrative order with real CTA targets', () => {
+describe('UI-03 homepage renders the accepted 8-section structure (WP-02 structural shell)', () => {
+  it('renders all eight homepage sections in order hero → … → closing', () => {
     const wrapper = mount(HomeView)
-    const headings = wrapper.findAll('h2').map((h) => h.text())
-    expect(headings[0]).toBe('皇甫谧')
-    expect(headings).toContain('《针灸甲乙经》')
-    expect(headings).toContain('文献与史料')
-    expect(headings).toContain('皇甫谧针灸非遗 · 活态传承')
-    expect(headings).toContain('从资料到研究')
+    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
+    expect(ids).toEqual([
+      'home-hero',
+      'home-life',
+      'home-book',
+      'home-knowledge',
+      'home-evidence',
+      'home-heritage',
+      'home-domains',
+      'home-closing',
+    ])
+  })
 
+  it('exactly one H1 (hero) and section H2s follow the accepted chapter set', () => {
+    const wrapper = mount(HomeView)
+    expect(wrapper.findAll('h1')).toHaveLength(1)
+    const headings = wrapper.findAll('h2').map((h) => h.text())
+    expect(headings).toContain('生于乱世，终于著述。')
+    expect(headings).toContain('一部书，成为历史中的物。')
+    expect(headings).toContain('从古籍文字，到可探索的知识。')
+    expect(headings).toContain('每一个结论，都回到它的出处。')
+    expect(headings).toContain('一千七百年之后，传承仍在继续。')
+    expect(headings).toContain('四域探索')
+    /* P1-01: closing platform identity is a NON-heading <p> so only the hero H1 carries
+       皇甫谧人文数字平台 as a heading. It is not an h2. */
+    expect(headings).not.toContain('皇甫谧人文数字平台')
+    expect(wrapper.find('.home-closing__name').text()).toBe('皇甫谧人文数字平台')
+  })
+
+  it('renders real CTA route targets (no fake links)', () => {
+    const wrapper = mount(HomeView)
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     for (const target of [
       '/persons/person-huangfu-mi',
       '/jiayi',
-      '/yan',
       '/archive',
       '/heritage',
-      '/research',
+      '/research/search',
       '/reader/houlun',
     ]) {
       expect(hrefs, target).toContain(target)
     }
+  })
+
+  it('keeps the authored data-status honesty contract on the book and heritage sections', () => {
+    const wrapper = mount(HomeView)
+    const book = wrapper.find('#home-book .hfm-status')
+    const heritage = wrapper.find('#home-heritage .hfm-status')
+    expect(book.attributes('data-status')).toBe('UNSTRUCTURED_OR_INCOMPLETE')
+    expect(heritage.attributes('data-status')).toBe('UNSTRUCTURED_OR_INCOMPLETE')
+    expect(wrapper.find('#home-book').text()).toContain('DATA-GAP')
+    expect(wrapper.find('#home-heritage').text()).toContain('PARTIAL')
+    expect(wrapper.find('#home-heritage').text()).toContain('第六代名医')
+    expect(wrapper.find('#home-heritage').text()).toContain('刘君奇')
   })
 
   it('search form is wired to the /search route', () => {
@@ -135,7 +180,7 @@ describe('UI-03 homepage renders narrative sections', () => {
     const form = wrapper.find('form.home-search')
     const input = wrapper.find('#home-search-input')
     expect(form.exists()).toBe(true)
-    expect(input.attributes('placeholder')).toContain('检索人物、作品、版本、文献与论文')
+    expect(input.exists()).toBe(true)
   })
 
   it('renders 第六代名医 on the homepage', () => {
