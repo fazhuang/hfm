@@ -1,0 +1,1259 @@
+== backend ruff check ==
+All checks passed!
+== backend ruff format ==
+181 files already formatted
+== backend mypy ==
+Success: no issues found in 166 source files
+== backend pytest (current-applicable) ==
+GOVERNANCE_PRECHECK=PASS (supersession register verified; governed deselections authorized)
+........................................................................ [ 14%]
+........................................................................ [ 28%]
+........................................................................ [ 42%]
+........................................................................ [ 56%]
+........................................................................ [ 70%]
+........................................................................ [ 84%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+=============================== warnings summary ===============================
+.venv/lib/python3.13/site-packages/fastapi/testclient.py:1
+  /Users/likeming/Sites/hfm/apps/backend/.venv/lib/python3.13/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+== frontend lint ==
+
+> @hfm/frontend@0.1.0 lint /Users/likeming/Sites/hfm/apps/frontend
+> eslint .
+
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/AppFooter.vue
+  17:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+  17:50  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  25:36  warning  'aria-label' should be on a new line                                                  vue/max-attributes-per-line
+  26:33  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  26:37  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+  27:44  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  27:51  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+  28:41  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  28:45  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+  31:33  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+  31:65  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/AppSkipLink.vue
+  10:24  warning  'href' should be on a new line  vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/ExportPanel.vue
+  25:33  warning  'aria-labelledby' should be on a new line                                         vue/max-attributes-per-line
+  26:29  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  26:31  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found      vue/singleline-html-element-content-newline
+  28:29  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  28:55  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  28:66  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+  29:29  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  29:52  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  29:56  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+  31:24  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  31:53  warning  'data-testid' should be on a new line                                             vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/LineageTree.vue
+   8:28  warning  'aria-label' should be on a new line  vue/max-attributes-per-line
+   9:31  warning  ':key' should be on a new line        vue/max-attributes-per-line
+   9:46  warning  'class' should be on a new line       vue/max-attributes-per-line
+  11:38  warning  'class' should be on a new line       vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/Timeline.vue
+  18:24  warning  ':aria-label' should be on a new line                                        vue/max-attributes-per-line
+  19:33  warning  ':key' should be on a new line                                               vue/max-attributes-per-line
+  19:49  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  20:38  warning  'aria-hidden' should be on a new line                                        vue/max-attributes-per-line
+  20:57  warning  Require self-closing on HTML elements (<span>)                               vue/html-self-closing
+  23:35  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  26:64  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  40:37  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  40:60  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  40:83  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/heritage/LineageGraph.vue
+  17:23  warning  'aria-label' should be on a new line                                         vue/max-attributes-per-line
+  18:36  warning  ':key' should be on a new line                                               vue/max-attributes-per-line
+  18:51  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  19:35  warning  'aria-hidden' should be on a new line                                        vue/max-attributes-per-line
+  20:43  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  20:70  warning  'aria-hidden' should be on a new line                                        vue/max-attributes-per-line
+  20:89  warning  Require self-closing on HTML elements (<span>)                               vue/html-self-closing
+  22:34  warning  ':class' should be on a new line                                             vue/max-attributes-per-line
+  23:29  warning  ':href' should be on a new line                                              vue/max-attributes-per-line
+  23:47  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  26:22  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  27:38  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  28:29  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  28:51  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  28:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found  vue/singleline-html-element-content-newline
+  29:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  29:60  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeBookSection.vue
+  36:27   warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  36:67   warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  37:35   warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+  37:54   warning  Require self-closing on HTML elements (<div>)                                 vue/html-self-closing
+  41:73   warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  44:34   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  44:40   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  48:44   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  48:72   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  49:42   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  49:82   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  54:34   warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  54:66   warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  54:90   warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  55:41   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  55:92   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  59:33   warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  69:45   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  69:82   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  71:56   warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  72:78   warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  79:38   warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+  80:50   warning  ':alt' should be on a new line                                                vue/max-attributes-per-line
+  80:84   warning  Disallow self-closing on HTML void elements (<img/>)                          vue/html-self-closing
+  83:38   warning  ':data-status' should be on a new line                                        vue/max-attributes-per-line
+  90:43   warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+  91:51   warning  'alt' should be on a new line                                                 vue/max-attributes-per-line
+  91:58   warning  Disallow self-closing on HTML void elements (<img/>)                          vue/html-self-closing
+  93:46   warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+  93:65   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  93:91   warning  Disallow self-closing on HTML void elements (<br/>)                           vue/html-self-closing
+  93:120  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeClosingSection.vue
+  27:30  warning  'class' should be on a new line                                              vue/max-attributes-per-line
+  27:73  warning  'aria-label' should be on a new line                                         vue/max-attributes-per-line
+  28:38  warning  'aria-hidden' should be on a new line                                        vue/max-attributes-per-line
+  28:57  warning  Require self-closing on HTML elements (<div>)                                vue/html-self-closing
+  31:76  warning  Expected no line breaks before closing bracket, but 1 line break found       vue/html-closing-bracket-newline
+  36:39  warning  'aria-hidden' should be on a new line                                        vue/max-attributes-per-line
+  36:58  warning  Require self-closing on HTML elements (<div>)                                vue/html-self-closing
+  39:37  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  39:60  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found  vue/singleline-html-element-content-newline
+  40:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  40:68  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeDomainsSection.vue
+   63:38  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+   63:57  warning  Require self-closing on HTML elements (<div>)                                 vue/html-self-closing
+   67:76  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+   72:37  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   72:65  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   72:92  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   73:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   73:77  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   74:41  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+   74:60  warning  Require self-closing on HTML elements (<div>)                                 vue/html-self-closing
+   78:45  warning  'role' should be on a new line                                                vue/max-attributes-per-line
+   78:57  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+   86:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   86:54  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   87:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   87:75  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   88:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   88:56  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   89:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   89:55  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   94:47  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+   94:64  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   95:38  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  101:48  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  101:65  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  102:38  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  109:50  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  109:67  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  110:40  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  117:49  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  117:66  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  118:38  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  124:39  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  124:58  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  125:1   warning  Expected indentation of 10 spaces but found 12 spaces                         vue/html-indent
+  125:69  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  126:1   warning  Expected indentation of 10 spaces but found 12 spaces                         vue/html-indent
+  126:60  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  131:39  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeEvidenceSection.vue
+   34:39  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+   34:58  warning  Require self-closing on HTML elements (<div>)                                 vue/html-self-closing
+   38:77  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+   41:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   41:50  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   44:38  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   44:67  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   44:90  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   54:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   54:85  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   59:44  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   59:69  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   65:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   65:85  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   67:43  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   67:52  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   75:48  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+   76:57  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+   84:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   84:85  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   98:40  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+   99:42  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   99:74  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  101:49  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  101:69  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  102:37  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  109:37  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  109:62  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  110:1   warning  Expected indentation of 6 spaces but found 8 spaces                           vue/html-indent
+  111:57  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeHeritageSection.vue
+   49:39  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+   49:58  warning  Require self-closing on HTML elements (<div>)                                 vue/html-self-closing
+   53:77  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+   56:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   56:45  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   59:38  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   71:33  warning  'alt' should be on a new line                                                 vue/max-attributes-per-line
+   71:40  warning  'aria-hidden' should be on a new line                                         vue/max-attributes-per-line
+   71:59  warning  Disallow self-closing on HTML void elements (<img/>)                          vue/html-self-closing
+   78:43  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+   79:45  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   79:73  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   86:47  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   86:64  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   87:47  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   87:63  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   95:43  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found    vue/singleline-html-element-content-newline
+   95:60  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found  vue/singleline-html-element-content-newline
+  103:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  103:61  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  107:38  warning  ':data-status' should be on a new line                                        vue/max-attributes-per-line
+  113:37  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  113:74  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+  114:1   warning  Expected indentation of 6 spaces but found 8 spaces                           vue/html-indent
+  115:57  warning  Expected no line breaks before closing bracket, but 1 line break found        vue/html-closing-bracket-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeHeroSection.vue
+  40:27  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  40:67  warning  'aria-labelledby' should be on a new line                                         vue/max-attributes-per-line
+  41:35  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  41:54  warning  Require self-closing on HTML elements (<div>)                                     vue/html-self-closing
+  42:35  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  42:54  warning  Require self-closing on HTML elements (<div>)                                     vue/html-self-closing
+  45:30  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  45:53  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  45:74  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found      vue/singleline-html-element-content-newline
+  49:71  warning  Expected no line breaks before closing bracket, but 1 line break found            vue/html-closing-bracket-newline
+  52:34  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  52:53  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  55:32  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  58:34  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  58:53  warning  Require self-closing on HTML elements (<div>)                                     vue/html-self-closing
+  60:37  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  60:63  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  61:33  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  61:53  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  63:31  warning  'href' should be on a new line                                                    vue/max-attributes-per-line
+  74:47  warning  'alt' should be on a new line                                                     vue/max-attributes-per-line
+  74:54  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  74:73  warning  Disallow self-closing on HTML void elements (<img/>)                              vue/html-self-closing
+  89:38  warning  'for' should be on a new line                                                     vue/max-attributes-per-line
+  97:7   warning  Disallow self-closing on HTML void elements (<input/>)                            vue/html-self-closing
+  98:43  warning  'type' should be on a new line                                                    vue/max-attributes-per-line
+  98:57  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  98:59  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeKnowledgeSection.vue
+   44:40   warning  'aria-hidden' should be on a new line                                                 vue/max-attributes-per-line
+   44:59   warning  Require self-closing on HTML elements (<div>)                                         vue/html-self-closing
+   48:78   warning  Expected no line breaks before closing bracket, but 1 line break found                vue/html-closing-bracket-newline
+   51:39   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   51:51   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   54:39   warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+   54:69   warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found            vue/singleline-html-element-content-newline
+   54:83   warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+   55:41   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   55:112  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   64:55   warning  'alt' should be on a new line                                                         vue/max-attributes-per-line
+   64:62   warning  'aria-hidden' should be on a new line                                                 vue/max-attributes-per-line
+   64:81   warning  Disallow self-closing on HTML void elements (<img/>)                                  vue/html-self-closing
+   65:56   warning  Expected 1 line break after opening tag (`<figcaption>`), but no line breaks found    vue/singleline-html-element-content-newline
+   65:82   warning  Disallow self-closing on HTML void elements (<br/>)                                   vue/html-self-closing
+   65:102  warning  Expected 1 line break before closing tag (`</figcaption>`), but no line breaks found  vue/singleline-html-element-content-newline
+   69:50   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   69:84   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   71:42   warning  ':key' should be on a new line                                                        vue/max-attributes-per-line
+   71:60   warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+   72:53   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   72:69   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   73:52   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   73:67   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   77:55   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   77:94   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   79:54   warning  ':key' should be on a new line                                                        vue/max-attributes-per-line
+   80:92   warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+   89:51   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+   89:81   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   91:62   warning  ':key' should be on a new line                                                        vue/max-attributes-per-line
+   93:61   warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+  100:53   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found             vue/singleline-html-element-content-newline
+  100:73   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  111:38   warning  ':href' should be on a new line                                                       vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/home/HomeLifeSection.vue
+  30:27   warning  'class' should be on a new line                                                vue/max-attributes-per-line
+  30:67   warning  'aria-labelledby' should be on a new line                                      vue/max-attributes-per-line
+  31:35   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  31:54   warning  Require self-closing on HTML elements (<div>)                                  vue/html-self-closing
+  36:75   warning  Expected no line breaks before closing bracket, but 1 line break found         vue/html-closing-bracket-newline
+  39:34   warning  'class' should be on a new line                                                vue/max-attributes-per-line
+  39:63   warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found     vue/singleline-html-element-content-newline
+  39:87   warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found   vue/singleline-html-element-content-newline
+  40:37   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found      vue/singleline-html-element-content-newline
+  40:58   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  44:36   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  44:55   warning  Require self-closing on HTML elements (<div>)                                  vue/html-self-closing
+  45:67   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  45:86   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  46:65   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  46:84   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  47:65   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  47:84   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  48:65   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  48:84   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  49:65   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  49:84   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  50:68   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  50:87   warning  Require self-closing on HTML elements (<span>)                                 vue/html-self-closing
+  53:59   warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found    vue/singleline-html-element-content-newline
+  53:121  warning  Expected 1 line break before closing tag (`</div>`), but no line breaks found  vue/singleline-html-element-content-newline
+  54:59   warning  Expected 1 line break after opening tag (`<div>`), but no line breaks found    vue/singleline-html-element-content-newline
+  54:119  warning  Expected 1 line break before closing tag (`</div>`), but no line breaks found  vue/singleline-html-element-content-newline
+  57:41   warning  ':key' should be on a new line                                                 vue/max-attributes-per-line
+  57:60   warning  'class' should be on a new line                                                vue/max-attributes-per-line
+  57:85   warning  ':class' should be on a new line                                               vue/max-attributes-per-line
+  59:42   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found      vue/singleline-html-element-content-newline
+  59:58   warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found    vue/singleline-html-element-content-newline
+  63:45   warning  'aria-hidden' should be on a new line                                          vue/max-attributes-per-line
+  64:49   warning  'alt' should be on a new line                                                  vue/max-attributes-per-line
+  64:56   warning  Disallow self-closing on HTML void elements (<img/>)                           vue/html-self-closing
+  72:45   warning  'href' should be on a new line                                                 vue/max-attributes-per-line
+  74:45   warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found      vue/singleline-html-element-content-newline
+  74:138  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found    vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/jiayi/EditionLineageImage.vue
+  53:31  warning  ':src' should be on a new line                                                    vue/max-attributes-per-line
+  53:62  warning  ':alt' should be on a new line                                                    vue/max-attributes-per-line
+  53:93  warning  Disallow self-closing on HTML void elements (<img/>)                              vue/html-self-closing
+  82:37  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  82:67  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  82:79  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found      vue/singleline-html-element-content-newline
+  87:7   warning  Disallow self-closing on HTML void elements (<img/>)                              vue/html-self-closing
+  88:29  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  88:59  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  88:80  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  88:87  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/reader/CitationBlock.vue
+  55:25  warning  'class' should be on a new line        vue/max-attributes-per-line
+  56:28  warning  'class' should be on a new line        vue/max-attributes-per-line
+  57:32  warning  'class' should be on a new line        vue/max-attributes-per-line
+  60:27  warning  'class' should be on a new line        vue/max-attributes-per-line
+  60:50  warning  ':aria-label' should be on a new line  vue/max-attributes-per-line
+  60:80  warning  '@click' should be on a new line       vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/research/EvidenceExplorer.vue
+  21:29  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  22:31  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  22:55  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  22:63  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  24:41  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  24:50  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  25:37  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  25:58  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  30:40  warning  ':data-status' should be on a new line                                        vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/research/RelatedEntityLinks.vue
+  14:32  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  14:55  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+  15:39  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  15:41  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  17:33  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  18:30  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/research/ResearchBreadcrumb.vue
+  44:36  warning  'aria-label' should be on a new line    vue/max-attributes-per-line
+  46:40  warning  ':key' should be on a new line          vue/max-attributes-per-line
+  47:55  warning  ':href' should be on a new line         vue/max-attributes-per-line
+  48:22  warning  'aria-current' should be on a new line  vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/research/ResearchSidebar.vue
+  73:33  warning  'aria-label' should be on a new line  vue/max-attributes-per-line
+  91:31  warning  ':key' should be on a new line        vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/search/SearchHighlight.vue
+  33:44  warning  ':key' should be on a new line   vue/max-attributes-per-line
+  34:28  warning  'class' should be on a new line  vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/states/EmptyState.vue
+  6:35  warning  'role' should be on a new line  vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/states/ErrorState.vue
+  6:35  warning  'role' should be on a new line  vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/components/states/LoadingState.vue
+  6:22  warning  'aria-live' should be on a new line  vue/max-attributes-per-line
+  6:41  warning  'class' should be on a new line      vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/layouts/AdminLayout.vue
+  22:37  warning  'aria-label' should be on a new line                                                  vue/max-attributes-per-line
+  23:33  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  23:37  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+  24:31  warning  '@click' should be on a new line                                                      vue/max-attributes-per-line
+  24:49  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found        vue/singleline-html-element-content-newline
+  24:53  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found      vue/singleline-html-element-content-newline
+  27:29  warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+  27:55  warning  'tabindex' should be on a new line                                                    vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/layouts/PublicLayout.vue
+   84:38  warning  'href' should be on a new line                                                    vue/max-attributes-per-line
+   84:47  warning  'aria-label' should be on a new line                                              vue/max-attributes-per-line
+   85:48  warning  'aria-hidden' should be on a new line                                             vue/max-attributes-per-line
+  124:37  warning  'role' should be on a new line                                                    vue/max-attributes-per-line
+  124:51  warning  '@submit.prevent' should be on a new line                                         vue/max-attributes-per-line
+  125:42  warning  'for' should be on a new line                                                     vue/max-attributes-per-line
+  126:43  warning  'v-model' should be on a new line                                                 vue/max-attributes-per-line
+  126:65  warning  'type' should be on a new line                                                    vue/max-attributes-per-line
+  126:79  warning  'placeholder' should be on a new line                                             vue/max-attributes-per-line
+  126:97  warning  Disallow self-closing on HTML void elements (<input/>)                            vue/html-self-closing
+  127:33  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  127:63  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  127:65  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+  129:33  warning  'href' should be on a new line                                                    vue/max-attributes-per-line
+  133:29  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  133:56  warning  'tabindex' should be on a new line                                                vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/layouts/ResearchLayout.vue
+  29:40  warning  'aria-label' should be on a new line                                                  vue/max-attributes-per-line
+  30:36  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  30:41  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+  32:31  warning  '@click' should be on a new line                                                      vue/max-attributes-per-line
+  32:49  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found        vue/singleline-html-element-content-newline
+  32:53  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found      vue/singleline-html-element-content-newline
+  38:31  warning  'class' should be on a new line                                                       vue/max-attributes-per-line
+  38:60  warning  'tabindex' should be on a new line                                                    vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/AboutView.vue
+  10:26  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  11:28  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+  11:32  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+  23:22  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  23:27  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  29:22  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  29:26  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  35:25  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  35:32  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/DeniedView.vue
+  6:27  warning  'aria-labelledby' should be on a new line                                             vue/max-attributes-per-line
+  7:29  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found            vue/singleline-html-element-content-newline
+  7:34  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  9:24  warning  Expected 1 line break after opening tag (`<RouterLink>`), but no line breaks found    vue/singleline-html-element-content-newline
+  9:30  warning  Expected 1 line break before closing tag (`</RouterLink>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/LoginView.vue
+  31:26  warning  'aria-labelledby' should be on a new line                                         vue/max-attributes-per-line
+  32:28  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  32:30  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found      vue/singleline-html-element-content-newline
+  33:31  warning  '@submit.prevent' should be on a new line                                         vue/max-attributes-per-line
+  35:34  warning  'v-model' should be on a new line                                                 vue/max-attributes-per-line
+  35:53  warning  'type' should be on a new line                                                    vue/max-attributes-per-line
+  35:65  warning  'autocomplete' should be on a new line                                            vue/max-attributes-per-line
+  35:89  warning  Disallow self-closing on HTML void elements (<input/>)                            vue/html-self-closing
+  42:7   warning  Disallow self-closing on HTML void elements (<input/>)                            vue/html-self-closing
+  43:23  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  43:44  warning  'role' should be on a new line                                                    vue/max-attributes-per-line
+  43:57  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  43:68  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  44:29  warning  ':disabled' should be on a new line                                               vue/max-attributes-per-line
+  44:46  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  44:48  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/admin/AdminHomeView.vue
+  27:28  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  27:32  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found      vue/singleline-html-element-content-newline
+  29:27  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  29:48  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  29:54  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+  30:22  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  30:33  warning  'role' should be on a new line                                                    vue/max-attributes-per-line
+  30:47  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  30:59  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  31:21  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  31:33  warning  'role' should be on a new line                                                    vue/max-attributes-per-line
+  31:46  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  31:57  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/admin/AuditLogView.vue
+  32:28  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+  32:32  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+  36:35  warning  ':message' should be on a new line                                            vue/max-attributes-per-line
+  41:42  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  41:54  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  42:31  warning  ':class' should be on a new line                                              vue/max-attributes-per-line
+  48:55  warning  'label' should be on a new line                                               vue/max-attributes-per-line
+  52:34  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  52:46  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  57:47  warning  'label' should be on a new line                                               vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/archive/ArchiveView.vue
+  15:28  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  17:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  17:41  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  18:32  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  18:60  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+  18:64  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+  31:51  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  37:45  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  37:62  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  38:33  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  38:53  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  41:24  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  43:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  43:65  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  45:38  warning  ':data-status' should be on a new line                                        vue/max-attributes-per-line
+  54:53  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  65:46  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/heritage/HeritageView.vue
+   40:29  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+   43:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   43:45  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+   44:33  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   44:62  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+   44:91  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+   63:43  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   71:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+   72:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   72:56  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+   72:60  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+   78:36  warning  'data-status' should be on a new line                                               vue/max-attributes-per-line
+   89:45  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   97:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+   98:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   98:56  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+   98:60  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  124:29  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  124:54  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  125:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  125:56  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  125:62  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  131:43  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  131:77  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  132:44  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  132:83  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  133:50  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  133:87  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  134:42  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  134:73  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  136:45  warning  Expected 1 line break after opening tag (`<h4>`), but no line breaks found          vue/singleline-html-element-content-newline
+  136:49  warning  Expected 1 line break before closing tag (`</h4>`), but no line breaks found        vue/singleline-html-element-content-newline
+  138:65  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  138:77  warning  Expected 1 line break after opening tag (`<li>`), but no line breaks found          vue/singleline-html-element-content-newline
+  138:87  warning  Expected 1 line break before closing tag (`</li>`), but no line breaks found        vue/singleline-html-element-content-newline
+  141:45  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  141:80  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  146:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  147:38  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  147:60  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  147:65  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  148:33  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  148:65  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  150:52  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  150:66  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  151:48  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  151:63  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  157:39  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  157:70  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  157:91  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  163:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  164:39  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  164:61  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  164:68  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  166:31  warning  Expected 1 line break after opening tag (`<h4>`), but no line breaks found          vue/singleline-html-element-content-newline
+  166:35  warning  Expected 1 line break before closing tag (`</h4>`), but no line breaks found        vue/singleline-html-element-content-newline
+  168:46  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  168:58  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  170:49  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  171:1   warning  Expected indentation of 12 spaces but found 14 spaces                               vue/html-indent
+  171:92  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  176:31  warning  Expected 1 line break after opening tag (`<h4>`), but no line breaks found          vue/singleline-html-element-content-newline
+  176:35  warning  Expected 1 line break before closing tag (`</h4>`), but no line breaks found        vue/singleline-html-element-content-newline
+  178:47  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  178:59  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  180:49  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  181:1   warning  Expected indentation of 12 spaces but found 14 spaces                               vue/html-indent
+  181:93  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  183:40  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  189:36  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  189:61  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  190:41  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  190:63  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  190:67  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  191:60  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  191:76  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  192:40  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  192:57  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  194:61  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  194:84  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  196:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  196:62  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  197:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  197:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  202:29  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  202:54  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  203:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  203:56  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  203:62  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  205:50  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  205:67  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  206:42  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  206:59  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  207:49  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  207:73  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  208:42  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  208:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  214:27  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  214:52  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  215:32  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  215:54  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  215:58  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  217:43  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  217:55  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  218:42  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  218:55  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  220:66  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  220:81  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  222:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  222:60  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  228:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  229:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  229:57  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  229:63  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  230:33  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  230:63  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  231:46  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  235:41  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  236:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  236:57  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  236:62  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  245:35  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/jiayi/JiayiView.vue
+   71:26  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   74:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   74:43  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   75:30  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   75:56  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+   75:63  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+   76:35  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   76:69  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   81:37  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+   91:28  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   91:50  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   92:33  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   92:55  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   92:59  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  128:27  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  128:49  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  129:32  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  129:54  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  129:58  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  135:34  warning  'data-status' should be on a new line                                         vue/max-attributes-per-line
+  141:28  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  141:50  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  142:33  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  142:55  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  142:59  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  144:39  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found    vue/singleline-html-element-content-newline
+  144:43  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found  vue/singleline-html-element-content-newline
+  146:55  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  146:73  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  151:39  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found    vue/singleline-html-element-content-newline
+  151:46  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found  vue/singleline-html-element-content-newline
+  153:54  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  153:72  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  160:36  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  160:58  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  161:41  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  161:63  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  161:69  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  166:43  warning  'label' should be on a new line                                               vue/max-attributes-per-line
+  170:33  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  170:55  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  171:38  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  171:60  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  171:67  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  173:49  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  173:64  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  174:31  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  174:49  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  187:31  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  187:53  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  188:36  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  188:58  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  188:65  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  189:31  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  189:57  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  191:54  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  191:72  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  200:26  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  200:48  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  201:31  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  201:53  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  201:57  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  207:50  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  207:66  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  212:36  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+  217:28  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  217:50  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  218:33  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  218:55  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  218:60  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  226:36  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/library/MediaLibraryView.vue
+   64:30  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+   64:33  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found      vue/singleline-html-element-content-newline
+   71:25  warning  'role' should be on a new line                                                    vue/max-attributes-per-line
+   71:40  warning  'aria-label' should be on a new line                                              vue/max-attributes-per-line
+   85:34  warning  'type' should be on a new line                                                    vue/max-attributes-per-line
+   85:48  warning  'placeholder' should be on a new line                                             vue/max-attributes-per-line
+   85:70  warning  Disallow self-closing on HTML void elements (<input/>)                            vue/html-self-closing
+   90:35  warning  ':message' should be on a new line                                                vue/max-attributes-per-line
+   91:48  warning  'label' should be on a new line                                                   vue/max-attributes-per-line
+   93:16  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+   94:34  warning  ':key' should be on a new line                                                    vue/max-attributes-per-line
+   94:50  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+   99:39  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+   99:55  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found      vue/singleline-html-element-content-newline
+  100:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  100:64  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  101:37  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  101:69  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  101:92  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found       vue/singleline-html-element-content-newline
+  109:1   warning  Expected indentation of 10 spaces but found 12 spaces                             vue/html-indent
+  109:19  warning  Expected no line breaks before closing bracket, but 1 line break found            vue/html-closing-bracket-newline
+  117:1   warning  Expected indentation of 10 spaces but found 12 spaces                             vue/html-indent
+  117:23  warning  Expected no line breaks before closing bracket, but 1 line break found            vue/html-closing-bracket-newline
+  123:32  warning  'class' should be on a new line                                                   vue/max-attributes-per-line
+  123:46  warning  'aria-label' should be on a new line                                              vue/max-attributes-per-line
+  124:29  warning  ':disabled' should be on a new line                                               vue/max-attributes-per-line
+  124:51  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  124:70  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  124:73  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+  126:29  warning  ':disabled' should be on a new line                                               vue/max-attributes-per-line
+  126:60  warning  '@click' should be on a new line                                                  vue/max-attributes-per-line
+  126:79  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  126:82  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/persons/PersonDetailView.vue
+  184:27  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  185:29  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  185:50  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  185:69  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  188:35  warning  ':message' should be on a new line                                                  vue/max-attributes-per-line
+  189:45  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  194:39  warning  'v-if' should be on a new line                                                      vue/max-attributes-per-line
+  194:39  warning  Attribute "v-if" should go before "class"                                           vue/attributes-order
+  194:59  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  194:82  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  195:33  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  195:59  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  195:88  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  198:49  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  198:80  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  199:45  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  199:72  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  200:43  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  200:66  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  202:32  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  202:64  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  202:92  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  206:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  207:37  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  207:59  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  207:63  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  208:33  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  208:55  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  209:58  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  209:74  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  213:28  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  217:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  218:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  218:53  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  218:55  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  224:28  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  228:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  229:36  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  229:58  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  229:60  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  232:38  warning  ':data-status' should be on a new line                                              vue/max-attributes-per-line
+  235:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  235:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  236:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  236:64  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  236:97  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  241:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  242:32  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  242:54  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  242:58  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  244:53  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  250:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  251:32  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  251:54  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  251:58  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  252:33  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  253:49  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  253:67  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  254:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  260:28  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  264:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  265:40  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  265:62  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  265:74  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  287:46  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  287:61  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  295:47  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  295:62  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  296:34  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  296:49  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  297:30  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  306:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  307:37  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  307:59  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  307:68  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  310:38  warning  ':data-status' should be on a new line                                              vue/max-attributes-per-line
+  313:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  313:65  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  314:41  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  314:64  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  314:96  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  319:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  320:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  320:57  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  320:61  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  321:61  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  322:20  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  323:56  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  323:76  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  324:46  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  324:67  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  328:44  warning  'title' should be on a new line                                                     vue/max-attributes-per-line
+  328:57  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  329:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  329:63  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  337:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  338:32  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  338:54  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  338:58  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  339:48  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  340:20  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  341:39  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  341:55  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  342:43  warning  Expected 1 line break after opening tag (`<h3>`), but no line breaks found          vue/singleline-html-element-content-newline
+  342:59  warning  Expected 1 line break before closing tag (`</h3>`), but no line breaks found        vue/singleline-html-element-content-newline
+  346:43  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  346:68  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  354:36  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  354:68  warning  'target' should be on a new line                                                    vue/max-attributes-per-line
+  354:84  warning  'rel' should be on a new line                                                       vue/max-attributes-per-line
+  354:98  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  355:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  355:23  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/reader/ReaderDocView.vue
+   45:27  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+   47:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   47:57  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+   48:40  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   48:71  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+   48:77  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+   62:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   62:61  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+   63:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   63:53  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+   63:73  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+   64:37  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+   64:60  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+   75:37  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+   76:31  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+   76:49  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+   76:77  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found      vue/singleline-html-element-content-newline
+   76:79  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found    vue/singleline-html-element-content-newline
+   77:31  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+   77:51  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+   80:31  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+   80:49  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+   80:76  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found      vue/singleline-html-element-content-newline
+   80:78  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found    vue/singleline-html-element-content-newline
+   90:40  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+   90:46  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+   98:52  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+   98:72  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  119:49  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  148:47  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  149:59  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  149:68  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  150:50  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  150:67  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  151:40  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  151:67  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  151:83  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  152:40  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  152:67  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  152:83  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  158:45  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  166:40  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  167:45  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  167:49  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  177:51  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  182:60  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/multiline-html-element-content-newline
+  182:70  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  187:45  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  187:47  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  189:62  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  198:38  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  199:45  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  199:49  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  201:47  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  205:53  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/reader/ReaderView.vue
+   90:29  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+   90:31  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+   97:35  warning  ':message' should be on a new line                                            vue/max-attributes-per-line
+   98:51  warning  'label' should be on a new line                                               vue/max-attributes-per-line
+  100:17  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  101:24  warning  'aria-label' should be on a new line                                          vue/max-attributes-per-line
+  116:35  warning  'aria-live' should be on a new line                                           vue/max-attributes-per-line
+  118:43  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  118:68  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  125:1   warning  Expected indentation of 18 spaces but found 16 spaces                         vue/html-indent
+  126:1   warning  Expected indentation of 20 spaces but found 18 spaces                         vue/html-indent
+  127:1   warning  Expected indentation of 22 spaces but found 20 spaces                         vue/html-indent
+  128:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  129:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  130:1   warning  Expected indentation of 26 spaces but found 24 spaces                         vue/html-indent
+  131:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  132:1   warning  Expected indentation of 22 spaces but found 20 spaces                         vue/html-indent
+  133:1   warning  Expected indentation of 20 spaces but found 18 spaces                         vue/html-indent
+  134:1   warning  Expected indentation of 18 spaces but found 16 spaces                         vue/html-indent
+  144:1   warning  Expected indentation of 18 spaces but found 16 spaces                         vue/html-indent
+  149:1   warning  Expected indentation of 18 spaces but found 16 spaces                         vue/html-indent
+  150:1   warning  Expected indentation of 20 spaces but found 18 spaces                         vue/html-indent
+  151:1   warning  Expected indentation of 22 spaces but found 20 spaces                         vue/html-indent
+  152:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  153:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  154:1   warning  Expected indentation of 26 spaces but found 24 spaces                         vue/html-indent
+  155:1   warning  Expected indentation of 24 spaces but found 22 spaces                         vue/html-indent
+  156:1   warning  Expected indentation of 22 spaces but found 20 spaces                         vue/html-indent
+  157:1   warning  Expected indentation of 20 spaces but found 18 spaces                         vue/html-indent
+  158:1   warning  Expected indentation of 18 spaces but found 16 spaces                         vue/html-indent
+  165:38  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  165:63  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  165:80  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  166:30  warning  'label' should be on a new line                                               vue/max-attributes-per-line
+  167:36  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  167:64  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  167:88  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/research/ResearchEntityView.vue
+  40:28  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  40:50  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  43:31  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  43:37  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  46:32  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  47:34  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  52:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  52:52  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  52:70  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  53:34  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  53:55  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  55:35  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  55:66  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  59:36  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  59:56  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  59:80  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  61:40  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  61:43  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  63:46  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  69:40  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  69:48  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  71:50  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  77:55  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  78:42  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  78:44  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  80:44  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  81:56  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  81:74  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/research/ResearchHomeView.vue
+  28:31  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  28:36  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  35:35  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+  35:49  warning  '@submit.prevent' should be on a new line                                           vue/max-attributes-per-line
+  36:38  warning  'for' should be on a new line                                                       vue/max-attributes-per-line
+  42:7   warning  Disallow self-closing on HTML void elements (<input/>)                              vue/html-self-closing
+  43:29  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found      vue/singleline-html-element-content-newline
+  43:31  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  48:30  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  48:52  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  48:57  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  50:36  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  50:54  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  53:33  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  54:30  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  54:46  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  66:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  66:53  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  66:71  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  74:55  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  75:1   warning  Expected indentation of 10 spaces but found 12 spaces                               vue/html-indent
+  75:39  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  83:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  83:53  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  83:55  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/research/ResearchSearchView.vue
+   79:38  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+   79:42  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+   85:33  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+   85:47  warning  '@submit.prevent' should be on a new line                                           vue/max-attributes-per-line
+   86:38  warning  'for' should be on a new line                                                       vue/max-attributes-per-line
+   92:7   warning  Disallow self-closing on HTML void elements (<input/>)                              vue/html-self-closing
+   93:29  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found      vue/singleline-html-element-content-newline
+   93:31  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found    vue/singleline-html-element-content-newline
+   97:35  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+   97:49  warning  'aria-live' should be on a new line                                                 vue/max-attributes-per-line
+   98:75  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+   99:1   warning  Expected indentation of 8 spaces but found 10 spaces                                vue/html-indent
+   99:12  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/multiline-html-element-content-newline
+   99:41  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/multiline-html-element-content-newline
+   99:51  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  104:40  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  105:46  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  105:50  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  124:42  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  129:47  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  130:49  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  130:72  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  131:46  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  131:86  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  137:61  warning  ':query' should be on a new line                                                    vue/max-attributes-per-line
+  140:45  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  141:62  warning  ':query' should be on a new line                                                    vue/max-attributes-per-line
+  168:44  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  173:21  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  173:44  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+  181:15  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  181:38  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  181:50  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/search/SearchView.vue
+  139:27  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  141:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  141:41  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  142:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  142:58  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  142:60  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  144:33  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+  144:47  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  144:67  warning  '@submit.prevent' should be on a new line                                           vue/max-attributes-per-line
+  145:40  warning  'for' should be on a new line                                                       vue/max-attributes-per-line
+  151:9   warning  Disallow self-closing on HTML void elements (<input/>)                              vue/html-self-closing
+  152:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  152:59  warning  Expected 1 line break after opening tag (`<button>`), but no line breaks found      vue/singleline-html-element-content-newline
+  152:61  warning  Expected 1 line break before closing tag (`</button>`), but no line breaks found    vue/singleline-html-element-content-newline
+  158:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  159:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  159:57  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  159:62  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  161:39  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  161:57  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  172:39  warning  'aria-labelledby' should be on a new line                                           vue/max-attributes-per-line
+  173:34  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  173:56  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  173:60  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  175:40  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  175:55  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  176:31  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  184:33  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+  184:47  warning  'aria-live' should be on a new line                                                 vue/max-attributes-per-line
+  186:41  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  186:70  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  195:36  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  196:35  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  196:39  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  210:41  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  226:36  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  226:58  warning  'aria-live' should be on a new line                                                 vue/max-attributes-per-line
+  228:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  228:64  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+  234:49  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  234:69  warning  'role' should be on a new line                                                      vue/max-attributes-per-line
+  235:43  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found           vue/singleline-html-element-content-newline
+  235:60  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found         vue/singleline-html-element-content-newline
+  239:35  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  239:62  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+  245:22  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  246:1   warning  Expected indentation of 12 spaces but found 14 spaces                               vue/html-indent
+  246:56  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  247:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  248:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  248:73  warning  ':entry' should be on a new line                                                    vue/max-attributes-per-line
+  249:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  251:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  251:28  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  252:1   warning  Expected indentation of 16 spaces but found 18 spaces                               vue/html-indent
+  253:1   warning  Expected indentation of 18 spaces but found 20 spaces                               vue/html-indent
+  253:50  warning  ':href' should be on a new line                                                     vue/max-attributes-per-line
+  253:77  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  254:1   warning  Expected indentation of 20 spaces but found 22 spaces                               vue/html-indent
+  254:67  warning  ':query' should be on a new line                                                    vue/max-attributes-per-line
+  255:1   warning  Expected indentation of 18 spaces but found 20 spaces                               vue/html-indent
+  256:1   warning  Expected indentation of 18 spaces but found 20 spaces                               vue/html-indent
+  256:37  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  257:1   warning  Expected indentation of 18 spaces but found 22 spaces                               vue/html-indent
+  257:24  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/multiline-html-element-content-newline
+  257:68  warning  ':query' should be on a new line                                                    vue/max-attributes-per-line
+  257:78  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  258:1   warning  Expected indentation of 18 spaces but found 20 spaces                               vue/html-indent
+  258:23  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/multiline-html-element-content-newline
+  259:1   warning  Expected indentation of 16 spaces but found 18 spaces                               vue/html-indent
+  260:1   warning  Expected indentation of 16 spaces but found 18 spaces                               vue/html-indent
+  261:1   warning  Expected indentation of 14 spaces but found 16 spaces                               vue/html-indent
+  262:1   warning  Expected indentation of 12 spaces but found 14 spaces                               vue/html-indent
+  263:1   warning  Expected indentation of 10 spaces but found 12 spaces                               vue/html-indent
+  266:38  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  266:52  warning  'aria-label' should be on a new line                                                vue/max-attributes-per-line
+  267:35  warning  ':disabled' should be on a new line                                                 vue/max-attributes-per-line
+  267:64  warning  '@click' should be on a new line                                                    vue/max-attributes-per-line
+  271:43  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/works/WorkDetailView.vue
+  34:29  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  37:35  warning  ':message' should be on a new line                                                  vue/max-attributes-per-line
+  38:43  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  41:29  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found          vue/singleline-html-element-content-newline
+  41:45  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found        vue/singleline-html-element-content-newline
+  43:39  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  43:57  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  44:40  warning  Expected 1 line break after opening tag (`<template>`), but no line breaks found    vue/singleline-html-element-content-newline
+  44:62  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/singleline-html-element-content-newline
+  46:41  warning  Expected 1 line break before closing tag (`</template>`), but no line breaks found  vue/multiline-html-element-content-newline
+  46:51  warning  Expected no line breaks before closing bracket, but 1 line break found              vue/html-closing-bracket-newline
+  51:30  warning  'href' should be on a new line                                                      vue/max-attributes-per-line
+  54:33  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found          vue/singleline-html-element-content-newline
+  54:37  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found        vue/singleline-html-element-content-newline
+  55:48  warning  'label' should be on a new line                                                     vue/max-attributes-per-line
+  56:18  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+  57:41  warning  ':key' should be on a new line                                                      vue/max-attributes-per-line
+  57:67  warning  'class' should be on a new line                                                     vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/works/WorksView.vue
+  16:26  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  18:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  18:42  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  19:30  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  19:56  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+  19:63  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+  26:36  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  27:35  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  27:57  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  27:61  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  29:45  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+  29:60  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  30:31  warning  ':href' should be on a new line                                               vue/max-attributes-per-line
+  30:49  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  38:39  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+  38:61  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+  48:36  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+  49:33  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+  49:55  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+  49:59  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  55:36  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+  56:36  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+
+/Users/likeming/Sites/hfm/apps/frontend/src/views/yan/YanView.vue
+   16:24  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   19:30  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   19:41  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   20:28  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   20:52  warning  Expected 1 line break after opening tag (`<h1>`), but no line breaks found    vue/singleline-html-element-content-newline
+   20:78  warning  Expected 1 line break before closing tag (`</h1>`), but no line breaks found  vue/singleline-html-element-content-newline
+   21:37  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   21:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   25:34  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   26:30  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   26:52  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   26:56  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   27:40  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   27:66  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   43:41  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   43:63  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   43:82  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   45:55  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   45:83  warning  'role' should be on a new line                                                vue/max-attributes-per-line
+   49:50  warning  ':key' should be on a new line                                                vue/max-attributes-per-line
+   49:67  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   50:48  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   50:65  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   52:40  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   83:35  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   83:57  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   83:61  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   84:45  warning  Expected 1 line break after opening tag (`<p>`), but no line breaks found     vue/singleline-html-element-content-newline
+   84:76  warning  Expected 1 line break before closing tag (`</p>`), but no line breaks found   vue/singleline-html-element-content-newline
+   88:34  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   89:31  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   89:53  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   89:55  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+   97:34  warning  'aria-labelledby' should be on a new line                                     vue/max-attributes-per-line
+   98:32  warning  'class' should be on a new line                                               vue/max-attributes-per-line
+   98:54  warning  Expected 1 line break after opening tag (`<h2>`), but no line breaks found    vue/singleline-html-element-content-newline
+   98:56  warning  Expected 1 line break before closing tag (`</h2>`), but no line breaks found  vue/singleline-html-element-content-newline
+  101:41  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+  104:41  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+  107:41  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+  110:41  warning  'href' should be on a new line                                                vue/max-attributes-per-line
+
+✖ 1116 problems (0 errors, 1116 warnings)
+  0 errors and 1001 warnings potentially fixable with the `--fix` option.
+
+== frontend typecheck ==
+
+> @hfm/frontend@0.1.0 typecheck /Users/likeming/Sites/hfm/apps/frontend
+> vue-tsc --noEmit
+
+== frontend build ==
+
+> @hfm/frontend@0.1.0 build /Users/likeming/Sites/hfm/apps/frontend
+> vue-tsc --noEmit && vite build
+
+vite v6.4.3 building for production...
+transforming...
+✓ 204 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.42 kB │ gzip:  0.32 kB
+dist/assets/index-B0sUnSNs.css  122.90 kB │ gzip: 16.01 kB
+dist/assets/index-CRlwpznv.js   277.64 kB │ gzip: 93.32 kB
+✓ built in 2.12s
+RELEASE_GATE=PASS

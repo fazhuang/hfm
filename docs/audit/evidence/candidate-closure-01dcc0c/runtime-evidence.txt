@@ -1,0 +1,38 @@
+HFM candidate 01dcc0ce0b95c773874699864ea173422e9f542e — backend runtime evidence
+Captured: uvicorn hfm.main:app on 127.0.0.1:8020 (default env) and 127.0.0.1:8021 (secret-env probe)
+=====================================================================
+
+== Endpoint matrix (port 8020, X-Request-ID supplied: verify-abc123) ==
+
+/health    HTTP/1.1 200 OK
+           x-request-id: verify-abc123
+           {"status":"ok","service":"hfm"}
+/ready     HTTP/1.1 200 OK
+           x-request-id: verify-abc123
+           {"status":"ready","service":"hfm"}
+/version   HTTP/1.1 200 OK
+           x-request-id: verify-abc123
+           {"success":true,...,"data":{"version":"0.1.0","environment":"development","project":"HFM"}}
+/config    HTTP/1.1 200 OK
+           x-request-id: verify-abc123
+           {"success":true,...,"data":{"project_name":"HFM","version":"0.1.0","environment":"development"}}
+/live      HTTP/1.1 200 OK
+           x-request-id: verify-abc123
+           {"success":true,...,"data":{"alive":true}}
+
+== X-Request-ID middleware behavior ==
+No X-Request-ID header        -> generated fresh UUID: a50939c1-e8a1-4b4c-bfb4-5a79219257cd
+Valid supplied value          -> echoed back (verify-abc123)
+Invalid value (contains space)-> sanitized to fresh UUID: fd0c90f2-98d8-4f41-a3ae-16a7ee4b3136
+Over-length value (140 chars) -> sanitized to fresh UUID: 3c19d956-8dde-4b0f-a594-6228e29f82a9
+
+== Secret-leak probe (port 8021, HFM_ENV=production + secrets present) ==
+Env set: HFM_API_SECRET=super-secret-123 , HFM_DB_URL=postgres://user:pass@db
+/config body (no X-Request-ID): {"success":true,...,"data":{"project_name":"HFM","version":"0.1.0","environment":"production"}}
+Leak scan: ok no 'super-secret-123' | ok no 'postgres://' | ok no 'user:pass'
+-> /config exposes ONLY project_name / version / environment; no secret, no DB URL, no credentials.
+environment correctly reflects HFM_ENV=production.
+
+== Verdict ==
+All runtime endpoints 200. X-Request-ID injected on every response (generated when absent,
+sanitized when invalid/over-length). /config does not leak secrets.
