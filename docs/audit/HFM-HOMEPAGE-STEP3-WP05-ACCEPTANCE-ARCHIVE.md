@@ -1,6 +1,6 @@
-# HFM Homepage — WP-05 Sections 05–08 Acceptance Archive / Candidate
+# HFM Homepage — WP-05 Sections 05–08 Acceptance Archive
 
-Work package: `WP-05` · Verdict: **`WP05_IMPLEMENTATION = VERIFIED`** · State: **`ACCEPTANCE_ARCHIVE = CANDIDATE`** · **`WP05_ACCEPTED = PENDING_INDEPENDENT_ARCHIVE_REVIEW`**
+Work package: `WP-05` · Verdict: **`WP05_IMPLEMENTATION = VERIFIED`** · State: **`ACCEPTANCE_ARCHIVE = COMMITTED`** · **`WP05_ACCEPTED = ACCEPTED`**
 
 ## 1. Candidate
 
@@ -73,8 +73,18 @@ Work package: `WP-05` · Verdict: **`WP05_IMPLEMENTATION = VERIFIED`** · State:
 
 ```text
 WP05_IMPLEMENTATION          = VERIFIED
-WP05_ACCEPTANCE_ARCHIVE      = CANDIDATE
-WP05_ACCEPTED                = PENDING_INDEPENDENT_ARCHIVE_REVIEW
+WP05_ACCEPTANCE_ARCHIVE      = COMMITTED
+WP05_ACCEPTED                = ACCEPTED
 ```
 
-*This archive is a candidate prepared from the committed WP-05 implementation. It does not declare acceptance; independent archive review will confirm (or identify corrections) before any freeze. No commit is made for this archive; separate authorization is required.*
+*WP-05 accepted. This acceptance archive was committed at `2266c227bb43ba2fd66e38586b20b27d83376777`; the Independent Archive Review is recorded below. No work beyond WP-05 is authorized by this archive.*
+
+## 10. Independent Archive Review
+
+| field | value |
+| --- | --- |
+| reviewed HEAD | `2266c227bb43ba2fd66e38586b20b27d83376777` |
+| verdict | **PASS** |
+| scope | archive content · candidate binding (HEAD `fa41d22…`, parent `99c5709…`) · file scope (23-file WP-05 set, no out-of-scope file) · evidence (15 browser PNGs + implementation evidence doc) · boundary (Sections 01–04 / shared foundation / `AppFooter` / backend untouched) |
+
+Status drift resolved: the archive body now reflects `WP05_ACCEPTED = ACCEPTED`, consistent with the independent review result.
