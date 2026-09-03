@@ -57,8 +57,11 @@ const layers = [
 
       <!-- transformation zone: manuscript dissolution → structure -->
       <div class="home-knowledge__zone">
-        <figure class="home-knowledge__leaf" aria-hidden="true">
-          <img src="/assets/jiayi/book-siku-leaf.jpg" alt="" />
+        <!-- manuscript leaf: the IMAGE is decorative (alt="" + aria-hidden on the img only);
+             the visible provenance figcaption is real content and must stay in the
+             accessibility tree — no aria-hidden on figure/caption (WP-04 P1-01) -->
+        <figure class="home-knowledge__leaf">
+          <img src="/assets/jiayi/book-siku-leaf.jpg" alt="" aria-hidden="true" />
           <figcaption class="home-knowledge__leaf-cap"><b>《针灸甲乙经》 · 四库全书本</b><br />清乾隆《四库全书》抄本 · 客户资料</figcaption>
         </figure>
 

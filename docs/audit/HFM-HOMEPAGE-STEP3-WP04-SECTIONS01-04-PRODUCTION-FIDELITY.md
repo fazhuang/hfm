@@ -13,10 +13,10 @@ Each section was reconstructed from the **frozen artboard absolute geometry** (1
 
 | Section | artboard | fidelity added | data source |
 | --- | --- | --- | --- |
-| 01 Hero | H3_REFINED | grain/halo, archive guide-line, kicker `魏晋·公元 215—282`, **190px 皇甫谧 monument (decorative aria-hidden)**, name rule, statement, roles, ONE CTA 进入人物档案 →, bottom note, **manuscript specimen (frag-macro.jpg)** breaking TOP+RIGHT + LEFT dissolve | `HOME_HERO`, `CORE_PERSON_DATES` |
+| 01 Hero | H3_REFINED | grain/halo, archive guide-line, kicker `魏晋·公元 215—282`, **190px 皇甫谧 monument (decorative aria-hidden)**, name rule, statement, roles, ONE CTA 进入人物档案 →, bottom note, **manuscript specimen (frag-macro.jpg)** breaking TOP+RIGHT + LEFT dissolve; **visible provenance spec-caption stays accessible (not aria-hidden)** | `HOME_HERO`, `CORE_PERSON_DATES` |
 | 02 Life | L2_REFINED | 82px 2-line headline `生于乱世，终于著述。`, intro right (no collision), **descending axis** + 6 junction marks, **104px 215/282 anchors** (derived), 4 narrative-rhythm stages, **manuscript column (frag-band1.jpg)** breaking TOP+page + LEFT dissolve, consolidated scholarly register | `HOME_LIFE` (stages/dates/intro), link `/reader/qichuan` |
 | 03 Book | B1_REFINED | **monumental 《针灸甲乙经》 150px**, metadata, narrative block h2, ONE CTA 进入古籍库 →, quiet evidence register (19/92/515 derived), version provenance chain (data-derived), **manuscript counterweight (book-siku-leaf.jpg)** breaking TOP+RIGHT + LEFT dissolve, **DATA-GAP status (ux2_p5 P1-01 `.home-lineage figcaption .hfm-status`)** | `HOME_BOOK`, `HOME_EDITIONS_TOTAL`, `INVENTORY_*`, lineage from `HOME_BOOK.book.lineage` |
-| 04 Knowledge | S4-B_REFINED | **manuscript leaf (book-siku-leaf.jpg) dissolving** toward structure + valid figure/figcaption (fixes WP-04C invalid-nesting defect), **taxonomy** (人物/文本/作品 primaries + 版本/档案/论文 layers), scholarly method line (research steps), quiet evidence register (56/6/19/92/515/5 derived), ONE CTA 进入研究工作台 → | `HOME_KNOWLEDGE` (counts), `HOME_RESEARCH_STEPS`, taxonomy = accepted S4-B category vocabulary (presentation-only, no new fact) |
+| 04 Knowledge | S4-B_REFINED | **manuscript leaf (book-siku-leaf.jpg) dissolving** toward structure + valid figure/figcaption (fixes WP-04C invalid-nesting defect); **visible provenance figcaption accessible (not aria-hidden)**; **taxonomy** (人物/文本/作品 primaries + 版本/档案/论文 layers), scholarly method line (research steps), quiet evidence register (56/6/19/92/515/5 derived), ONE CTA 进入研究工作台 → | `HOME_KNOWLEDGE` (counts), `HOME_RESEARCH_STEPS`, taxonomy = accepted S4-B category vocabulary (presentation-only, no new fact) |
 
 ### Asset intake (SHA-verified, traceable)
 
@@ -28,7 +28,7 @@ Three production assets re-intaken from the isolated sources (byte-identical to 
 | `frag-band1.jpg` | `/tmp/hfm-wp03-isolation/frag-band1.jpg` | `apps/frontend/public/assets/jiayi/frag-band1.jpg` | `ec9520f2a36c29a7b61afef585bfba228d68e118bc23ee14084bdb3756d732ad` |
 | `book-siku-leaf.jpg` | `/tmp/hfm-wp03-isolation/book-siku-leaf.jpg` | `apps/frontend/public/assets/jiayi/book-siku-leaf.jpg` | `a5a892b63673525ac1e4c4979794483eb839a951a98a92d3c2930d50ba70ab7a` |
 
-`edition-lineage.png` (lineage, tracked) reused. Images are decorative manuscript/specimen material → `alt=""` + `aria-hidden` (or inside `aria-hidden` figure), matching the accepted treatment; no content-bearing alt fabricated.
+`edition-lineage.png` (lineage, tracked) reused. Manuscript/specimen **images** are decorative → `alt=""` + `aria-hidden="true"` applied to the `img` only. Visible provenance text (hero spec-caption, knowledge figcaption: 《四库全书本》/ 客户资料 / 授权资料) is real content and carries **no** `aria-hidden` (WP-04 P1-01 correction; figure/caption stay in the accessibility tree); no content-bearing alt fabricated.
 
 ## 2. Frozen-artifact comparison evidence
 

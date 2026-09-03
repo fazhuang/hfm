@@ -107,6 +107,27 @@ test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ p
   }
 })
 
+test('WP-04 P1-01 correction: visible provenance captions are in the accessibility tree', async ({ page }) => {
+  await page.goto('/')
+  // Hero — specimen IMAGE decorative only (aria-hidden on img); the visible provenance
+  // spec-caption must not be aria-hidden (visible text ≠ hidden from AT).
+  const heroFigure = page.locator('.home-hero__specimen')
+  expect(await heroFigure.getAttribute('aria-hidden')).toBeNull()
+  expect(await heroFigure.locator('img').getAttribute('aria-hidden')).toBe('true')
+  const heroCaption = page.locator('.home-hero__spec-caption')
+  await expect(heroCaption).toBeVisible()
+  expect(await heroCaption.getAttribute('aria-hidden')).toBeNull()
+  await expect(heroCaption).toContainText('四库全书本 · 卷一 · 清乾隆抄本 · 客户授权资料')
+  // Knowledge — leaf figure must not hide its visible provenance figcaption.
+  const leaf = page.locator('.home-knowledge__leaf')
+  expect(await leaf.getAttribute('aria-hidden')).toBeNull()
+  expect(await leaf.locator('img').getAttribute('aria-hidden')).toBe('true')
+  const leafCap = leaf.locator('figcaption.home-knowledge__leaf-cap')
+  await expect(leafCap).toBeVisible()
+  expect(await leafCap.getAttribute('aria-hidden')).toBeNull()
+  await expect(leafCap).toContainText('清乾隆《四库全书》抄本 · 客户资料')
+})
+
 test('UI-13 focus-visible ring appears on interactive elements', async ({ page }) => {
   await page.goto('/')
   await page.keyboard.press('Tab')

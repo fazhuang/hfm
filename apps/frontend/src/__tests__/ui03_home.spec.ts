@@ -116,6 +116,46 @@ describe('UI-03 invariants', () => {
   })
 })
 
+describe('WP-04 P1-01 provenance captions stay in the accessibility tree', () => {
+  const hasAriaHiddenAncestor = (el: Element): boolean => {
+    let cur: Element | null = el.parentElement
+    while (cur) {
+      if (cur.getAttribute('aria-hidden') === 'true') return true
+      cur = cur.parentElement
+    }
+    return false
+  }
+
+  it('hero provenance spec-caption is visible content, not aria-hidden', () => {
+    const wrapper = mount(HomeView)
+    const cap = wrapper.find('.home-hero__spec-caption')
+    expect(cap.exists()).toBe(true)
+    // the caption itself and its ancestors must not hide it from the AT tree
+    expect(cap.attributes('aria-hidden')).toBeUndefined()
+    expect(hasAriaHiddenAncestor(cap.element)).toBe(false)
+    expect(cap.text()).toContain('四库全书本 · 卷一 · 清乾隆抄本 · 客户授权资料')
+    // decorative hiding is on the image only
+    expect(wrapper.find('.home-hero__specimen').attributes('aria-hidden')).toBeUndefined()
+    const img = wrapper.find('.home-hero__specimen img')
+    expect(img.attributes('alt')).toBe('')
+    expect(img.attributes('aria-hidden')).toBe('true')
+  })
+
+  it('knowledge provenance figcaption is not inside an aria-hidden figure', () => {
+    const wrapper = mount(HomeView)
+    const fig = wrapper.find('.home-knowledge__leaf-cap')
+    expect(fig.exists()).toBe(true)
+    expect(wrapper.find('.home-knowledge__leaf').attributes('aria-hidden')).toBeUndefined()
+    expect(hasAriaHiddenAncestor(fig.element)).toBe(false)
+    expect(fig.text()).toContain('《针灸甲乙经》 · 四库全书本')
+    expect(fig.text()).toContain('清乾隆《四库全书》抄本 · 客户资料')
+    // decorative hiding is on the image only
+    const img = wrapper.find('.home-knowledge__leaf img')
+    expect(img.attributes('alt')).toBe('')
+    expect(img.attributes('aria-hidden')).toBe('true')
+  })
+})
+
 describe('UI-03 homepage renders the accepted 8-section structure (WP-02 structural shell)', () => {
   it('renders all eight homepage sections in order hero → … → closing', () => {
     const wrapper = mount(HomeView)

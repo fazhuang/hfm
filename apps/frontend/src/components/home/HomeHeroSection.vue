@@ -6,7 +6,11 @@
  * composition (1440×900). Reconciles:
  *  - VISUAL: museum-grade editorial hero — 190px 皇甫谧 monument (decorative aria-hidden),
  *    kicker, statement, roles, ONE editorial action, bottom note, manuscript specimen
- *    (frag-macro.jpg) breaking TOP+RIGHT with LEFT dissolve, grain/halo, archive guide-line.
+ *    (frag-macro.jpg, decorative img alt="" + aria-hidden) breaking TOP+RIGHT with LEFT
+ *    dissolve, grain/halo, archive guide-line.
+ *  - PROVENANCE: the visible spec-caption (《针灸甲乙经》 · 四库全书本 · 卷一 · 客户授权资料)
+ *    is REAL visible content and stays in the accessibility tree — NOT aria-hidden (WP-04
+ *    P1-01 correction); only the decorative specimen <img> itself is hidden.
  *  - SEMANTICS: exactly ONE H1 = the platform name (皇甫谧人文数字平台), rendered as the quiet
  *    top-right register (per the artboard `reg-hfm`); the 皇甫谧 name monument is aria-hidden
  *    decorative (no duplicate accessible heading). Heading order preserved.
@@ -63,11 +67,13 @@ const dates = CORE_PERSON_DATES
       <span>其传 / 其言 / 后论 · 史料来源整理</span>
     </p>
 
-    <!-- specimen: manuscript detail, breaking TOP + RIGHT, LEFT dissolves (decorative) -->
-    <figure class="home-hero__specimen" aria-hidden="true">
-      <img src="/assets/jiayi/frag-macro.jpg" alt="" />
+    <!-- specimen: manuscript detail, breaking TOP + RIGHT, LEFT dissolves — decorative IMAGE only
+         (hidden on the img: alt="" + aria-hidden); the visible provenance spec-caption below stays
+         accessible (WP-04 P1-01: no aria-hidden on visible captions) -->
+    <figure class="home-hero__specimen">
+      <img src="/assets/jiayi/frag-macro.jpg" alt="" aria-hidden="true" />
     </figure>
-    <div class="home-hero__spec-caption" aria-hidden="true">
+    <div class="home-hero__spec-caption">
       <span class="home-hero__spec-title">《针灸甲乙经》</span>
       <span class="home-hero__spec-sub">四库全书本 · 卷一 · 清乾隆抄本 · 客户授权资料</span>
     </div>
