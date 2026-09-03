@@ -2,15 +2,25 @@
 /**
  * HomeHeritageSection — accepted homepage Section 06 (Heritage S6-B Corrected).
  *
- * WP-02A STRUCTURAL SHELL ONLY. Semantic root + h2 + living-transmission person
- * data + PARTIAL-lineage honesty (第六代名医 · 刘君奇 · PARTIAL · 不虚构). No final
- * visual fidelity (no ceremony photo asset, no documentary-field absolute
- * geometry, no fixed 1240 height) — that belongs to WP-04.
+ * WP-05: production visual fidelity for the frozen
+ * HFM_HOMEPAGE_SECTION06_VISUAL_BASELINE_S6B_CORRECTED composition (1440×1240).
+ * Proposition: 知识之后，是人 — living transmission in the present. ONE
+ * continuous editorial field: DOCUMENTARY ACT (authentic 2023-09-26 师承教育拜师
+ * 大会 photograph, materially embedded with edge dissolution) → TRANSMISSION
+ * RECORDS (师承教育 principal; 名中医工作室 / 媒体记录 quieter corroborating
+ * records — three documentary traces from HOME_HERITAGE.items) → HUMAN CARRIER
+ * (刘君奇 — continuous register, no cards/chips/badges) → PARTIAL lineage as
+ * quiet provenance (shared resolver + label).
  *
  * TEST CONTRACT (ux2_p5 P1-01): .home-state-line .hfm-status routes data-status
- * through the shared resolver/label (UNSTRUCTURED_OR_INCOMPLETE). Preserved.
+ * through resolvePresentationState and the label through
+ * presentationStatusLabel — both shared functions invoked at setup (spied).
+ * ASSET: heritage-baishi-ceremony.jpg (customer-supplied, SHA-verified, 客户实拍);
+ * decorative presentation image → alt="" + aria-hidden on the img only; the
+ * visible provenance figcaption stays in the accessibility tree (no aria-hidden
+ * on figure/caption — WP-04 P1-01 rule).
  */
-import { HOME_HERITAGE_LIVING, HOME_CHAPTERS } from '../../data/homeProjection'
+import { HOME_HERITAGE, HOME_HERITAGE_LIVING, HOME_CHAPTERS } from '../../data/homeProjection'
 import {
   presentationStatusLabel,
   resolvePresentationState,
@@ -19,10 +29,15 @@ import {
 
 defineOptions({ name: 'HomeHeritageSection' })
 
+const person = HOME_HERITAGE_LIVING.person
+/* PARTIAL lineage state via the shared P0 mapping (fail-closed default for the
+ * surface-specific incomplete lineage row) — label via the shared helper. */
 const lineageState: PresentationState = resolvePresentationState({ contentStatus: 'DATA_GAP' })
 const lineageLabel = presentationStatusLabel(lineageState, '谱系整理中')
-
-const person = HOME_HERITAGE_LIVING.person
+/* three documentary traces of living transmission (existing data, in order:
+ * 师承教育拜师大会 principal · 央视《陇脉医承》/ 名中医工作室 corroborating). */
+const traces = (HOME_HERITAGE.items ?? []).slice(1)
+const photo = { src: '/assets/heritage/heritage-baishi-ceremony.jpg', alt: '' }
 </script>
 
 <template>
@@ -31,50 +46,445 @@ const person = HOME_HERITAGE_LIVING.person
     class="home-section home-section--heritage"
     aria-labelledby="home-heritage-title"
   >
-    <p class="home-eyebrow">
-      <span class="home-eyebrow__no">{{ HOME_CHAPTERS.heritage.no }}</span
-      >{{ HOME_CHAPTERS.heritage.label }}
-    </p>
-    <h2 id="home-heritage-title" class="home-section__title">
-      {{ HOME_HERITAGE_LIVING.headline }}
-    </h2>
-    <p class="home-section__lede">{{ HOME_HERITAGE_LIVING.project }}</p>
-
-    <div class="home-heritage__person">
-      <h3 class="home-heritage__name">{{ person.name }}</h3>
-      <p class="home-heritage__role">
-        {{ person.generationTitle }} · {{ person.heritageRole }} · {{ person.institutionRole }}
+    <div class="home-heritage__grain" aria-hidden="true"></div>
+    <div class="home-heritage__inner">
+      <!-- header -->
+      <p class="home-eyebrow home-heritage__eyebrow">
+        <span class="home-eyebrow__no">{{ HOME_CHAPTERS.heritage.no }}</span
+        >{{ HOME_CHAPTERS.heritage.label }}
       </p>
-      <p class="home-heritage__bio">{{ person.biography }}</p>
-      <p class="home-heritage__lineage-note">{{ HOME_HERITAGE_LIVING.lineageNote }}</p>
-      <p class="home-state-line">
-        <span class="hfm-status" :data-status="lineageState">{{ lineageLabel }}</span>
-      </p>
-    </div>
+      <p class="home-heritage__jump">知识，仍在传递</p>
 
-    <p class="home-cta-row">
-      <a class="home-cta" :href="HOME_HERITAGE_LIVING.cta.href"
-        >{{ HOME_HERITAGE_LIVING.cta.label }} →</a
+      <div class="home-heritage__head">
+        <h2 id="home-heritage-title" class="home-heritage__title">
+          {{ HOME_HERITAGE_LIVING.headline }}
+        </h2>
+        <p class="home-heritage__side">
+          皇甫谧针灸以皇甫谧与《针灸甲乙经》为<b>学术源头</b>，是甘肃地域特色的针灸文化传承项目。平台收录其传承人、师承教育、工作室与媒体报道等活态档案。
+        </p>
+      </div>
+
+      <!-- ONE continuous field: documentary act + transmission records -->
+      <div class="home-heritage__field">
+        <!-- documentary act — authentic ceremony photo, materially embedded -->
+        <figure class="home-heritage__act-pic">
+          <img :src="photo.src" alt="" aria-hidden="true" />
+          <figcaption class="home-heritage__cap">
+            <b>师承教育拜师大会 · 现场</b>2023-09-26 · 甘肃医学院附属医院国医馆 · 客户实拍
+          </figcaption>
+        </figure>
+
+        <!-- transmission records — 师承教育 principal, the others quieter -->
+        <div class="home-heritage__trace" aria-label="传承之实 · 媒体与档案记录">
+          <p class="home-heritage__trace-k"><b>传承之实</b><span>同在发生</span></p>
+          <div
+            v-for="(trace, i) in traces"
+            :key="trace.title"
+            class="home-heritage__trace-row"
+            :class="i === 0 ? 'home-heritage__trace-row--main' : 'home-heritage__trace-row--sub'"
+          >
+            <p class="home-heritage__trace-t">{{ trace.title }}</p>
+            <p class="home-heritage__trace-d">{{ trace.meta }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 刘君奇 — the present human carrier (continuous register, no chips) -->
+      <div class="home-heritage__carrier">
+        <div class="home-heritage__carrier-row">
+          <h3 class="home-heritage__name">{{ person.name }}</h3>
+          <p class="home-heritage__role">
+            {{ person.generationTitle }} · {{ person.heritageRole }} · {{ person.institutionRole }}
+          </p>
+        </div>
+        <p class="home-heritage__credits">
+          {{ person.professionalTitle }}
+        </p>
+        <p class="home-heritage__bio">{{ person.biography }}</p>
+        <p class="home-heritage__prov">
+          {{ HOME_HERITAGE_LIVING.lineageNote }}
+          <span class="home-state-line">
+            <span class="hfm-status" :data-status="lineageState">{{ lineageLabel }}</span>
+          </span>
+        </p>
+      </div>
+
+      <!-- ONE principal CTA -->
+      <a class="home-heritage__act" :href="HOME_HERITAGE_LIVING.cta.href"
+        ><span class="home-heritage__act-label">进入活态传承档案</span>
+        <span class="home-heritage__act-arr">→</span></a
       >
-    </p>
+    </div>
   </section>
 </template>
 
 <style scoped>
-/* WP-02A STRUCTURAL SHELL ONLY. */
+/* ===== Section 06 Heritage (S6-B Corrected) — production fidelity, 1440×1240 ===== */
 .home-section--heritage {
-  padding: var(--hfm-space-12) var(--hfm-space-6);
-  border-bottom: 1px solid var(--hfm-color-border);
+  position: relative;
+  overflow: hidden;
+  min-height: 1240px;
+  background:
+    radial-gradient(
+      1020px 680px at 88% -8%,
+      color-mix(in srgb, var(--hfm-color-heritage) 5%, transparent) 0%,
+      transparent 62%
+    ),
+    radial-gradient(
+      740px 540px at -4% 114%,
+      color-mix(in srgb, var(--hfm-color-accent) 4%, transparent) 0%,
+      transparent 60%
+    ),
+    var(--hfm-color-canvas);
 }
-.home-heritage__name {
+.home-heritage__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.home-heritage__inner {
+  position: relative;
+  max-width: 1272px;
+  margin: 0 auto;
+  width: 100%;
+  height: 1240px;
+}
+
+/* header */
+.home-heritage__eyebrow {
+  position: absolute;
+  left: 0;
+  top: 120px;
   margin: 0;
 }
-.home-heritage__role,
-.home-heritage__bio,
-.home-heritage__lineage-note {
+.home-heritage__jump {
+  position: absolute;
+  right: 0;
+  top: 120px;
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.26em;
+  color: var(--hfm-color-text-muted);
+}
+.home-heritage__head {
+  position: absolute;
+  left: 0;
+  top: 188px;
+  width: 1120px;
+}
+.home-heritage__title {
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: 60px;
+  line-height: 1.28;
+  letter-spacing: 0.03em;
+  color: var(--hfm-color-text);
+  margin: 0;
+  /* two-line wrap after 「，」 (no <br>) so the accessible heading stays clean */
+  max-width: 500px;
+}
+.home-heritage__side {
+  margin-top: 26px;
+  font-size: 15px;
+  line-height: 2.05;
   color: var(--hfm-color-text-secondary);
+  max-width: 72ch;
 }
-.home-heritage__lineage-note {
-  margin-bottom: 0;
+.home-heritage__side b {
+  color: var(--hfm-color-text);
+  font-weight: 600;
 }
+
+/* ONE continuous editorial field */
+.home-heritage__field {
+  position: absolute;
+  left: 0;
+  top: 470px;
+  width: 1200px;
+  height: 480px;
+}
+/* documentary act — materially embedded, dissolved edges */
+.home-heritage__act-pic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 730px;
+  margin: 0;
+  pointer-events: none;
+}
+.home-heritage__act-pic img {
+  width: 730px;
+  height: 420px;
+  object-fit: cover;
+  object-position: center 42%;
+  display: block;
+  filter: sepia(0.07) saturate(0.9) contrast(1.02);
+  -webkit-mask-image:
+    linear-gradient(90deg, #000 0, #000 82%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(180deg, #000 0, #000 62%, rgba(0, 0, 0, 0) 100%);
+  mask-image:
+    linear-gradient(90deg, #000 0, #000 82%, rgba(0, 0, 0, 0) 100%),
+    linear-gradient(180deg, #000 0, #000 62%, rgba(0, 0, 0, 0) 100%);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+/* factual caption bound to the act (visible content — stays in the accessibility tree) */
+.home-heritage__cap {
+  display: block;
+  margin-top: 16px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text-muted);
+  line-height: 1.8;
+  max-width: 600px;
+}
+.home-heritage__cap b {
+  display: block;
+  font-family: var(--hfm-font-display);
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--hfm-color-text-secondary);
+  letter-spacing: 0.06em;
+}
+
+/* transmission records — right column */
+.home-heritage__trace {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 470px;
+}
+.home-heritage__trace-k {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 20px;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  color: var(--hfm-color-text-muted);
+}
+.home-heritage__trace-k b {
+  font-family: var(--hfm-font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hfm-color-text);
+  letter-spacing: 0.08em;
+}
+.home-heritage__trace-row--main {
+  padding: 0 0 22px;
+}
+.home-heritage__trace-row--main .home-heritage__trace-t {
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text);
+  margin: 0;
+}
+.home-heritage__trace-row--main .home-heritage__trace-d {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.85;
+  color: var(--hfm-color-text-secondary);
+  max-width: 40ch;
+}
+.home-heritage__trace-row--main::after {
+  content: '';
+  display: block;
+  margin-top: 22px;
+  width: 100%;
+  height: 1px;
+  background: var(--hfm-color-border);
+}
+.home-heritage__trace-row--sub {
+  padding: 16px 0;
+  border-bottom: 1px dotted var(--hfm-color-border);
+}
+.home-heritage__trace-row--sub:last-child {
+  border-bottom: none;
+}
+.home-heritage__trace-t {
+  font-family: var(--hfm-font-display);
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text-secondary);
+  margin: 0;
+}
+.home-heritage__trace-d {
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.75;
+  color: var(--hfm-color-text-muted);
+  max-width: 40ch;
+}
+
+/* 刘君奇 — present human carrier (continuous register) */
+.home-heritage__carrier {
+  position: absolute;
+  left: 0;
+  top: 962px;
+  width: 1200px;
+  border-top: 1px solid var(--hfm-color-border);
+  padding-top: 24px;
+}
+.home-heritage__carrier-row {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.home-heritage__name {
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: 0.08em;
+  color: var(--hfm-color-text);
+  margin: 0;
+}
+.home-heritage__role {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--hfm-color-text-secondary);
+  margin: 0;
+}
+.home-heritage__credits {
+  margin-top: 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--hfm-color-text-muted);
+}
+.home-heritage__bio {
+  margin-top: 6px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  color: var(--hfm-color-text-secondary);
+  line-height: 1.9;
+  max-width: 90ch;
+}
+.home-heritage__prov {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  color: var(--hfm-color-text-muted);
+  line-height: 1.9;
+  max-width: 84ch;
+}
+.home-state-line {
+  display: inline-flex;
+}
+
+/* ONE principal CTA */
+.home-heritage__act {
+  position: absolute;
+  right: 0;
+  bottom: 52px;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  letter-spacing: 0.18em;
+  color: var(--hfm-color-text);
+  text-decoration: none;
+}
+.home-heritage__act-arr {
+  color: var(--hfm-color-accent);
+  font-family: var(--hfm-font-serif);
+  font-size: 15px;
+}
+.home-heritage__act-label {
+  border-bottom: 1px solid var(--hfm-color-border-strong);
+  padding-bottom: 4px;
+}
+
+/* ===== Mobile flow (max-width 1199px) — no readable content hidden ===== */
+@media (max-width: 1199px) {
+  .home-section--heritage {
+    min-height: 0;
+    padding: 96px 24px 88px;
+  }
+  .home-heritage__inner {
+    height: auto;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .home-heritage__eyebrow {
+    position: static;
+    margin: 0;
+  }
+  .home-heritage__jump {
+    position: static;
+    margin: 16px 0 0;
+    text-align: right;
+  }
+  .home-heritage__head {
+    position: static;
+    width: auto;
+    margin-top: 60px;
+  }
+  .home-heritage__title {
+    font-size: clamp(30px, 7.6vw, 46px);
+    line-height: 1.32;
+    max-width: none;
+  }
+  .home-heritage__side {
+    margin-top: 20px;
+    font-size: 14px;
+    max-width: none;
+  }
+  .home-heritage__field {
+    position: static;
+    width: auto;
+    height: auto;
+    margin-top: 56px;
+  }
+  .home-heritage__act-pic {
+    position: static;
+    width: 100%;
+    max-width: 720px;
+  }
+  .home-heritage__act-pic img {
+    width: 100%;
+    height: auto;
+  }
+  .home-heritage__cap {
+    margin-top: 12px;
+    max-width: none;
+  }
+  .home-heritage__trace {
+    position: static;
+    width: auto;
+    margin-top: 48px;
+  }
+  .home-heritage__trace-row--main .home-heritage__trace-d,
+  .home-heritage__trace-d {
+    max-width: none;
+  }
+  .home-heritage__carrier {
+    position: static;
+    width: auto;
+    margin-top: 56px;
+    padding-top: 24px;
+  }
+  .home-heritage__name {
+    font-size: 24px;
+  }
+  .home-heritage__bio {
+    max-width: none;
+  }
+  .home-heritage__prov {
+    max-width: none;
+  }
+  .home-heritage__act {
+    position: static;
+    margin-top: 44px;
+  }
+}
+
 </style>
