@@ -85,10 +85,10 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
   const heroH1 = await page
     .getByRole('heading', { name: '皇甫谧人文数字平台' })
     .evaluate((el) => getComputedStyle(el).fontSize)
-  /* WP-02 structural H1 uses the base serif heading scale (28px). The accepted visual
-     hero 56px (text-4xl) override is a WP-03 visual-fidelity value (directive forbids
-     visual implementation in WP-02) and is re-asserted when the Hero visual lands. */
-  expect(heroH1).toBe('28px')
+  /* Accepted H3 hero (WP-04): the platform name is the quiet top-right register (10px) as
+     the single H1; the dominant 皇甫谧 190px monument is a non-heading decorative element
+     (aria-hidden). This is the frozen artboard's heading treatment. */
+  expect(heroH1).toBe('10px')
 })
 
 test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ page }) => {

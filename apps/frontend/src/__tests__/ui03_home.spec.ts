@@ -35,9 +35,9 @@ describe('UI-03 brand & hero', () => {
     const h1 = wrapper.findAll('h1')
     expect(h1).toHaveLength(1)
     expect(h1[0]?.text()).toBe('皇甫谧人文数字平台')
-    /* WP-02 structural: hero renders the person + dates (from corePerson projection);
-       the accepted kicker copy (公元 215—282) is a WP-03 visual string, not structural. */
-    expect(wrapper.text()).toContain('皇甫谧 215—282')
+    /* WP-04 Hero (H3) visual: the accepted monument renders the name glyphs; the kicker
+       carries the dates as 魏晋 · 公元 215—282, and the platform-register H1 = 皇甫谧人文数字平台. */
+    expect(wrapper.text()).toContain('魏晋 · 公元 215—282')
   })
 
   it('hero definition reuses UI-04 data (no new person facts)', () => {

@@ -28,18 +28,22 @@ describe('WP-03 home foundation — homepage-scoped roles', () => {
     for (const s of sections) {
       expect(s.element.closest('.home')).not.toBeNull()
     }
-    // shared foundation roles present on homepage content
+    // shared foundation role: the chapter eyebrow is used by every section (heritage accent)
     expect(wrapper.findAll('.home-eyebrow').length).toBeGreaterThanOrEqual(8)
-    expect(wrapper.findAll('.home-section__title').length).toBeGreaterThanOrEqual(6)
-    expect(wrapper.findAll('.home-cta').length).toBeGreaterThanOrEqual(4)
+    // per-section heading roles are applied (visual sections use artboard-scoped classes)
+    expect(wrapper.findAll('.home-life__statement, .home-book__narr-heading, .home-knowledge__title').length).toBeGreaterThanOrEqual(3)
+    // the single H1 (hero) is present
+    expect(wrapper.find('#home-hero-title').exists()).toBe(true)
   })
 
   it('foundation roles are token-driven (no hard-coded color/font in homepage markup)', () => {
     const wrapper = mount(HomeView)
     // eyebrows carry the number span used by the heritage-accent .home-eyebrow__no rule
     expect(wrapper.findAll('.home-eyebrow__no').length).toBeGreaterThanOrEqual(8)
-    // CTA links are real anchors (no fake controls), editorial action role
-    for (const a of wrapper.findAll('.home-cta')) {
+    // editorial actions are real anchors (per-section action roles), no fake controls
+    const actions = wrapper.findAll('.home-hero__act, .home-book__act, .home-knowledge__act, .home-cta')
+    expect(actions.length).toBeGreaterThanOrEqual(3)
+    for (const a of actions) {
       expect(a.attributes('href')).toBeTruthy()
     }
   })
