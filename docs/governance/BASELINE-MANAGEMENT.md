@@ -32,13 +32,13 @@ Candidate Set SHA256:
 94179e7e11a95612dfbfbb1d1fa378aa469abea15bf9829241e7d54cdaf413cb
 
 Phase 0.4 Completion Baseline:
-this commit（自引用；提交完成后经 `git rev-parse HEAD` 记录实际 SHA）
+0167b1702dac13993a5206f63752eafcc8e5387e
 
 Final Acceptance:
 PASS（P0/P1/P2 = 0/0/0；P3 = 1 non-blocking；BLOCKERS: NONE）
 ```
 
-- **Phase 0.4 Completion Baseline: this commit**（自引用；正式完成基线 — 绑定 Governance 00ed3ff / Implementation d08e343 / Source 03755b5 / Completion Candidate 7960fb6 的已接受完成态；不取代历史治理/实现基线）
+- **Phase 0.4 Completion Baseline: `0167b1702dac13993a5206f63752eafcc8e5387e`**（`docs: freeze phase 0.4 core completion`；正式完成基线 — 绑定 Governance 00ed3ff / Implementation d08e343 / Source 03755b5 / Completion Candidate 7960fb6 的已接受完成态；不取代历史治理/实现基线）
 - **冻结语义**：Phase 0.4 COMPLETE — CD-0…CD-6 ACCEPTED/FROZEN；CORE-COMPLETION ACCEPTED/ARCHIVED/FROZEN；Inventory 28/28 CLOSED；Completion Evidence CLOSED；DoD 9/9 PASS。**不表示**：actual production HFB import 已执行（NO；0 records；persistent state NONE）、CD-7 存在（NONEXISTENT）、Phase 1 已实现（NOT IMPLEMENTED IN THIS TASK）。
 - **验收归档**：`docs/audit/HFM-PHASE0.4-CORE-COMPLETION-ACCEPTANCE-ARCHIVE.md`（FINAL VERDICT: PASS；e26598f FAIL 历史如实保留）
 - **失败候选历史**：e26598f（FAIL，3×P1 — C1 synthetic biography / C2 file_path 替代 / dedup identity 不足）→ 7960fb6 修正并 CLOSED；不重写历史、不删除失败证据

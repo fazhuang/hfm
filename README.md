@@ -29,9 +29,17 @@ Architecture Greenfield + Capability Brownfield
 - 公众文化传播
 - 政府与高校共建成果展示
 
-## 当前阶段
+## 当前状态
 
-**Phase 0.4 — COMPLETE / ACCEPTED / ARCHIVED / FROZEN**（2026-08-28）
+截至 HEAD `f73c1ad`（2026-09-03），Phase 0 / Phase 1 / Phase 2 均已验收并归档冻结；首页（Homepage）生产保真工作已推进至 WP-04（ACCEPTED / FROZEN）。
+
+- **Phase 0**：COMPLETE / ARCHIVED / FROZEN（Engineering Skeleton · Selective Migration · Core Domain）
+- **Phase 1**：COMPLETE — COMPLETION ACCEPTANCE ARCHIVE & FREEZE（Frontier-1…6；P1-00…P1-13）
+- **Phase 2**：COMPLETE — COMPLETION ACCEPTANCE ARCHIVE & FREEZE（Completion Baseline `50572a4`）
+- **Homepage Step 3**：WP-02 / WP-03 / WP-04 ACCEPTED / FROZEN（WP-04 @ `ab7b978`）
+- **下一阶段**：Phase 3 须经独立准入/治理程序另行授权；WP-05 尚未启动
+
+### Phase 0.4 完成详情（2026-08-28，历史事实）
 
 - Architecture Baseline: **Frozen**（`7e109201e250dd5843add2249a24afa699766dd0`）
 - Engineering Skeleton: **Frozen**（`5ba7662` 治理链，见 `docs/governance/BASELINE-MANAGEMENT.md`）
@@ -40,7 +48,6 @@ Architecture Greenfield + Capability Brownfield
 - Core Domain Contract Amendment v0.2: **Accepted / Frozen**（`6331dee`；28/28 Inventory disposition + 12/12 canonical ownership + CORE-COMPLETION 定义）
 - **Core Domain: CD-0…CD-6 Accepted / Frozen**（`e1c33af` `7402ce5` `2288979` `6528ab0` `79cf3f7` `523294a` `7bb6e2e`）
 - **CORE-COMPLETION: Accepted / Archived / Frozen**（Candidate `7960fb6`，FINAL VERDICT PASS；失败候选 `e26598f` FAIL 历史保留）
-- **Phase 0.4 Completion Baseline: `d08e343…链上最新归档冻结提交`**（见 BASELINE-MANAGEMENT；DoD 9/9；Inventory 28/28 CLOSED；Completion Evidence CLOSED）
+- **Phase 0.4 Completion Baseline: `0167b1702dac13993a5206f63752eafcc8e5387e`**（`docs: freeze phase 0.4 core completion`；DoD 9/9；Inventory 28/28 CLOSED；Completion Evidence CLOSED）
 - Actual HFB production import: **NOT performed**（0 records；persistent state NONE）
 - CD-7: **Nonexistent**
-- Phase 1: **Not implemented by this freeze**（G1/G2/G3/G4/G7 均未实现；须在 Phase 0.4 冻结后另行授权）
