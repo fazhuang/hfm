@@ -59,7 +59,7 @@ def upgrade() -> None:
             "start_approximate",
             sa.Boolean(),
             nullable=False,
-            server_default=sa.text("0"),
+            server_default=sa.false(),
         ),
         sa.Column("end_year", sa.Integer(), nullable=True),
         sa.Column("end_month", sa.Integer(), nullable=True),
@@ -74,7 +74,7 @@ def upgrade() -> None:
             "end_approximate",
             sa.Boolean(),
             nullable=False,
-            server_default=sa.text("0"),
+            server_default=sa.false(),
         ),
         sa.Column(
             "created_at",

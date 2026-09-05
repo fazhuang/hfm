@@ -71,6 +71,7 @@ def upgrade() -> None:
         sa.ForeignKeyConstraint(
             ["original_object_key"], ["media_assets.object_key"], ondelete="RESTRICT"
         ),
+        sa.UniqueConstraint("object_key", name="uq_media_assets_object_key"),
         sa.CheckConstraint(
             "publication_state IN ('draft', 'published', 'withdrawn')",
             name="ck_media_assets_state",
@@ -78,7 +79,6 @@ def upgrade() -> None:
         sa.CheckConstraint("byte_size >= 0", name="ck_media_assets_byte_size"),
         sa.CheckConstraint("length(object_key) > 0", name="ck_media_assets_object_key"),
     )
-    op.create_index("ix_media_assets_object_key", "media_assets", ["object_key"], unique=True)
     op.create_index("ix_media_assets_sha256", "media_assets", ["sha256"])
     op.create_index("ix_media_assets_state", "media_assets", ["publication_state"])
 
@@ -86,5 +86,4 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_index("ix_media_assets_state", table_name="media_assets")
     op.drop_index("ix_media_assets_sha256", table_name="media_assets")
-    op.drop_index("ix_media_assets_object_key", table_name="media_assets")
     op.drop_table("media_assets")

@@ -39,7 +39,7 @@ def upgrade() -> None:
         sa.Column("username", sa.String(100), nullable=False),
         sa.Column("password_hash", sa.String(256), nullable=False),
         sa.Column("token_version", sa.Integer(), nullable=False, server_default="0"),
-        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.text("1")),
+        sa.Column("is_active", sa.Boolean(), nullable=False, server_default=sa.true()),
         sa.Column("created_by", sa.String(36), nullable=True),
         sa.Column(
             "created_at",
@@ -54,7 +54,7 @@ def upgrade() -> None:
             nullable=False,
         ),
         sa.UniqueConstraint("username", name="uq_users_username"),
-        sa.CheckConstraint("is_active IN (0, 1)", name="ck_users_is_active"),
+        sa.CheckConstraint("is_active IN (TRUE, FALSE)", name="ck_users_is_active"),
     )
     op.create_table(
         "roles",
@@ -150,10 +150,6 @@ def upgrade() -> None:
         op.execute(
             "CREATE INDEX IF NOT EXISTS ix_passages_content_trgm "
             "ON passages USING gin (content_text gin_trgm_ops)"
-        )
-        op.execute(
-            "CREATE INDEX IF NOT EXISTS ix_passages_pub_rights_active "
-            "ON passages (publication_status, rights_status, is_active)"
         )
 
 
