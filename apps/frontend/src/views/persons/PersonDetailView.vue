@@ -1,225 +1,259 @@
 <script setup lang="ts">
 /**
- * PersonDetailView — FLAGSHIP-01 Huangfu Mi Profile (UI-04).
+ * PersonDetailView — CF-03 Person Archive (recovery runtime).
  *
- * Digital Scholarly Biography 页面模型（UI-00 v2）：
- * Hero → 皇甫谧 215—282 → 权威人物定义 → 多维身份 → 生平（时间轴）→
- * 其传 → 其言精选 → 主要著作 → 《针灸甲乙经》 → 后论/历史评价 →
- * 电影/影像 → 相关史料（Evidence/Citation 可见）。
+ * The production person archive is rebuilt on the real Golden chain:
  *
- * Data policy: real data from the public person projection where available;
- * customer-confirmed flagship anchors (dates / definition / identities /
- * life phases / works entries) render for the core person from config until
- * content admission ([DATA-GAP: CONTENT_METADATA / ENTITY_RELATIONS]);
- * everything else degrades to graceful empty states — no fabricated content.
+ *   PostgreSQL → FastAPI /api/v1/public/persons/:id → Vite /api proxy
+ *     → PersonDetailView → CF-02 DHObjectLayout/stateMapping → browser render
+ *
+ * Data source policy (CF-03):
+ *   - the ONLY runtime source is GET /api/v1/public/persons/:id — no local
+ *     fixture, no hard-coded Huangfu Mi object, no searchIndex, no donor
+ *     static object as runtime data;
+ *   - API DATA → PROJECTION → PRESENTATION; the view never invents a domain
+ *     fact for visual completeness;
+ *   - a field missing from the real projection is presented as ABSENT /
+ *     PARTIAL / UNKNOWN — never fabricated.
+ *
+ * Ownership boundary (CF-03 §8):
+ *   - this view owns: route parameter, data-loading orchestration, API state
+ *     (loading / ready / not-found / error), person-specific projection and
+ *     page composition;
+ *   - CF-02 primitives own: presentation, state display, metadata layout and
+ *     the status/provenance band. They do no fetching and no person logic.
+ *
+ * Page states are discriminated (CF-03 §7):
+ *   - 404 (ApiError status 404) → dedicated NOT_FOUND presentation;
+ *   - other ApiError / network failure → dedicated ERROR presentation;
+ *   - a missing optional field is never a page failure;
+ *   - an /api HTML fallback would surface through the CF-01 gate monitors.
  */
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { ApiError, fetchPublicMedia, fetchPublicPerson } from '../../services/api'
-import {
-  formatBytes,
-  isPlayableVideo,
-  MEDIA_CATEGORY_LABELS,
-  mediaBytesUrl,
-} from '../../services/media'
-import type { MediaAssetItem } from '../../types/media'
+import { ApiError, fetchPublicPerson } from '../../services/api'
 import type { PersonAssertion, PersonEvent, PublicPerson } from '../../types/public'
-import type { TimelineEvent } from '../../types/timeline'
-import {
-  CORE_PERSON_DATES,
-  CORE_PERSON_DEFINITION,
-  CORE_PERSON_IDENTITIES,
-  CORE_PERSON_LIFE_PHASES,
-  CORE_PERSON_NAME,
-  CORE_PERSON_WORKS,
-} from '../../config/corePerson'
-import Timeline from '../../components/Timeline.vue'
-import EmptyState from '../../components/states/EmptyState.vue'
+import DHObjectLayout from '../../components/primitives/DHObjectLayout.vue'
 import ErrorState from '../../components/states/ErrorState.vue'
 import LoadingState from '../../components/states/LoadingState.vue'
 
 defineOptions({ name: 'PersonDetailView' })
 
+type PageStatus = 'loading' | 'ready' | 'not-found' | 'error'
+
+/* Structural mirrors of the DHObjectLayout slot contract (presentation only). */
+type PersonRegion = 'header' | 'context' | 'evidence' | 'relations'
+type PersonSlotState = 'PRESENT' | 'ABSENT_OPTIONAL' | 'INCOMPLETE_WITH_EVIDENCE_STATE'
+interface PersonSlot {
+  state: PersonSlotState
+  status?: string
+  statusLabel?: string
+  note?: string
+}
+interface MetaItem {
+  label?: string
+  value: string
+}
+
 const route = useRoute()
+const status = ref<PageStatus>('loading')
 const person = ref<PublicPerson | null>(null)
-const movies = ref<MediaAssetItem[]>([])
-const loading = ref(true)
-const error = ref<string | null>(null)
+const errorMessage = ref<string | null>(null)
 
-const isCorePerson = computed(() => person.value?.name_zh === CORE_PERSON_NAME)
+/** Regional IA labels for the person archive (CF-02 regionLabels override). */
+const regionLabels = {
+  header: '人物档案',
+  context: '生平',
+  evidence: '史料依据',
+  relations: '关联',
+} as const
 
-const timelineEvents = computed<TimelineEvent[]>(() => {
-  const apiEvents: TimelineEvent[] = (person.value?.events ?? []).map((e: PersonEvent) => ({
-    id: e.event_id,
-    title: e.role,
-    description: e.description ?? undefined,
-  }))
-  // Core person: customer-confirmed life phases frame the (not-yet-admitted) data.
-  if (isCorePerson.value && apiEvents.length === 0) {
-    return CORE_PERSON_LIFE_PHASES.map((phase, i) => ({
-      id: `phase-${i}`,
-      title: phase.title,
-      description: phase.note,
-    }))
+/** Publication-state label map (publication_status from the real API). The API
+ * emits enum-style uppercase values (e.g. PUBLISHED); normalization is
+ * case-insensitive so the presentation survives contract casing changes. */
+const PUBLICATION_LABELS: Record<string, string> = {
+  PUBLISHED: '已发布',
+  DRAFT: '草稿',
+  WITHDRAWN: '已撤回',
+}
+
+const identityName = computed<string>(() => person.value?.name_zh?.trim() ?? '')
+const events = computed<PersonEvent[]>(() => person.value?.events ?? [])
+const assertions = computed<PersonAssertion[]>(() => person.value?.assertions ?? [])
+
+/** Only fields actually present in the real projection are shown. */
+const identityMeta = computed<MetaItem[]>(() => {
+  const p = person.value
+  if (p === null) return []
+  const meta: MetaItem[] = []
+  const push = (label: string, raw: string | null | undefined): void => {
+    const value = raw?.trim()
+    if (value !== undefined && value !== '') meta.push({ label, value })
   }
-  return apiEvents
+  push('拼音', p.name_pinyin)
+  push('朝代', p.dynasty)
+  push('字', p.courtesy_name)
+  push('号', p.pseudonym)
+  return meta
 })
 
-const evidencedAssertions = computed<PersonAssertion[]>(() =>
-  (person.value?.assertions ?? []).filter((a) => a.evidence_ids.length > 0),
-)
+/**
+ * Region slot projection:
+ *   - data present        → PRESENT (slot content renders);
+ *   - known empty depth   → INCOMPLETE_WITH_EVIDENCE_STATE with a PARTIAL
+ *                           status band + static note (never a live region);
+ *   - no region concept   → ABSENT_OPTIONAL (collapses, no empty card).
+ */
+function depthSlot(kind: string, count: number): PersonSlot {
+  if (count > 0) return { state: 'PRESENT' }
+  return {
+    state: 'INCOMPLETE_WITH_EVIDENCE_STATE',
+    status: 'PARTIAL',
+    note: `${kind}信息暂未收录。`,
+  }
+}
 
-onMounted(async () => {
-  const entityId = String(route.params.id ?? '')
+const archiveSlots = computed<Record<PersonRegion, PersonSlot>>(() => ({
+  header: { state: 'PRESENT' },
+  context: depthSlot('生平编年', events.value.length),
+  evidence: depthSlot('史料断言', assertions.value.length),
+  relations: { state: 'ABSENT_OPTIONAL' },
+}))
+
+/** Record-level publication state is shown only when the API provides it. */
+const publicationNote = computed<string>(() => {
+  const p = person.value
+  if (p === null) return ''
+  const raw = p.publication_status
+  if (raw === undefined || raw === null || raw === '') return ''
+  const normalized = raw.toUpperCase()
+  const label = PUBLICATION_LABELS[normalized] ?? raw
+  return `档案发布状态：${label}`
+})
+
+async function loadPerson(entityId: string): Promise<void> {
+  status.value = 'loading'
+  person.value = null
+  errorMessage.value = null
   try {
-    person.value = await fetchPublicPerson(entityId)
-    const media = await fetchPublicMedia('movie')
-    movies.value = media.slice(0, 8)
+    const record = await fetchPublicPerson(entityId)
+    if (record === null || record === undefined) {
+      status.value = 'not-found'
+      return
+    }
+    person.value = record
+    status.value = 'ready'
   } catch (err) {
-    error.value = err instanceof ApiError ? err.message : '人物资料加载失败。'
-  } finally {
-    loading.value = false
+    if (err instanceof ApiError && err.status === 404) {
+      status.value = 'not-found'
+      return
+    }
+    errorMessage.value =
+      err instanceof ApiError && err.message !== '' ? err.message : '人物资料加载失败，请稍后重试。'
+    status.value = 'error'
   }
+}
+
+onMounted(() => {
+  void loadPerson(String(route.params.id ?? ''))
 })
+
+watch(
+  () => route.params.id,
+  (id) => {
+    void loadPerson(String(id ?? ''))
+  },
+)
 </script>
 
 <template>
-  <section class="person" aria-labelledby="person-heading">
-    <p class="person__back"><a class="back-link" href="/">← 返回首页</a></p>
+  <section
+    class="person-page"
+    :aria-label="`人物档案${identityName !== '' ? '：' + identityName : ''}`"
+  >
+    <p class="person-page__back">
+      <a class="back-link" href="/">← 返回首页</a>
+    </p>
 
-    <LoadingState v-if="loading" />
-    <ErrorState v-else-if="error" :message="error" />
-    <EmptyState v-else-if="person === null" label="人物不存在或未发布。" />
+    <LoadingState v-if="status === 'loading'" label="正在加载人物档案…" />
+
+    <template v-else-if="status === 'not-found'">
+      <div class="person-page__state" data-page-state="not-found">
+        <h1 class="person-page__state-title">未找到该人物档案</h1>
+        <p class="person-page__state-text">
+          该档案不存在或尚未发布。请返回<a class="back-link" href="/">首页</a>继续浏览。
+        </p>
+      </div>
+    </template>
+
+    <div v-else-if="status === 'error'" data-page-state="error">
+      <ErrorState :message="errorMessage ?? '人物资料加载失败，请稍后重试。'" />
+    </div>
 
     <template v-else>
-      <!-- Hero -->
-      <header class="person-hero">
-        <p class="person-hero__dates" v-if="isCorePerson">{{ CORE_PERSON_DATES }}</p>
-        <h1 id="person-heading" class="person-hero__name">{{ person.name_zh || '未命名' }}</h1>
-        <p class="person-hero__meta">
-          {{ person.name_pinyin || '' }}
-          <template v-if="person.courtesy_name"> · 字 {{ person.courtesy_name }}</template>
-          <template v-if="person.pseudonym"> · 号 {{ person.pseudonym }}</template>
-          <template v-if="person.dynasty"> · {{ person.dynasty }}</template>
-        </p>
-        <p v-if="isCorePerson" class="person-hero__definition">{{ CORE_PERSON_DEFINITION }}</p>
-      </header>
+      <DHObjectLayout
+        class="person-archive"
+        :title="identityName !== '' ? identityName : '未命名人物'"
+        :title-tag="1"
+        :meta="identityMeta"
+        :slots="archiveSlots"
+        :region-labels="regionLabels"
+      >
+        <!-- 生平: renders ONLY real API events (region PRESENT). -->
+        <template v-if="events.length > 0" #context>
+          <ul class="person-events" data-primitive="person-events" aria-label="生平事件">
+            <li v-for="event in events" :key="event.event_id" class="person-events__item">
+              <span class="person-events__role">{{ event.role }}</span>
+              <span v-if="event.description" class="person-events__description">
+                {{ event.description }}
+              </span>
+            </li>
+          </ul>
+        </template>
 
-      <!-- 多维身份 -->
-      <section class="person-section" aria-labelledby="identities-heading">
-        <h2 id="identities-heading" class="section-title">多维身份</h2>
-        <ul v-if="isCorePerson" class="identity-tags" aria-label="多维身份">
-          <li v-for="identity in CORE_PERSON_IDENTITIES" :key="identity" class="identity-tag">
-            {{ identity }}
-          </li>
-        </ul>
-        <EmptyState v-else label="身份信息整理中。" />
-      </section>
+        <!-- 史料依据: renders ONLY real API assertions (region PRESENT). -->
+        <template v-if="assertions.length > 0" #evidence>
+          <ul class="person-assertions" data-primitive="person-assertions" aria-label="史料断言">
+            <li v-for="assertion in assertions" :key="assertion.id" class="person-assertions__item">
+              <p class="person-assertions__value">
+                {{ assertion.value }}
+              </p>
+              <p class="person-assertions__meta">
+                <span v-if="assertion.predicate" class="person-assertions__predicate">
+                  {{ assertion.predicate }}
+                </span>
+                <span v-if="assertion.confidence" class="person-assertions__confidence">
+                  {{ assertion.confidence }}
+                </span>
+                <span
+                  v-if="Array.isArray(assertion.evidence_ids) && assertion.evidence_ids.length > 0"
+                  class="person-assertions__evidence"
+                  >证据 ×{{ assertion.evidence_ids.length }}</span
+                >
+              </p>
+            </li>
+          </ul>
+        </template>
+      </DHObjectLayout>
 
-      <!-- 生平 -->
-      <section class="person-section" aria-labelledby="life-heading">
-        <h2 id="life-heading" class="section-title">生平</h2>
-        <Timeline
-          v-if="timelineEvents.length > 0"
-          :events="timelineEvents"
-          label="皇甫谧生平时间轴"
-        />
-        <EmptyState v-else label="生平内容整理中。" />
-      </section>
-
-      <!-- 其传 -->
-      <section class="person-section" aria-labelledby="biography-heading">
-        <h2 id="biography-heading" class="section-title">其传</h2>
-        <EmptyState label="其传全文整理中（客户资料：其传）。" />
-      </section>
-
-      <!-- 其言精选 -->
-      <section class="person-section" aria-labelledby="qiyan-heading">
-        <h2 id="qiyan-heading" class="section-title">其言精选</h2>
-        <p class="section-note">
-          三都赋、玄守论、释劝论、笃终论。全文见<a class="inline-link" href="/yan">其言</a>。
-        </p>
-        <EmptyState label="其言摘句整理中。" />
-      </section>
-
-      <!-- 主要著作 -->
-      <section class="person-section" aria-labelledby="works-heading">
-        <h2 id="works-heading" class="section-title">主要著作</h2>
-        <ul v-if="isCorePerson" class="works-grid">
-          <li v-for="work in CORE_PERSON_WORKS" :key="work.title" class="work-card">
-            <a :href="work.href" class="work-card__link">
-              <span class="work-card__title">{{ work.title }}</span>
-              <span class="work-card__note">{{ work.note }}</span>
-            </a>
-          </li>
-        </ul>
-        <EmptyState v-else label="著作信息整理中。" />
-      </section>
-
-      <!-- 后论 / 历史评价 -->
-      <section class="person-section" aria-labelledby="afterwords-heading">
-        <h2 id="afterwords-heading" class="section-title">后论 / 历史评价</h2>
-        <EmptyState label="历史评价整理中（客户资料：后论）。" />
-      </section>
-
-      <!-- 相关史料（Evidence 可见） -->
-      <section class="person-section" aria-labelledby="evidence-heading">
-        <h2 id="evidence-heading" class="section-title">史料依据</h2>
-        <EmptyState v-if="evidencedAssertions.length === 0" label="史料断言整理中。" />
-        <ul v-else class="assertion-list">
-          <li v-for="assertion in evidencedAssertions" :key="assertion.id" class="assertion-item">
-            <p class="assertion-item__value">{{ assertion.value }}</p>
-            <p class="assertion-item__meta">
-              <span class="assertion-item__predicate">{{ assertion.predicate }}</span>
-              <span class="assertion-item__confidence">{{ assertion.confidence }}</span>
-              <span class="evidence-badge" title="已绑定证据"
-                >证据 ×{{ assertion.evidence_ids.length }}</span
-              >
-            </p>
-          </li>
-        </ul>
-      </section>
-
-      <!-- 电影 / 影像 -->
-      <section class="person-section" aria-labelledby="media-heading">
-        <h2 id="media-heading" class="section-title">影像资料</h2>
-        <EmptyState v-if="movies.length === 0" label="暂无影像资料。" />
-        <ul v-else class="movie-list">
-          <li v-for="movie in movies" :key="movie.id" class="movie-card">
-            <h3 class="movie-card__title">{{ movie.name }}</h3>
-            <p class="movie-card__meta">
-              {{ MEDIA_CATEGORY_LABELS[movie.category] }} · {{ formatBytes(movie.byte_size) }}
-            </p>
-            <p class="movie-card__rights">{{ movie.license_basis }}</p>
-            <video
-              v-if="isPlayableVideo(movie.mime_type)"
-              :src="mediaBytesUrl(movie.id)"
-              controls
-              preload="none"
-            />
-            <p v-else>
-              <a class="open-link" :href="mediaBytesUrl(movie.id)" target="_blank" rel="noopener"
-                >打开</a
-              >
-            </p>
-          </li>
-        </ul>
-      </section>
-
-      <p class="person__evidence-note">
-        本页史实均以版本与证据为准：来源、版本与 Citation 将在内容准入后逐条呈现。
+      <p
+        v-if="publicationNote !== ''"
+        class="person-page__publication"
+        data-record-publication="true"
+      >
+        {{ publicationNote }}
       </p>
     </template>
   </section>
 </template>
 
 <style scoped>
-.person {
+.person-page {
   max-width: var(--hfm-content-max);
   margin: 0 auto;
 }
 
-.person__back {
+.person-page__back {
   margin: 0 0 var(--hfm-space-4);
 }
 
@@ -228,116 +262,55 @@ onMounted(async () => {
   text-decoration: none;
 }
 
-.person-hero {
-  padding: var(--hfm-space-8) 0 var(--hfm-space-6);
-  border-bottom: 1px solid var(--hfm-color-border);
-  margin-bottom: var(--hfm-space-8);
+.person-page__state {
+  padding: var(--hfm-space-12) var(--hfm-space-6);
+  text-align: center;
 }
 
-.person-hero__dates {
-  margin: 0 0 var(--hfm-space-2);
-  font-family: var(--hfm-font-numeric);
-  font-variant-numeric: tabular-nums;
-  color: var(--hfm-color-heritage);
-  letter-spacing: 0.1em;
-}
-
-.person-hero__name {
-  font-size: var(--hfm-text-3xl);
-  margin: 0 0 var(--hfm-space-3);
-  letter-spacing: var(--hfm-tracking-display);
-}
-
-.person-hero__meta {
-  color: var(--hfm-color-text-secondary);
-  margin: 0 0 var(--hfm-space-4);
-}
-
-.person-hero__definition {
-  max-width: 60ch;
-  font-family: var(--hfm-font-serif);
-  font-size: var(--hfm-text-lg);
-  line-height: var(--hfm-leading-reading);
-  color: var(--hfm-color-text);
-  margin: 0;
-}
-
-.person-section {
-  margin-bottom: var(--hfm-space-12);
-}
-
-.section-title {
-  margin: 0 0 var(--hfm-space-4);
-  padding-bottom: var(--hfm-space-2);
-  border-bottom: 1px solid var(--hfm-color-border);
-}
-
-.section-note {
-  color: var(--hfm-color-text-muted);
+.person-page__state-title {
+  font-size: var(--hfm-text-2xl);
   margin: 0 0 var(--hfm-space-3);
 }
 
-.inline-link {
-  color: var(--hfm-color-interactive);
-}
-
-.identity-tags {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--hfm-space-2);
-}
-
-.identity-tag {
-  padding: var(--hfm-space-1) var(--hfm-space-3);
-  border: 1px solid var(--hfm-color-border-strong);
-  border-radius: var(--hfm-radius-sm);
-  background: var(--hfm-color-surface);
+.person-page__state-text {
   color: var(--hfm-color-text-secondary);
-  font-size: var(--hfm-text-sm);
-}
-
-.works-grid {
-  list-style: none;
   margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--hfm-space-3);
 }
 
-.work-card {
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-md);
-  background: var(--hfm-color-surface);
-}
-
-.work-card__link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--hfm-space-1);
-  padding: var(--hfm-space-4);
-  text-decoration: none;
-  color: var(--hfm-color-text);
-}
-
-.work-card__link:hover .work-card__title {
-  color: var(--hfm-color-accent);
-}
-
-.work-card__title {
-  font-family: var(--hfm-font-serif);
-  font-weight: 600;
-}
-
-.work-card__note {
+.person-page__publication {
+  margin-top: var(--hfm-space-4);
   font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
 }
 
-.assertion-list {
+/* 生平 events (context region content). */
+.person-events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--hfm-space-2);
+}
+
+.person-events__item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-4);
+  padding: var(--hfm-space-2) 0;
+  font-size: var(--hfm-text-sm);
+}
+
+.person-events__role {
+  font-weight: 600;
+  color: var(--hfm-color-text);
+}
+
+.person-events__description {
+  color: var(--hfm-color-text-secondary);
+}
+
+/* 史料依据 assertions (evidence region content). */
+.person-assertions {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -345,89 +318,36 @@ onMounted(async () => {
   gap: var(--hfm-space-3);
 }
 
-.assertion-item {
-  padding: var(--hfm-space-4);
+.person-assertions__item {
+  padding: var(--hfm-space-3) var(--hfm-space-4);
   border: 1px solid var(--hfm-color-border);
   border-radius: var(--hfm-radius-md);
   background: var(--hfm-color-surface);
 }
 
-.assertion-item__value {
+.person-assertions__value {
   margin: 0 0 var(--hfm-space-2);
   line-height: var(--hfm-leading-reading);
 }
 
-.assertion-item__meta {
+.person-assertions__meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--hfm-space-2);
+  gap: var(--hfm-space-2) var(--hfm-space-3);
   align-items: center;
   margin: 0;
   font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
 }
 
-.assertion-item__predicate {
+.person-assertions__predicate {
   padding: 2px var(--hfm-space-2);
   border-radius: var(--hfm-radius-sm);
   background: var(--hfm-color-canvas);
 }
 
-.evidence-badge {
-  padding: 2px var(--hfm-space-2);
-  border-radius: var(--hfm-radius-sm);
-  background: var(--hfm-color-success-surface);
-  color: var(--hfm-color-success);
+.person-assertions__evidence {
   font-weight: 600;
-}
-
-.movie-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--hfm-space-4);
-}
-
-.movie-card {
-  padding: var(--hfm-space-4);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-md);
-  background: var(--hfm-color-surface);
-}
-
-.movie-card__title {
-  margin: 0 0 var(--hfm-space-1);
-}
-
-.movie-card__meta {
-  margin: 0 0 var(--hfm-space-1);
-  color: var(--hfm-color-text-muted);
-  font-size: var(--hfm-text-sm);
-}
-
-.movie-card__rights {
-  margin: 0 0 var(--hfm-space-2);
-  color: var(--hfm-color-text-muted);
-  font-size: var(--hfm-text-xs);
-}
-
-.movie-card video {
-  width: 100%;
-  max-height: 420px;
-  background: var(--hfm-color-canvas);
-  border-radius: var(--hfm-radius-sm);
-}
-
-.open-link {
-  color: var(--hfm-color-interactive);
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.person__evidence-note {
-  margin-top: var(--hfm-space-8);
-  font-size: var(--hfm-text-xs);
-  color: var(--hfm-color-text-muted);
+  color: var(--hfm-color-text-secondary);
 }
 </style>

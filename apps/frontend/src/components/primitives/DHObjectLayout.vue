@@ -41,6 +41,9 @@ interface ObjectSlot {
   note?: string
 }
 
+/** Regional IA labels are presentation copy — a page may override them. */
+type RegionLabelMap = Partial<Record<ObjectRegion, string>>
+
 interface MetaItem {
   label?: string
   value: string
@@ -64,8 +67,10 @@ const props = withDefaults(
     slots: Partial<Record<ObjectRegion, ObjectSlot>>
     /** relations items (explicit text labels only). */
     relations?: RelationItem[]
+    /** optional presentation labels for each region (defaults below). */
+    regionLabels?: RegionLabelMap
   }>(),
-  { title: '', titleTag: null, meta: () => [], relations: () => [] },
+  { title: '', titleTag: null, meta: () => [], relations: () => [], regionLabels: () => ({}) },
 )
 
 const REGION_ORDER: readonly ObjectRegion[] = ['header', 'context', 'evidence', 'relations']
@@ -74,6 +79,11 @@ const REGION_TITLES: Record<ObjectRegion, string> = {
   context: '语境',
   evidence: '证据',
   relations: '关联',
+}
+
+function regionTitle(region: ObjectRegion): string {
+  const override = props.regionLabels[region]
+  return override !== undefined && override !== '' ? override : REGION_TITLES[region]
 }
 
 const titleTagResolved = computed<string>(() => resolveTitleTag(props.titleTag))
@@ -107,21 +117,16 @@ function badgeLabel(region: ObjectRegion): string {
       :data-slot="region"
       :data-slot-state="slotOf(region).state"
     >
-      <p class="dh-object__slot-title">{{ REGION_TITLES[region] }}</p>
+      <p class="dh-object__slot-title">
+        {{ regionTitle(region) }}
+      </p>
 
       <!-- header: title + meta -->
       <div v-if="region === 'header'" class="dh-object__header">
-        <component
-          :is="titleTagResolved"
-          class="dh-object__title"
-        >
+        <component :is="titleTagResolved" class="dh-object__title">
           {{ title || '未命名' }}
         </component>
-        <span
-          v-for="m in meta"
-          :key="m.value"
-          class="dh-object__meta"
-        >
+        <span v-for="m in meta" :key="m.value" class="dh-object__meta">
           <template v-if="m.label">{{ m.label }}：</template>{{ m.value }}
         </span>
       </div>
@@ -135,34 +140,26 @@ function badgeLabel(region: ObjectRegion): string {
           class="dh-object__status"
           data-status-prefix="presentation"
           :data-status="badgeStatus(region)"
-        >{{ badgeLabel(region) }}</span>
-        <span
-          v-if="slotOf(region).note"
-          class="dh-object__incomplete-text"
-        >{{ slotOf(region).note }}</span>
+          >{{ badgeLabel(region) }}</span
+        >
+        <span v-if="slotOf(region).note" class="dh-object__incomplete-text">{{
+          slotOf(region).note
+        }}</span>
       </div>
 
       <!-- context / evidence slot content -->
-      <slot
-        v-if="region === 'context' || region === 'evidence'"
-        :name="region"
-      />
+      <slot v-if="region === 'context' || region === 'evidence'" :name="region" />
 
       <!-- relations: explicit text labels only -->
-      <ul
-        v-if="region === 'relations' && relations.length > 0"
-        class="dh-object__relations"
-      >
+      <ul v-if="region === 'relations' && relations.length > 0" class="dh-object__relations">
         <li
           v-for="item in relations"
           :key="`${item.label}-${item.sem}`"
           class="dh-object__relation"
         >
-          <a
-            v-if="item.href"
-            :href="item.href"
-            class="dh-object__relation-label"
-          >{{ item.label }}</a>
+          <a v-if="item.href" :href="item.href" class="dh-object__relation-label">{{
+            item.label
+          }}</a>
           <span v-else class="dh-object__relation-label">{{ item.label }}</span>
           <span class="dh-object__relation-sem">{{ item.sem }}</span>
         </li>
