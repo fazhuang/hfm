@@ -151,8 +151,19 @@ async def assign_role(session: SessionDep, user_id: str, body: dict[str, str]) -
 async def public_search(
     session: SessionDep, q: str = "", page: int = 1, page_size: int = 20
 ) -> dict[str, Any]:
-    """Anonymous public search — PUBLISHED projection only (ADR-02/05)."""
-    result = await SearchService(session).public_search(query=q, page=page, page_size=page_size)
+    """Anonymous public search — PUBLISHED projection only (ADR-02/05).
+
+    Pagination outside the supported contract (page < 1 or page_size outside
+    1..100) previously surfaced as an unhandled ValueError → HTTP 500; it is
+    now a client error (400). Valid queries always return 200 + JSON with the
+    documented envelope (CF-06 P1-SEARCH-01 closure).
+    """
+    try:
+        result = await SearchService(session).public_search(
+            query=q, page=page, page_size=page_size
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return api_response(
         data={
             "hits": [

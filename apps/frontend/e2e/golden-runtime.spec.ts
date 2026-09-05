@@ -47,7 +47,9 @@ function attach(page: import('@playwright/test').Page): void {
     if (m.type() === 'error') captured.consoleErrors.push(m.text().slice(0, 200))
   })
   page.on('pageerror', (e) => captured.pageErrors.push(String(e).slice(0, 200)))
-  page.on('requestfailed', (r) => captured.requestFailed.push(`${r.url()} :: ${r.failure()?.errorText}`))
+  page.on('requestfailed', (r) =>
+    captured.requestFailed.push(`${r.url()} :: ${r.failure()?.errorText}`),
+  )
   page.on('response', (r) => recordApi(r.url(), r.status(), r.headers()['content-type'] || ''))
 }
 
@@ -87,20 +89,28 @@ test('HERITAGE — /heritage served 200 + heading', async ({ page }) => {
 test('SEARCH — real search behaviour renders real results from Golden data', async ({ page }) => {
   attach(page)
   await goto200(page, '/search')
-  // The recovery foundation's search is the deterministic in-app searchIndex
-  // (UI-10): typing a query performs a real search over SEARCH_INDEX. Assert the
-  // real path produces real result rows (not a DOM shell, not a mocked result).
+  // CF-06: the public search page calls the REAL backend search endpoint
+  // (Browser → Vite /api proxy → FastAPI /api/v1/public/search → PostgreSQL
+  // → JSON → render). Typing a query runs the real published-content search.
+  // Assert the real path produces real result rows (no DOM shell, no mock).
   const input = page.locator('input[type="search"], input[type="text"], form input').first()
   await input.fill('皇甫谧')
-  // Search-as-you-type / submit path of the real view.
   await page.keyboard.press('Enter')
-  await page.waitForTimeout(400)
-  // Real results must render in .result-list (title contains query).
+  // Real results must render in .result-list (title contains query) from the
+  // published person record in the golden database.
   const list = page.locator('.result-list, ol.result-list')
   await expect(list).toBeVisible()
-  const rows = page.locator('.result-list .result-row, ol.result-list .result-row, .result-list li, ol.result-list li')
+  const rows = page.locator(
+    '.result-list .result-row, ol.result-list .result-row, .result-list li, ol.result-list li',
+  )
   await expect(rows.first()).toBeVisible()
   await expect(list).toContainText('皇甫谧')
+  // The person result carries the real canonical route and navigates to the
+  // real person page served by the same runtime chain.
+  const rowLink = page.locator('.result-row a.result-row__link').first()
+  await expect(rowLink).toHaveAttribute('href', '/persons/person-huangfu-mi')
+  await rowLink.click()
+  await expect(page.getByRole('heading', { level: 1 }).first()).toContainText('皇甫谧')
 })
 
 test('RESEARCH — anonymous route guard → login (correct)', async ({ page }) => {
@@ -116,7 +126,10 @@ test('final invariants: 0 fallback / 0 fatal / 0 failed network / 0 unexpected 4
   const fatal = [...captured.pageErrors, ...captured.consoleErrors]
   expect(captured.htmlFallback, 'an /api request was answered with SPA HTML').toHaveLength(0)
   expect(captured.requestFailed, 'a browser request failed (network/abort)').toHaveLength(0)
-  expect(captured.unexpectedHttp, 'an /api request returned unexpected 4xx/5xx (incl. 404)').toHaveLength(0)
+  expect(
+    captured.unexpectedHttp,
+    'an /api request returned unexpected 4xx/5xx (incl. 404)',
+  ).toHaveLength(0)
   expect(fatal, 'fatal browser errors (console.error / pageerror)').toHaveLength(0)
   console.log(
     `CF01_MONITOR htmlFallback=${captured.htmlFallback.length} ` +

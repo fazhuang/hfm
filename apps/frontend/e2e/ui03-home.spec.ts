@@ -36,6 +36,33 @@ test('UI-03 CTA targets are real routes', async ({ page }) => {
 })
 
 test('UI-03 search submits to /search?q=', async ({ page }) => {
+  // Public search is the real /api/v1/public/search endpoint (CF-06); this
+  // auxiliary spec stubs the transport so the homepage CTA round-trip is
+  // deterministic. Real-chain proof lives in the golden runtime journey.
+  await page.route('**/api/v1/public/search*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          hits: [
+            {
+              kind: 'work',
+              id: 'w-jiayi',
+              title: '《针灸甲乙经》',
+              snippet: '',
+              version_id: null,
+              publication_status: 'PUBLISHED',
+            },
+          ],
+          total: 1,
+          page: 1,
+          page_size: 20,
+        },
+      }),
+    }),
+  )
   await page.goto('/')
   const input = page.locator('#home-search-input')
   await input.fill('甲乙经')

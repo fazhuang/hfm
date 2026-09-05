@@ -32,7 +32,34 @@ test('UI-09 lineage shows confirmed nodes with a PARTIAL state (no fabricated ge
   await expect(page.getByText('LINEAGE_STRUCTURING')).toHaveCount(0)
 })
 
-test('UI-09 search integration: 刘君奇 findable via unified search', async ({ page }) => {
+test('UI-09 search integration: 刘君奇 surfaces through the public search UI', async ({ page }) => {
+  // Public search is the real /api/v1/public/search endpoint (CF-06); this
+  // auxiliary spec stubs the transport so the search-UI integration stays
+  // deterministic. Full-chain proof is the golden runtime journey.
+  await page.route('**/api/v1/public/search*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          hits: [
+            {
+              kind: 'person',
+              id: 'person-liujunqi',
+              title: '刘君奇',
+              snippet: '',
+              version_id: null,
+              publication_status: 'PUBLISHED',
+            },
+          ],
+          total: 1,
+          page: 1,
+          page_size: 20,
+        },
+      }),
+    }),
+  )
   await page.goto('/search?q=刘君奇')
   await expect(page.getByText(/找到 \d+ 条结果/)).toBeVisible()
   await expect(page.getByRole('link', { name: '刘君奇', exact: true }).first()).toBeVisible()

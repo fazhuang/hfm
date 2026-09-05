@@ -1,212 +1,251 @@
 /**
- * UI-10 Search / Bibliography tests.
+ * CF-06 SearchView tests (real public search API orchestration).
  *
- *  - index construction (types, real structured paper count, no internal
- *    paths in searchable content);
- *  - real-query checks (皇甫谧 / 针灸甲乙经 / 帝王世纪 / 高士传 / 黄龙祥 /
- *    nonexistent);
- *  - deterministic ranking + facet counts from the current result set;
- *  - URL query parse/serialize + pagination;
- *  - data integrity: audited 515 ≠ searchable count, no fabricated papers,
- *    no internal paths, no copyright blockers;
- *  - component states (initial / results / empty) + axe.
+ * The public surface is wired to searchPublicHits → GET /api/v1/public/search.
+ * These component tests stub ONLY the API-client transport (unit boundary,
+ * CF-06 §15); real-browser acceptance of the full chain
+ * (Browser → Vite proxy → FastAPI → PostgreSQL → JSON → render) is the
+ * golden real-runtime journey + the CF-06 real browser gate — never mocked.
+ *
+ * Coverage: idle / loading / ready / empty / error (4xx ≠ 5xx), result
+ * projection (kind labels, canonical navigation), URL q/page state, axe.
  */
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import axe from 'axe-core'
+import { ApiError, searchPublicHits } from '../services/api'
 import SearchView from '../views/search/SearchView.vue'
-import {
-  AUDITED_PAPER_TOTAL,
-  SEARCH_INDEX,
-  SEARCHABLE_PAPER_TOTAL,
-  facetCounts,
-  searchIndex,
-} from '../data/searchIndex'
-import { JIAYI_PAPER_PREVIEW } from '../data/jiayiView'
-import { parseSearchQuery, serializeSearchQuery } from '../composables/useSearchQuery'
+import type { PublicSearchPage } from '../services/api'
 
-describe('UI-10 index construction', () => {
-  it('builds the projection once with all supported types', () => {
-    const types = new Set(SEARCH_INDEX.map((e) => e.type))
-    expect(types.has('person')).toBe(true)
-    expect(types.has('text')).toBe(true)
-    expect(types.has('work')).toBe(true)
-    expect(types.has('edition')).toBe(true)
-    expect(types.has('archive')).toBe(true)
-    expect(types.has('paper')).toBe(true)
-    expect(SEARCH_INDEX.length).toBeGreaterThan(20)
-  })
-
-  it('searchable paper count equals real structured records (≠ audited 515)', () => {
-    expect(SEARCHABLE_PAPER_TOTAL).toBe(JIAYI_PAPER_PREVIEW.length)
-    expect(SEARCHABLE_PAPER_TOTAL).toBeLessThan(AUDITED_PAPER_TOTAL)
-    expect(AUDITED_PAPER_TOTAL).toBe(515)
-  })
-
-  it('searchable content never contains internal paths or register keys', () => {
-    for (const entry of SEARCH_INDEX) {
-      expect(entry.searchableText).not.toMatch(/hfmzl|zzcl|\/论著\/|\/论文\//)
-      expect(entry.sourceName ?? '').not.toMatch(/^hfmzl|^zzcl/)
+vi.mock('../services/api', () => {
+  class ApiErrorMock extends Error {
+    status: number
+    constructor(message: string, status: number) {
+      super(message)
+      this.name = 'ApiError'
+      this.status = status
     }
-  })
+  }
+  return {
+    ApiError: ApiErrorMock,
+    searchPublicHits: vi.fn(),
+  }
 })
 
-describe('UI-10 real-query checks', () => {
-  it('皇甫谧 → person result', () => {
-    const results = searchIndex('皇甫谧')
-    expect(results.length).toBeGreaterThan(0)
-    expect(results[0]?.entry.type).toBe('person')
-    expect(results[0]?.entry.title).toBe('皇甫谧')
-  })
+const searchPublicHitsMock = vi.mocked(searchPublicHits)
 
-  it('针灸甲乙经 → work + edition results', () => {
-    const results = searchIndex('针灸甲乙经')
-    const types = results.map((r) => r.entry.type)
-    expect(types).toContain('work')
-    expect(types).toContain('edition')
-  })
-
-  it('帝王世纪 / 高士传 → real works', () => {
-    const dwsj = searchIndex('帝王世纪').filter((r) => r.entry.type === 'work')
-    expect(dwsj.length).toBeGreaterThan(0)
-    expect(dwsj[0]?.entry.title).toBe('《帝王世纪》')
-    const gsc = searchIndex('高士传').filter((r) => r.entry.type === 'work')
-    expect(gsc.length).toBeGreaterThan(0)
-    expect(gsc[0]?.entry.title).toBe('《高士传》')
-  })
-
-  it('黄龙祥 / 张灿玾 → real edition records (modern collators)', () => {
-    for (const name of ['黄龙祥', '张灿玾']) {
-      const results = searchIndex(name)
-      expect(results.length).toBeGreaterThan(0)
-      expect(results.some((r) => r.entry.type === 'edition')).toBe(true)
-    }
-  })
-
-  it('1601 → edition result', () => {
-    const results = searchIndex('1601')
-    expect(results.length).toBeGreaterThan(0)
-    expect(results[0]?.entry.type).toBe('edition')
-  })
-
-  it('nonexistent query → 0 results', () => {
-    expect(searchIndex('完全不存在的词xyz')).toHaveLength(0)
-  })
-})
-
-describe('UI-10 ranking & facets', () => {
-  it('ranking is deterministic (same query → same order)', () => {
-    const a = searchIndex('甲乙经')
-    const b = searchIndex('甲乙经')
-    expect(a.map((r) => r.entry.id)).toEqual(b.map((r) => r.entry.id))
-  })
-
-  it('exact title match ranks above partial match', () => {
-    const exact = searchIndex('皇甫谧')[0]?.entry.id
-    expect(exact).toBe('person-huangfu-mi')
-    const partial = searchIndex('谧')[0]?.entry.id
-    expect(partial).toBe('person-huangfu-mi')
-  })
-
-  it('facet counts come from the current result set (type filter respected)', () => {
-    const qAll = searchIndex('甲乙经', 'all')
-    const counts = facetCounts(qAll)
-    const workCount = counts.find((c) => c.type === 'work')?.count ?? 0
-    expect(workCount).toBe(qAll.filter((r) => r.entry.type === 'work').length)
-    expect(workCount).toBeGreaterThan(0)
-    // Facet total reflects real matches, never the audited 515.
-    const paperCount = counts.find((c) => c.type === 'paper')?.count ?? 0
-    expect(paperCount).toBeLessThanOrEqual(SEARCHABLE_PAPER_TOTAL)
-    expect(paperCount).toBeLessThan(AUDITED_PAPER_TOTAL)
-  })
-})
-
-describe('UI-10 URL query sync & pagination', () => {
-  it('parses and serializes q/type/page', () => {
-    const parsed = parseSearchQuery({ q: '甲乙经', type: 'edition', page: '2' })
-    expect(parsed).toEqual({ q: '甲乙经', type: 'edition', page: 2 })
-    const serialized = serializeSearchQuery({ q: '甲乙经', type: 'edition', page: 2 })
-    expect(serialized).toEqual({ q: '甲乙经', type: 'edition', page: '2' })
-    // Empty state serializes to clean query.
-    expect(serializeSearchQuery({ q: '', type: 'all', page: 1 })).toEqual({})
-  })
-
-  it('paginates deterministically by PAGE_SIZE', () => {
-    const all = searchIndex('甲乙经', 'all')
-    const pageSize = 10
-    const page1 = all.slice(0, pageSize)
-    const page2 = all.slice(pageSize, pageSize * 2)
-    expect(page1.length).toBeLessThanOrEqual(pageSize)
-    expect(page1[0]?.entry.id).toBe(all[0]?.entry.id)
-    expect(page2[0]?.entry.id).toBe(all[pageSize]?.entry.id)
-  })
-})
-
-describe('UI-10 data integrity', () => {
-  it('results never expose internal paths and no fake papers are created', () => {
-    for (const q of ['皇甫谧', '甲乙经', '论文', '档案']) {
-      for (const r of searchIndex(q)) {
-        expect(r.entry.searchableText).not.toMatch(/hfmzl|zzcl/)
-        expect(r.entry.route ?? '').not.toMatch(/hfmzl|zzcl/)
-      }
-    }
-    const papers = SEARCH_INDEX.filter((e) => e.type === 'paper')
-    const realTitles = new Set(JIAYI_PAPER_PREVIEW.map((p) => p.title))
-    for (const p of papers) expect(realTitles.has(p.title)).toBe(true)
-  })
-})
-
-async function mountSearch(query: string): Promise<ReturnType<typeof mount>> {
-  const router = createRouter({
-    history: createMemoryHistory(),
-    routes: [{ path: '/search', component: SearchView }],
-  })
-  await router.push(query ? `/search?q=${encodeURIComponent(query)}` : '/search')
-  await router.isReady()
-  return mount(SearchView, { global: { plugins: [router] } })
+function page(hits: PublicSearchPage['hits'], total?: number): PublicSearchPage {
+  return { hits, total: total ?? hits.length, page: 1, page_size: 20 }
 }
 
-describe('UI-10 SearchView component', () => {
-  it('renders the initial state without a query', async () => {
-    const wrapper = await mountSearch('')
+const PERSON_HIT = {
+  kind: 'person',
+  id: 'person-huangfu-mi',
+  title: '皇甫谧',
+  snippet: '',
+  version_id: null,
+  publication_status: 'PUBLISHED',
+}
+
+const mountedWrappers: ReturnType<typeof mount>[] = []
+
+afterEach(() => {
+  while (mountedWrappers.length > 0) {
+    mountedWrappers.pop()?.unmount()
+  }
+  vi.unstubAllGlobals()
+  searchPublicHitsMock.mockReset()
+})
+
+async function mountSearch(
+  query: Record<string, string> = {},
+  attach = false,
+): Promise<{ wrapper: ReturnType<typeof mount>; router: ReturnType<typeof createRouter> }> {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/search', name: 'search', component: SearchView }],
+  })
+  await router.push({ path: '/search', query })
+  await router.isReady()
+  const wrapper = mount(SearchView, {
+    attachTo: attach ? document.body : undefined,
+    global: { plugins: [router] },
+  })
+  mountedWrappers.push(wrapper)
+  return { wrapper, router }
+}
+
+describe('CF-06 idle & loading', () => {
+  it('idle (no q): scope copy + static entry points; API not called', async () => {
+    const { wrapper } = await mountSearch({})
     expect(wrapper.find('h1').text()).toBe('检索')
-    expect(wrapper.find('.type-overview').exists()).toBe(true)
-    expect(wrapper.text()).toContain('可检索内容')
+    expect(wrapper.text()).toContain('检索范围')
+    expect(wrapper.text()).toContain('皇甫谧')
+    expect(searchPublicHitsMock).not.toHaveBeenCalled()
   })
 
-  it('renders results for ?q=针灸甲乙经', async () => {
-    const wrapper = await mountSearch('针灸甲乙经')
-    expect(wrapper.text()).toContain('找到')
-    expect(wrapper.find('.result-list').exists()).toBe(true)
-  })
-
-  it('renders a useful empty state for a nonexistent query', async () => {
-    const wrapper = await mountSearch('zzz不存在')
-    expect(wrapper.find('.empty-state').exists()).toBe(true)
-    expect(wrapper.text()).toContain('未找到匹配')
-    expect(wrapper.text()).toContain('清除关键词')
-  })
-
-  it('contains no clinical recommendation expression', async () => {
-    const wrapper = await mountSearch('甲乙经')
-    expect(wrapper.text()).not.toMatch(/治疗|疗效|处方|建议就诊|治愈/)
+  it('shows a programmatically understandable loading state', async () => {
+    let resolve!: (v: PublicSearchPage) => void
+    searchPublicHitsMock.mockReturnValueOnce(
+      new Promise<PublicSearchPage>((r) => {
+        resolve = r
+      }),
+    )
+    const { wrapper } = await mountSearch({ q: '皇甫谧' })
+    expect(wrapper.find('[role="status"]').text()).toContain('正在检索')
+    resolve(page([PERSON_HIT]))
+    await vi.waitFor(() => {
+      expect(wrapper.find('.result-row').exists()).toBe(true)
+    })
   })
 })
 
-describe('UI-10 accessibility', () => {
-  it('passes axe on results and empty states', async () => {
-    for (const query of ['针灸甲乙经', 'zzz不存在']) {
-      const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [{ path: '/search', component: SearchView }],
-      })
-      await router.push(`/search?q=${encodeURIComponent(query)}`)
-      await router.isReady()
-      const wrapper = mount(SearchView, { attachTo: document.body, global: { plugins: [router] } })
-      const results = await axe.run(wrapper.element as HTMLElement)
-      wrapper.unmount()
-      expect(results.violations, query).toHaveLength(0)
-    }
+describe('CF-06 ready results & navigation', () => {
+  it('renders a person result with the real canonical route', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(page([PERSON_HIT]))
+    const { wrapper } = await mountSearch({ q: '皇甫谧' })
+    await vi.waitFor(() => {
+      expect(wrapper.find('.result-row__type').text()).toBe('人物')
+    })
+    const link = wrapper.find('.result-row__link')
+    expect(link.attributes('href')).toBe('/persons/person-huangfu-mi')
+    expect(wrapper.find('.search-summary').text()).toContain('找到 1 条结果')
+    expect(searchPublicHitsMock).toHaveBeenCalledWith('皇甫谧', 1, 20)
+  })
+
+  it('work results navigate to /works/:id; route-less kinds render without invented links', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(
+      page([
+        PERSON_HIT,
+        {
+          kind: 'work',
+          id: 'work-1',
+          title: '《针灸甲乙经》',
+          snippet: '',
+          version_id: null,
+          publication_status: 'PUBLISHED',
+        },
+        {
+          kind: 'passage',
+          id: 'p-1',
+          title: '（片段）',
+          snippet: '……皇甫谧曰……',
+          version_id: null,
+          publication_status: 'PUBLISHED',
+        },
+        {
+          kind: 'edition',
+          id: 'e-1',
+          title: '明万历本',
+          snippet: '',
+          version_id: null,
+          publication_status: 'PUBLISHED',
+        },
+      ]),
+    )
+    const { wrapper } = await mountSearch({ q: '皇甫' })
+    await vi.waitFor(() => {
+      expect(wrapper.findAll('.result-row').length).toBe(4)
+    })
+    const hrefs = wrapper.findAll('.result-row__link').map((n) => n.attributes('href'))
+    expect(hrefs).toContain('/persons/person-huangfu-mi')
+    expect(hrefs).toContain('/works/work-1')
+    // Route-less kinds never fabricate a link.
+    expect(hrefs).not.toContain('/reader/p-1')
+    expect(hrefs).not.toContain('/e-1')
+    const passageRow = wrapper.findAll('.result-row')[2]
+    expect(passageRow.find('.result-row__link').exists()).toBe(false)
+    expect(passageRow.find('.result-row__meta').text()).toContain('皇甫谧')
+  })
+})
+
+describe('CF-06 empty vs error semantics', () => {
+  it('empty (total 0) is a distinct valid state, never an error', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(page([], 0))
+    const { wrapper } = await mountSearch({ q: '完全没有的词xyz' })
+    await vi.waitFor(() => {
+      expect(wrapper.find('[data-search-state="empty"]').exists()).toBe(true)
+    })
+    expect(wrapper.find('[data-search-state="empty"]').text()).toContain('未找到匹配')
+    expect(wrapper.find('[role="alert"]').exists()).toBe(false)
+  })
+
+  it('server failure (5xx) shows an error — never masked as 暂无结果', async () => {
+    searchPublicHitsMock.mockRejectedValueOnce(new ApiError('public request failed: 500', 500))
+    const { wrapper } = await mountSearch({ q: '皇甫谧' })
+    await vi.waitFor(() => {
+      expect(wrapper.find('[data-search-state="error"]').exists()).toBe(true)
+    })
+    const error = wrapper.find('[data-search-state="error"]')
+    expect(error.text()).toContain('检索服务暂时不可用')
+    expect(error.attributes('role')).toBe('alert')
+    expect(wrapper.find('[data-search-state="empty"]').exists()).toBe(false)
+  })
+
+  it('client 4xx is distinguished from a server 5xx', async () => {
+    searchPublicHitsMock.mockRejectedValueOnce(new ApiError('public request failed: 400', 400))
+    const { wrapper } = await mountSearch({ q: '皇甫谧' })
+    await vi.waitFor(() => {
+      expect(wrapper.find('[data-search-state="error"]').text()).toContain('检索条件无效')
+    })
+  })
+
+  it('network failure renders the error state with a retry affordance', async () => {
+    searchPublicHitsMock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    const { wrapper } = await mountSearch({ q: '皇甫谧' })
+    await vi.waitFor(() => {
+      expect(wrapper.find('[data-search-state="error"]').exists()).toBe(true)
+    })
+    expect(wrapper.find('.search-error__retry').exists()).toBe(true)
+    // Retry issues a fresh real request.
+    searchPublicHitsMock.mockResolvedValueOnce(page([PERSON_HIT]))
+    await wrapper.find('.search-error__retry').trigger('click')
+    await vi.waitFor(() => {
+      expect(wrapper.find('.result-row').exists()).toBe(true)
+    })
+    expect(searchPublicHitsMock).toHaveBeenCalledTimes(2)
+  })
+})
+
+describe('CF-06 URL state & submission', () => {
+  it('submitting updates the URL query and triggers the real API with paging', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(page([PERSON_HIT]))
+    const { wrapper, router } = await mountSearch({})
+    await wrapper.find('.search-form input').setValue('皇甫谧')
+    await wrapper.find('.search-form').trigger('submit')
+    await vi.waitFor(() => {
+      expect(router.currentRoute.value.query.q).toBe('皇甫谧')
+    })
+    await vi.waitFor(() => {
+      expect(wrapper.find('.result-row').exists()).toBe(true)
+    })
+    expect(searchPublicHitsMock).toHaveBeenCalledWith('皇甫谧', 1, 20)
+  })
+
+  it('honors the URL page parameter on initial load', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(page([PERSON_HIT], 25))
+    await mountSearch({ q: '皇甫谧', page: '2' })
+    await vi.waitFor(() => {
+      expect(searchPublicHitsMock).toHaveBeenCalledWith('皇甫谧', 2, 20)
+    })
+  })
+})
+
+describe('CF-06 accessibility', () => {
+  it('exposes a labeled input and passes axe on results', async () => {
+    searchPublicHitsMock.mockResolvedValueOnce(page([PERSON_HIT]))
+    const { wrapper } = await mountSearch({ q: '皇甫谧' }, true)
+    await vi.waitFor(() => {
+      expect(wrapper.find('.result-row').exists()).toBe(true)
+    })
+    const input = wrapper.find('input[type="search"]')
+    expect(input.attributes('id')).toBe('search-input')
+    const label = wrapper.find('label[for="search-input"]')
+    expect(label.exists()).toBe(true)
+    expect(label.text()).toBe('检索平台内容')
+    const results = await axe.run(wrapper.element as HTMLElement)
+    const messages = results.violations.map((v) => v.id)
+    expect(messages).toEqual([])
   })
 })

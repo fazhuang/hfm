@@ -41,12 +41,42 @@ test('UI-07 invalid reader id shows not-found with recovery links', async ({ pag
   await expect(page.getByRole('link', { name: '检索' })).toBeVisible()
 })
 
-test('UI-07 search → reader routing', async ({ page }) => {
+test('UI-07 search renders passage-kind results without invented reader routes', async ({
+  page,
+}) => {
+  // Public search returns real published kinds (CF-06). The reader documents
+  // are not yet published API records, so a passage result must NOT fabricate
+  // a /reader/:id link (CF-06 §9: no invented routes).
+  await page.route('**/api/v1/public/search*', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        success: true,
+        data: {
+          hits: [
+            {
+              kind: 'passage',
+              id: 'p-houlun',
+              title: '（片段）',
+              snippet: '……后论……',
+              version_id: null,
+              publication_status: 'PUBLISHED',
+            },
+          ],
+          total: 1,
+          page: 1,
+          page_size: 20,
+        },
+      }),
+    }),
+  )
   await page.goto('/search?q=后论')
   await expect(page.getByText(/找到 \d+ 条结果/)).toBeVisible()
-  const readerLink = page.getByRole('link', { name: /后论/ }).first()
-  await readerLink.click()
-  await expect(page.getByRole('heading', { name: /后论/ })).toBeVisible()
+  await expect(page.locator('.result-row__type').first()).toHaveText('文本片段')
+  // No invented navigation for a kind without a stable public page.
+  await expect(page.getByRole('link', { name: /后论/ })).toHaveCount(0)
+  await expect(page.locator('a[href^="/reader/"]')).toHaveCount(0)
 })
 
 test('UI-07 responsive: 375 no overflow, 1920 reading bounded, dark + 200% zoom', async ({

@@ -9,10 +9,20 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { locatorKey, resolveLocator } from '../services/reader'
 import ReaderView from '../views/reader/ReaderView.vue'
 import SearchView from '../views/search/SearchView.vue'
 import type { ReaderPassage } from '../types/reader'
+
+function searchRouter(): ReturnType<typeof createRouter> {
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/search', name: 'search', component: SearchView }],
+  })
+  void router.push('/search')
+  return router
+}
 
 const passages: ReaderPassage[] = [
   {
@@ -130,8 +140,10 @@ describe('P2-03-AC-04 no clinical recommendation surface', () => {
     wrapper.unmount()
   })
 
-  it('search view template contains no clinical recommendation elements', () => {
-    const wrapper = mount(SearchView)
+  it('search view template contains no clinical recommendation elements', async () => {
+    const router = searchRouter()
+    await router.isReady()
+    const wrapper = mount(SearchView, { global: { plugins: [router] } })
     const html = wrapper.html()
     for (const term of FORBIDDEN_TERMS) {
       expect(html.toLowerCase()).not.toContain(term)

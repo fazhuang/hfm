@@ -115,10 +115,33 @@ export async function fetchPublicMedia(kind?: MediaCategory): Promise<MediaAsset
   return data.items
 }
 
-/** Public search hits (kind-tagged; published projection only). */
-export async function searchPublicHits(query: string): Promise<SearchHit[]> {
+/** One page of public search results (kind-tagged; published projection only). */
+export interface PublicSearchPage {
+  hits: SearchHit[]
+  total: number
+  page: number
+  page_size: number
+}
+
+/**
+ * Public search over the real backend endpoint. Paging is explicit
+ * (page ≥ 1, page_size 1..100 — the backend contract); an empty result set
+ * is a valid response (total 0), never an error.
+ */
+export async function searchPublicHits(
+  query: string,
+  page = 1,
+  pageSize = 20,
+): Promise<PublicSearchPage> {
   const params = new URLSearchParams({ q: query })
+  params.set('page', String(page))
+  params.set('page_size', String(pageSize))
   const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/search?${params.toString()}`)
-  const data = unwrap<{ hits: SearchHit[]; total: number }>(body)
-  return data.hits
+  const data = unwrap<PublicSearchPage>(body)
+  return {
+    hits: data.hits ?? [],
+    total: data.total ?? 0,
+    page: data.page ?? page,
+    page_size: data.page_size ?? pageSize,
+  }
 }

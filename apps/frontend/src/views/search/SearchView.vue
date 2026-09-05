@@ -1,108 +1,132 @@
 <script setup lang="ts">
 /**
- * SearchView — UI-10 entity-aware scholarly discovery.
+ * SearchView — CF-06 scholarly discovery on the real public search API.
  *
- * Local deterministic index over the established content semantics
- * (person / text / work / edition / archive / paper). URL is the single
- * source of truth (?q= &type= &page=): refresh + back/forward recover state.
- * Facet counts come from the current result set; audited paper total (515)
- * is shown separately from searchable structured records (5).
+ * QUERY → frontend API client (searchPublicHits) → GET /api/v1/public/search
+ *   → FastAPI → PostgreSQL → JSON → typed projection → presentation.
+ *
+ * The local static searchIndex is NOT the runtime result source for the
+ * public surface (P1-SEARCH-02 closed); it remains only on the
+ * authenticated research surface. Static content here is limited to
+ * non-result presentation data: entry-point links and scope copy.
+ *
+ * URL is the single source of truth for q (and page): refresh and
+ * back/forward recover state. States are discriminated (CF-06 §7):
+ *   idle → no query; loading → in flight; ready → results; empty → 0 total
+ *   (never an error); error → API/network failure (never shown as 暂无结果).
+ * HTTP 4xx (bad request) and 5xx/network are rendered distinctly.
  */
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import type { SearchType } from '../../types/search'
-import {
-  AUDITED_PAPER_TOTAL,
-  PAGE_SIZE,
-  SEARCHABLE_PAPER_TOTAL,
-  facetCounts,
-  searchIndex,
-  searchTypeLabel,
-} from '../../data/searchIndex'
-import { parseSearchQuery, serializeSearchQuery } from '../../composables/useSearchQuery'
+import { ApiError, searchPublicHits } from '../../services/api'
+import { toSearchResultRows, type SearchResultRow } from '../../presentation/searchResults'
 import SearchHighlight from '../../components/search/SearchHighlight.vue'
-import BibliographyEntry from '../../components/search/BibliographyEntry.vue'
 
 defineOptions({ name: 'SearchView' })
+
+type PageStatus = 'idle' | 'loading' | 'ready' | 'empty' | 'error'
+
+const PAGE_SIZE = 20
 
 const route = useRoute()
 const router = useRouter()
 
-// Local input bound to the form; synced from/into the URL.
 const inputValue = ref('')
+const status = ref<PageStatus>('idle')
+const rows = ref<SearchResultRow[]>([])
+const total = ref(0)
+const currentPage = ref(1)
+const errorMessage = ref('')
+const errorKind = ref<'client' | 'server' | 'network'>('server')
 
-const state = computed(() => parseSearchQuery(route?.query ?? {}))
-const q = computed(() => state.value.q)
-const type = computed<SearchType | 'all'>(() => state.value.type)
-const page = computed(() => state.value.page)
-
-// Keep the input in sync when the URL changes externally (back/forward).
-watch(q, (value) => {
-  inputValue.value = value
+const q = computed(() => (typeof route.query.q === 'string' ? route.query.q.trim() : ''))
+const pageParam = computed(() => {
+  const raw = typeof route.query.page === 'string' ? Number.parseInt(route.query.page, 10) : NaN
+  return Number.isFinite(raw) && raw > 0 ? raw : 1
 })
+
 watch(
-  () => route?.query,
-  () => {
-    inputValue.value = q.value
+  q,
+  (value) => {
+    inputValue.value = value
   },
+  { immediate: true },
 )
 
-function syncInput(): void {
-  inputValue.value = q.value
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / PAGE_SIZE)))
+
+async function runSearch(query: string, page: number): Promise<void> {
+  status.value = 'loading'
+  errorMessage.value = ''
+  try {
+    const result = await searchPublicHits(query, page, PAGE_SIZE)
+    if (q.value !== query || currentPage.value !== page) return // stale response
+    total.value = result.total
+    rows.value = toSearchResultRows(result.hits)
+    currentPage.value = page
+    status.value = result.total === 0 ? 'empty' : 'ready'
+  } catch (err) {
+    if (q.value !== query || currentPage.value !== page) return
+    if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+      errorKind.value = 'client'
+      errorMessage.value = '检索条件无效，请调整后重试。'
+    } else {
+      errorKind.value = err instanceof ApiError ? 'server' : 'network'
+      errorMessage.value = '检索服务暂时不可用，请稍后重试。'
+    }
+    status.value = 'error'
+  }
 }
-syncInput()
 
-/** Results matching q (before type filter) — used for facet counts. */
-const qResults = computed(() => searchIndex(q.value, 'all'))
-
-/** Results after type filter — the actual result set. */
-const filteredResults = computed(() => searchIndex(q.value, type.value))
-
-const facets = computed(() => facetCounts(qResults.value))
-
-const totalPages = computed(() => Math.max(1, Math.ceil(filteredResults.value.length / PAGE_SIZE)))
-
-const currentPage = computed(() => Math.min(page.value, totalPages.value))
-
-const pagedResults = computed(() => {
-  const start = (currentPage.value - 1) * PAGE_SIZE
-  return filteredResults.value.slice(start, start + PAGE_SIZE)
-})
-
-function updateQuery(patch: Record<string, string>): void {
-  const next = { ...serializeSearchQuery(state.value), ...patch }
+function updateQuery(next: Record<string, string>): void {
   void router?.replace({ query: next })
 }
 
 function onSubmit(): void {
-  updateQuery({ q: inputValue.value.trim(), type: 'all', page: '1' })
+  const query = inputValue.value.trim()
+  if (query === '') {
+    void router?.replace({ query: {} })
+    return
+  }
+  updateQuery({ q: query })
 }
 
-function onSelectType(next: SearchType | 'all'): void {
-  updateQuery({ type: next === 'all' ? '' : next, page: '1' })
-}
-
-function onClear(): void {
+function clearAndSearch(): void {
   inputValue.value = ''
   void router?.replace({ query: {} })
 }
 
 function goToPage(p: number): void {
   if (p < 1 || p > totalPages.value) return
-  updateQuery({ page: p > 1 ? String(p) : '' })
+  const next: Record<string, string> = { q: q.value }
+  if (p > 1) next.page = String(p)
+  updateQuery(next)
 }
 
-const hasQuery = computed(() => q.value.length > 0)
+watch(
+  () => [q.value, pageParam.value] as const,
+  ([query, page]) => {
+    currentPage.value = page
+    if (query === '') {
+      status.value = 'idle'
+      rows.value = []
+      total.value = 0
+      return
+    }
+    void runSearch(query, page)
+  },
+  { immediate: true },
+)
 
-/** Deterministic suggestion entries for the empty/initial states. */
+/** Static content entry points (non-result presentation data). */
 const SUGGESTIONS = [
   { label: '皇甫谧', href: '/persons/person-huangfu-mi' },
   { label: '《针灸甲乙经》', href: '/jiayi' },
-  { label: '《帝王世纪》', href: '/works' },
-  { label: '《高士传》', href: '/works' },
-  { label: '黄龙祥（校注本）', href: '/jiayi#scholarship' },
   { label: '非遗传承', href: '/heritage' },
+  { label: '人物档案', href: '/persons/person-huangfu-mi' },
 ] as const
+
+const SCOPE_KINDS = ['人物', '作品', '版本', '非遗档案', '术语', '文本片段'] as const
 </script>
 
 <template>
@@ -117,164 +141,125 @@ const SUGGESTIONS = [
           id="search-input"
           v-model="inputValue"
           type="search"
-          placeholder="检索人物、作品、版本、档案、论文… 例如：皇甫谧 / 甲乙经 / 黄龙祥"
+          autocomplete="off"
+          placeholder="检索已发布内容… 例如：皇甫谧 / 甲乙经"
         />
         <button type="submit" class="search-form__submit">检索</button>
       </form>
     </header>
 
-    <!-- Initial state: no query -->
-    <template v-if="!hasQuery">
+    <!-- IDLE: no query — scope copy + static entry points only. -->
+    <template v-if="status === 'idle'">
       <section class="search-section" aria-labelledby="overview-heading">
-        <h2 id="overview-heading" class="section-title">可检索内容</h2>
-        <ul class="type-overview">
-          <li v-for="facet in facets" :key="facet.type" class="type-overview__item">
-            <span class="type-overview__label">{{ facet.label }}</span>
-            <span class="type-overview__count">{{ facet.count }}</span>
-          </li>
-        </ul>
+        <h2 id="overview-heading" class="section-title">检索范围</h2>
         <p class="search-note">
-          客户资料收录论文 {{ AUDITED_PAPER_TOTAL }} 篇；当前已结构化题录
-          {{ SEARCHABLE_PAPER_TOTAL }} 条（题录整理持续进行）。
+          检索覆盖平台已发布（PUBLISHED）的公开内容，按真实数据来源返回：{{
+            SCOPE_KINDS.join('、')
+          }}。结果均来自公开检索接口，随内容准入实时更新。
         </p>
       </section>
 
       <section class="search-section" aria-labelledby="entries-heading">
         <h2 id="entries-heading" class="section-title">内容入口</h2>
         <ul class="entry-list">
-          <li v-for="s in SUGGESTIONS" :key="s.label" class="entry-item">
+          <li v-for="s in SUGGESTIONS" :key="s.href + s.label" class="entry-item">
             <a :href="s.href" class="entry-item__link">{{ s.label }}</a>
           </li>
         </ul>
       </section>
     </template>
 
-    <!-- Query state -->
+    <!-- QUERY STATES -->
     <template v-else>
-      <p class="search-summary" role="status" aria-live="polite">
-        找到 {{ filteredResults.length }} 条结果
-        <template v-if="type !== 'all'">（{{ searchTypeLabel(type) }}）</template>
-        <template
-          v-if="SEARCHABLE_PAPER_TOTAL > 0 && AUDITED_PAPER_TOTAL !== SEARCHABLE_PAPER_TOTAL"
-        >
-          · 论文题录：已结构化 {{ SEARCHABLE_PAPER_TOTAL }} / 审计 {{ AUDITED_PAPER_TOTAL }}
-        </template>
+      <!-- Live summary: updates only when the result set really changes. -->
+      <p
+        v-if="status === 'loading'"
+        class="search-summary search-summary--live"
+        role="status"
+        aria-live="polite"
+      >
+        正在检索「{{ q }}」…
+      </p>
+      <p
+        v-else-if="status === 'ready'"
+        class="search-summary search-summary--live"
+        role="status"
+        aria-live="polite"
+      >
+        找到 {{ total }} 条结果
+        <template v-if="total > 0">（第 {{ currentPage }} 页）</template>
       </p>
 
-      <div class="search-layout">
-        <aside class="facet-panel" aria-label="筛选">
-          <h2 class="facet-title">内容类型</h2>
-          <ul class="facet-list">
-            <li>
-              <button
-                type="button"
-                class="facet-btn"
-                :class="{ 'facet-btn--active': type === 'all' }"
-                :aria-pressed="type === 'all'"
-                @click="onSelectType('all')"
-              >
-                <span class="facet-btn__label">全部</span>
-                <span class="facet-btn__count">{{ qResults.length }}</span>
-              </button>
-            </li>
-            <li v-for="facet in facets" :key="facet.type">
-              <button
-                type="button"
-                class="facet-btn"
-                :class="{ 'facet-btn--active': type === facet.type }"
-                :aria-pressed="type === facet.type"
-                @click="onSelectType(facet.type)"
-              >
-                <span class="facet-btn__label">{{ facet.label }}</span>
-                <span class="facet-btn__count">{{ facet.count }}</span>
-              </button>
-            </li>
-          </ul>
-        </aside>
-
-        <div class="search-results">
-          <p v-if="type !== 'all'" class="active-filter" aria-live="polite">
-            当前筛选：{{ searchTypeLabel(type) }}
-            <button type="button" class="active-filter__clear" @click="onSelectType('all')">
-              清除筛选
-            </button>
-          </p>
-
-          <!-- Empty state -->
-          <div v-if="pagedResults.length === 0" class="empty-state" role="status">
-            <p class="empty-state__title">未找到匹配「{{ q }}」的结果</p>
-            <p class="empty-state__hint">
-              可尝试：作品名（针灸甲乙经）、人物名（皇甫谧）、整理者（黄龙祥）。
-            </p>
-            <button type="button" class="empty-state__clear" @click="onClear">
-              清除关键词，查看全部内容
-            </button>
-          </div>
-
-          <!-- Results -->
-          <ol v-else class="result-list">
-            <template v-for="result in pagedResults" :key="result.entry.id">
-              <!-- PAPER → BibliographyEntry -->
-              <BibliographyEntry
-                v-if="result.entry.type === 'paper'"
-                :entry="result.entry"
-                :query="q"
-              />
-              <!-- others → generic scholarly row -->
-              <li v-else class="result-row">
-                <p class="result-row__type">{{ searchTypeLabel(result.entry.type) }}</p>
-                <p class="result-row__title">
-                  <a v-if="result.entry.route" :href="result.entry.route" class="result-row__link">
-                    <SearchHighlight :text="result.entry.title" :query="q" />
-                  </a>
-                  <template v-else
-                    ><SearchHighlight :text="result.entry.title" :query="q"
-                  /></template>
-                </p>
-                <p v-if="result.entry.subtitle" class="result-row__meta">
-                  <SearchHighlight :text="result.entry.subtitle" :query="q" />
-                </p>
-                <p
-                  v-if="result.entry.authors && result.entry.authors.length"
-                  class="result-row__authors"
-                >
-                  {{ result.entry.authors.join('；') }}
-                </p>
-                <p v-if="result.entry.sourceName" class="result-row__source">
-                  {{ result.entry.sourceName }}
-                </p>
-              </li>
-            </template>
-          </ol>
-
-          <!-- Pagination -->
-          <nav v-if="totalPages > 1" class="pager" aria-label="结果分页">
-            <button type="button" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
-              上一页
-            </button>
-            <ol class="pager__pages">
-              <li v-for="p in totalPages" :key="p">
-                <button
-                  type="button"
-                  class="pager__page"
-                  :class="{ 'pager__page--current': p === currentPage }"
-                  :aria-current="p === currentPage ? 'page' : undefined"
-                  @click="goToPage(p)"
-                >
-                  {{ p }}
-                </button>
-              </li>
-            </ol>
-            <button
-              type="button"
-              :disabled="currentPage >= totalPages"
-              @click="goToPage(currentPage + 1)"
-            >
-              下一页
-            </button>
-          </nav>
-        </div>
+      <!-- ERROR: real failure — distinct from no-match, never masked as 暂无结果. -->
+      <div v-if="status === 'error'" class="search-error" data-search-state="error" role="alert">
+        <p class="search-error__title">{{ errorMessage }}</p>
+        <p class="search-error__detail">
+          {{
+            errorKind === 'client'
+              ? '请求未被接受（HTTP 4xx）。'
+              : '服务未能完成检索（HTTP 5xx 或网络中断）。'
+          }}
+        </p>
+        <button type="button" class="search-error__retry" @click="runSearch(q, currentPage)">
+          重试
+        </button>
       </div>
+
+      <!-- EMPTY: 0 results is a valid outcome, not an error. -->
+      <div
+        v-else-if="status === 'empty'"
+        class="empty-state"
+        role="status"
+        data-search-state="empty"
+      >
+        <p class="empty-state__title">未找到匹配「{{ q }}」的结果</p>
+        <p class="empty-state__hint">可尝试：人物名（皇甫谧）、作品名（甲乙经）或项目名。</p>
+        <button type="button" class="empty-state__clear" @click="clearAndSearch">清除关键词</button>
+      </div>
+
+      <!-- READY: real backend results. -->
+      <template v-else-if="status === 'ready'">
+        <ol class="result-list">
+          <li v-for="row in rows" :key="`${row.kind}-${row.title}`" class="result-row">
+            <p class="result-row__type">{{ row.kindLabel }}</p>
+            <p class="result-row__title">
+              <a v-if="row.href" :href="row.href" class="result-row__link">
+                <SearchHighlight :text="row.title" :query="q" />
+              </a>
+              <template v-else><SearchHighlight :text="row.title" :query="q" /></template>
+            </p>
+            <p v-if="row.snippet !== ''" class="result-row__meta">
+              <SearchHighlight :text="row.snippet" :query="q" />
+            </p>
+          </li>
+        </ol>
+
+        <nav v-if="totalPages > 1" class="pager" aria-label="结果分页">
+          <button type="button" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">
+            上一页
+          </button>
+          <ol class="pager__pages">
+            <li v-for="p in totalPages" :key="p">
+              <button
+                type="button"
+                class="pager__page"
+                :class="{ 'pager__page--current': p === currentPage }"
+                :aria-current="p === currentPage ? 'page' : undefined"
+                @click="goToPage(p)"
+              >
+                {{ p }}
+              </button>
+            </li>
+          </ol>
+          <button
+            type="button"
+            :disabled="currentPage >= totalPages"
+            @click="goToPage(currentPage + 1)"
+          >
+            下一页
+          </button>
+        </nav>
+      </template>
     </template>
   </section>
 </template>
@@ -332,33 +317,10 @@ const SUGGESTIONS = [
   border-bottom: 1px solid var(--hfm-color-border);
 }
 
-.type-overview {
-  list-style: none;
-  margin: 0 0 var(--hfm-space-3);
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
-  gap: var(--hfm-space-2);
-}
-
-.type-overview__item {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--hfm-space-2) var(--hfm-space-3);
-  border: 1px solid var(--hfm-color-border);
-  border-radius: var(--hfm-radius-sm);
-  background: var(--hfm-color-surface);
-  font-size: var(--hfm-text-sm);
-}
-
-.type-overview__count {
-  color: var(--hfm-color-heritage);
-  font-variant-numeric: tabular-nums;
-}
-
 .search-note {
   color: var(--hfm-color-text-muted);
-  font-size: var(--hfm-text-sm);
+  max-width: 60ch;
+  line-height: var(--hfm-leading-reading);
 }
 
 .entry-list {
@@ -389,79 +351,32 @@ const SUGGESTIONS = [
   margin: 0 0 var(--hfm-space-4);
 }
 
-.search-layout {
-  display: grid;
-  grid-template-columns: 13rem 1fr;
-  gap: var(--hfm-space-6);
-  align-items: start;
+.search-error {
+  padding: var(--hfm-space-8) var(--hfm-space-4);
+  text-align: center;
+  border: 1px solid var(--hfm-color-danger);
+  border-radius: var(--hfm-radius-md);
 }
 
-.facet-panel {
-  position: sticky;
-  top: var(--hfm-space-4);
-}
-
-.facet-title {
-  font-size: var(--hfm-text-sm);
-  color: var(--hfm-color-text-muted);
-  margin: 0 0 var(--hfm-space-2);
-}
-
-.facet-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: var(--hfm-space-1);
-}
-
-.facet-btn {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  gap: var(--hfm-space-2);
-  padding: var(--hfm-space-1) var(--hfm-space-2);
-  border: none;
-  border-left: 3px solid transparent;
-  background: none;
-  color: var(--hfm-color-text-secondary);
-  cursor: pointer;
-  font-size: var(--hfm-text-sm);
-  text-align: left;
-}
-
-.facet-btn:hover {
-  color: var(--hfm-color-text);
-  background: var(--hfm-color-canvas);
-}
-
-.facet-btn--active {
-  border-left-color: var(--hfm-color-accent);
-  color: var(--hfm-color-accent);
+.search-error__title {
   font-weight: 600;
+  margin: 0 0 var(--hfm-space-2);
+  color: var(--hfm-color-danger);
 }
 
-.facet-btn__count {
-  font-variant-numeric: tabular-nums;
-  color: var(--hfm-color-text-muted);
-}
-
-.active-filter {
-  display: flex;
-  align-items: center;
-  gap: var(--hfm-space-3);
-  color: var(--hfm-color-text-muted);
+.search-error__detail {
+  color: var(--hfm-color-text-secondary);
   font-size: var(--hfm-text-sm);
-  margin: 0 0 var(--hfm-space-3);
+  margin: 0 0 var(--hfm-space-4);
 }
 
-.active-filter__clear {
-  border: none;
-  background: none;
-  color: var(--hfm-color-interactive);
+.search-error__retry {
+  padding: var(--hfm-space-1) var(--hfm-space-4);
+  border: 1px solid var(--hfm-color-accent);
+  border-radius: var(--hfm-radius-sm);
+  background: var(--hfm-color-surface);
+  color: var(--hfm-color-accent);
   cursor: pointer;
-  padding: 0;
-  font-size: var(--hfm-text-sm);
 }
 
 .result-list {
@@ -488,6 +403,7 @@ const SUGGESTIONS = [
   margin: 0;
   font-weight: 600;
   line-height: var(--hfm-leading-normal);
+  overflow-wrap: anywhere;
 }
 
 .result-row__link {
@@ -499,12 +415,11 @@ const SUGGESTIONS = [
   color: var(--hfm-color-accent);
 }
 
-.result-row__meta,
-.result-row__authors,
-.result-row__source {
+.result-row__meta {
   margin: 0;
   font-size: var(--hfm-text-sm);
   color: var(--hfm-color-text-muted);
+  line-height: var(--hfm-leading-normal);
   overflow-wrap: anywhere;
 }
 
@@ -537,6 +452,7 @@ const SUGGESTIONS = [
 
 .pager {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--hfm-space-3);
   align-items: center;
   margin-top: var(--hfm-space-5);
@@ -561,6 +477,7 @@ const SUGGESTIONS = [
   margin: 0;
   padding: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--hfm-space-1);
 }
 
@@ -576,27 +493,5 @@ const SUGGESTIONS = [
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
-}
-
-@media (max-width: 767px) {
-  .search-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .facet-panel {
-    position: static;
-  }
-
-  .facet-list {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--hfm-space-2);
-  }
-
-  .facet-btn {
-    border: 1px solid var(--hfm-color-border);
-    border-left-width: 3px;
-    border-radius: var(--hfm-radius-sm);
-    padding: var(--hfm-space-2);
-  }
 }
 </style>

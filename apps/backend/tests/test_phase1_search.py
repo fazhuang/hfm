@@ -1,3 +1,6 @@
+# mypy: disable-error-code=import-untyped
+# hfm is first-party typed source installed editable (no py.typed marker);
+# strict mypy would otherwise mislabel every project import in tests.
 """Phase 1 P1-08 — unified search tests (ADR-02, publication/RBAC predicates).
 
 Public search returns only PUBLISHED content; withdrawn/draft/private content
@@ -7,9 +10,12 @@ absent; research search requires authentication; no leakage to anonymous.
 from __future__ import annotations
 
 import pytest
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from hfm.api.v1.phase1 import public_search
 from hfm.models.content_artifact import ProvenanceStatus, RightsStatus
+from hfm.models.entity import Entity, EntityType
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.models.passage import Passage
 from hfm.phase1.auth import (
@@ -153,3 +159,75 @@ async def test_pagination(session: AsyncSession) -> None:
     assert {h.id for h in page1.hits}.isdisjoint({h.id for h in page2.hits})
     with pytest.raises(ValueError, match="pagination"):
         await SearchService(session).public_search(query="x", page=0)
+
+
+# ---------------------------------------------------------------- CF-06
+# P1-SEARCH-01 closure: the recorded repro GET /api/v1/public/search?q=皇甫谧
+# must return 200-equivalent results through the real search implementation
+# (person hit), never an HTTP 500; response schema must be stable; invalid
+# pagination must map to a client error (400), not a 500.
+
+
+async def _published_person(session: AsyncSession, entity_id: str, name_zh: str) -> None:
+    """Publish a person entity the same way the recovery bootstrap does."""
+    session.add(
+        Entity(id=entity_id, entity_type=EntityType.person.value, name=name_zh, name_zh=name_zh)
+    )
+    await session.flush()
+    source, _ = await SourceRepository(session).create_idempotent(
+        source_key=f"cf06-person-{entity_id}", title="史料"
+    )
+    artifact = await ContentArtifactRepository(session).submit_with_source_check(
+        source_id=source.id,
+        content=name_zh.encode("utf-8"),
+        provenance_status=ProvenanceStatus.VERIFIED,
+        rights_status=RightsStatus.CUSTOMER_OWNED,
+        subject_entity_id=entity_id,
+    )
+    await session.flush()
+    researcher = await _principal(session, "cf6a1", UserRoleCode.SCHOLAR_RESEARCHER)
+    reviewer = await _principal(session, "cf6b1", UserRoleCode.CONTENT_REVIEWER)
+    svc = PublicationService(session)
+    await svc.submit_for_review(artifact_id=artifact.id, creator=researcher)
+    await svc.review(artifact_id=artifact.id, reviewer=reviewer, approve=True)
+    await svc.publish(artifact_id=artifact.id, actor=reviewer)
+
+
+async def test_cf06_q_huangfumi_returns_person_hit(session: AsyncSession) -> None:
+    """q=皇甫谧 → deterministic person hit (real search implementation)."""
+    await _published_person(session, "person-huangfu-mi", "皇甫谧")
+    result = await SearchService(session).public_search(query="皇甫谧")
+    assert result.total >= 1
+    person_hits = [h for h in result.hits if h.kind == "person"]
+    assert any(h.id == "person-huangfu-mi" and h.title == "皇甫谧" for h in person_hits)
+
+
+async def test_cf06_public_search_schema_is_stable(session: AsyncSession) -> None:
+    """Every hit carries the documented envelope fields (never HTML)."""
+    await _published_person(session, "person-huangfu-mi", "皇甫谧")
+    envelope = await public_search(session, q="皇甫谧", page=1, page_size=20)
+    data = envelope["data"]
+    assert "hits" in data and "total" in data and "page" in data
+    assert isinstance(data["total"], int) and data["total"] >= 1
+    for hit in data["hits"]:
+        for key in ("kind", "id", "title", "snippet", "version_id", "publication_status"):
+            assert key in hit
+    # endpoint function returns the api_response envelope (JSON-serializable).
+    assert envelope.get("success") is True
+
+
+async def test_cf06_empty_no_match_is_not_an_error(session: AsyncSession) -> None:
+    await _published_person(session, "person-huangfu-mi", "皇甫谧")
+    envelope = await public_search(session, q="完全不存在的词xyz", page=1, page_size=20)
+    data = envelope["data"]
+    assert data["total"] == 0 and data["hits"] == []
+
+
+async def test_cf06_invalid_pagination_is_400_not_500(session: AsyncSession) -> None:
+    """page<1 or page_size out of range → HTTPException 400 (previously 500)."""
+    with pytest.raises(HTTPException) as exc_page:
+        await public_search(session, q="x", page=0, page_size=20)
+    assert exc_page.value.status_code == 400
+    with pytest.raises(HTTPException) as exc_size:
+        await public_search(session, q="x", page=1, page_size=500)
+    assert exc_size.value.status_code == 400
