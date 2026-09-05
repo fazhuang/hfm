@@ -73,8 +73,8 @@ describe('UI-03 brand & hero', () => {
     const h1 = wrapper.findAll('h1')
     expect(h1).toHaveLength(1)
     expect(h1[0]?.text()).toBe('皇甫谧人文数字平台')
-    // Structural hero: person + dates from the corePerson projection.
-    expect(wrapper.text()).toContain('皇甫谧 215—282')
+    // CF-08 kicker carries the person dates (215—282) from corePerson projection.
+    expect(wrapper.text()).toContain('公元 215—282')
   })
 
   it('hero definition reuses core-person data (no new person facts)', () => {
@@ -87,6 +87,32 @@ describe('UI-03 brand & hero', () => {
     const wrapper = mountHome()
     expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
     expect(wrapper.find('#home-hero').attributes('id')).toBe('home-hero')
+  })
+
+  it('CF-08 hero renders the accepted H3 composition (monument, kicker, statement, roles, CTA, register)', () => {
+    const wrapper = mountHome()
+    const hero = wrapper.find('#home-hero')
+    // Decorative 190px name monument is aria-hidden and is NOT a heading.
+    expect(hero.find('.home-hero__name').exists()).toBe(true)
+    expect(hero.find('.home-hero__name').attributes('aria-hidden')).toBe('true')
+    expect(hero.findAll('h2')).toHaveLength(0) // hero has no h2; H1 is the only heading.
+    // Statement + roles + ONE editorial action + quiet platform register.
+    expect(hero.text()).toContain('针灸学专著《针灸甲乙经》的编纂者')
+    expect(hero.text()).toContain('西晋 · 医学家 · 文学家 · 史学家')
+    expect(hero.text()).toContain('进入人物档案')
+    // Provenance spec-caption (real content) stays in the accessibility tree.
+    expect(hero.find('.home-hero__spec-caption').exists()).toBe(true)
+    expect(hero.find('.home-hero__spec-caption').attributes('aria-hidden')).toBeUndefined()
+    expect(hero.text()).toContain('四库全书本')
+  })
+
+  it('CF-10-style search boundary: the search interface is in the hero and stays wired to /search', () => {
+    const wrapper = mountHome()
+    const hero = wrapper.find('#home-hero')
+    expect(hero.find('#home-search-input').exists()).toBe(true)
+    expect(hero.find('form.home-search').attributes('role')).toBe('search')
+    // Only ONE homepage search input (hero); the header search lives in PublicLayout.
+    expect(wrapper.findAll('#home-search-input')).toHaveLength(1)
   })
 })
 
@@ -265,7 +291,7 @@ describe('UI-03 CF-07 homepage renders the accepted 8-section structure', () => 
     const input = hero.find('#home-search-input')
     expect(form.exists()).toBe(true)
     expect(input.exists()).toBe(true)
-    expect(hero.find('#home-search-input').attributes('placeholder')).toContain('检索人物')
+    expect(hero.find('#home-search-input').attributes('placeholder')).toBe('检索平台内容')
 
     // Only ONE search input on the homepage page body (hero) — the header
     // search lives in PublicLayout, not in HomeView.
@@ -290,5 +316,73 @@ describe('UI-03 CF-07 homepage renders the accepted 8-section structure', () => 
     const results = await axe.run(wrapper.element as HTMLElement)
     wrapper.unmount()
     expect(results.violations).toHaveLength(0)
+  })
+})
+
+describe('UI-03 CF-08 Sections 01–04 production contract', () => {
+  it('Section 02 Life renders the accepted two-plane documentary form (4 stages, dated anchors)', () => {
+    const wrapper = mountHome()
+    const life = wrapper.find('#home-life')
+    expect(life.findAll('.home-life__stage')).toHaveLength(4)
+    expect(life.findAll('.home-life__junction')).toHaveLength(6)
+    expect(life.findAll('.home-life__anchor')).toHaveLength(2)
+    expect(life.text()).toContain('215')
+    expect(life.text()).toContain('282')
+    // Narrative plane + documentary/register plane both present.
+    expect(life.find('.home-life__register').exists()).toBe(true)
+    expect(life.find('.home-life__register-row').exists()).toBe(true)
+  })
+
+  it('Section 03 Book keeps WORK ≠ EDITION (no false 19-works claim)', () => {
+    const wrapper = mountHome()
+    const book = wrapper.find('#home-book')
+    // Edition record register shows the EDITION count, never a work count.
+    expect(book.text()).toContain('版本记录')
+    expect(book.text()).toContain(String(INVENTORY_EDITION_RECORDS))
+    expect(book.text()).not.toMatch(/部著作|部作品/)
+    // Single WORK object heading + edition chain + lineage entry preserved.
+    expect(book.find('.home-book__title-glyphs').text()).toBe('《针灸甲乙经》')
+    expect(book.findAll('.home-book__prov-chain b').length).toBeGreaterThanOrEqual(4)
+    expect(book.find('.home-lineage img').attributes('src')).toContain('edition-lineage.png')
+  })
+
+  it('Section 04 Knowledge derives every count from data and keeps taxonomy + evidence register', () => {
+    expect(HOME_KNOWLEDGE.searchable).toBe(SEARCH_INDEX.length)
+    expect(HOME_KNOWLEDGE.categoriesCount).toBe(HOME_KNOWLEDGE.categories.length)
+    expect(HOME_KNOWLEDGE.editions).toBe(INVENTORY_EDITION_RECORDS)
+    expect(HOME_KNOWLEDGE.lunzhu).toBe(INVENTORY_LUNZHU_FILES)
+    expect(HOME_KNOWLEDGE.lunwen).toBe(INVENTORY_LUNWEN_FILES)
+    expect(HOME_KNOWLEDGE.structured).toBe(SEARCHABLE_PAPER_TOTAL)
+
+    const wrapper = mountHome()
+    const knowledge = wrapper.find('#home-knowledge')
+    expect(knowledge.findAll('.home-knowledge__prim-item')).toHaveLength(3)
+    expect(knowledge.text()).toContain('版本记录')
+    // No invented corpus/evidence count is displayed beyond the real ones.
+    expect(knowledge.text()).not.toMatch(/\d+\s*万|99\s*%|100\s*%|\.\d+\s*%/)
+  })
+
+  it('Sections 01–04 each carry their accepted section id (no dupes, correct order)', () => {
+    const wrapper = mountHome()
+    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
+    expect(ids.slice(0, 4)).toEqual(['home-hero', 'home-life', 'home-book', 'home-knowledge'])
+    expect(ids).toEqual(SECTION_IDS)
+  })
+
+  it('production assets (manuscripts/lineage) are referenced at real paths', () => {
+    // Hero specimen + life manuscript + book/knowledge leaf reference the authorized assets.
+    const wrapper = mountHome()
+    const srcs = wrapper
+      .findAll('img')
+      .map((i) => i.attributes('src'))
+      .filter((s): s is string => !!s)
+    for (const src of [
+      '/assets/jiayi/frag-macro.jpg',
+      '/assets/jiayi/frag-band1.jpg',
+      '/assets/jiayi/book-siku-leaf.jpg',
+      '/assets/jiayi/edition-lineage.png',
+    ]) {
+      expect(srcs).toContain(src)
+    }
   })
 })

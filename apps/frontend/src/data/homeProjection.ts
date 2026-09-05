@@ -189,7 +189,7 @@ export const HOME_BOOK = {
   book: HOME_JIAYI,
   editionsTotal: HOME_EDITIONS_TOTAL,
   lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）',
-  cta: HOME_JIAYI.cta,
+  cta: { label: '进入古籍库', href: '/jiayi' },
 } as const
 
 /**
@@ -197,17 +197,32 @@ export const HOME_BOOK = {
  * facet vocabulary (person/text/work/edition/archive/paper); the register
  * values derive from contentInventory / searchIndex (single source).
  */
+/**
+ * Section 04 — 知识对象。The six rows mirror the platform's real search
+ * facet vocabulary (person/text/work/edition/archive/paper); every count in
+ * the S4-B register derives from contentInventory / searchIndex (single source).
+ */
+const KNOWLEDGE_CATEGORIES = [
+  { title: '人物', note: '皇甫谧 · 传承人物 · 人物档案' },
+  { title: '文本', note: '古籍全文与长文本 · 专业阅读' },
+  { title: '作品', note: '《针灸甲乙经》及相关著作' },
+  { title: '版本', note: '历代版本与近现代整理本' },
+  { title: '档案', note: '数字档案 · 史料来源整理' },
+  { title: '论文', note: '学术论文目录审计' },
+] as const
+
 export const HOME_KNOWLEDGE = {
   headline: '从古籍文字，到可探索的知识。',
   lede: '古籍文字经结构化记录成为可检索的知识，并始终可以回到阅读、来源与引用。',
-  categories: [
-    { title: '人物', note: '皇甫谧 · 传承人物 · 人物档案' },
-    { title: '文本', note: '古籍全文与长文本 · 专业阅读' },
-    { title: '作品', note: '《针灸甲乙经》及相关著作' },
-    { title: '版本', note: '历代版本与近现代整理本' },
-    { title: '档案', note: '数字档案 · 史料来源整理' },
-    { title: '论文', note: '学术论文目录审计' },
-  ],
+  categories: KNOWLEDGE_CATEGORIES,
+  /** CF-08 S4-B evidence register — all values derive from inventory / searchIndex. */
+  searchable: SEARCH_INDEX.length,
+  categoriesCount: KNOWLEDGE_CATEGORIES.length,
+  editions: INVENTORY_EDITION_RECORDS,
+  lunzhu: INVENTORY_LUNZHU_FILES,
+  lunwen: INVENTORY_LUNWEN_FILES,
+  structured: SEARCHABLE_PAPER_TOTAL,
+  knowledgeTypes: KNOWLEDGE_CATEGORIES.map((c) => c.title).join(' / '),
   register: [
     {
       label: '可检索记录',

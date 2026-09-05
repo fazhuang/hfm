@@ -62,8 +62,21 @@ function onSearch(): void {
 </template>
 
 <style scoped>
-/* CF-07 structural shell only — document flow, no final visuals. */
+/* CF-08 geometry correction: the homepage is full-bleed (not clamped to
+ * --hfm-content-max) so Sections 01–04 render at the accepted 1272px artboard
+ * geometry (inner column → 84px gutters; hero absolute coordinates land at the
+ * frozen positions). Sections 05–08 are structurally preserved: they keep the
+ * shared --hfm-content-max content column while their visual treatment is
+ * deferred to CF-09. */
 .home {
+  display: block;
+}
+
+/* Preserve the frozen Sections 05–08 content column now that .home is full-bleed. */
+.home-section--evidence,
+.home-section--heritage,
+.home-section--domains,
+.home-section--closing {
   max-width: var(--hfm-content-max);
   margin: 0 auto;
 }

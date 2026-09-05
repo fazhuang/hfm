@@ -1,18 +1,19 @@
 /**
- * UI-03 Homepage — browser E2E (CF-07 8-section structural shell).
+ * UI-03 Homepage — browser E2E (CF-07 structure + CF-08 Sections 01–04 production).
  *
  *  - unique H1 = 皇甫谧人文数字平台; the eight accepted homepage sections
  *    exist in exact order with stable ids (home-hero → home-closing);
  *  - exactly ONE global semantic footer (AppFooter); Section 08 is a
  *    narrative closing section, never a second footer;
  *  - CTA targets real routes; search submits to /search?q=;
- *  - 刘君奇·第六代名医 real; book lineage caption carries DATA-GAP; heritage
- *    lineage state is PARTIAL;
- *  - viewport structural smoke at 375 / 768 / 1440 (all sections render in
- *    order, no catastrophic horizontal overflow, no fatal errors);
- *  - dark + 200% zoom no overflow.
+ *  - CF-08: Sections 01–04 render the accepted composition in real Chromium —
+ *    images actually load (naturalWidth > 0), interactive controls never
+ *    overlap and stay within viewport, no horizontal page failure, at
+ *    375 / 768 / 1440 (no mock); screenshots captured as evidence.
  */
 import { expect, test } from '@playwright/test'
+import { mkdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 const SECTION_IDS = [
   'home-hero',
@@ -25,6 +26,8 @@ const SECTION_IDS = [
   'home-closing',
 ]
 
+const EVIDENCE_DIR = resolve(process.cwd(), '../../docs/audit/evidence/cf08')
+
 test('UI-03 homepage renders the unique H1 and the accepted eight sections in order', async ({
   page,
 }) => {
@@ -32,12 +35,11 @@ test('UI-03 homepage renders the unique H1 and the accepted eight sections in or
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
   await expect(page.getByRole('heading', { name: '皇甫谧人文数字平台' })).toBeVisible()
 
-  const sections = page.locator('#main-content section[id^="home-"], main section[id^="home-"]')
+  const sections = page.locator('#main-content section[id^="home-"]')
   await expect(sections).toHaveCount(8)
   const ids = await sections.evaluateAll((els) => els.map((el) => el.id))
   expect(ids).toEqual(SECTION_IDS)
 
-  // Section H2 set follows the accepted chapter headlines.
   for (const name of [
     '从带经而农，到著书传世。',
     '一部书，成为历史中的物。',
@@ -55,8 +57,6 @@ test('UI-03 exactly one global footer — Section 08 is a closing section, not a
 }) => {
   await page.goto('/')
   await expect(page.locator('footer')).toHaveCount(1)
-  // The closing section is a <section> landmarked via aria-label, and it must
-  // contain no footer-level content (legal nav / copyright / co-construction).
   const closing = page.locator('#home-closing')
   await expect(closing).toBeVisible()
   expect(await closing.evaluate((el) => el.tagName)).toBe('SECTION')
@@ -86,9 +86,6 @@ test('UI-03 CTA targets are real routes', async ({ page }) => {
 })
 
 test('UI-03 search submits to /search?q= (real CF-06 transport stubbed here)', async ({ page }) => {
-  // Public search is the real /api/v1/public/search endpoint (CF-06); this
-  // auxiliary spec stubs the transport so the homepage CTA round-trip is
-  // deterministic. Real-chain proof lives in the golden runtime journey.
   await page.route('**/api/v1/public/search*', (route) =>
     route.fulfill({
       status: 200,
@@ -129,7 +126,6 @@ test('UI-03 刘君奇·第六代名医, PARTIAL lineage and book lineage DATA-GA
   await expect(heritage.getByText('刘君奇').first()).toBeVisible()
   await expect(heritage.getByText('第六代名医').first()).toBeVisible()
   await expect(page.locator('#home-heritage .hfm-status')).toHaveAttribute('data-status', 'PARTIAL')
-  // Book lineage caption: the accepted homepage transparency line (unchanged).
   await expect(
     page.locator('#home-book').getByText(/结构化版本关系整理中（DATA-GAP）/),
   ).toBeVisible()
@@ -154,7 +150,7 @@ test('UI-03 structural smoke: 375 / 768 / 1440 — all sections render in order,
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/')
     await page.waitForTimeout(150)
-    const sections = page.locator('#main-content section[id^="home-"], main section[id^="home-"]')
+    const sections = page.locator('#main-content section[id^="home-"]')
     await expect(sections, `eight sections at ${width}`).toHaveCount(8)
     const ids = await sections.evaluateAll((els) => els.map((el) => el.id))
     expect(ids, `section order at ${width}`).toEqual(SECTION_IDS)
@@ -173,11 +169,136 @@ test('UI-03 responsive: dark theme and 200% zoom do not overflow', async ({ page
   await page.waitForTimeout(150)
   const bodyColor = await page.evaluate(() => getComputedStyle(document.body).backgroundColor)
   expect(bodyColor).not.toBe('rgb(255, 255, 255)')
-  // 200% zoom (640px = 1280 at 200%).
   await page.setViewportSize({ width: 640, height: 720 })
   await page.goto('/')
   const zoomOverflow = await page.evaluate(
     () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
   expect(zoomOverflow).toBeLessThanOrEqual(0)
+})
+
+test('CF-08 Sections 01–04: images load, controls never overlap/off-screen, no page failure (375/768/1440)', async ({
+  page,
+}) => {
+  mkdirSync(EVIDENCE_DIR, { recursive: true })
+  const fatal: string[] = []
+  page.on('pageerror', (e) => fatal.push(String(e)))
+  page.on('console', (m) => {
+    if (m.type() === 'error') fatal.push(m.text())
+  })
+
+  for (const width of [375, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    await page.waitForTimeout(200)
+
+    // Production images genuinely load (real asset, not a broken ref).
+    const badImages = await page.evaluate(() =>
+      Array.from(document.images)
+        .filter((img) => img.getAttribute('src')?.startsWith('/assets/jiayi/'))
+        .filter((img) => !img.complete || img.naturalWidth === 0),
+    )
+    expect(badImages, `broken asset at ${width}`).toHaveLength(0)
+
+    // No catastrophic horizontal overflow.
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow, `overflow at ${width}`).toBeLessThanOrEqual(0)
+
+    // Hero: the CTA and the search input never overlap and both stay in-viewport.
+    const boxes = await page.evaluate(() => {
+      const hero = document.querySelector('#home-hero')!
+      const act = hero.querySelector('.home-hero__act')!.getBoundingClientRect()
+      const search = hero.querySelector('.home-search')!.getBoundingClientRect()
+      const intersects =
+        act.left < search.right &&
+        search.left < act.right &&
+        act.top < search.bottom &&
+        search.top < act.bottom
+      const inViewport =
+        act.left >= 0 &&
+        act.right <= window.innerWidth &&
+        search.left >= 0 &&
+        search.right <= window.innerWidth
+      return { intersects, inViewport }
+    })
+    expect(boxes.intersects, `hero CTA overlaps search at ${width}`).toBe(false)
+    expect(boxes.inViewport, `hero controls off-screen at ${width}`).toBe(true)
+
+    // Full-page + per-section evidence screenshots (real browser render).
+    if (width === 1440 || width === 768 || width === 375) {
+      await page.screenshot({ path: `${EVIDENCE_DIR}/home-${width}.png`, fullPage: true })
+      for (const id of ['home-hero', 'home-life', 'home-book', 'home-knowledge']) {
+        const section = page.locator(`#${id}`)
+        if ((await section.count()) > 0) {
+          await section.screenshot({ path: `${EVIDENCE_DIR}/${id}-${width}.png` })
+        }
+      }
+    }
+  }
+  expect(fatal, 'fatal browser errors during CF-08 visual smoke').toHaveLength(0)
+})
+
+test('CF-08 artboard geometry at 1440 — heights and display scales match the accepted baselines', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto('/')
+  await page.waitForTimeout(300)
+
+  // Accepted section heights (artboard): Hero 900 · Life 1240 · Book 1200 · Knowledge 1240.
+  const heights = await page.evaluate(() => {
+    const h = (id: string) => document.getElementById(id)!.getBoundingClientRect().height
+    return {
+      hero: h('home-hero'),
+      life: h('home-life'),
+      book: h('home-book'),
+      knowledge: h('home-knowledge'),
+    }
+  })
+  expect(heights.hero).toBeGreaterThanOrEqual(898)
+  expect(heights.life).toBeGreaterThanOrEqual(1238)
+  expect(heights.book).toBeGreaterThanOrEqual(1198)
+  expect(heights.knowledge).toBeGreaterThanOrEqual(1238)
+
+  // Accepted display scales: 190px 皇甫谧 monument · 150px book title · 104px date anchors.
+  const scales = await page.evaluate(() => {
+    const g = document.querySelector('.home-hero__glyph') as HTMLElement
+    const t = document.querySelector('.home-book__title-glyphs') as HTMLElement
+    const a = document.querySelector('.home-life__anchor--a') as HTMLElement
+    return {
+      glyph: parseFloat(getComputedStyle(g).fontSize),
+      title: parseFloat(getComputedStyle(t).fontSize),
+      anchor: parseFloat(getComputedStyle(a).fontSize),
+    }
+  })
+  expect(scales.glyph).toBeGreaterThanOrEqual(180)
+  expect(scales.title).toBeGreaterThanOrEqual(140)
+  expect(scales.anchor).toBeGreaterThanOrEqual(98)
+
+  // Geometry-correction proof (P1): the artwork must be full-bleed — NOT clamped
+  // to 1200px. Sections 01–04 use the accepted 1272px artboard geometry:
+  //  hero name monument ≈ x130 (frozen), life/book/knowledge inner column ≈ 1272px
+  //  centred with ≈ 84px gutters.
+  const position = await page.evaluate(() => {
+    const name = document.querySelector('.home-hero__name')!.getBoundingClientRect()
+    const lifeInner = document.querySelector('.home-life__inner')!.getBoundingClientRect()
+    const lifeSection = document.getElementById('home-life')!.getBoundingClientRect()
+    return {
+      nameLeft: name.left,
+      lifeInnerLeft: lifeInner.left,
+      lifeInnerWidth: lifeInner.width,
+      lifeSectionWidth: lifeSection.width,
+    }
+  })
+  // Hero monument should sit near the frozen ≈x130 (not x246 from the 1200px clamp).
+  expect(position.nameLeft).toBeGreaterThanOrEqual(118)
+  expect(position.nameLeft).toBeLessThanOrEqual(150)
+  // Life section is full-bleed; its inner column is ≈1272px with ≈84px gutters.
+  expect(position.lifeSectionWidth).toBeGreaterThanOrEqual(1420)
+  expect(position.lifeInnerWidth).toBeGreaterThanOrEqual(1264)
+  expect(position.lifeInnerWidth).toBeLessThanOrEqual(1280)
+  expect(position.lifeInnerLeft).toBeGreaterThanOrEqual(76)
+  expect(position.lifeInnerLeft).toBeLessThanOrEqual(96)
 })
