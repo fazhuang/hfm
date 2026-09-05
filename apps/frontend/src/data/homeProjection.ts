@@ -17,6 +17,7 @@ import {
   CORE_PERSON_DATES,
   CORE_PERSON_DEFINITION,
   CORE_PERSON_IDENTITIES,
+  CORE_PERSON_LIFE_PHASES,
   CORE_PERSON_NAME,
 } from '../config/corePerson'
 import {
@@ -24,8 +25,8 @@ import {
   INVENTORY_LUNWEN_FILES,
   INVENTORY_LUNZHU_FILES,
 } from './contentInventory'
-import { SEARCHABLE_PAPER_TOTAL } from './searchIndex'
-import { READER_DOCUMENTS } from './readerDocuments'
+import { SEARCHABLE_PAPER_TOTAL, SEARCH_INDEX } from './searchIndex'
+import { getReaderDocument, READER_DOCUMENTS } from './readerDocuments'
 import { HERITAGE_PERSON } from './heritageView'
 import {
   JIAYI_ANCIENT_EDITIONS,
@@ -149,3 +150,162 @@ export const HOME_RESEARCH_STEPS = [
 ] as const
 
 export const HOME_EDITIONS_TOTAL = JIAYI_ANCIENT_EDITIONS.length + JIAYI_MODERN_EDITIONS.length
+
+/* --------------------------------------------------------------------
+ * CF-07 — ADDITIVE presentation projections for the accepted homepage
+ * 8-section structure. These SELECT/derive existing authoritative data
+ * only: no new domain facts, no fabricated counts, no second domain
+ * model. The macro sequence is: 01 Hero → 02 一生 → 03 一部书 → 04
+ * 知识对象 → 05 史料证据 → 06 活态传承 → 07 研究导航 → 08 Close.
+ * -------------------------------------------------------------------- */
+
+/** Accepted homepage chapter labels (presentation microcopy only). */
+export const HOME_CHAPTERS = {
+  hero: { no: '01', label: 'Hero' },
+  life: { no: '02', label: '一生' },
+  book: { no: '03', label: '一部书' },
+  knowledge: { no: '04', label: '知识对象' },
+  evidence: { no: '05', label: '史料证据' },
+  heritage: { no: '06', label: '活态传承' },
+  domains: { no: '07', label: '研究导航' },
+  closing: { no: '08', label: 'Institutional Close' },
+} as const
+
+/** Section 02 — 一生。Life stages derive from the verified life-phase model. */
+export const HOME_LIFE = {
+  headline: '从带经而农，到著书传世。',
+  dates: CORE_PERSON_DATES,
+  intro:
+    '皇甫谧的一生，见诸《晋书》等本源史料与后世整理的其传。生平四阶段彼此衔接：少家贫、躬自稼穑、带经而农；屡征不仕、专事著述；中年风痹、犹手不释卷、旁通医理；晚年编撰《针灸甲乙经》，垂范后世。',
+  stages: CORE_PERSON_LIFE_PHASES,
+  /** 人物档案入口（其传 / 其言 / 后论 — 与 HOME_HUANGFU 同源）。 */
+  items: HOME_HUANGFU.items,
+  cta: { label: '进入人物档案', href: '/persons/person-huangfu-mi' },
+} as const
+
+/** Section 03 — 一部书。Book object + edition preview (existing HOME_JIAYI data). */
+export const HOME_BOOK = {
+  headline: '一部书，成为历史中的物。',
+  book: HOME_JIAYI,
+  editionsTotal: HOME_EDITIONS_TOTAL,
+  lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）',
+  cta: HOME_JIAYI.cta,
+} as const
+
+/**
+ * Section 04 — 知识对象。The six rows mirror the platform's real search
+ * facet vocabulary (person/text/work/edition/archive/paper); the register
+ * values derive from contentInventory / searchIndex (single source).
+ */
+export const HOME_KNOWLEDGE = {
+  headline: '从古籍文字，到可探索的知识。',
+  lede: '古籍文字经结构化记录成为可检索的知识，并始终可以回到阅读、来源与引用。',
+  categories: [
+    { title: '人物', note: '皇甫谧 · 传承人物 · 人物档案' },
+    { title: '文本', note: '古籍全文与长文本 · 专业阅读' },
+    { title: '作品', note: '《针灸甲乙经》及相关著作' },
+    { title: '版本', note: '历代版本与近现代整理本' },
+    { title: '档案', note: '数字档案 · 史料来源整理' },
+    { title: '论文', note: '学术论文目录审计' },
+  ],
+  register: [
+    {
+      label: '可检索记录',
+      value: String(SEARCH_INDEX.length),
+      note: '统一索引：人物 / 文本 / 作品 / 版本 / 档案 / 论文',
+    },
+    { label: '论著资料', value: String(INVENTORY_LUNZHU_FILES), note: '件（客户目录审计）' },
+    {
+      label: '学术论文',
+      value: String(INVENTORY_LUNWEN_FILES),
+      note: `篇（客户目录审计；已结构化题录 ${SEARCHABLE_PAPER_TOTAL} 条）`,
+    },
+  ],
+  cta: { label: '进入研究工作台', href: '/research/search' },
+} as const
+
+/**
+ * Section 05 — 史料证据。The quotation is the real 房玄龄等《晋书》
+ * witness (HOME_QUOTATION). The source register derives from the real
+ * 其传 · 史料来源整理 document sections (reader/qichuan) — never invented.
+ */
+const QICHUAN = getReaderDocument('qichuan')
+
+export const HOME_EVIDENCE = {
+  headline: '每一个结论，都回到它的出处。',
+  lede: '平台的判断不替代考证，只呈现考证：结论旁标注依据，争议如实明示。',
+  claim: {
+    label: '结论',
+    text: `生卒年 ${CORE_PERSON_DATES}`,
+    note: '客户确认值 · 其传 · 史证来源整理',
+  },
+  sourceLabel: '《晋书》等本源史料',
+  quotation: HOME_QUOTATION,
+  dispute: {
+    label: '争议',
+    text: '建安 / 正始 两说',
+    note: '其传考据另载建安 / 正始两说（现代学术考据）；平台以客户确认的生卒年呈现，并明示争议存在。',
+  },
+  sources: (QICHUAN?.sections ?? []).map((section) => ({
+    title: section.heading,
+    href: '/reader/qichuan',
+  })),
+  cta: { label: '阅读《后论》全文', href: '/reader/houlun' },
+} as const
+
+/** Section 06 — 活态传承。Living transmission (existing heritage data). */
+export const HOME_HERITAGE_LIVING = {
+  headline: '一千七百年之后，传承仍在继续。',
+  project: '皇甫谧针灸 · 市级非物质文化遗产代表性项目',
+  person: HERITAGE_PERSON,
+  /** Documentary traces of living transmission (existing HOME_HERITAGE items). */
+  traces: HOME_HERITAGE.items,
+  lineageNote: '谱系中间代（第二代至第五代）结构化整理中，不虚构。',
+  cta: { label: '进入活态传承档案', href: '/heritage' },
+} as const
+
+/** Section 07 — 研究导航。Four doors map to existing real routes. */
+export const HOME_DOMAINS = {
+  headline: '四域探索',
+  lede: '人物 · 文献 · 医学 · 传承 —— 四类知识，四个入口。',
+  domains: [
+    {
+      no: '01',
+      key: '人物档案',
+      en: 'THE PERSON',
+      title: '皇甫谧',
+      href: '/persons/person-huangfu-mi',
+      cta: '进入人物档案',
+    },
+    {
+      no: '02',
+      key: '文献史料',
+      en: 'TEXTS & ARCHIVE',
+      title: '文献史料',
+      href: '/archive',
+      cta: '进入文献库',
+    },
+    {
+      no: '03',
+      key: '医学知识',
+      en: 'THE BOOK',
+      title: '《针灸甲乙经》',
+      href: '/jiayi',
+      cta: '进入古籍库',
+    },
+    {
+      no: '04',
+      key: '活态传承',
+      en: 'LIVING HERITAGE',
+      title: '活态传承',
+      href: '/heritage',
+      cta: '进入传承档案',
+    },
+  ],
+} as const
+
+/** Section 08 — 结语。Platform closing identity; AppFooter owns the global footer. */
+export const HOME_CLOSING = {
+  name: HOME_HERO.title,
+  subtitle: HOME_HERO.subtitle,
+} as const
