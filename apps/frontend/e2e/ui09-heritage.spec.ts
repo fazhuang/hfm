@@ -18,14 +18,18 @@ test('UI-09 /heritage renders the flagship content', async ({ page }) => {
   await expect(page.getByRole('heading', { name: '传承谱系' })).toBeVisible()
 })
 
-test('UI-09 lineage shows confirmed nodes with PARTIAL note (no fabricated generations)', async ({
+test('UI-09 lineage shows confirmed nodes with a PARTIAL state (no fabricated generations)', async ({
   page,
 }) => {
   await page.goto('/heritage')
   await expect(page.locator('.lineage__person').first()).toHaveText('皇甫谧')
   await expect(page.getByText('第六代', { exact: false }).first()).toBeVisible()
   await expect(page.getByText(/第二代至第五代/).first()).toBeVisible()
-  await expect(page.getByText('LINEAGE_STRUCTURING: PARTIAL').first()).toBeVisible()
+  // PARTIAL is presented as a real state with plain public copy — never the
+  // internal LINEAGE_STRUCTURING marker (CF-05 §8).
+  await expect(page.locator('.lineage__status[data-status="PARTIAL"]').first()).toBeVisible()
+  await expect(page.getByText(/仅掌握部分传承信息/).first()).toBeVisible()
+  await expect(page.getByText('LINEAGE_STRUCTURING')).toHaveCount(0)
 })
 
 test('UI-09 search integration: 刘君奇 findable via unified search', async ({ page }) => {

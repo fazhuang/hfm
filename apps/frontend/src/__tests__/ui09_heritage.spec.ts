@@ -116,6 +116,37 @@ describe('UI-09 lineage integrity', () => {
   })
 })
 
+describe('CF-05 PARTIAL is a data state, never developer copy', () => {
+  it('renders the PARTIAL lineage gap with CF-02 state semantics', () => {
+    const wrapper = mount(HeritageView)
+    const gap = wrapper.find('[data-lineage-kind="partial-gap"]')
+    expect(gap.exists()).toBe(true)
+    const chip = gap.find('.lineage__status[data-status="PARTIAL"]')
+    expect(chip.exists()).toBe(true)
+    // presentationStatusLabel('PARTIAL') canonical label.
+    expect(chip.text()).toBe('部分整理')
+    expect(gap.text()).toContain('仅掌握部分传承信息')
+    expect(gap.text()).not.toContain('LINEAGE_STRUCTURING')
+  })
+
+  it('rendered heritage page exposes no internal governance terminology', () => {
+    const wrapper = mount(HeritageView)
+    const text = wrapper.text()
+    expect(text).not.toMatch(/LINEAGE_STRUCTURING|DATA-GAP|TODO|FIXME|registerKey|zzcl|hfmzl/)
+    // 刘君奇 = 第六代名医 stays intact.
+    expect(text).toContain('第六代名医')
+    expect(text).toContain('刘君奇')
+  })
+
+  it('confirmed person node state (COMPLETE) is distinct from the PARTIAL gap', () => {
+    const wrapper = mount(HeritageView)
+    const personState = wrapper.find('.person-profile__state[data-status="COMPLETE"]')
+    expect(personState.exists()).toBe(true)
+    expect(personState.text()).toBe('传承节点已确认')
+    expect(wrapper.findAll('[data-status="PARTIAL"]').length).toBeGreaterThan(0)
+  })
+})
+
 describe('UI-09 privacy scan', () => {
   it('public heritage data contains no phone/ID patterns or internal paths', () => {
     const all = JSON.stringify([
