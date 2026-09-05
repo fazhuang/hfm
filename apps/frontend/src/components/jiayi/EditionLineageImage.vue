@@ -1,21 +1,21 @@
 <script setup lang="ts">
 /**
- * EditionLineageImage — UI-08 version-lineage visual (customer PNG asset).
+ * EditionLineageImage — CF-04 version-lineage visual (customer PNG asset).
  *
  * The customer-provided lineage PNG is a public presentation asset. It is
  * displayed with caption + source; a keyboard-accessible enlarge dialog
  * (focus trap, ESC close, focus return, reduced-motion safe). The image is
- * NOT a pure background; alt carries meaning. Structured edition relations
- * remain [DATA-GAP: JIAYI_EDITION_RELATIONS] — the PNG is never
- * reconstructed into formal genealogical edges.
+ * NOT a pure background; alt carries meaning. The diagram is presented as a
+ * material schematic — the page never reconstructs formal genealogical
+ * edition edges from it.
  */
 import { onBeforeUnmount, ref } from 'vue'
 import { useFocusTrap } from '../../composables/useFocusTrap'
-import {
-  JIAYI_LINEAGE_IMAGE_ALT,
-  JIAYI_LINEAGE_IMAGE_SRC,
-  JIAYI_PUBLIC_SOURCES,
-} from '../../data/jiayiView'
+import { JIAYI_LINEAGE_IMAGE_SRC, JIAYI_PUBLIC_SOURCES } from '../../data/jiayiView'
+
+/** CF-04 public alt — the customer asset is presented without developer jargon. */
+const JIAYI_LINEAGE_ALT =
+  '《针灸甲乙经》版本及各版本之间脉络联系图（客户提供资料）；图中关系为资料示意，页面不对各版本作传承谱系推断。'
 
 defineOptions({ name: 'EditionLineageImage' })
 
@@ -50,13 +50,11 @@ onBeforeUnmount(() => {
 
 <template>
   <figure class="lineage">
-    <img class="lineage__img" :src="JIAYI_LINEAGE_IMAGE_SRC" :alt="JIAYI_LINEAGE_IMAGE_ALT" />
+    <img class="lineage__img" :src="JIAYI_LINEAGE_IMAGE_SRC" :alt="JIAYI_LINEAGE_ALT" />
     <figcaption class="lineage__caption">
       <span class="lineage__title">《针灸甲乙经》版本脉络图</span>
       <span class="lineage__note">{{ JIAYI_PUBLIC_SOURCES.lineage }}</span>
-      <span class="lineage__data-gap">
-        图中关系为资料示意；结构化版本关系尚未建模（DATA-GAP），不据此推断版本继承关系。
-      </span>
+      <span class="lineage__caveat"> 图中关系为资料示意；页面不对各版本作传承谱系推断。 </span>
     </figcaption>
     <button
       ref="triggerRef"
@@ -80,11 +78,7 @@ onBeforeUnmount(() => {
   >
     <div class="lineage-dialog__frame">
       <h2 id="lineage-dialog-title" class="lineage-dialog__title">《针灸甲乙经》版本脉络图</h2>
-      <img
-        class="lineage-dialog__img"
-        :src="JIAYI_LINEAGE_IMAGE_SRC"
-        :alt="JIAYI_LINEAGE_IMAGE_ALT"
-      />
+      <img class="lineage-dialog__img" :src="JIAYI_LINEAGE_IMAGE_SRC" :alt="JIAYI_LINEAGE_ALT" />
       <button type="button" class="lineage-dialog__close" @click="closeDialog">关闭（Esc）</button>
     </div>
   </div>
@@ -118,12 +112,12 @@ onBeforeUnmount(() => {
 }
 
 .lineage__note,
-.lineage__data-gap {
+.lineage__caveat {
   font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
 }
 
-.lineage__data-gap {
+.lineage__caveat {
   color: var(--hfm-color-warning);
 }
 
