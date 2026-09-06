@@ -109,7 +109,11 @@ class GuardrailReport:
 
     @property
     def migration_ok(self) -> bool:
-        expected = {f"{i:04d}" for i in range(1, 14)}
+        # Fail-closed current-state contract: the tree must carry exactly the
+        # currently authorized linear revision set (0001..0014 after the P2-05
+        # advance over the superseded P2-00 0013 boundary) and exactly one
+        # Alembic head (permanent single-head invariant).
+        expected = {f"{i:04d}" for i in range(1, 15)}
         return set(self.migration_revisions) == expected and len(self.migration_heads) == 1
 
     @property
