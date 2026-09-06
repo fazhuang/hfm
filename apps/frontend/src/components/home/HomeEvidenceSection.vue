@@ -407,6 +407,10 @@ const disputeAfter = disputeParts.slice(1).join('正始')
   color: var(--hfm-color-accent);
   font-family: var(--hfm-font-serif);
   font-size: 15px;
+  transition: transform 0.2s ease;
+}
+.home-evidence__act:hover .home-evidence__act-arr {
+  transform: translateX(4px);
 }
 .home-evidence__act-label {
   border-bottom: 1px solid var(--hfm-color-border-strong);

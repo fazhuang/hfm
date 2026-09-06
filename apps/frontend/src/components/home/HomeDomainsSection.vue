@@ -363,6 +363,10 @@ const leads = [
   color: var(--hfm-color-accent);
   font-family: var(--hfm-font-serif);
   font-size: 15px;
+  transition: transform 0.2s ease;
+}
+.home-domains__go:hover .home-domains__go-arr {
+  transform: translateX(4px);
 }
 .home-domains__go-u {
   border-bottom: 1px solid var(--hfm-color-border-strong);

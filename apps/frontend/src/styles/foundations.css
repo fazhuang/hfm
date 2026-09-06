@@ -99,6 +99,8 @@ a {
   color: var(--hfm-color-interactive);
   text-decoration: underline;
   text-underline-offset: 2px;
+  /* subtle, non-blocking colour feedback (CF-11 §22); reduced-motion zeroes it. */
+  transition: color 0.15s ease;
 }
 
 a:hover {

@@ -384,6 +384,10 @@ const photo = { src: '/assets/heritage/heritage-baishi-ceremony.jpg', alt: '' }
   color: var(--hfm-color-accent);
   font-family: var(--hfm-font-serif);
   font-size: 15px;
+  transition: transform 0.2s ease;
+}
+.home-heritage__act:hover .home-heritage__act-arr {
+  transform: translateX(4px);
 }
 .home-heritage__act-label {
   border-bottom: 1px solid var(--hfm-color-border-strong);

@@ -230,6 +230,10 @@ const versions = HOME_BOOK.book.editions
   color: var(--hfm-color-accent);
   font-family: var(--hfm-font-serif);
   font-size: 15px;
+  transition: transform 0.2s ease;
+}
+.home-book__act:hover .home-book__act-arr {
+  transform: translateX(4px);
 }
 .home-book__act-label {
   border-bottom: 1px solid var(--hfm-color-border-strong);

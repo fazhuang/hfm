@@ -85,7 +85,11 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
   const heroH1 = await page
     .getByRole('heading', { name: '皇甫谧人文数字平台' })
     .evaluate((el) => getComputedStyle(el).fontSize)
-  expect(heroH1).toBe('56px') // hero override (text-4xl)
+  // CF-11: accepted H3 baseline renders the platform-name H1 as a quiet 10px
+  // register (it is the single accessible page H1; the 皇甫谧 identity is a
+  // non-heading decorative monument). The previous 56px expectation was a stale
+  // assertion from a pre-refined hero (text-4xl) — corrected to accepted truth.
+  expect(heroH1).toBe('10px')
 })
 
 test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ page }) => {

@@ -477,6 +477,10 @@ const layers = HOME_KNOWLEDGE.categories.slice(3)
   color: var(--hfm-color-accent);
   font-family: var(--hfm-font-serif);
   font-size: 15px;
+  transition: transform 0.2s ease;
+}
+.home-knowledge__act:hover .home-knowledge__act-arr {
+  transform: translateX(4px);
 }
 .home-knowledge__act-label {
   border-bottom: 1px solid var(--hfm-color-border-strong);
