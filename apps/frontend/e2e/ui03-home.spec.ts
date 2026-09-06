@@ -302,3 +302,65 @@ test('CF-08 artboard geometry at 1440 — heights and display scales match the a
   expect(position.lifeInnerLeft).toBeGreaterThanOrEqual(76)
   expect(position.lifeInnerLeft).toBeLessThanOrEqual(96)
 })
+
+test('CF-09 Sections 05–08: render in order, single-footer handoff, no overflow (375/768/1440)', async ({
+  page,
+}) => {
+  mkdirSync(EVIDENCE_DIR, { recursive: true })
+  const fatal: string[] = []
+  page.on('pageerror', (e) => fatal.push(String(e)))
+  page.on('console', (m) => {
+    if (m.type() === 'error') fatal.push(m.text())
+  })
+  const FROM = ['home-evidence', 'home-heritage', 'home-domains', 'home-closing']
+  for (const width of [375, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    await page.waitForTimeout(200)
+    // Sections 05–08 render, in order, exactly once.
+    const sections = page.locator('#main-content section[id^="home-"]')
+    const ids = await sections.evaluateAll((els) => els.map((el) => el.id))
+    expect(ids).toEqual(SECTION_IDS)
+    for (const id of FROM) {
+      await expect(page.locator(`#${id}`), `${id} at ${width}`).toBeVisible()
+    }
+    // No horizontal page failure.
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    )
+    expect(overflow, `overflow at ${width}`).toBeLessThanOrEqual(0)
+    // Single semantic footer; the closing is a <section>, not a footer.
+    await expect(page.locator('footer')).toHaveCount(1)
+    expect(await page.locator('#home-closing').evaluate((el) => el.tagName)).toBe('SECTION')
+    // Footer comes after the closing section (clean handoff, no overlap).
+    const handoff = await page.evaluate(() => {
+      const close = document.getElementById('home-closing')!.getBoundingClientRect()
+      const foot = document.querySelector('footer')!.getBoundingClientRect()
+      return { closeBottom: close.bottom, footTop: foot.top }
+    })
+    expect(handoff.footTop).toBeGreaterThanOrEqual(handoff.closeBottom)
+    // Evidence screenshots for 05–08 at the primary reference width (1440).
+    if (width === 1440) {
+      for (const id of FROM) {
+        await page.locator(`#${id}`).screenshot({ path: `${EVIDENCE_DIR}/${id}-1440.png` })
+      }
+    }
+  }
+  expect(fatal, 'fatal browser errors during CF-09 sections 05-08').toHaveLength(0)
+})
+
+test('CF-09 Section 07 route truth: the four domain CTAs resolve to real current routes', async ({
+  page,
+}) => {
+  const targets = ['/persons/person-huangfu-mi', '/archive', '/jiayi', '/heritage']
+  for (const target of targets) {
+    const resp = await page.goto(target)
+    expect(resp?.status(), `${target} must be 200`).toBe(200)
+    await expect(page.locator('h1, h2').first()).toBeVisible()
+  }
+  // The rejected line is absent from the rendered homepage source.
+  await page.goto('/')
+  await expect(page.locator('#home-domains')).not.toContainText(/NARRATIVE|USABLE ARCHIVE/)
+  const body = await page.evaluate(() => document.body.innerText)
+  expect(body).not.toMatch(/NARRATIVE · USABLE ARCHIVE|USABLE ARCHIVE/)
+})

@@ -386,3 +386,79 @@ describe('UI-03 CF-08 Sections 01–04 production contract', () => {
     }
   })
 })
+
+describe('UI-03 CF-09 Sections 05–08 production contract', () => {
+  it('Section 05 Evidence: one scholarly argument + real source register + real CTA', () => {
+    const wrapper = mountHome()
+    const ev = wrapper.find('#home-evidence')
+    expect(ev.exists()).toBe(true)
+    // ONE argument held open: 结论 / 出处 / 争议 (3 indented blocks).
+    expect(ev.findAll('.home-evidence__st')).toHaveLength(3)
+    expect(ev.text()).toContain('结论')
+    expect(ev.text()).toContain('出处')
+    expect(ev.text()).toContain('争议')
+    // The real 晋书 witness + attribution.
+    expect(ev.text()).toContain('皇甫谧素履幽贞')
+    expect(ev.text()).toContain('房玄龄')
+    // The dispute (建安 / 正始) is the documented one.
+    expect(ev.text()).toContain('建安')
+    expect(ev.text()).toContain('正始')
+    // Provenance register links to the real source document; CTA to 后论.
+    expect(ev.find('.home-evidence__src-link').attributes('href')).toBe('/reader/qichuan')
+    expect(ev.find('.home-evidence__act').attributes('href')).toBe('/reader/houlun')
+  })
+
+  it('Section 06 Heritage: living link renders, 刘君奇·第六代名医 correct, PARTIAL truthful', () => {
+    const wrapper = mountHome()
+    const hg = wrapper.find('#home-heritage')
+    expect(hg.exists()).toBe(true)
+    // Documentary act (photo + caption) + transmission records + carrier.
+    expect(hg.find('.home-heritage__act-pic img').attributes('src')).toBe(
+      '/assets/heritage/heritage-baishi-ceremony.jpg',
+    )
+    expect(hg.find('.home-heritage__trace').exists()).toBe(true)
+    expect(hg.find('.home-heritage__carrier').exists()).toBe(true)
+    // 刘君奇 = 第六代名医 stays correct.
+    expect(hg.find('.home-heritage__name').text()).toBe('刘君奇')
+    expect(hg.text()).toContain('第六代名医')
+    // PARTIAL lineage is honest — no fabricated generation/completeness.
+    const status = hg.find('.hfm-status')
+    expect(status.attributes('data-status')).toBe('PARTIAL')
+    expect(status.text()).toBe('谱系整理中')
+    expect(hg.text()).not.toMatch(/第二代主|第三代|第四代主|第五代主|已确认完整谱系|谱系完整/)
+  })
+
+  it('Section 07 Domains: real route CTAs, holdings rows, rejected line absent', () => {
+    const wrapper = mountHome()
+    const dm = wrapper.find('#home-domains')
+    expect(dm.exists()).toBe(true)
+    const doors = dm.findAll('.home-domains__door')
+    expect(doors).toHaveLength(4)
+    const hrefs = doors.map((d) => d.find('.home-domains__go').attributes('href'))
+    expect(hrefs).toEqual(['/persons/person-huangfu-mi', '/archive', '/jiayi', '/heritage'])
+    // Holdings rows + medical bibliographic register are rendered (informational).
+    expect(dm.findAll('.home-domains__pv').length).toBeGreaterThanOrEqual(3)
+    expect(dm.findAll('.home-domains__b')).toHaveLength(3)
+    // Rejected line never restored.
+    expect(dm.text()).not.toMatch(/NARRATIVE|USABLE ARCHIVE|叙事之后/)
+  })
+
+  it('Section 08 Closing: quiet institutional close, non-heading identity, no footer', () => {
+    const wrapper = mountHome()
+    const cl = wrapper.find('#home-closing')
+    expect(cl.exists()).toBe(true)
+    expect(cl.element.tagName).toBe('SECTION')
+    // Platform identity is a NON-heading signature (single accessible H1 = hero).
+    expect(cl.find('.home-closing__name').text()).toBe('皇甫谧人文数字平台')
+    expect(cl.findAll('h1, h2, h3')).toHaveLength(0)
+    // No footer element / no legal / institutional duplicate inside the close.
+    expect(cl.findAll('footer')).toHaveLength(0)
+    expect(cl.text()).not.toMatch(/版权与免责声明|隐私说明|关于平台|仅供皇甫谧学术研究|甘肃医学院/)
+  })
+
+  it('whole homepage: eight sections in order, Sections 01–04 & 05–08 present', () => {
+    const wrapper = mountHome()
+    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
+    expect(ids).toEqual(SECTION_IDS)
+  })
+})
