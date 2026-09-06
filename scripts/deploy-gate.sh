@@ -1,22 +1,40 @@
 #!/usr/bin/env bash
-# HFM deployment gate (P2-07-AC-03).
+# HFM deployment gate (P2-07-AC-03, ND-1 B01 hardening).
 #
-# The database migration gate runs BEFORE any deploy: the gate verifies
-# environment validity, a single Alembic head, and that migrations are
-# applied. Pending migrations BLOCK the release unless the operator passes
-# --apply-migrations (which is never auto-invoked). This gate never performs
-# a production HFB import; deploy authorization != import authorization
-# (ADR-P2-02).
+# The preflight runs BEFORE any deploy and is fail-closed:
+#   1. real HFM_* runtime inputs are validated (redacted) by
+#      scripts/validate-production-env.py — missing/template/known-dev DB and
+#      token-secret values are rejected without printing their values;
+#   2. the exact Alembic current revision must equal the head (0014) with a
+#      single head — verified read-only against the target database;
+#   3. a database/command failure is a non-zero gate failure;
+#   4. --apply-migrations can NEVER bypass verification: the preflight does
+#      not apply a live migration (operators apply separately, then re-run the
+#      gate). No production HFB import is ever performed (ADR-P2-02).
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND="$REPO_ROOT/apps/backend"
-APPLY=0
+PYTHON="$BACKEND/.venv/bin/python"
 ENV_NAME="${1:-}"
-[[ "${2:-}" == "--apply-migrations" ]] && APPLY=1
+ENV_FILE=""
+APPLY=0
+
+shift || true
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --apply-migrations) APPLY=1 ;;
+    --env-file)
+      ENV_FILE="${2:-}"
+      shift || true
+      ;;
+    *) echo "usage: deploy-gate.sh <dev|test|prod> [--env-file FILE] [--apply-migrations]"; exit 2 ;;
+  esac
+  shift || true
+done
 
 if [[ -z "$ENV_NAME" ]]; then
-  echo "usage: deploy-gate.sh <dev|test|prod> [--apply-migrations]"
+  echo "usage: deploy-gate.sh <dev|test|prod> [--env-file FILE] [--apply-migrations]"
   exit 2
 fi
 case "$ENV_NAME" in dev|test|prod) ;; *)
@@ -24,30 +42,37 @@ case "$ENV_NAME" in dev|test|prod) ;; *)
   exit 2
 ;; esac
 
-# 1. Environment separation must hold first.
-if ! "$REPO_ROOT/scripts/check-env.sh" > /dev/null; then
-  echo "MIGRATION_GATE=FAIL (environment separation failed)"
+VALIDATOR_ARGS=(--env "$ENV_NAME" --verify-migration)
+if [[ -n "$ENV_FILE" ]]; then
+  if [[ ! -f "$ENV_FILE" ]]; then
+    echo "ENV_FILE=FAIL (not found: $ENV_FILE)"
+    exit 1
+  fi
+  VALIDATOR_ARGS+=(--env-file "$ENV_FILE")
+fi
+if [[ "$ENV_NAME" == "prod" ]]; then
+  # --apply-migrations acknowledges that a separate, authorized migration
+  # apply step may be required; it never skips the fail-closed verification.
+  if [[ "$APPLY" -eq 1 ]]; then
+    echo "MIGRATION_APPLY=ACKNOWLEDGED (operator runs alembic upgrade separately; gate still verifies)"
+  fi
+else
+  # dev/test additionally tolerate SQLite test targets (read-only verification).
+  VALIDATOR_ARGS+=(--allow-sqlite)
+fi
+
+if ! "$PYTHON" "$REPO_ROOT/scripts/validate-production-env.py" "${VALIDATOR_ARGS[@]}"; then
+  echo "MIGRATION_GATE=FAIL (environment/migration preflight failed)"
   exit 1
 fi
 
-# 2. Single Alembic head.
-HEADS="$(cd "$BACKEND" && .venv/bin/python -m alembic heads 2>/dev/null || true)"
-HEAD_COUNT="$(printf '%s\n' "$HEADS" | grep -c . || true)"
-if [[ "$HEAD_COUNT" -ne 1 ]]; then
-  echo "MIGRATION_GATE=FAIL (expected exactly one Alembic head, got: ${HEAD_COUNT})"
-  exit 1
+if [[ "$ENV_NAME" == "prod" ]]; then
+  if [[ "$APPLY" -eq 0 ]]; then
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0014; apply is a separate authorized step)"
+  else
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0014)"
+  fi
+else
+  echo "MIGRATION_GATE=PASS (head=0014 current=0014 verified for $ENV_NAME)"
 fi
-
-# 3. Pending-migration gate: current revision must equal the head before deploy.
-CURRENT="$(cd "$BACKEND" && .venv/bin/python -m alembic current 2>/dev/null | tail -1 || true)"
-if [[ "$CURRENT" != *"$HEADS"* && "$APPLY" -eq 0 ]]; then
-  echo "MIGRATION_GATE=BLOCKED (pending migrations: current='${CURRENT}' head='${HEADS}'; re-run with --apply-migrations to apply first)"
-  exit 1
-fi
-if [[ "$ENV_NAME" == "prod" && "$APPLY" -eq 1 ]]; then
-  # Prod requires an explicit migration apply step; the gate only verifies.
-  echo "MIGRATION_GATE=PASS (prod: migration apply is a separate authorized step)"
-  exit 0
-fi
-
-echo "MIGRATION_GATE=PASS (head=${HEADS} current=${CURRENT})"
+exit 0

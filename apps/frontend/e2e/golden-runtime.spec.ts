@@ -17,7 +17,9 @@
  */
 import { expect, test } from '@playwright/test'
 
-const BASE = process.env.CF01_BASE || 'http://localhost:5199'
+// ND-1 H01: the spec honours the same explicit-port override as the Playwright
+// config (HFM_E2E_BASE) in addition to the CF01_BASE the gate scripts set.
+const BASE = process.env.CF01_BASE || process.env.HFM_E2E_BASE || 'http://localhost:5199'
 
 const captured = {
   consoleErrors: [] as string[],

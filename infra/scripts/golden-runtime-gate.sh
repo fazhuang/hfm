@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# HFM CLEAN FORWARD CF-01 — FULL_GOLDEN_GATE
+# HFM CLEAN FORWARD CF-01 — FULL_GOLDEN_GATE (ND-1 H01 hardened)
 #
 # Proves the real runtime chain without any mock / route fulfillment:
 #   fresh disposable PostgreSQL
@@ -9,6 +9,11 @@
 #     → Vite dev with real /api proxy (:5199 → :8000)
 #     → real Chromium journeys (HOME/PERSON/JIAYI/HERITAGE/SEARCH/RESEARCH_GUARD)
 #     → build + typecheck
+#
+# ND-1 H01 (test-harness hardening): every server started here is recorded by
+# its actual listener PID and cleaned up only after its working directory is
+# proven to be THIS repository. A foreign process occupying the target port
+# FAILS THE GATE (never reused, never killed). No broad pkill is used.
 #
 # Not for daily use (costly); milestone / CF acceptance runs this.
 set -euo pipefail
@@ -28,18 +33,69 @@ GOLDEN_BACKEND_PORT="${GOLDEN_BACKEND_PORT:-8000}"
 GOLDEN_FRONTEND_PORT="${GOLDEN_FRONTEND_PORT:-5199}"
 
 rec() { echo "$1=$2"; }
+# Recorded listener PIDs owned by this run (killed on cleanup only after an
+# ownership re-check). Empty until each server reports healthy.
+BE_PID=""
+FE_PID=""
+
+# ------------------------------------------------------------------ ownership
+listener_pid() { lsof -nP -iTCP:"$1" -sTCP:LISTEN -t 2>/dev/null | head -1; }
+pid_cwd() { lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1; }
+
+# owned_listener PORT DIRPREFIX — echoes the listener PID when its cwd is
+# under DIRPREFIX (this repository's own process); empty otherwise.
+owned_listener() {
+  local pid cwd
+  pid="$(listener_pid "$1")" || true
+  [[ -z "$pid" ]] && return 0
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$2"*) echo "$pid" ;;
+  esac
+}
+
+# fail_on_foreign PORT KIND — a live listener on PORT whose cwd is NOT this
+# repository is a hard gate failure (never reused, never killed).
+fail_on_foreign() {
+  local pid cwd
+  pid="$(listener_pid "$1")" || true
+  [[ -z "$pid" ]] && return 0
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$ROOT"*) return 0 ;;   # owned (this repo) leftover — cleanup handles it
+  esac
+  echo "HARNESS_FOREIGN_OWNER=FAIL kind=$2 port=$1 pid=$pid cwd=${cwd:-<unknown>}"
+  FAIL=1
+}
+
+kill_owned_listener() {
+  # PID CWD_DIRPREFIX — kill only when the process is proven owned.
+  local pid="$1" prefix="$2" cwd
+  [[ -n "$pid" ]] || return 0
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$prefix"*) kill "$pid" 2>/dev/null || true ;;
+    *) echo "HARNESS_SKIP_FOREIGN_KILL pid=$pid (not owned; left intact)" ;;
+  esac
+}
 
 cleanup() {
   echo "==> cleanup"
-  # Kill the exact uvicorn/vite processes by their target port (robust vs the
-  # nohup subshell PID which is not the real server process).
-  pkill -f "uvicorn hfm.main:app.*--port $GOLDEN_BACKEND_PORT" 2>/dev/null || true
-  pkill -f "vite.*--port $GOLDEN_FRONTEND_PORT" 2>/dev/null || true
-  if [ -n "${BE_PID:-}" ]; then kill "$BE_PID" 2>/dev/null || true; fi
-  if [ -n "${FE_PID:-}" ]; then kill "$FE_PID" 2>/dev/null || true; fi
+  # Only recorded, ownership-re-verified PIDs are terminated. Foreign
+  # processes are always left intact (never a broad pkill).
+  kill_owned_listener "${BE_PID:-}" "$ROOT/apps/backend"
+  kill_owned_listener "${FE_PID:-}" "$ROOT/apps/frontend"
   PGPASSWORD="$GOLDEN_PGPASS" dropdb -h "$GOLDEN_PGHOST" -U "$GOLDEN_PGUSER" -f --if-exists "$GOLDEN_DB" 2>/dev/null || true
 }
 trap cleanup EXIT
+
+# H01: refuse to run when a foreign process already owns a target port.
+fail_on_foreign "$GOLDEN_BACKEND_PORT" backend
+fail_on_foreign "$GOLDEN_FRONTEND_PORT" frontend
+if [ "$FAIL" -ne 0 ]; then
+  echo "FULL_GOLDEN_GATE=FAIL (foreign process on a target port; free the port and re-run)"
+  exit 1
+fi
 
 step "fresh disposable PostgreSQL ($GOLDEN_DB)"
 # Dedicated role + isolated db, owned by app role (like the runtime contract).
@@ -73,28 +129,34 @@ if [ $FAIL -eq 0 ]; then
   (cd "$ROOT/apps/backend" && \
     HFM_DATABASE_URL="$GOLDEN_DB_URL" \
     nohup .venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port "$GOLDEN_BACKEND_PORT" >/tmp/cf01-backend.log 2>&1) &
-  BE_PID=$!
   for i in $(seq 1 30); do
     if curl -sf "http://127.0.0.1:$GOLDEN_BACKEND_PORT/health" >/dev/null 2>&1; then break; fi
     sleep 1
   done
   if ! curl -sf "http://127.0.0.1:$GOLDEN_BACKEND_PORT/health" >/dev/null 2>&1; then
     echo "BACKEND=FAIL"; tail -20 /tmp/cf01-backend.log; FAIL=1
-  else rec BACKEND PASS; fi
+  else
+    BE_PID="$(owned_listener "$GOLDEN_BACKEND_PORT" "$ROOT/apps/backend")" || true
+    if [ -n "$BE_PID" ]; then rec BACKEND PASS; else
+      echo "BACKEND=FAIL (listener ownership unverifiable on :$GOLDEN_BACKEND_PORT)"; FAIL=1; fi
+  fi
 fi
 
 step "start Vite dev with real /api proxy (:$GOLDEN_FRONTEND_PORT)"
 if [ $FAIL -eq 0 ]; then
   (cd "$ROOT/apps/frontend" && \
     nohup pnpm dev --port "$GOLDEN_FRONTEND_PORT" --strictPort >/tmp/cf01-frontend.log 2>&1) &
-  FE_PID=$!
   for i in $(seq 1 30); do
     if curl -sf "http://localhost:$GOLDEN_FRONTEND_PORT/" >/dev/null 2>&1; then break; fi
     sleep 1
   done
   if ! curl -sf "http://localhost:$GOLDEN_FRONTEND_PORT/" >/dev/null 2>&1; then
     echo "FRONTEND=FAIL"; tail -20 /tmp/cf01-frontend.log; FAIL=1
-  else rec FRONTEND PASS; fi
+  else
+    FE_PID="$(owned_listener "$GOLDEN_FRONTEND_PORT" "$ROOT/apps/frontend")" || true
+    if [ -n "$FE_PID" ]; then rec FRONTEND PASS; else
+      echo "FRONTEND=FAIL (listener ownership unverifiable on :$GOLDEN_FRONTEND_PORT)"; FAIL=1; fi
+  fi
 fi
 
 step "real browser golden journeys (no mock)"

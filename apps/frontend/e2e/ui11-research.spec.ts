@@ -10,16 +10,22 @@ import { expect, test } from '@playwright/test'
 const USER = {
   id: 'u1',
   username: 'researcher',
-  roles: ['STUDENT_RESEARCHER'],
-  permissions: [],
+  role: 'STUDENT_RESEARCHER',
 }
 
 async function loginAt(page: import('@playwright/test').Page, target: string): Promise<void> {
+  // ND-1 B05: the login mock returns the authoritative backend api_response
+  // envelope ({success,data:{ok,token,user_id,role}}) — never the bare shape.
   await page.route('**/api/v1/auth/login', (route) =>
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ token: 'test-token', user: USER }),
+      body: JSON.stringify({
+        success: true,
+        timestamp: '2026-09-07T00:00:00Z',
+        message: 'ok',
+        data: { ok: true, token: 'test-token', user_id: USER.id, role: USER.role },
+      }),
     }),
   )
   await page.goto(target)

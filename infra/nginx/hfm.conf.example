@@ -1,0 +1,59 @@
+# HFM Nginx reverse proxy — production topology (ND-1 B04) EXAMPLE.
+#
+# Topology: public TLS terminator / Nginx → static same-origin /api →
+# private Uvicorn (127.0.0.1:8000, systemd) → private PostgreSQL.
+#
+# OPERATOR INPUTS (required values — never invented here):
+#   * HOST_DOMAIN       : the public host served by this server block
+#   * TLS_CERT_PATH     : fullchain cert path (or terminate TLS upstream)
+#   * TLS_KEY_PATH      : private key path
+#   * STATIC_ROOT       : path of the release frontend dist
+#   * MEDIA_ROOT        : persistent media volume (matches HFM_MEDIA_ROOT)
+#
+# Vite is NEVER the production server. Static files are served by Nginx;
+# the API is same-origin under /api (no CORS in production).
+#
+# ND2_EXECUTION_REQUIRED: this example is applied and TLS/reboot proven only
+# during ND-2 execution on the real target. ND-1 keeps this file unapplied.
+
+# Plain-HTTP listener (intended to sit behind an operator TLS terminator or to
+# be replaced by the commented TLS server during ND-2).
+server {
+    listen 127.0.0.1:8080;
+    server_name _;
+
+    # Persistent published-media volume (bytes never live in PostgreSQL).
+    location /media/ {
+        alias /var/lib/hfm/media/;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    # Same-origin API: private Uvicorn only (never exposed directly).
+    location /api/ {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    # Static single-page application (release frontend dist).
+    location / {
+        root /var/www/hfm;
+        try_files $uri $uri/ /index.html;
+        add_header Cache-Control "no-cache";
+    }
+}
+
+# ND-2 TLS listener template (operator fills HOST_DOMAIN / cert paths):
+# server {
+#     listen 443 ssl;
+#     http2 on;
+#     server_name HOST_DOMAIN;
+#     ssl_certificate     TLS_CERT_PATH;
+#     ssl_certificate_key TLS_KEY_PATH;
+#     ...same locations as above...
+# }

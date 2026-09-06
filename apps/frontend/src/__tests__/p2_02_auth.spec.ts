@@ -171,19 +171,92 @@ describe('P2-02-AC-04 token revocation', () => {
     expect(store.isAuthenticated).toBe(false)
     vi.unstubAllGlobals()
   })
+})
 
-  it('login stores the token and user', async () => {
+// ND-1 B05 — the authoritative backend login contract is the shared
+// `api_response` envelope `{success,data:{ok,token,user_id,role}}`; the client
+// adapts it to LoginResponse and strict shape validation guards state writes.
+function loginEnvelope(overrides: Record<string, unknown> = {}) {
+  return {
+    success: true,
+    timestamp: '2026-09-07T00:00:00Z',
+    message: 'ok',
+    data: { ok: true, token: 't1', user_id: 'u1', role: 'STUDENT_RESEARCHER', ...overrides },
+  }
+}
+
+function stubLoginResponse(body: unknown): void {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => body }))
+}
+
+describe('B05 login envelope contract (existing-auth repair)', () => {
+  it('login stores token + identity from the real envelope, then guards follow', async () => {
+    stubLoginResponse(loginEnvelope())
+    const store = useAuthStore()
+    await store.login('researcher', 'pw')
+    expect(store.isAuthenticated).toBe(true)
+    expect(store.token).toBe('t1')
+    expect(store.user?.id).toBe('u1')
+    expect(store.hasRole('STUDENT_RESEARCHER')).toBe(true)
+    expect(store.user?.permissions).toEqual([])
+
+    const router = makeRouter()
+    router.push('/research')
+    await router.isReady()
+    expect(router.currentRoute.value.name).toBe('research-home')
+    await router.push('/admin')
+    expect(router.currentRoute.value.name).toBe('denied')
+    vi.unstubAllGlobals()
+  })
+
+  it('rejects a bare (non-envelope) login body and writes no auth state', async () => {
+    // The contradictory pre-B05 bare success shape must never be accepted.
+    stubLoginResponse({ token: 't1', user: user(['STUDENT_RESEARCHER']) })
+    const store = useAuthStore()
+    await expect(store.login('u', 'p')).rejects.toThrow(/login response/i)
+    expect(store.isAuthenticated).toBe(false)
+    expect(store.token).toBeNull()
+    expect(store.user).toBeNull()
+    vi.unstubAllGlobals()
+  })
+
+  it('rejects a failure envelope (success false / ok false) and writes no state', async () => {
+    stubLoginResponse({ ...loginEnvelope(), success: false })
+    const store = useAuthStore()
+    await expect(store.login('u', 'p')).rejects.toThrow(/login response/i)
+    expect(store.isAuthenticated).toBe(false)
+    stubLoginResponse(loginEnvelope({ ok: false }))
+    await expect(store.login('u', 'p')).rejects.toThrow(/not ok/i)
+    expect(store.isAuthenticated).toBe(false)
+    vi.unstubAllGlobals()
+  })
+
+  it('rejects an envelope with an unknown role and writes no state', async () => {
+    stubLoginResponse(loginEnvelope({ role: 'SUPERUSER' }))
+    const store = useAuthStore()
+    await expect(store.login('u', 'p')).rejects.toThrow(/role/i)
+    expect(store.isAuthenticated).toBe(false)
+    vi.unstubAllGlobals()
+  })
+
+  it('rejects an envelope with missing token or user_id and writes no state', async () => {
+    stubLoginResponse(loginEnvelope({ token: '' }))
+    const store = useAuthStore()
+    await expect(store.login('u', 'p')).rejects.toThrow(/token/i)
+    stubLoginResponse(loginEnvelope({ user_id: '' }))
+    await expect(store.login('u', 'p')).rejects.toThrow(/user_id/i)
+    expect(store.isAuthenticated).toBe(false)
+    vi.unstubAllGlobals()
+  })
+
+  it('invalid credentials (HTTP 401) reject and revoke, writing no state', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        json: async () => ({ token: 't1', user: user(['STUDENT_RESEARCHER']) }),
-      }),
+      vi.fn().mockResolvedValue({ ok: false, status: 401, json: async () => ({}) }),
     )
     const store = useAuthStore()
-    await store.login('u', 'p')
-    expect(store.isAuthenticated).toBe(true)
-    expect(store.hasRole('STUDENT_RESEARCHER')).toBe(true)
+    await expect(store.login('u', 'wrong')).rejects.toThrow()
+    expect(store.isAuthenticated).toBe(false)
     vi.unstubAllGlobals()
   })
 })
