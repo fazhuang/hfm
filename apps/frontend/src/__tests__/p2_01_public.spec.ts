@@ -142,8 +142,10 @@ describe('P2-01-AC-04 accessibility assertions', () => {
   })
 
   it('state components are accessible', () => {
+    // Loading = real async → live region (role=status). Error = alert.
     expect(mount(LoadingState).find('[role="status"]').exists()).toBe(true)
-    expect(mount(EmptyState).find('[role="status"]').exists()).toBe(true)
+    // Static empty content is NOT a live region (CF-10 §22 — no static role=status).
+    expect(mount(EmptyState).find('[role="status"]').exists()).toBe(false)
     expect(mount(ErrorState).find('[role="alert"]').exists()).toBe(true)
   })
 })

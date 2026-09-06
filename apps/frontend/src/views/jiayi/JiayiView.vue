@@ -451,7 +451,7 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
   padding: 2px var(--hfm-space-2);
   border-radius: var(--hfm-radius-sm);
   background: var(--hfm-color-warning);
-  color: var(--hfm-color-text);
+  color: var(--hfm-color-on-accent);
   font-size: var(--hfm-text-xs);
   font-weight: 600;
 }

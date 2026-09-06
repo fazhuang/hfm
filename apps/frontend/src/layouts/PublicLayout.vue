@@ -121,7 +121,12 @@ onBeforeUnmount(() => {
       </nav>
 
       <div class="public-shell__tools">
-        <form class="header-search" role="search" @submit.prevent="onSearchSubmit">
+        <form
+          class="header-search"
+          role="search"
+          aria-label="全局检索"
+          @submit.prevent="onSearchSubmit"
+        >
           <label class="visually-hidden" for="header-search-input">检索平台内容</label>
           <input id="header-search-input" v-model="searchQuery" type="search" placeholder="检索…" />
           <button type="submit" class="header-search__submit">检索</button>

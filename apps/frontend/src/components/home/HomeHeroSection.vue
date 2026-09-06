@@ -479,5 +479,11 @@ const dates = CORE_PERSON_DATES
   .home-hero__specimen {
     width: 132px;
   }
+  /* Touch target (WCAG 2.5.5): the quiet search submit needs ≥24px height. */
+  .home-search__submit {
+    min-height: 24px;
+    min-width: 24px;
+    padding: var(--hfm-space-2) 0;
+  }
 }
 </style>

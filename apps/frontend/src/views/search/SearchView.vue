@@ -135,7 +135,7 @@ const SCOPE_KINDS = ['人物', '作品', '版本', '非遗档案', '术语', '�
       <p class="hfm-eyebrow">数字人文 · 学术检索</p>
       <h1 id="search-heading" class="search-hero__title">检索</h1>
 
-      <form class="search-form" role="search" @submit.prevent="onSubmit">
+      <form class="search-form" role="search" aria-label="全文检索" @submit.prevent="onSubmit">
         <label class="visually-hidden" for="search-input">检索平台内容</label>
         <input
           id="search-input"

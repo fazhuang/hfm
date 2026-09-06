@@ -88,7 +88,8 @@ describe('P2-04-AC-03 empty genealogy state', () => {
 
   it('empty projection renders the EmptyState component', () => {
     const wrapper = mount(EmptyState, { props: { label: '暂无已发布的传承谱系数据。' } })
-    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+    // Static empty content is not a live region (CF-10 §22 — no static role=status).
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
     expect(wrapper.text()).toContain('暂无已发布的传承谱系数据')
   })
 

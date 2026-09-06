@@ -42,7 +42,7 @@ defineOptions({ name: 'YanView' })
     >
       <h2 :id="`${section.id}-heading`" class="section-title">{{ section.title }}</h2>
 
-      <p v-if="section.fullTextStatus === 'DATA_GAP'" class="yan-fulltext-status" role="status">
+      <p v-if="section.fullTextStatus === 'DATA_GAP'" class="yan-fulltext-status">
         全文整理中（客户文稿为整理说明，未含全文）
       </p>
 

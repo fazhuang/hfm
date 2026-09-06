@@ -32,7 +32,7 @@ function onSearch(): void {
     </p>
 
     <!-- Search entry -->
-    <form class="research-search" role="search" @submit.prevent="onSearch">
+    <form class="research-search" role="search" aria-label="研究检索" @submit.prevent="onSearch">
       <label class="visually-hidden" for="research-search-input">检索研究内容</label>
       <input
         id="research-search-input"

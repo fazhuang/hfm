@@ -80,11 +80,10 @@ const readingFontSize = computed(() => `${fontScale.value}em`)
         <button type="button" aria-label="增大字号" @click="adjustFont(0.125)">A＋</button>
       </div>
 
-      <!-- METADATA_ONLY state (classical full texts) -->
+      <!-- METADATA_ONLY state (classical full texts) — static content, not a live region -->
       <section
         v-if="document.readingStatus === 'METADATA_ONLY'"
         class="reader__metadata-only"
-        role="status"
         aria-labelledby="metadata-only-heading"
       >
         <h2 id="metadata-only-heading">当前仅有题录</h2>

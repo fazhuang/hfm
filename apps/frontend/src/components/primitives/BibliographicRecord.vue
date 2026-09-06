@@ -38,7 +38,16 @@ const props = withDefaults(
     /** optional provenance note (only real, caller-supplied provenance). */
     provenance?: string
   }>(),
-  { title: '', author: '', edition: '', year: '', meta: () => [], status: '', statusLabel: '', provenance: '' },
+  {
+    title: '',
+    author: '',
+    edition: '',
+    year: '',
+    meta: () => [],
+    status: '',
+    statusLabel: '',
+    provenance: '',
+  },
 )
 
 function resolvedStatus(): PresentationState | string {
@@ -62,17 +71,18 @@ function resolvedStatus(): PresentationState | string {
         <dt>年份</dt>
         <dd>{{ year }}</dd>
       </div>
-      <div
-        v-for="m in meta"
-        :key="`${m.label}-${m.value}`"
-        class="bib-record__meta-row"
-      >
+      <div v-for="m in meta" :key="`${m.label}-${m.value}`" class="bib-record__meta-row">
         <dt>{{ m.label }}</dt>
         <dd>{{ m.value }}</dd>
       </div>
     </dl>
 
-    <p v-if="status" class="bib-record__status" data-status-prefix="presentation" :data-status="resolvedStatus()">
+    <p
+      v-if="status"
+      class="bib-record__status"
+      data-status-prefix="presentation"
+      :data-status="resolvedStatus()"
+    >
       {{ presentationStatusLabel(resolvedStatus(), statusLabel) }}
     </p>
 
@@ -134,7 +144,7 @@ function resolvedStatus(): PresentationState | string {
   padding: 2px var(--hfm-space-2);
   border-radius: var(--hfm-radius-sm);
   background: var(--hfm-color-warning);
-  color: var(--hfm-color-text);
+  color: var(--hfm-color-on-accent);
   font-size: var(--hfm-text-xs);
   font-weight: 600;
 }

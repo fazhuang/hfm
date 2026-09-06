@@ -3,7 +3,7 @@ defineProps<{ label?: string }>()
 </script>
 
 <template>
-  <div class="state state--empty" role="status">
+  <div class="state state--empty">
     <p>{{ label ?? 'No published content available.' }}</p>
   </div>
 </template>

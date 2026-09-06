@@ -73,7 +73,7 @@ function researchHref(entryType: string, id: string): string {
       {{ SEARCHABLE_PAPER_TOTAL }} / 审计 {{ AUDITED_PAPER_TOTAL }}。
     </p>
 
-    <form class="research-form" role="search" @submit.prevent="onSubmit">
+    <form class="research-form" role="search" aria-label="研究检索" @submit.prevent="onSubmit">
       <label class="visually-hidden" for="research-q">检索词</label>
       <input
         id="research-q"
