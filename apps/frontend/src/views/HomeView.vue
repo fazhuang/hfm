@@ -38,7 +38,7 @@ defineOptions({ name: 'HomeView' })
 
 const router = useRouter()
 const searchInput = ref('')
-const homeSource = useHomePublicData().source
+const { source: homeSource, enrichment: homeEnrichment } = useHomePublicData()
 
 function onSearch(): void {
   const q = searchInput.value.trim()
@@ -58,7 +58,7 @@ function onSearch(): void {
     <HomeKnowledgeSection />
     <HomeEvidenceSection />
     <HomeHeritageSection />
-    <HomeDomainsSection />
+    <HomeDomainsSection :published="homeEnrichment" />
     <HomeClosingSection />
   </div>
 </template>

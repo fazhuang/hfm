@@ -34,8 +34,10 @@ export function useHomePublicData(fetcher: typeof fetchPublicHome = fetchPublicH
     try {
       const payload = await fetcher(controller.signal)
       enrichment.value = mapPublicHomeToEnrichment(payload)
-      source.value = 'backend'
-      failed.value = false
+      // The source marker is truthful to VISIBLE participation: 'backend' only
+      // when mapped data actually carries non-empty content for the page.
+      source.value = enrichment.value.hasData ? 'backend' : 'fallback'
+      failed.value = !enrichment.value.hasData
     } catch {
       // Graceful degradation: the static homepage projection remains the page.
       source.value = 'fallback'

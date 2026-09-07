@@ -15,6 +15,7 @@
  * "NARRATIVE → USABLE ARCHIVE" line is absent. Holdings rows are informational
  * (no fake links); the single CTA per door is the navigation.
  */
+import { computed } from 'vue'
 import {
   HOME_DOMAINS,
   HOME_CHAPTERS,
@@ -23,8 +24,18 @@ import {
   HOME_KNOWLEDGE,
   HOME_HERITAGE,
 } from '../../data/homeProjection'
+import type { HomePublicEnrichment } from '../../data/homePublicEnrichment'
 
 defineOptions({ name: 'HomeDomainsSection' })
+
+/** Optional backend /public/home enrichment (REM-02): when present and
+ *  non-empty, published portal data participates in the matching door's
+ *  existing holdings rows; when null/empty the frozen static rows stand. */
+const props = withDefaults(defineProps<{ published?: HomePublicEnrichment | null }>(), {
+  published: null,
+})
+
+const publishedWorks = computed(() => (props.published?.works ?? []).slice(0, 2))
 
 const domains = HOME_DOMAINS.domains
 /* domain supporting material (existing data, per door) */
@@ -114,6 +125,38 @@ const leads = [
               <span v-for="row in heritageRows" :key="row.title" class="home-domains__pv">
                 <b>{{ row.title }}</b
                 ><span>{{ row.meta }}</span>
+              </span>
+            </template>
+
+            <!-- REM-02: backend /public/home data participates in the matching
+                 door's existing holdings when the published inventory is
+                 non-empty; otherwise these lines are absent and the frozen
+                 static rows remain the only content. -->
+            <template v-if="published && domain.no === '01' && published.counts.persons > 0">
+              <span class="home-domains__pv home-domains__pv--live">
+                <b>已上线公开人物</b><span>{{ published.counts.persons }} 条档案</span>
+              </span>
+            </template>
+            <template v-else-if="published && domain.no === '02'">
+              <span
+                v-for="row in publishedWorks"
+                :key="row.work_id"
+                class="home-domains__pv home-domains__pv--live"
+              >
+                <b>{{ row.title }}</b
+                ><span>{{ row.dynasty ? row.dynasty + ' · 已发布文献' : '已发布文献' }}</span>
+              </span>
+            </template>
+            <template v-else-if="published && domain.no === '03' && published.counts.c_terms > 0">
+              <span class="home-domains__pv home-domains__pv--live">
+                <b>已上线公开术语</b><span>{{ published.counts.c_terms }} 条</span>
+              </span>
+            </template>
+            <template
+              v-else-if="published && domain.no === '04' && published.counts.heritage_projects > 0"
+            >
+              <span class="home-domains__pv home-domains__pv--live">
+                <b>已上线公开传承档案</b><span>{{ published.counts.heritage_projects }} 项</span>
               </span>
             </template>
           </div>

@@ -143,9 +143,7 @@ describe('HomeView integration', () => {
     const wrapper = mountHome()
     await flushPromises()
     await wrapper.vm.$nextTick()
-    const homeCalls = fetchMock.mock.calls.filter(
-      (c) => (c[0] as string) === '/api/v1/public/home',
-    )
+    const homeCalls = fetchMock.mock.calls.filter((c) => (c[0] as string) === '/api/v1/public/home')
     expect(homeCalls).toHaveLength(1)
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('backend')
     wrapper.unmount()
@@ -153,17 +151,12 @@ describe('HomeView integration', () => {
   })
 
   it('backend failure degrades to fallback and the frozen 8 sections still render', async () => {
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockRejectedValue(new Error('network down')),
-    )
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
     const wrapper = mountHome()
     await flushPromises()
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('fallback')
-    const ids = wrapper
-      .findAll('section[id^="home-"]')
-      .map((s) => s.attributes('id'))
+    const ids = wrapper.findAll('section[id^="home-"]').map((s) => s.attributes('id'))
     expect(ids).toEqual(SECTION_IDS)
     // Hero content intact on the failure path.
     expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
@@ -172,15 +165,54 @@ describe('HomeView integration', () => {
     vi.unstubAllGlobals()
   })
 
-  it('empty backend payload still renders and marks backend (defensive map)', async () => {
+  it('empty backend payload renders static content and marks fallback (no visible backend data)', async () => {
     const fetchMock = vi
       .fn()
-      .mockResolvedValue(okResponse({ works: [], counts: { works: 0, persons: 0, heritage_projects: 0, c_terms: 0 } }))
+      .mockResolvedValue(
+        okResponse({
+          works: [],
+          counts: { works: 0, persons: 0, heritage_projects: 0, c_terms: 0 },
+        }),
+      )
+    vi.stubGlobal('fetch', fetchMock)
+    const wrapper = mountHome()
+    await flushPromises()
+    // Nothing from the backend participates visually -> truthful fallback marker.
+    expect(wrapper.find('.home').attributes('data-home-source')).toBe('fallback')
+    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(8)
+    expect(wrapper.text()).not.toContain('已上线公开人物')
+    wrapper.unmount()
+    vi.unstubAllGlobals()
+  })
+
+  it('PARTICIPATION: backend persons/works values render visibly in the matching domain doors', async () => {
+    const payload = {
+      works: [
+        {
+          work_id: 'w-live',
+          title: '皇甫谧新刊论著',
+          dynasty: '西晋',
+          category: '医书',
+          edition_count: 2,
+          publication_status: 'published',
+        },
+      ],
+      counts: { works: 1, persons: 2, heritage_projects: 0, c_terms: 0 },
+    }
+    const fetchMock = vi.fn().mockResolvedValue(okResponse(payload))
     vi.stubGlobal('fetch', fetchMock)
     const wrapper = mountHome()
     await flushPromises()
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('backend')
+    // visible backend-derived content inside the existing door holdings
+    expect(wrapper.text()).toContain('已上线公开人物')
+    expect(wrapper.text()).toContain('2 条档案')
+    expect(wrapper.text()).toContain('皇甫谧新刊论著')
+    expect(wrapper.text()).toContain('已发布文献')
+    // frozen structure still intact alongside participation
     expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(8)
+    expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
+    expect(wrapper.find('#home-search-input').exists()).toBe(true)
     wrapper.unmount()
     vi.unstubAllGlobals()
   })
