@@ -164,6 +164,30 @@ they launched. See `apps/frontend/playwright.config.ts`,
 `infra/scripts/fast-runtime-gate.sh`, `infra/scripts/golden-runtime-gate.sh`.
 Static-file serving binds the release `manifest.json` source SHA (ND-2).
 
+### ND1-H01-GOLDEN-PORT-CONTRACT — one frontend-server owner per invocation
+
+The runtime gates use the **Playwright-owned frontend model**: the gate never
+pre-starts the frontend Vite. Playwright's webServer is the single frontend
+owner (`reuseExistingServer:false` + `--strictPort` + `HFM_TARGET_SHA`
+inheritance). Gate contract for every browser invocation:
+
+```text
+HFM_E2E_PORT        = GOLDEN_FRONTEND_PORT          (must be free before launch)
+HFM_E2E_BASE        = http://localhost:GOLDEN_FRONTEND_PORT
+HFM_E2E_TARGET_SHA  = SOURCE_SHA                     (checked by Playwright at load)
+CF01_BASE           = http://localhost:GOLDEN_FRONTEND_PORT   (test URL input only; equals HFM_E2E_BASE)
+```
+
+`CF01_BASE` remains only a test URL input for `golden-runtime.spec.ts` and is
+always set equal to `HFM_E2E_BASE` in gate invocations. While the recorded
+Playwright child runs, the gate resolves the listener on
+`GOLDEN_FRONTEND_PORT` and verifies PID, CWD under `apps/frontend`, port,
+process ownership and `HFM_TARGET_SHA == SOURCE_SHA`; `HARNESS_FRONTEND_TARGET_SHA`
+is emitted only after that check passes. If Playwright exits before the
+listener is verified the gate fails. On every failure path the gate stops
+only the recorded Playwright child and its verified (owned + SHA) child
+resources — never a foreign or stale listener.
+
 ## ND2_EXECUTION_REQUIRED checklist (not ND-1 evidence)
 
 - Apply and test the Nginx/systemd example configs on the real target

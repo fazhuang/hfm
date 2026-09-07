@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# HFM CLEAN FORWARD CF-01 — FAST_RUNTIME_GATE (ND-1 H01 + RV-01 hardened)
+# HFM CLEAN FORWARD CF-01 — FAST_RUNTIME_GATE
+# (ND-1 H01 + RV-01 hardened; ND1-H01-GOLDEN-PORT-CONTRACT)
 #
 # Daily regression: real backend + real frontend + real browser, NO mock.
 # Reuses the current database (does NOT create a fresh disposable one) — use
@@ -7,16 +8,23 @@
 #
 #   FAST_RUNTIME_GATE = real DB (existing) + real /api proxy + real browser
 #
-# ND-1 H01 + RV-01 (test-harness hardening): each target port is classified
-# BEFORE any reuse or navigation:
-#   free     → this run starts its own server (env HFM_TARGET_SHA=SOURCE_SHA),
-#              verified after startup;
-#   owned    → reused ONLY when the listener PID's cwd is this repository AND
-#              its process environment carries HFM_TARGET_SHA == SOURCE_SHA;
-#   stale    → same-CWD process without the current SHA: FAIL (never reused);
-#   foreign  → process outside this repository: FAIL (never reused).
-# Foreign/stale processes are NEVER killed; cleanup stops only recorded PIDs
-# owned by this run.
+# FRONTEND OWNERSHIP MODEL (ND1-H01-GOLDEN-PORT-CONTRACT): identical to the
+# golden gate — the gate never pre-starts the frontend. Playwright is the
+# single frontend-server owner: its webServer launches the repository Vite
+# on GOLDEN_FRONTEND_PORT (reuseExistingServer:false + strictPort +
+# HFM_TARGET_SHA). The gate requires the port to be free BEFORE launch
+# (foreign/stale occupant fails closed and is never killed), launches
+# Playwright as a recorded child with one coherent contract
+# (HFM_E2E_PORT == HFM_E2E_BASE == CF01_BASE ==
+# http://localhost:GOLDEN_FRONTEND_PORT, HFM_E2E_TARGET_SHA == SOURCE_SHA),
+# and verifies the owned listener (PID/CWD/port/SHA) while Playwright runs,
+# emitting HARNESS_FRONTEND_TARGET_SHA only after the check passes. If
+# Playwright exits before the listener is verified the gate fails. Cleanup
+# stops only the recorded Playwright child and its verified child resources.
+#
+# The BACKEND stays gate-managed: reuse is allowed ONLY when the listener is
+# owned (cwd under this repo) AND its env carries HFM_TARGET_SHA == current
+# source SHA; stale/foreign occupants fail closed and are never killed.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 FAIL=0
@@ -29,6 +37,7 @@ GOLDEN_FRONTEND_PORT="${GOLDEN_FRONTEND_PORT:-5199}"
 DB_URL="$HFM_DATABASE_URL"
 SOURCE_SHA="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || true)"
 BE_PID=""
+PW_PID=""
 FE_PID=""
 
 listener_pid() { lsof -nP -iTCP:"$1" -sTCP:LISTEN -t 2>/dev/null | head -1; }
@@ -41,90 +50,147 @@ pid_has_env() { # PID TOKEN — true when the process environment contains TOKEN
   fi
   return 1
 }
+child_alive() { # PID — true while the child exists and is not a zombie.
+  local s
+  s="$(ps -o stat= -p "$1" 2>/dev/null | tr -d ' ')"
+  [[ -n "$s" && "$s" != "Z" ]]
+}
 
-# port_status PORT KIND DIRPREFIX OUTVAR — sets OUTVAR to "free" |
-# "reuse <pid>" | "stale <pid>" | "foreign <pid>"; diagnostics go to stdout
-# and FAIL is recorded for stale/foreign (never reused, never killed).
-port_status() {
-  local port="$1" kind="$2" dirprefix="$3" outvar="$4"
-  local pid cwd token
-  pid="$(listener_pid "$port")" || true
-  [[ -z "$pid" ]] && { printf -v "$outvar" "%s" "free"; return 0; }
+owned_listener() {
+  local pid cwd
+  pid="$(listener_pid "$1")" || true
+  [[ -z "$pid" ]] && return 0
   cwd="$(pid_cwd "$pid")" || true
   case "$cwd" in
-    "$dirprefix"*) ;;
-    *)
-      echo "HARNESS_FOREIGN_OWNER=FAIL kind=$kind port=$port pid=$pid cwd=${cwd:-<unknown>}"
-      FAIL=1
-      printf -v "$outvar" "%s" "foreign $pid"
-      return 0
-      ;;
+    "$2"*) echo "$pid" ;;
   esac
-  token="HFM_TARGET_SHA=$SOURCE_SHA"
-  if pid_has_env "$pid" "$token"; then
-    printf -v "$outvar" "%s" "reuse $pid"
-  else
-    echo "HARNESS_TARGET_SHA=FAIL kind=$kind port=$port pid=$pid expected=$SOURCE_SHA (stale or unverified process; free the port and re-run)"
-    FAIL=1
-    printf -v "$outvar" "%s" "stale $pid"
-  fi
-  return 0
 }
 
 health_on_port() { curl -sf --max-time 3 "$2" >/dev/null 2>&1; }
 
+# backend_status OUTVAR — sets OUTVAR to "free" | "reuse <pid>" | "stale" |
+# "foreign"; diagnostics to stdout; FAIL recorded for stale/foreign.
+backend_status() {
+  local outvar="$1" pid cwd
+  pid="$(listener_pid "$GOLDEN_BACKEND_PORT")" || true
+  [[ -z "$pid" ]] && { printf -v "$outvar" "%s" "free"; return 0; }
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$ROOT/apps/backend"*) ;;
+    *)
+      echo "HARNESS_FOREIGN_OWNER=FAIL kind=backend port=$GOLDEN_BACKEND_PORT pid=$pid cwd=${cwd:-<unknown>}"
+      FAIL=1
+      printf -v "$outvar" "%s" "foreign"
+      return 0
+      ;;
+  esac
+  if pid_has_env "$pid" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+    printf -v "$outvar" "%s" "reuse $pid"
+  else
+    echo "HARNESS_TARGET_SHA=FAIL kind=backend port=$GOLDEN_BACKEND_PORT pid=$pid expected=$SOURCE_SHA (stale or unverified process; free the port and re-run)"
+    FAIL=1
+    printf -v "$outvar" "%s" "stale"
+  fi
+  return 0
+}
+
+# frontend_must_be_free — Playwright owns the frontend; any occupant is FAIL.
+frontend_must_be_free() {
+  local pid cwd
+  pid="$(listener_pid "$GOLDEN_FRONTEND_PORT")" || true
+  [[ -z "$pid" ]] && return 0
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$ROOT/apps/frontend"*)
+      echo "HARNESS_STALE_OWNER=FAIL kind=frontend port=$GOLDEN_FRONTEND_PORT pid=$pid (Playwright owns the frontend; free the port and re-run)"
+      ;;
+    *)
+      echo "HARNESS_FOREIGN_OWNER=FAIL kind=frontend port=$GOLDEN_FRONTEND_PORT pid=$pid cwd=${cwd:-<unknown>}"
+      ;;
+  esac
+  FAIL=1
+  return 1
+}
+
 kill_owned_listener() {
+  # PID CWD_DIRPREFIX — stop only when the process is proven owned. SIGTERM,
+  # then wait up to 5s; an owned process that ignores SIGTERM is force-killed.
   local pid="$1" prefix="$2" cwd
   [[ -n "$pid" ]] || return 0
   cwd="$(pid_cwd "$pid")" || true
   case "$cwd" in
-    "$prefix"*) kill "$pid" 2>/dev/null || true ;;
-    *) echo "HARNESS_SKIP_FOREIGN_KILL pid=$pid (not owned; left intact)" ;;
+    "$prefix"*) ;;
+    *) echo "HARNESS_SKIP_FOREIGN_KILL pid=$pid (not owned; left intact)"; return 0 ;;
+  esac
+  kill "$pid" 2>/dev/null || true
+  for _ in $(seq 1 10); do
+    kill -0 "$pid" 2>/dev/null || return 0
+    sleep 0.5
+  done
+  cwd="$(pid_cwd "$pid")" || true
+  case "$cwd" in
+    "$prefix"*) kill -9 "$pid" 2>/dev/null || true ;;
+    *) echo "HARNESS_SKIP_FORCE_KILL pid=$pid (ownership changed; left intact)" ;;
   esac
 }
 
 cleanup() {
-  kill_owned_listener "${BE_PID:-}" "$ROOT/apps/backend"
+  if [ -n "${PW_PID:-}" ] && child_alive "$PW_PID"; then
+    kill "$PW_PID" 2>/dev/null || true
+  fi
   kill_owned_listener "${FE_PID:-}" "$ROOT/apps/frontend"
+  # Any remaining listener on the frontend port carrying THIS run's
+  # HFM_TARGET_SHA is this run's orphaned webServer child; foreign and stale
+  # (same-CWD but other-SHA) listeners are never touched.
+  FE_LEFT="$(owned_listener "$GOLDEN_FRONTEND_PORT" "$ROOT/apps/frontend")" || true
+  if [ -n "$FE_LEFT" ] && pid_has_env "$FE_LEFT" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+    kill_owned_listener "$FE_LEFT" "$ROOT/apps/frontend"
+  fi
+  kill_owned_listener "${BE_PID:-}" "$ROOT/apps/backend"
 }
 trap cleanup EXIT
 
 rec HARNESS_SOURCE_SHA "$SOURCE_SHA"
 
-# Pre-classify both ports; bail before any server/navigation when either is
-# stale or foreign (never reused, never killed).
+# Pre-classify the backend; require the frontend port to be free for the
+# Playwright-owned Vite. Bail before any server/navigation on stale/foreign.
 BACKEND_STATUS=""
-FRONTEND_STATUS=""
-port_status "$GOLDEN_BACKEND_PORT" backend "$ROOT/apps/backend" BACKEND_STATUS
-port_status "$GOLDEN_FRONTEND_PORT" frontend "$ROOT/apps/frontend" FRONTEND_STATUS
+backend_status BACKEND_STATUS
+frontend_must_be_free
 if [ "$FAIL" -ne 0 ]; then
-  echo "FAST_RUNTIME_GATE=FAIL (target port occupied by a foreign or stale process; free the port and re-run)"
+  echo "FAST_RUNTIME_GATE=FAIL (backend foreign/stale or frontend port occupied; free the port and re-run)"
   exit 1
 fi
-case "$BACKEND_STATUS" in free|reuse*) ;; *) echo "FAST_RUNTIME_GATE=FAIL"; exit 1 ;; esac
-case "$FRONTEND_STATUS" in free|reuse*) ;; *) echo "FAST_RUNTIME_GATE=FAIL"; exit 1 ;; esac
 
 step "backend on :$GOLDEN_BACKEND_PORT"
 if [[ "$BACKEND_STATUS" == "free" ]]; then
-  (cd "$ROOT/apps/backend" && \
-    HFM_DATABASE_URL="$DB_URL" HFM_TARGET_SHA="$SOURCE_SHA" \
-    nohup .venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port "$GOLDEN_BACKEND_PORT" >/tmp/cf01-fast-backend.log 2>&1) &
+  # Deterministic child: exec chain keeps one PID, so $! is the server PID.
+  (cd "$ROOT/apps/backend" && exec \
+    env HFM_DATABASE_URL="$DB_URL" HFM_TARGET_SHA="$SOURCE_SHA" \
+    nohup "$ROOT/apps/backend/.venv/bin/python" -m uvicorn hfm.main:app \
+      --host 127.0.0.1 --port "$GOLDEN_BACKEND_PORT" >/tmp/cf01-fast-backend.log 2>&1) &
+  BE_PID=$!
   for _ in $(seq 1 30); do
     if health_on_port "$GOLDEN_BACKEND_PORT" "http://127.0.0.1:$GOLDEN_BACKEND_PORT/health"; then break; fi
     sleep 1
   done
   if ! health_on_port "$GOLDEN_BACKEND_PORT" "http://127.0.0.1:$GOLDEN_BACKEND_PORT/health"; then
     echo "BACKEND=FAIL"; tail -20 /tmp/cf01-fast-backend.log; FAIL=1
-  else
-    BE_PID="$(listener_pid "$GOLDEN_BACKEND_PORT")" || true
-    if [ -n "$BE_PID" ] && pid_has_env "$BE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+  elif ! pid_has_env "$BE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+    for _ in $(seq 1 10); do
+      pid_has_env "$BE_PID" "HFM_TARGET_SHA=$SOURCE_SHA" && break
+      sleep 0.5
+    done
+    if pid_has_env "$BE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
       rec BACKEND PASS
       rec HARNESS_BACKEND_TARGET_SHA "PASS ($SOURCE_SHA)"
     else
       echo "BACKEND=FAIL (ownership/SHA unverifiable on :$GOLDEN_BACKEND_PORT)"
-      BE_PID=""
       FAIL=1
     fi
+  else
+    rec BACKEND PASS
+    rec HARNESS_BACKEND_TARGET_SHA "PASS ($SOURCE_SHA)"
   fi
 else
   BE_PID="${BACKEND_STATUS#reuse }"
@@ -132,39 +198,64 @@ else
   rec HARNESS_BACKEND_TARGET_SHA "MATCH ($SOURCE_SHA)"
 fi
 
-step "frontend on :$GOLDEN_FRONTEND_PORT"
-if [[ "$FRONTEND_STATUS" == "free" ]]; then
-  (cd "$ROOT/apps/frontend" && HFM_TARGET_SHA="$SOURCE_SHA" pnpm dev --port "$GOLDEN_FRONTEND_PORT" --strictPort >/tmp/cf01-fast-frontend.log 2>&1) &
-  for _ in $(seq 1 30); do
-    if health_on_port "$GOLDEN_FRONTEND_PORT" "http://localhost:$GOLDEN_FRONTEND_PORT/"; then break; fi
+# run_playwright_owned_frontend LOG — Playwright is the single frontend
+# owner; verified while running (see golden-runtime-gate.sh for semantics).
+run_playwright_owned_frontend() {
+  local log="$1" pid found="" pw_exit
+  occupant="$(listener_pid "$GOLDEN_FRONTEND_PORT")" || true
+  if [ -n "$occupant" ]; then
+    echo "HARNESS_FOREIGN_OWNER=FAIL kind=frontend port=$GOLDEN_FRONTEND_PORT pid=$occupant (port became occupied before launch)"
+    FAIL=1
+    return 1
+  fi
+  (
+    cd "$ROOT/apps/frontend" && \
+    HFM_E2E_PORT="$GOLDEN_FRONTEND_PORT" \
+    HFM_E2E_BASE="http://localhost:$GOLDEN_FRONTEND_PORT" \
+    HFM_E2E_TARGET_SHA="$SOURCE_SHA" \
+    CF01_BASE="http://localhost:$GOLDEN_FRONTEND_PORT" \
+    pnpm exec playwright test e2e/golden-runtime.spec.ts
+  ) >"$log" 2>&1 &
+  PW_PID=$!
+  for _ in $(seq 1 90); do
+    pid="$(owned_listener "$GOLDEN_FRONTEND_PORT" "$ROOT/apps/frontend")" || true
+    if [ -n "$pid" ]; then
+      if pid_has_env "$pid" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+        found="$pid"
+        FE_PID="$pid"
+        rec HARNESS_FRONTEND_TARGET_SHA "PASS (pid=$pid port=$GOLDEN_FRONTEND_PORT cwd=$ROOT/apps/frontend sha=$SOURCE_SHA)"
+        break
+      else
+        echo "HARNESS_TARGET_SHA=FAIL kind=frontend port=$GOLDEN_FRONTEND_PORT pid=$pid (owned but stale/unverified)"
+        FAIL=1
+        break
+      fi
+    fi
+    child_alive "$PW_PID" || break
     sleep 1
   done
-  if ! health_on_port "$GOLDEN_FRONTEND_PORT" "http://localhost:$GOLDEN_FRONTEND_PORT/"; then
-    echo "FRONTEND=FAIL"; tail -20 /tmp/cf01-fast-frontend.log; FAIL=1
-  else
-    FE_PID="$(listener_pid "$GOLDEN_FRONTEND_PORT")" || true
-    if [ -n "$FE_PID" ] && pid_has_env "$FE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
-      rec FRONTEND PASS
-      rec HARNESS_FRONTEND_TARGET_SHA "PASS ($SOURCE_SHA)"
-    else
-      echo "FRONTEND=FAIL (ownership/SHA unverifiable on :$GOLDEN_FRONTEND_PORT)"
-      FE_PID=""
-      FAIL=1
-    fi
+  pw_exit=0
+  wait "$PW_PID" 2>/dev/null || pw_exit=$?
+  PW_PID=""
+  if [ -z "$found" ]; then
+    echo "BROWSER=FAIL (no owned+SHA frontend listener verified while Playwright ran; exit=$pw_exit)"
+    tail -40 "$log" 2>/dev/null || true
+    FAIL=1
+    return 1
   fi
-else
-  FE_PID="${FRONTEND_STATUS#reuse }"
-  rec FRONTEND PASS
-  rec HARNESS_FRONTEND_TARGET_SHA "MATCH ($SOURCE_SHA)"
-fi
+  if [ "$pw_exit" -ne 0 ]; then
+    echo "BROWSER=FAIL (playwright exit=$pw_exit)"
+    tail -40 "$log" 2>/dev/null || true
+    FAIL=1
+    return 1
+  fi
+  rec BROWSER PASS
+  return 0
+}
 
-step "real browser golden journeys (no mock)"
+step "real browser golden journeys — Playwright-owned Vite (no mock)"
 if [ $FAIL -eq 0 ]; then
-  if ! (cd "$ROOT/apps/frontend" && \
-        CF01_BASE="http://localhost:$GOLDEN_FRONTEND_PORT" \
-        pnpm exec playwright test e2e/golden-runtime.spec.ts >/tmp/cf01-fast-browser.log 2>&1); then
-    echo "BROWSER=FAIL"; tail -40 /tmp/cf01-fast-browser.log; FAIL=1
-  else rec BROWSER PASS; fi
+  run_playwright_owned_frontend /tmp/cf01-fast-browser.log
 fi
 
 if [ $FAIL -eq 0 ]; then
