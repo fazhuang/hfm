@@ -105,8 +105,11 @@ if [[ ! -w "$MEDIA_ROOT" ]]; then
 fi
 echo "SMOKE_MEDIA=PASS ($MEDIA_ROOT)"
 
-# 3. Live backend endpoints through the same-origin /api.
-for endpoint in health "api/v1/system/version"; do
+# 3. Live backend endpoints through the same-origin /api. The backend mounts
+#    system/health routes at the ROOT (/version, /health — see hfm.main and
+#    hfm.api.system); there is no /api/v1/system/* namespace (ND-2
+#    RUNBOOK-CORRECTION-01: smoke must probe the real product contract).
+for endpoint in health version; do
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$API_BASE/$endpoint" || true)"
   if [[ "$code" != "200" ]]; then
     echo "SMOKE_API=FAIL ($endpoint -> HTTP $code)"
