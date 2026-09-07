@@ -21,12 +21,14 @@ DOC = REPO_ROOT / "docs" / "operations" / "ND1-RELEASE-QUALIFICATION.md"
 
 def test_nginx_example_contract() -> None:
     text = NGINX.read_text(encoding="utf-8")
-    # Topology: reverse proxy to the private uvicorn; static served by nginx;
-    # media volume; operator TLS template marked ND2.
+    # Topology: reverse proxy to the private uvicorn; static served by nginx.
     assert "proxy_pass http://127.0.0.1:8000" in text
     assert "try_files $uri $uri/ /index.html" in text
-    assert "/media/" in text and "/var/lib/hfm/media" in text
     assert "ND2_EXECUTION_REQUIRED" in text
+    # ND-1 RV-P0-01: NO public alias/root of the persistent media volume.
+    assert "location /media/" not in text
+    assert "alias /var/lib/hfm/media" not in text
+    assert "/api/v1/public/media/{asset_id}/bytes" in text
 
 
 def test_systemd_example_contract() -> None:
@@ -46,6 +48,46 @@ def test_qualification_doc_distinguishes_rollback_terms() -> None:
     assert "DATABASE_RESTORE" in text
     assert "0014 → 0013 downgrade is not supported as a release path" in text
     assert "ND2_EXECUTION_REQUIRED" in text
+    # RV-P0-01: media served only via the published endpoint; direct alias forbidden.
+    assert "media/{asset_id}/bytes" in text
+    assert "public alias" in text.lower() or "never alias" in text.lower()
+
+
+def test_nginx_example_passes_smoke_media_alias_check() -> None:
+    run = subprocess.run(
+        ["bash", str(SMOKE), "--media-alias-check", str(NGINX), "--check-args"],
+        cwd=str(REPO_ROOT),
+        env={"PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "HFM_ENV": "prod"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert "SMOKE_MEDIA_ALIAS=PASS" in run.stdout
+
+
+def test_smoke_media_alias_check_rejects_direct_alias(tmp_path: Path) -> None:
+    bad = tmp_path / "bad-nginx.conf"
+    bad.write_text(
+        "server {\n"
+        "    listen 443 ssl;\n"
+        "    location /media/ {\n"
+        "        alias /var/lib/hfm/media/;\n"
+        "    }\n"
+        "    location /api/ { proxy_pass http://127.0.0.1:8000; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    run = subprocess.run(
+        ["bash", str(SMOKE), "--media-alias-check", str(bad)],
+        cwd=str(REPO_ROOT),
+        env={"PATH": "/usr/bin:/bin:/usr/sbin:/sbin"},
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 1
+    assert "SMOKE_MEDIA_ALIAS=FAIL" in run.stdout
 
 
 def test_smoke_check_args_accepts_valid_inputs() -> None:
@@ -81,4 +123,7 @@ def test_smoke_check_args_rejects_placeholder_inputs() -> None:
         check=False,
     )
     assert run.returncode == 1
-    assert "SMOKE_ENV_MIGRATION=FAIL" in run.stdout or "PRODUCTION_SMOKE=FAIL" in run.stdout
+    assert (
+        "SMOKE_ENV_MIGRATION=FAIL" in run.stdout
+        or "PRODUCTION_SMOKE=FAIL" in run.stdout
+    )

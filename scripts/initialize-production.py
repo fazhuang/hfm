@@ -66,8 +66,6 @@ validator = _load_module(
 # hfm models/auth run from source (apps/backend/src) — same path the canonical
 # backend gates use; modules are loaded by file path so static checks stay clean.
 sys.path.insert(0, str(BACKEND_DIR / "src"))
-import hfm.models.identity  # noqa: F401  (register models on Base.metadata)
-from hfm.db.base import Base
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import ensure_roles_seeded, hash_password
 from sqlalchemy import func, select
@@ -86,14 +84,16 @@ _FORBIDDEN_PASSWORDS = {"password", "changeme", "changeme123", "admin", "secret"
 async def _initialize(
     db_url: str, admin_username: str, admin_password: str
 ) -> tuple[str, str, str]:
-    """Run initialization in one transaction; returns (roles, admin_state, admin_id)."""
+    """Run initialization in one transaction; returns (roles, admin_state, admin_id).
+
+    ND-1 RV-P1-03: this function NEVER emits DDL and never repairs schema
+    drift. It operates only on the qualified migrated schema (the preflight
+    verified current == 0014); every query below targets tables created by the
+    migrations. A structurally invalid target (e.g. a dropped table) raises
+    and rolls back instead of being silently mutated.
+    """
     engine = create_async_engine(db_url)
     try:
-        async with engine.begin() as conn:
-            # Roles are schema-level (Base.metadata has every model registered).
-            # ensure_roles_seeded only needs the identity tables, but running
-            # against a fully migrated database is required by the preflight.
-            await conn.run_sync(Base.metadata.create_all)  # no-op when tables exist
         factory = async_sessionmaker(
             engine, expire_on_commit=False, class_=AsyncSession
         )

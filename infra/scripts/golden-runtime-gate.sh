@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# HFM CLEAN FORWARD CF-01 — FULL_GOLDEN_GATE (ND-1 H01 hardened)
+# HFM CLEAN FORWARD CF-01 — FULL_GOLDEN_GATE (ND-1 H01 + RV-01 hardened)
 #
 # Proves the real runtime chain without any mock / route fulfillment:
 #   fresh disposable PostgreSQL
@@ -10,10 +10,12 @@
 #     → real Chromium journeys (HOME/PERSON/JIAYI/HERITAGE/SEARCH/RESEARCH_GUARD)
 #     → build + typecheck
 #
-# ND-1 H01 (test-harness hardening): every server started here is recorded by
-# its actual listener PID and cleaned up only after its working directory is
-# proven to be THIS repository. A foreign process occupying the target port
-# FAILS THE GATE (never reused, never killed). No broad pkill is used.
+# ND-1 H01 + RV-01 (test-harness hardening): servers are started ONLY by this
+# run and only when the target port is free; every launched process records
+# HFM_TARGET_SHA=<current source SHA> in its environment, which is verified
+# after startup. A foreign OR stale process already occupying a target port
+# FAILS the gate before any work (never reused, never killed). Cleanup
+# terminates only recorded PIDs whose cwd is proven to be this repository.
 #
 # Not for daily use (costly); milestone / CF acceptance runs this.
 set -euo pipefail
@@ -31,6 +33,7 @@ GOLDEN_APP_PW="${GOLDEN_APP_PW:-cf01-golden-pw}"
 GOLDEN_DB_URL="postgresql+asyncpg://hfm_app:${GOLDEN_APP_PW}@${GOLDEN_PGHOST}:${GOLDEN_PGPORT}/${GOLDEN_DB}"
 GOLDEN_BACKEND_PORT="${GOLDEN_BACKEND_PORT:-8000}"
 GOLDEN_FRONTEND_PORT="${GOLDEN_FRONTEND_PORT:-5199}"
+SOURCE_SHA="$(git -C "$ROOT" rev-parse HEAD 2>/dev/null || true)"
 
 rec() { echo "$1=$2"; }
 # Recorded listener PIDs owned by this run (killed on cleanup only after an
@@ -41,6 +44,14 @@ FE_PID=""
 # ------------------------------------------------------------------ ownership
 listener_pid() { lsof -nP -iTCP:"$1" -sTCP:LISTEN -t 2>/dev/null | head -1; }
 pid_cwd() { lsof -a -p "$1" -d cwd -Fn 2>/dev/null | sed -n 's/^n//p' | head -1; }
+pid_has_env() { # PID TOKEN — true when the process environment contains TOKEN.
+  local pid="$1" token="$2"
+  if ps eww -p "$pid" -o command= 2>/dev/null | grep -qF "$token"; then return 0; fi
+  if [[ -r "/proc/$pid/environ" ]] && tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | grep -qF "$token"; then
+    return 0
+  fi
+  return 1
+}
 
 # owned_listener PORT DIRPREFIX — echoes the listener PID when its cwd is
 # under DIRPREFIX (this repository's own process); empty otherwise.
@@ -54,17 +65,17 @@ owned_listener() {
   esac
 }
 
-# fail_on_foreign PORT KIND — a live listener on PORT whose cwd is NOT this
-# repository is a hard gate failure (never reused, never killed).
-fail_on_foreign() {
-  local pid cwd
-  pid="$(listener_pid "$1")" || true
+# port_free_or_fail PORT KIND — any occupant (foreign OR stale) is a hard
+# gate failure: this gate always starts its own fresh, SHA-recorded servers.
+port_free_or_fail() {
+  local port="$1" kind="$2" pid cwd
+  pid="$(listener_pid "$port")" || true
   [[ -z "$pid" ]] && return 0
   cwd="$(pid_cwd "$pid")" || true
   case "$cwd" in
-    "$ROOT"*) return 0 ;;   # owned (this repo) leftover — cleanup handles it
+    "$ROOT"*) echo "HARNESS_STALE_OWNER=FAIL kind=$kind port=$port pid=$pid (leftover process; free the port and re-run)" ;;
+    *) echo "HARNESS_FOREIGN_OWNER=FAIL kind=$kind port=$port pid=$pid cwd=${cwd:-<unknown>}" ;;
   esac
-  echo "HARNESS_FOREIGN_OWNER=FAIL kind=$2 port=$1 pid=$pid cwd=${cwd:-<unknown>}"
   FAIL=1
 }
 
@@ -89,11 +100,13 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# H01: refuse to run when a foreign process already owns a target port.
-fail_on_foreign "$GOLDEN_BACKEND_PORT" backend
-fail_on_foreign "$GOLDEN_FRONTEND_PORT" frontend
+rec HARNESS_SOURCE_SHA "$SOURCE_SHA"
+
+# RV-01/H01: refuse to run when any process (foreign or stale) owns a target port.
+port_free_or_fail "$GOLDEN_BACKEND_PORT" backend
+port_free_or_fail "$GOLDEN_FRONTEND_PORT" frontend
 if [ "$FAIL" -ne 0 ]; then
-  echo "FULL_GOLDEN_GATE=FAIL (foreign process on a target port; free the port and re-run)"
+  echo "FULL_GOLDEN_GATE=FAIL (target port occupied; free it and re-run)"
   exit 1
 fi
 
@@ -127,9 +140,9 @@ rec BOOTSTRAP "$([ $FAIL -eq 0 ] && echo PASS || echo FAIL)"
 step "start FastAPI backend (:$GOLDEN_BACKEND_PORT)"
 if [ $FAIL -eq 0 ]; then
   (cd "$ROOT/apps/backend" && \
-    HFM_DATABASE_URL="$GOLDEN_DB_URL" \
+    HFM_DATABASE_URL="$GOLDEN_DB_URL" HFM_TARGET_SHA="$SOURCE_SHA" \
     nohup .venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port "$GOLDEN_BACKEND_PORT" >/tmp/cf01-backend.log 2>&1) &
-  for i in $(seq 1 30); do
+  for _ in $(seq 1 30); do
     if curl -sf "http://127.0.0.1:$GOLDEN_BACKEND_PORT/health" >/dev/null 2>&1; then break; fi
     sleep 1
   done
@@ -137,16 +150,22 @@ if [ $FAIL -eq 0 ]; then
     echo "BACKEND=FAIL"; tail -20 /tmp/cf01-backend.log; FAIL=1
   else
     BE_PID="$(owned_listener "$GOLDEN_BACKEND_PORT" "$ROOT/apps/backend")" || true
-    if [ -n "$BE_PID" ]; then rec BACKEND PASS; else
-      echo "BACKEND=FAIL (listener ownership unverifiable on :$GOLDEN_BACKEND_PORT)"; FAIL=1; fi
+    if [ -n "$BE_PID" ] && pid_has_env "$BE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+      rec BACKEND PASS
+      rec HARNESS_BACKEND_TARGET_SHA "PASS ($SOURCE_SHA)"
+    else
+      echo "BACKEND=FAIL (ownership/SHA unverifiable on :$GOLDEN_BACKEND_PORT)"
+      BE_PID=""
+      FAIL=1
+    fi
   fi
 fi
 
 step "start Vite dev with real /api proxy (:$GOLDEN_FRONTEND_PORT)"
 if [ $FAIL -eq 0 ]; then
   (cd "$ROOT/apps/frontend" && \
-    nohup pnpm dev --port "$GOLDEN_FRONTEND_PORT" --strictPort >/tmp/cf01-frontend.log 2>&1) &
-  for i in $(seq 1 30); do
+    HFM_TARGET_SHA="$SOURCE_SHA" nohup pnpm dev --port "$GOLDEN_FRONTEND_PORT" --strictPort >/tmp/cf01-frontend.log 2>&1) &
+  for _ in $(seq 1 30); do
     if curl -sf "http://localhost:$GOLDEN_FRONTEND_PORT/" >/dev/null 2>&1; then break; fi
     sleep 1
   done
@@ -154,8 +173,14 @@ if [ $FAIL -eq 0 ]; then
     echo "FRONTEND=FAIL"; tail -20 /tmp/cf01-frontend.log; FAIL=1
   else
     FE_PID="$(owned_listener "$GOLDEN_FRONTEND_PORT" "$ROOT/apps/frontend")" || true
-    if [ -n "$FE_PID" ]; then rec FRONTEND PASS; else
-      echo "FRONTEND=FAIL (listener ownership unverifiable on :$GOLDEN_FRONTEND_PORT)"; FAIL=1; fi
+    if [ -n "$FE_PID" ] && pid_has_env "$FE_PID" "HFM_TARGET_SHA=$SOURCE_SHA"; then
+      rec FRONTEND PASS
+      rec HARNESS_FRONTEND_TARGET_SHA "PASS ($SOURCE_SHA)"
+    else
+      echo "FRONTEND=FAIL (ownership/SHA unverifiable on :$GOLDEN_FRONTEND_PORT)"
+      FE_PID=""
+      FAIL=1
+    fi
   fi
 fi
 

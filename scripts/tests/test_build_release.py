@@ -14,6 +14,7 @@ from __future__ import annotations
 import hashlib
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -25,7 +26,17 @@ PYTHON = "/usr/local/bin/python3.12"
 
 def _pypi_reachable() -> bool:
     run = subprocess.run(
-        ["curl", "-s", "-m", "8", "-o", "/dev/null", "-w", "%{http_code}", "https://pypi.org/simple/"],
+        [
+            "curl",
+            "-s",
+            "-m",
+            "8",
+            "-o",
+            "/dev/null",
+            "-w",
+            "%{http_code}",
+            "https://pypi.org/simple/",
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -35,7 +46,12 @@ def _pypi_reachable() -> bool:
 
 @pytest.mark.skipif(not _pypi_reachable(), reason="PyPI unreachable")
 def test_release_locks_parse() -> None:
-    run = subprocess.run(["bash", str(BUILD_SCRIPT), "--check"], capture_output=True, text=True, check=False)
+    run = subprocess.run(
+        ["bash", str(BUILD_SCRIPT), "--check"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
     assert run.returncode == 0, run.stdout
     assert "RELEASE_LOCKS=PASS" in run.stdout
 
@@ -44,7 +60,10 @@ def test_release_locks_parse() -> None:
 def test_release_build_emits_manifest_with_expected_artifacts(tmp_path: Path) -> None:
     out = tmp_path / "release"
     head = subprocess.run(
-        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"], capture_output=True, text=True, check=True
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
     ).stdout.strip()
     run = subprocess.run(
         [
@@ -58,10 +77,11 @@ def test_release_build_emits_manifest_with_expected_artifacts(tmp_path: Path) ->
         ],
         capture_output=True,
         text=True,
-        timeout=600,
+        timeout=900,
         check=False,
     )
     assert run.returncode == 0, run.stdout + run.stderr
+    assert "RUNTIME_WHEELHOUSE=DOWNLOAD_VERIFIED" in run.stdout
     manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
     assert manifest["source_sha"] == head
     paths = {artifact["path"]: artifact["sha256"] for artifact in manifest["artifacts"]}
@@ -71,3 +91,102 @@ def test_release_build_emits_manifest_with_expected_artifacts(tmp_path: Path) ->
     for path, digest in paths.items():
         blob = (out / path).read_bytes()
         assert hashlib.sha256(blob).hexdigest() == digest
+
+
+@pytest.mark.skipif(not _pypi_reachable(), reason="PyPI unreachable")
+def test_release_build_packages_hash_verified_runtime_closure(tmp_path: Path) -> None:
+    """RV-P1-02: the full production runtime closure is packaged + hash-verified."""
+    import re
+
+    out = tmp_path / "release"
+    head = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=True,
+    ).stdout.strip()
+    run = subprocess.run(
+        [
+            "bash",
+            str(BUILD_SCRIPT),
+            "--out",
+            str(out),
+            "--expect-sha",
+            head,
+            "--skip-frontend",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=900,
+        check=False,
+    )
+    assert run.returncode == 0, run.stdout + run.stderr
+
+    # The bundled lock copy and every runtime wheel must exist with the locked
+    # sha256 (download was already pip --require-hashes verified).
+    bundle_lock = (out / "runtime-requirements-production.lock").read_text(
+        encoding="utf-8"
+    )
+    pinned = {}
+    cur = None
+    for line in bundle_lock.splitlines():
+        m = re.match(r"^([A-Za-z0-9_.-]+==[^ ]+) \\$", line)
+        if m:
+            cur = m.group(1)
+            continue
+        hm = re.match(r"^\s*--hash=sha256:([0-9a-f]{64})$", line)
+        if hm and cur:
+            pinned.setdefault(cur.split("==")[0].replace("-", "_").lower(), set()).add(
+                hm.group(1)
+            )
+    wheelhouse = out / "runtime-wheelhouse"
+    wheels = sorted(wheelhouse.glob("*.whl"))
+    assert len(wheels) >= 20, "runtime closure should contain the full wheel set"
+    seen = {}
+    for wheel in wheels:
+        name = wheel.name.split("-")[0].replace("-", "_").lower()
+        seen.setdefault(name, set()).add(hashlib.sha256(wheel.read_bytes()).hexdigest())
+    for name in ("alembic", "asyncpg", "fastapi", "sqlalchemy", "uvicorn"):
+        assert name in seen, f"missing runtime package: {name}"
+        assert seen[name] & pinned.get(name, set()), f"hash mismatch for {name}"
+
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    assert any(
+        a["path"].startswith("runtime-wheelhouse/") for a in manifest["artifacts"]
+    )
+    assert any(
+        a["path"] == "runtime-requirements-production.lock"
+        for a in manifest["artifacts"]
+    )
+
+    # Clean-platform install from ONLY the bundle is executable on the declared
+    # platform (linux x86_64 + CPython 3.12); skipped on other hosts.
+    if sys.platform.startswith("linux") and sys.version_info[:2] == (3, 12):
+        env_dir = tmp_path / "runtime-venv"
+        subprocess.run([PYTHON, "-m", "venv", str(env_dir)], check=True)
+        install = subprocess.run(
+            [
+                str(env_dir / "bin" / "pip"),
+                "install",
+                "--no-index",
+                "--find-links",
+                str(wheelhouse),
+                "-r",
+                str(out / "runtime-requirements-production.lock"),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert install.returncode == 0, install.stderr[-2000:]
+        probe = subprocess.run(
+            [
+                str(env_dir / "bin" / "python"),
+                "-c",
+                "import fastapi, sqlalchemy, asyncpg, alembic, uvicorn",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert probe.returncode == 0, probe.stderr

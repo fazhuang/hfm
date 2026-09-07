@@ -35,7 +35,17 @@ _PG = pytest.mark.skipif(
 
 def _psql(dbname: str, query: str) -> str:
     run = subprocess.run(
-        ["psql", "-h", "127.0.0.1", "-U", os.environ.get("USER", "likeming"), "-d", dbname, "-tAc", query],
+        [
+            "psql",
+            "-h",
+            "127.0.0.1",
+            "-U",
+            os.environ.get("USER", "likeming"),
+            "-d",
+            dbname,
+            "-tAc",
+            query,
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -63,7 +73,10 @@ def isolated_db() -> Iterator[str]:
     if created.returncode != 0:
         pytest.skip(f"cannot create database: {created.stderr.strip()}")
     try:
-        env = {**os.environ, "HFM_DATABASE_URL": f"postgresql+asyncpg://{user}@127.0.0.1:5432/{dbname}"}
+        env = {
+            **os.environ,
+            "HFM_DATABASE_URL": f"postgresql+asyncpg://{user}@127.0.0.1:5432/{dbname}",
+        }
         migrated = subprocess.run(
             [PYTHON, "-m", "alembic", "-c", "alembic.ini", "upgrade", "head"],
             cwd=str(BACKEND_DIR),
@@ -83,7 +96,9 @@ def isolated_db() -> Iterator[str]:
         )
 
 
-def _run_init(dbname: str, *, username: str, password: str) -> subprocess.CompletedProcess[str]:
+def _run_init(
+    dbname: str, *, username: str, password: str
+) -> subprocess.CompletedProcess[str]:
     user = os.environ.get("USER", "likeming")
     env = {
         **os.environ,
@@ -112,7 +127,9 @@ def test_first_run_creates_admin_and_exact_roles(isolated_db: str) -> None:
     assert "INIT_ROLES=PASS" in run.stdout
     assert password not in run.stdout and password not in run.stderr
     assert _psql(isolated_db, "SELECT count(*) FROM roles") == "5"
-    codes = _psql(isolated_db, "SELECT count(*) FROM (SELECT DISTINCT code FROM roles) t")
+    codes = _psql(
+        isolated_db, "SELECT count(*) FROM (SELECT DISTINCT code FROM roles) t"
+    )
     assert codes == "5"
     assert (
         _psql(
@@ -170,3 +187,18 @@ def test_weak_password_rejected(isolated_db: str) -> None:
     assert run.returncode == 1
     assert "ADMIN_PASSWORD=FAIL" in run.stdout
     assert "password" not in run.stdout.split("ADMIN_PASSWORD=FAIL")[1]
+
+
+@_PG
+def test_initializer_never_repairs_dropped_table(isolated_db: str) -> None:
+    """RV-P1-03: initialization emits no DDL and fails, not repairs, drift."""
+    password = "D" + secrets.token_urlsafe(18)
+    first = _run_init(isolated_db, username="nd1-root", password=password)
+    assert first.returncode == 0 and "INIT_ADMIN=CREATED" in first.stdout
+    # Structural damage: drop a migrated table the initializer must rely on.
+    _psql(isolated_db, "DROP TABLE users CASCADE")
+    damaged = _run_init(isolated_db, username="nd1-root", password=password)
+    assert damaged.returncode == 1
+    assert "INITIALIZE_PRODUCTION=FAIL" in damaged.stdout
+    # The initializer must NOT have re-created the table (no create_all DDL).
+    assert _psql(isolated_db, "SELECT to_regclass('public.users') IS NULL") == "t"

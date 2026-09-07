@@ -69,7 +69,9 @@ def test_missing_database_url_fails() -> None:
 
 def test_template_database_url_fails() -> None:
     env = _valid_prod_env()
-    env["HFM_DATABASE_URL"] = "postgresql+asyncpg://CHANGEME:CHANGEME@CHANGEME:5432/CHANGEME"
+    env["HFM_DATABASE_URL"] = (
+        "postgresql+asyncpg://CHANGEME:CHANGEME@CHANGEME:5432/CHANGEME"
+    )
     errors = validator.validate_env(env, environment="prod")
     assert errors and "template placeholder" in errors[0]
 
@@ -124,7 +126,11 @@ def test_test_environment_sqlite_and_no_token_secret_allowed() -> None:
 def test_diagnostics_are_redacted(tmp_path: Path) -> None:
     env_file = _write_env(
         tmp_path / "redacted.env",
-        {"HFM_ENV": "prod", "HFM_DATABASE_URL": "CHANGEME", "HFM_TOKEN_SECRET": "CHANGEME"},
+        {
+            "HFM_ENV": "prod",
+            "HFM_DATABASE_URL": "CHANGEME",
+            "HFM_TOKEN_SECRET": "CHANGEME",
+        },
     )
     result = subprocess.run(
         [PYTHON, str(VALIDATOR), "--env-file", str(env_file), "--env", "prod"],
@@ -157,14 +163,18 @@ def _sqlite_at_revision(db_file: Path, revision: str) -> None:
 def test_migration_verification_accepts_0014(tmp_path: Path) -> None:
     db_file = tmp_path / "at0014.db"
     _sqlite_at_revision(db_file, "0014")
-    errors = validator.verify_migration(BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014")
+    errors = validator.verify_migration(
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014"
+    )
     assert errors == []
 
 
 def test_migration_verification_blocks_0013(tmp_path: Path) -> None:
     db_file = tmp_path / "at0013.db"
     _sqlite_at_revision(db_file, "0013")
-    errors = validator.verify_migration(BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014")
+    errors = validator.verify_migration(
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014"
+    )
     assert errors and "current revision" in errors[0]
 
 
@@ -214,7 +224,14 @@ def test_deploy_gate_blocks_pending_migration_even_with_apply(tmp_path: Path) ->
         },
     )
     run = subprocess.run(
-        ["bash", str(DEPLOY_GATE), "test", "--env-file", str(env_file), "--apply-migrations"],
+        [
+            "bash",
+            str(DEPLOY_GATE),
+            "test",
+            "--env-file",
+            str(env_file),
+            "--apply-migrations",
+        ],
         cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,

@@ -86,6 +86,24 @@ cp "$REPO_ROOT/apps/backend/alembic.ini" "$OUT/alembic/alembic.ini"
 find "$OUT/alembic" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 echo "ALEMBIC_PACKAGE=COPIED"
 
+# ------------------------------------------------ runtime closure (RV-P1-02)
+# Download-verify and package the COMPLETE production runtime closure from
+# requirements-production.lock as a hash-verified wheelhouse for the declared
+# platform/ABI. pip rejects any artifact whose sha256 does not match the lock.
+# Runtime venv provisioning from the bundle (see ops doc):
+#   python3.12 -m venv /opt/hfm/venv
+#   /opt/hfm/venv/bin/pip install --no-index \
+#       --find-links /opt/hfm/runtime-wheelhouse \
+#       -r /opt/hfm/runtime-requirements-production.lock
+mkdir -p "$OUT/runtime-wheelhouse"
+"$BUILD_VENV/bin/python" -m pip download --require-hashes --only-binary=:all: \
+  --platform manylinux2014_x86_64 --python-version 312 --implementation cp --abi cp312 \
+  -r "$REPO_ROOT/infra/requirements-production.lock" -d "$OUT/runtime-wheelhouse" \
+  >/tmp/hfm-runtime-download.log 2>&1
+cp "$REPO_ROOT/infra/requirements-production.lock" "$OUT/runtime-requirements-production.lock"
+RUNTIME_WHEEL_COUNT="$(find "$OUT/runtime-wheelhouse" -name '*.whl' | wc -l | tr -d ' ')"
+echo "RUNTIME_WHEELHOUSE=DOWNLOAD_VERIFIED wheels=$RUNTIME_WHEEL_COUNT"
+
 # ------------------------------------------------ frontend static build
 if [[ "$SKIP_FRONTEND" -eq 0 ]]; then
   (cd "$REPO_ROOT/apps/frontend" && pnpm install --frozen-lockfile >/dev/null && pnpm build >/dev/null)
@@ -107,7 +125,7 @@ def sha256(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 artifacts = []
-for root in ("wheels", "alembic"):
+for root in ("wheels", "alembic", "runtime-wheelhouse"):
     base = Path(out) / root
     for path in sorted(base.rglob("*")):
         if path.is_file():
@@ -119,6 +137,15 @@ if not skip_fe:
         if path.is_file():
             rel = f"frontend-dist/{path.relative_to(base)}"
             artifacts.append({"path": rel, "sha256": sha256(path), "size": path.stat().st_size})
+lock_copy = Path(out) / "runtime-requirements-production.lock"
+if lock_copy.is_file():
+    artifacts.append(
+        {
+            "path": "runtime-requirements-production.lock",
+            "sha256": sha256(lock_copy),
+            "size": lock_copy.stat().st_size,
+        }
+    )
 
 manifest = {
     "source_sha": source_sha,

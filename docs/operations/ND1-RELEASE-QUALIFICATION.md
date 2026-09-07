@@ -56,8 +56,18 @@ Build: `scripts/build-release.sh --out DIR [--expect-sha SHA]
 [--skip-frontend]` builds the backend wheel in an isolated venv from the
 build lock (no editable reuse), packages the Alembic tree (without
 `__pycache__`), builds the frontend static dist with the frozen pnpm lock,
-and emits `manifest.json` (source SHA, tool/lock identifiers, per-artifact
-sha256). `build-release.sh --check` validates lock syntax offline.
+DOWNLOAD-VERIFIES and packages the complete production runtime closure as a
+hash-verified wheelhouse from `requirements-production.lock`, and emits
+`manifest.json` (source SHA, tool/lock identifiers, per-artifact sha256
+including every runtime wheel). Runtime provisioning from the release bundle
+(ND-1 RV-P1-02):
+
+    python3.12 -m venv /opt/hfm/venv
+    /opt/hfm/venv/bin/pip install --no-index \
+        --find-links /opt/hfm/runtime-wheelhouse \
+        -r /opt/hfm/runtime-requirements-production.lock
+
+`build-release.sh --check` validates lock syntax offline.
 
 Regeneration of the Python locks is documented in the lock headers and must
 run on the declared platform.
@@ -79,23 +89,36 @@ Repeat execution: an active SYSTEM_ADMIN present → `ALREADY_PRESENT`
 (idempotent no-op); an admin user missing the role link → `REPAIRED`; all
 writes happen in one transaction (rollback on error → no partial state).
 The preflight requires the database to be migrated at 0014 and verifies the
-exact role matrix (5 roles, no duplicates).
+exact role matrix (5 roles, no duplicates). ND-1 RV-P1-03: initialization
+NEVER emits DDL and never repairs schema drift — `Base.metadata.create_all`
+is not called; a structurally invalid target (missing tables) fails the run
+instead of being silently mutated.
 
 ## 4. Deploy, persistence and recovery package (B04)
 
 Topology (example configs, unapplied at ND-1):
 `Nginx (infra/nginx/hfm.conf.example) → static same-origin /api → private
 Uvicorn 127.0.0.1:8000 (infra/systemd/hfm-backend.service.example) → private
-PostgreSQL`. Vite is never the production server. Media bytes live on the
-persistent volume (`HFM_MEDIA_ROOT`, proxied under `/media/`).
+PostgreSQL`. Vite is never the production server.
+
+Media boundary (ND-1 RV-P0-01): media bytes live on the persistent volume
+(`HFM_MEDIA_ROOT`) but are served ONLY through the application endpoint
+`/api/v1/public/media/{asset_id}/bytes`, which rejects absent, draft and
+withdrawn assets before resolving the local file. Nginx MUST never alias or
+root the raw media volume to a public URL; `production-smoke.sh
+--media-alias-check` and `scripts/tests/test_operations_package.py` enforce
+that a direct persistent-root alias is forbidden.
 
 Lifecycle: start/stop/restart/reboot recovery = `systemctl` + `Restart=
 on-failure` on the stateless backend; the database and media volume are the
 only persistent state.
 
-Smoke: `scripts/production-smoke.sh --check-args` (input validation only) and
-`--api-base URL` (live health + version + migration state + media volume
-checks against a real release).
+Smoke: `scripts/production-smoke.sh --check-args` (input validation only),
+`--media-alias-check FILE` (nginx media-boundary contract, ND-1 RV-P0-01)
+and `--api-base URL` (live health + version + migration state + media volume
++ media probes: a direct `/media/<key>` URL must NOT be served 200, a
+published asset must be served through `/api/v1/public/media/{asset_id}/bytes`
+with operator-supplied asset ids at ND-2).
 
 Backup/restore (PostgreSQL + media) and rollback decisions:
 
@@ -133,10 +156,13 @@ permission change was made.
 
 Closed by the harness changes in this packet: Playwright/webServer fail
 closed when the target port is occupied by a foreign process (never silently
-reused), and the runtime gate scripts prove ownership (PID/CWD/SHA) before
-reusing a running server and clean up only processes they launched. See
-`apps/frontend/playwright.config.ts`, `apps/frontend/e2e/golden-runtime.spec.ts`,
+reused) and bind the launched source SHA; the runtime gate scripts prove
+ownership (PID/CWD/port) and TARGET_SHA identity (the process environment
+must carry the current source SHA) before reuse, and clean up only processes
+they launched. See `apps/frontend/playwright.config.ts`,
+`apps/frontend/e2e/golden-runtime.spec.ts`,
 `infra/scripts/fast-runtime-gate.sh`, `infra/scripts/golden-runtime-gate.sh`.
+Static-file serving binds the release `manifest.json` source SHA (ND-2).
 
 ## ND2_EXECUTION_REQUIRED checklist (not ND-1 evidence)
 
