@@ -28,6 +28,12 @@ Group=hfm
 WorkingDirectory=/opt/hfm
 # Real HFM_* inputs only; validated by scripts/validate-production-env.py.
 EnvironmentFile=/etc/hfm/prod.env
+# ND-1 B01 mechanical fail-closed start dependency: the production env +
+# exact-migration preflight runs BEFORE the process starts; any failure
+# (missing/placeholder env, unreachable DB, current != 0014) prevents start.
+# OPERATOR INPUT: place validate-production-env.py at /opt/hfm/bin/ during ND-2
+# (the backend itself also fails closed at import when prod env is invalid).
+ExecStartPre=/opt/hfm/bin/validate-production-env.py --env prod --verify-migration --backend-dir /opt/hfm/alembic
 ExecStart=/opt/hfm/venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port 8000
 Restart=on-failure
 RestartSec=5

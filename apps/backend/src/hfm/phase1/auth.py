@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from hfm.core.config import TOKEN_SECRET
 from hfm.models.identity import (
     ROLE_PERMISSIONS,
     Role,
@@ -35,8 +36,9 @@ from hfm.models.identity import (
     user_roles,
 )
 
-#: signing secret (stdlib-driven; production would load from env/config)
-_TOKEN_SECRET = os.environ.get("HFM_TOKEN_SECRET", "hfm-phase1-dev-secret")
+#: signing secret from the single config source (ND-1 B01: production import
+#: fails closed unless a real HFM_TOKEN_SECRET is present — see hfm.core.config).
+_TOKEN_SECRET = TOKEN_SECRET
 _TOKEN_TTL_SECONDS = 3600  # 1h
 _SCRYPT_N = 2**14
 _SCRYPT_R = 8

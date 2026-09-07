@@ -19,7 +19,68 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PYTHON="${PYTHON:-$(command -v python3.12 || command -v python3)}"
+
+# Declared release runtime contract (ND-1 B02): the same frozen lines the
+# dependency locks and ops doc declare. A missing or mismatched runtime is a
+# CLEAR FAILURE — never a silent substitution of another major/minor version.
+REQUIRED_PYTHON_MINOR="3.12"
+REQUIRED_NODE_MAJOR="22"
+REQUIRED_PNPM="10.33.2"
+
+PYTHON="${PYTHON:-$(command -v python3.12 || true)}"
+
+version_matches() { # NEEDLE PREFIX — 1 when NEEDLE starts with PREFIX.
+  case "$1" in "$2"*) return 0 ;; *) return 1 ;; esac
+}
+
+# check_runtime — prints actual tool versions and source SHA; exits nonzero
+# when any declared runtime is missing or mismatched.
+check_runtime() {
+  local fail=0 py_ver node_ver pnpm_ver source_sha
+  source_sha="$(git -C "$REPO_ROOT" rev-parse HEAD 2>/dev/null || echo "unknown")"
+  echo "SOURCE_SHA=$source_sha"
+  if [[ -z "$PYTHON" || ! -x "$PYTHON" ]]; then
+    echo "PYTHON=FAIL (missing: required python$REQUIRED_PYTHON_MINOR)"
+    fail=1
+  else
+    py_ver="$("$PYTHON" --version 2>&1)"
+    echo "PYTHON_VERSION=$py_ver"
+    if ! version_matches "$py_ver" "Python $REQUIRED_PYTHON_MINOR."; then
+      echo "PYTHON=FAIL (declared CPython $REQUIRED_PYTHON_MINOR required; got: $py_ver)"
+      fail=1
+    fi
+  fi
+  node_bin="$(command -v node || true)"
+  if [[ -z "$node_bin" ]]; then
+    echo "NODE=FAIL (missing: node $REQUIRED_NODE_MAJOR required)"
+    fail=1
+  else
+    node_ver="$("$node_bin" --version 2>&1)"
+    echo "NODE_VERSION=$node_ver"
+    if ! version_matches "$node_ver" "v$REQUIRED_NODE_MAJOR."; then
+      echo "NODE=FAIL (declared Node $REQUIRED_NODE_MAJOR LTS required; got: $node_ver)"
+      fail=1
+    fi
+  fi
+  pnpm_bin="$(command -v pnpm || true)"
+  if [[ -z "$pnpm_bin" ]]; then
+    echo "PNPM=FAIL (missing: pnpm $REQUIRED_PNPM required)"
+    fail=1
+  else
+    pnpm_ver="$("$pnpm_bin" --version 2>&1)"
+    echo "PNPM_VERSION=$pnpm_ver"
+    if [[ "$pnpm_ver" != "$REQUIRED_PNPM" ]]; then
+      echo "PNPM=FAIL (declared pnpm $REQUIRED_PNPM required; got: $pnpm_ver)"
+      fail=1
+    fi
+  fi
+  if [[ "$fail" -eq 0 ]]; then
+    echo "RUNTIME_CONTRACT=PASS"
+  else
+    echo "RUNTIME_CONTRACT=FAIL"
+  fi
+  return "$fail"
+}
 
 # --------------------------------------------------------------- helpers
 artifact_hash() { shasum -a 256 "$1" | awk '{print $1}'; }
@@ -44,6 +105,14 @@ if [[ "${1:-}" == "--check" ]]; then
   [[ "$FAIL" -eq 0 ]] && echo "RELEASE_LOCKS=PASS" || echo "RELEASE_LOCKS=FAIL"
   exit "$FAIL"
 fi
+
+if [[ "${1:-}" == "--check-runtime" ]]; then
+  check_runtime
+  exit $?
+fi
+
+# ND-1 B02: a real release build requires the declared runtime contract.
+check_runtime || { echo "RELEASE_BUILD=FAIL (declared runtime unavailable)"; exit 1; }
 
 OUT=""
 EXPECT_SHA=""

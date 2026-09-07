@@ -35,6 +35,15 @@ verification (the preflight never applies a migration; operators apply
 separately and re-run the gate). Launcher: `scripts/deploy-gate.sh
 <dev|test|prod> [--env-file FILE] [--apply-migrations]`.
 
+Runtime fail-closed (ND-1 B01): the application itself fails at
+import/startup when `HFM_ENV=prod` and a real `HFM_DATABASE_URL` /
+`HFM_TOKEN_SECRET` is missing or is the development default
+(`hfm.core.config._production_fail_closed`, consumed by `hfm.phase1.auth`).
+The systemd unit runs the preflight as `ExecStartPre` so an invalid
+production configuration can never silently fall back to the localhost
+database or the development token secret. Developer/test behavior is
+unchanged outside `HFM_ENV=prod`.
+
 Operator inputs (required values): the real PostgreSQL DSN, the token
 secret, and the public origins. ND-1 does not invent host/cert/retention
 facts.
@@ -67,7 +76,12 @@ including every runtime wheel). Runtime provisioning from the release bundle
         --find-links /opt/hfm/runtime-wheelhouse \
         -r /opt/hfm/runtime-requirements-production.lock
 
-`build-release.sh --check` validates lock syntax offline.
+`build-release.sh --check` validates lock syntax offline and
+`--check-runtime` verifies the declared runtimes (CPython 3.12, Node 22 LTS,
+pnpm 10.33.2) with actual version + source-SHA output; every real release
+build enforces the contract and exits non-zero when a declared runtime is
+missing or mismatched (ND-1 B02 — no silent substitution of another
+major/minor runtime).
 
 Regeneration of the Python locks is documented in the lock headers and must
 run on the declared platform.
@@ -198,3 +212,83 @@ resources — never a foreign or stale listener.
   build in the target environment.
 - Release the ND-1 corrected candidate only after Codex independent
   re-verification.
+
+## Pre-release checklist (machine-executable)
+
+`scripts/pre-release-checklist.sh` records PASS / FAIL / N/A+justification
+for every required pre-release item and exits nonzero on any FAIL. Items:
+RC SHA (--expect-sha), worktree/artifact identity (clean porcelain +
+`git diff --check`), required env/secrets (redacted validator),
+PostgreSQL connectivity, target migration revision (current == 0014, one
+head), backup/restore point, bootstrap status, persistent media path,
+runtime versions (python 3.12 / node 22 / pnpm 10.33.2 contract), reverse
+proxy config (media-boundary check), TLS/DNS readiness, auth prerequisite,
+and rollback readiness. Operator-declared facts (backup point, TLS/DNS,
+bootstrap, auth, rollback) default to N/A with justification until ND-2
+executes them on the target.
+
+## Post-deploy smoke checklist (procedure — executed at ND-2)
+
+Evidence per item is produced by the existing mechanical gates; nothing here
+runs against a production target during ND-1.
+
+| Check | Evidence command (ND-2, on the target release) |
+| --- | --- |
+| HOME served 200 + platform heading | golden-runtime.spec HOME |
+| PERSON real chain (Browser→/api→PG→render) | golden-runtime.spec PERSON |
+| JIAYI served 200 + heading | golden-runtime.spec JIAYI |
+| HERITAGE served 200 + heading | golden-runtime.spec HERITAGE |
+| SEARCH real results from Golden data | golden-runtime.spec SEARCH |
+| RESEARCH_GUARD anonymous → /login | golden-runtime.spec RESEARCH |
+| HTTP/HTTPS + API connectivity + PostgreSQL dependency | `scripts/database-dependency-probe.sh` + `scripts/production-smoke.sh --api-base URL` |
+| Static assets / media assets (published only, no direct alias) | `production-smoke.sh --media-alias-check` + published-asset probe |
+| Valid authentication / invalid authentication (401) | real-browser auth evidence gate |
+| Authorization / admin denial (non-admin denied) | real-browser auth evidence gate |
+| 404 behavior / 500 behavior | browser journey assertions + `CF01_MONITOR` (no unexpected 4xx/5xx) |
+| Browser fatal errors = 0 | `CF01_MONITOR fatal=0` |
+| Unexpected network failures = 0 | `CF01_MONITOR requestFailed=0 unexpectedHttp=0` |
+| Mobile basic rendering (375) | E2E responsive/viewport suite |
+
+## Rollback trigger matrix
+
+Rollback = APPLICATION_ROLLBACK (release artifacts/config only),
+DATABASE_RESTORE (restore pre-release snapshot — migration downgrade is NOT
+a rollback path), MEDIA restore in lockstep with the DB snapshot.
+`git checkout <old SHA>` alone is never a complete rollback procedure.
+
+| Trigger | Decision | Application rollback | Database handling | Media handling | Verification |
+| --- | --- | --- | --- | --- | --- |
+| Startup failure (env/import fail-closed, ExecStartPre) | Roll back artifacts; fix env | Point systemd/release root at previous bundle; re-run preflight | None (untouched) | None | `pre-release-checklist.sh` + smoke PASS |
+| Migration failure at deploy | Abort; do not run forward | Keep current artifacts | Restore pre-release `pg_dump` snapshot; do NOT downgrade 0014 | Restore matching snapshot | `database-dependency-probe.sh` (revision 0014) |
+| Core smoke failure (HOME/PERSON/SEARCH…) | Roll back artifacts | Previous release bundle | None if DB compatible | None | Golden journeys re-run PASS |
+| Authentication failure (valid login rejected / invalid accepted) | Roll back artifacts; no auth redesign in rollback | Previous bundle | Restore snapshot if data suspected | None | Real-browser auth evidence PASS |
+| Authorization regression (privilege widening/denial broken) | Roll back artifacts | Previous bundle | Restore snapshot if role data suspected | None | RBAC + real-browser admin-denial evidence |
+| Persistent 5xx | Roll back artifacts | Previous bundle | Investigate/restore snapshot on data cause | None | Smoke + CF01_MONITOR (unexpectedHttp=0) |
+| Data-integrity concern | Stop writes; restore | Previous bundle | Restore pre-release snapshot | Restore matching snapshot | Post-restore smoke + integrity probe |
+| Static/media critical failure | Roll back artifacts | Previous bundle | None | Restore media volume from matching backup | Media published/denied probes |
+
+Post-rollback verification is always: `pre-release-checklist.sh` +
+`production-smoke.sh` + `database-dependency-probe.sh` + the relevant
+golden/auth browser journeys.
+
+## Database dependency probe (post-start, repeatable)
+
+`scripts/database-dependency-probe.sh --api-base URL --db-url DSN` proves a
+real database dependency, not just an HTTP process: process must answer
+/health (PROBE_PROCESS=UP) and the database must answer a read-only revision
+probe at 0014 (PROBE_DATABASE=OK). A process that is up while its database
+is unreachable or off-revision is detected as PROBE_RESULT=FAIL.
+
+## Real-browser auth evidence (G7)
+
+`scripts/real-browser-auth-evidence.sh` is the stable, repeatable real-browser
+auth path: isolated PostgreSQL → 0014 → first admin (initialize-production,
+prod env) → student via the admin API → real backend on :8000 with a valid
+prod runtime env → Playwright-owned Vite → real Chromium runs
+`apps/frontend/e2e-auth/auth-evidence.spec.ts` (no route fulfillment),
+verifying valid login → research, invalid credentials rejected (401),
+anonymous guards, and authenticated non-admin denied on an admin endpoint
+with the real token. Browser completion evidence is the gate's
+`G7_REAL_AUTH_EVIDENCE=PASS` output (with CF01-style pageError=0). The spec
+lives under `apps/frontend/e2e-auth/` and is excluded from the standard
+88-test suite.
