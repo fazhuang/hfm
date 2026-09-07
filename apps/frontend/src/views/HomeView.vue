@@ -23,6 +23,7 @@
  * only deterministic presentation projections. No new domain facts.
  */
 import { ref } from 'vue'
+import { useHomePublicData } from '../composables/useHomePublicData'
 import { useRouter } from 'vue-router'
 import HomeHeroSection from '../components/home/HomeHeroSection.vue'
 import HomeLifeSection from '../components/home/HomeLifeSection.vue'
@@ -37,6 +38,7 @@ defineOptions({ name: 'HomeView' })
 
 const router = useRouter()
 const searchInput = ref('')
+const homeSource = useHomePublicData().source
 
 function onSearch(): void {
   const q = searchInput.value.trim()
@@ -45,7 +47,7 @@ function onSearch(): void {
 </script>
 
 <template>
-  <div class="home">
+  <div class="home" :data-home-source="homeSource">
     <HomeHeroSection
       v-model:search-value="searchInput"
       :on-search="onSearch"
