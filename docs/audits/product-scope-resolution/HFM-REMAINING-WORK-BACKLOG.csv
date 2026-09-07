@@ -1,0 +1,7 @@
+TASK_ID,SCOPE_CLASS,MODULE,TASK,WHY_REQUIRED,CURRENT_STATE,TARGET_STATE,DEPENDENCIES,ACCEPTANCE_CRITERIA,IMPLEMENTATION_OWNER,DEVELOPMENT_SUPPORT,VERIFICATION_OWNER
+REM-01,R1,ResearchWorkspace,研究工作台前端在线新增项目与笔记表单UI及API联通,学者需要在界面上直接输入并保存研究项目与考证笔记,后端API和DB已就绪但前端仅有只读展示,在ResearchHomeView或专属子路由补充新建项目弹窗/表单及笔记输入框并调通API,后端POST /api/v1/research/projects & notes,学者登录后可输入标题描述点击创建并成功在页面列表与DB中回显,Pi,Claude,Codex
+REM-02,R1,Homepage,首页/api/v1/public/home接入与既有降级行为保持,消除纯静态渲染使后台发布的数据能动态同步至首页,首页100%由本地homeProjection驱动,在HomeView挂载时异步请求/public/home接口优先展示接口数据异常时自动降级至现有静态数据,后端GET /api/v1/public/home,首页正常请求接口接口异常时页面仍100%正常渲染且无报错,Pi,Claude,Codex
+REM-03,R1,Docs,编撰《用户与学者操作指南》,指导非技术学者与评审专家上手查阅和使用工作台,仅有技术运维Runbook缺少面向最终用户的业务操作说明,编写Markdown格式的用户手册包含各板块浏览与工作台导出步骤,无,手册图文并茂覆盖公众端8大页面与研究端全部操作流程,DOCUMENTATION / Gemini,Claude,Codex
+REM-04,R2,Content,《针灸甲乙经》349穴位及经文条文数字化全量录入,建立全书数字化中医经络与主治知识库,仅有骨架与代表性样本,分批将349穴及万条条文结构化导入数据库,数据库Schema与CDomainTerm,数据库包含全部349穴位并可通过检索接口准确查得,CONTENT,N/A,Gemini
+REM-05,R2,Content,515篇当代研究论文全文OCR与深度检索标引,提供皇甫谧学派海量当代科研文献库,当前已审计515篇清单仅结构化检索了10篇代表论文,将515篇论文全部建立题录、摘要与关键词索引,文献扫描件与全文,在检索页输入任意515篇中的论文标题均能命中并高亮,CONTENT,N/A,Gemini
+REM-06,R3,Admin,管理员在线审核成果与媒体在线上传UI,提供全可视化的科研成果流转与多媒体文件上传面板,后端具备状态机前端缺乏专属表单与大屏,构建AdminPublicationView与MediaUploadModal,后端approve/reject与MediaService,管理员可一键批准或驳回成果并可拖拽上传图片,Pi,Claude,Codex

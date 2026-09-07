@@ -1,0 +1,57 @@
+METHOD,PATH,API_GROUP,PUBLIC_OR_PROTECTED,HANDLER,SERVICE,REQUEST_MODEL,RESPONSE_MODEL,DATABASE_DEPENDENCY,CALLING_FRONTEND,AUTH_REQUIRED,TEST_PRESENT,RUNTIME_VERIFIED,STATUS
+GET,/health,System,PUBLIC,health,None,None,dict,None,None,NO,YES,YES,COMPLETE
+GET,/ready,System,PUBLIC,ready,None,None,dict,None,None,NO,YES,YES,COMPLETE
+GET,/version,System,PUBLIC,get_version,None,None,dict,None,None,NO,YES,YES,COMPLETE
+GET,/live,System,PUBLIC,liveness_check,None,None,dict,None,None,NO,YES,YES,COMPLETE
+GET,/config,System,PUBLIC,public_config,None,None,dict,None,None,NO,YES,YES,COMPLETE
+POST,/api/v1/auth/login,Auth,PUBLIC,login,LocalDatabaseAuthProvider,dict (username/password),api_response(token),User/Role,apps/frontend/src/services/auth.ts,NO,YES,YES,COMPLETE
+POST,/api/v1/auth/logout,Auth,PROTECTED,logout,LocalDatabaseAuthProvider,None,api_response(ok),User,apps/frontend/src/services/auth.ts,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/users,Admin,PROTECTED,create_user,LocalDatabaseAuthProvider,dict (username/password/role),api_response(user_id),User/Role,apps/frontend/src/services/admin.ts,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/users/{user_id}/roles,Admin,PROTECTED,assign_role,LocalDatabaseAuthProvider,dict (role),api_response(ok),User/Role,apps/frontend/src/services/admin.ts,YES,YES,YES,COMPLETE
+GET,/api/v1/public/search,Public,PUBLIC,public_search,SearchService,None (q/page/page_size),api_response(hits),Entity/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/persons/{entity_id},Public,PUBLIC,public_person,PersonService,None,api_response(person),Person/Entity/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/works/{work_id},Public,PUBLIC,public_work,LiteratureService,None,api_response(work),Work/Entity/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/c-terms/{entity_id},Public,PUBLIC,public_c_term,CDomainService,None,api_response(term),CDomainTerm/Publication,None,NO,YES,YES,COMPLETE
+GET,/api/v1/public/reader/resolve,Public,PUBLIC,public_reader_resolve,ReaderService,None (work_id/edition_id),api_response(reader),Passage/Chapter/Work,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/heritage/{entity_id},Public,PUBLIC,public_heritage,HeritageService,None,api_response(heritage),HeritageProject/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/home,Public,PUBLIC,public_home,PortalService,None,api_response(home),PublicationRecord/Work/Person,None,NO,YES,YES,COMPLETE
+GET,/api/v1/public/works,Public,PUBLIC,public_works_list,LiteratureService,None,api_response(works),Work/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/works/{work_id}/editions,Public,PUBLIC,public_work_editions,LiteratureService,None,api_response(editions),Edition/Work,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/works/{work_id}/structure,Public,PUBLIC,public_work_structure,LiteratureService,None,api_response(structure),Chapter/Work,None,NO,YES,YES,COMPLETE
+GET,/api/v1/public/heritage,Public,PUBLIC,public_heritage_list,HeritageService,None,api_response(projects),HeritageProject/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/persons,Public,PUBLIC,public_persons_list,PersonService,None,api_response(persons),Person/Publication,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/media,Public,PUBLIC,public_media_list,MediaService,None,api_response(media),MediaAsset,apps/frontend/src/services/api.ts,NO,YES,YES,COMPLETE
+GET,/api/v1/public/media/{asset_id}/bytes,Public,PUBLIC,public_media_bytes,MediaService,None,FileResponse,MediaAsset/Filesystem,None,NO,YES,YES,COMPLETE
+GET,/api/v1/research/reader/resolve,Research,PROTECTED,research_reader_resolve,ReaderService,None,api_response(reader),Passage/Chapter,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/search,Research,PROTECTED,research_search,SearchService,None,api_response(hits),Entity/Assertion,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/evidence-chain/{citation_id},Research,PROTECTED,research_evidence_chain,EvidenceChainService,None,api_response(chain),Citation/Evidence/Source,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/persons,Research,PROTECTED,research_create_person,PersonService,dict,api_response(person),Person/Entity,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/persons/{entity_id}/events,Research,PROTECTED,research_create_event,PersonService,dict,api_response(event),Event/Entity,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/persons/{entity_id},Research,PROTECTED,research_get_person,PersonService,None,api_response(person),Person/Entity,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/works,Research,PROTECTED,research_create_work,LiteratureService,dict,api_response(work),Work,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/works/{work_id}/editions,Research,PROTECTED,research_create_edition,LiteratureService,dict,api_response(edition),Edition,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/works/{work_id}/chapters,Research,PROTECTED,research_create_chapter,LiteratureService,dict,api_response(chapter),Chapter,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/works/{work_id},Research,PROTECTED,research_get_work,LiteratureService,None,api_response(work),Work,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/c-terms,Research,PROTECTED,research_create_c_term,CDomainService,dict,api_response(term),CDomainTerm,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/c-terms/{entity_id},Research,PROTECTED,research_get_c_term,CDomainService,None,api_response(term),CDomainTerm,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/heritage,Research,PROTECTED,research_create_heritage,HeritageService,dict,api_response(heritage),HeritageProject,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/heritage/{entity_id},Research,PROTECTED,research_get_heritage,HeritageService,None,api_response(heritage),HeritageProject,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/artifacts,Research,PROTECTED,research_submit_artifact,PublicationService,dict,api_response(artifact),ContentArtifact,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/artifacts/{artifact_id}/submit,Research,PROTECTED,research_submit_for_review,PublicationService,None,api_response(record),PublicationRecord,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/projects,Research,PROTECTED,research_list_projects,ResearchWorkspaceService,None,api_response(projects),ResearchProject,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/projects,Research,PROTECTED,research_create_project,ResearchWorkspaceService,dict,api_response(project),ResearchProject,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/projects/{project_id},Research,PROTECTED,research_get_project,ResearchWorkspaceService,None,api_response(project),ResearchProject,None,YES,YES,YES,COMPLETE
+PATCH,/api/v1/research/projects/{project_id},Research,PROTECTED,research_update_project,ResearchWorkspaceService,dict,api_response(project),ResearchProject,None,YES,YES,YES,COMPLETE
+DELETE,/api/v1/research/projects/{project_id},Research,PROTECTED,research_delete_project,ResearchWorkspaceService,None,api_response(ok),ResearchProject,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/notes,Research,PROTECTED,research_list_notes,ResearchWorkspaceService,None,api_response(notes),ResearchNote,None,YES,YES,YES,COMPLETE
+POST,/api/v1/research/notes,Research,PROTECTED,research_create_note,ResearchWorkspaceService,dict,api_response(note),ResearchNote,None,YES,YES,YES,COMPLETE
+GET,/api/v1/research/notes/{note_id},Research,PROTECTED,research_get_note,ResearchWorkspaceService,None,api_response(note),ResearchNote,None,YES,YES,YES,COMPLETE
+PATCH,/api/v1/research/notes/{note_id},Research,PROTECTED,research_update_note,ResearchWorkspaceService,dict,api_response(note),ResearchNote,None,YES,YES,YES,COMPLETE
+DELETE,/api/v1/research/notes/{note_id},Research,PROTECTED,research_delete_note,ResearchWorkspaceService,None,api_response(ok),ResearchNote,None,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/publications/{artifact_id}/approve,Admin,PROTECTED,admin_approve_publication,PublicationService,dict,api_response(publication),PublicationRecord,None,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/publications/{artifact_id}/reject,Admin,PROTECTED,admin_reject_publication,PublicationService,dict,api_response(publication),PublicationRecord,None,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/publications/{artifact_id}/withdraw,Admin,PROTECTED,admin_withdraw_publication,PublicationService,dict,api_response(publication),PublicationRecord,None,YES,YES,YES,COMPLETE
+GET,/api/v1/admin/search,Admin,PROTECTED,admin_search,SearchService,None,api_response(hits),Entity/ContentArtifact,None,YES,YES,YES,COMPLETE
+POST,/api/v1/admin/reconciliation,Admin,PROTECTED,admin_reconciliation,ReconciliationService,None,api_response(result),ReconciliationRun,apps/frontend/src/services/audit.ts,YES,YES,YES,COMPLETE
+GET,/api/v1/admin/audit-log,Admin,PROTECTED,admin_audit_log,AuditService,None,api_response(logs),AuditLog,apps/frontend/src/services/audit.ts,YES,YES,YES,COMPLETE
+GET,/api/v1/admin/lineage/{version_id},Admin,PROTECTED,admin_lineage,VersionLineageService,None,api_response(lineage),Version,apps/frontend/src/services/audit.ts,YES,YES,YES,COMPLETE
