@@ -115,8 +115,8 @@ only persistent state.
 
 Smoke: `scripts/production-smoke.sh --check-args` (input validation only),
 `--media-alias-check FILE` (nginx media-boundary contract, ND-1 RV-P0-01)
-and `--api-base URL` (live health + version + migration state + media volume
-+ media probes: a direct `/media/<key>` URL must NOT be served 200, a
+and `--api-base URL` (live health + version + migration state + media volume;
+media probes: a direct `/media/<key>` URL must NOT be served 200, a
 published asset must be served through `/api/v1/public/media/{asset_id}/bytes`
 with operator-supplied asset ids at ND-2).
 
