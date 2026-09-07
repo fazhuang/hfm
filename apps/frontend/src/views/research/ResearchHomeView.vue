@@ -7,6 +7,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import ExportPanel from '../../components/ExportPanel.vue'
+import ResearchWorkspacePanel from '../../components/research/ResearchWorkspacePanel.vue'
 import { researchScopeSummary } from '../../data/researchProjection'
 import { SEARCHABLE_PAPER_TOTAL, AUDITED_PAPER_TOTAL } from '../../data/researchProjection'
 
@@ -83,6 +84,9 @@ function onSearch(): void {
       <h2 id="export-heading" class="section-title">导出</h2>
       <ExportPanel />
     </section>
+
+    <!-- REM-01: online project & note write closure (real P1-12 backend) -->
+    <ResearchWorkspacePanel />
   </section>
 </template>
 
