@@ -5,7 +5,7 @@
 | DELIVERY_PACKAGE | 皇甫谧人文数字平台 — 客户交付包（CDP-01） |
 | DELIVERY_DATE | 2026-09-07 |
 | DELIVERY_BRANCH | recovery/hfm-foundation |
-| DELIVERED_COMMIT | 0704118722f61f0922a05b480943fb69bbb8fda1（软件最终实现提交） |
+| DELIVERED_COMMIT | c9dd6ad2eb7e6ae4ae90adcb9cfbc7f44ffcfbd5（权威软件/当前交付基线） |
 | PACKAGE_COMMIT | 本交付包所在提交（提交后随交付报告记录实际 SHA） |
 | PACKAGE_PATH | `HFM-CUSTOMER-DELIVERY/` |
 | PACKAGE_MD_FILES | 13 个 Markdown 文件（见文末索引） |

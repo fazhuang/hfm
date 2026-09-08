@@ -21,7 +21,7 @@
 
 - 发布、备份/恢复、回滚操作：见 `docs/operations/` 运维说明。
 - 终端用户手册：见 `docs/user-guide/HFM-USER-AND-SCHOLAR-GUIDE.md`。
-- 接收验收路径：见本交付包《02 — 快速启动与核对》与《03 — 已交付功能清单》。
+- 接收验收路径：先按 `02-INSTALLATION/README.md` 完成安装启动，再按 `00-START-HERE/ACCEPTANCE-CHECKLIST.md` 与 `DEMO-GUIDE.md` 验收。
 
 ## 4. 权限与安全要点
 

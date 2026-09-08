@@ -17,6 +17,54 @@ cd <仓库根目录> && pnpm dev
 # 停止：对应终端 Ctrl-C
 ```
 
+## 1b. 重启（显式步骤）
+
+> 以下命令与 `02-INSTALLATION/README.md` 中已验证的启动命令一致；本地运行
+> 形态不使用任何额外进程管理器。
+
+### BACKEND_RESTART
+
+1. 停止当前后端进程：在运行后端的那个终端按 `Ctrl-C`，等待进程退出
+   （命令行提示符返回）。
+2. 返回后端工作目录：
+
+   ```bash
+   cd apps/backend
+   ```
+
+3. 重新执行与首次启动一致的后端启动命令：
+
+   ```bash
+   HFM_DATABASE_URL="postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>" \
+     .venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port 8000
+   ```
+
+4. 验证：另开终端执行健康检查，两个接口都应返回含 `success=true` 的 JSON：
+
+   ```bash
+   curl -s http://127.0.0.1:8000/health
+   curl -s http://127.0.0.1:8000/version
+   ```
+
+### FRONTEND_RESTART
+
+1. 停止当前前端进程：在运行前端（Vite）的那个终端按 `Ctrl-C`，等待进程
+   退出。
+2. 返回仓库根目录：
+
+   ```bash
+   cd <仓库根目录>
+   ```
+
+3. 重新执行与首次启动一致的前端启动命令：
+
+   ```bash
+   pnpm dev
+   ```
+
+4. 验证：浏览器打开本地前端地址 `http://localhost:5173`（若端口被占用请
+   使用与启动时相同的 `--port` 参数地址），确认首页可打开并正常渲染。
+
 ## 2. 健康与依赖检查
 
 ```bash
