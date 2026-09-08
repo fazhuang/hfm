@@ -22,11 +22,17 @@ Rules:
     error);
   - the exact role matrix is verified (5 roles, no duplicates) and the admin
     count stays exactly one SYSTEM_ADMIN after first run;
+  - the production bootstrap binds the SINGLE canonical database (hfm_prod):
+    the shared production preflight rejects restore/verify/recovery/scratch or
+    any other database name (no prefix matching);
+  - the first-admin password policy is the SAME single source as the runtime
+    change-password path (hfm.phase1.auth.password_policy_reasons); only the
+    operator-facing display wording differs here;
   - no RBAC change, no new capability, no permission widening, no automatic
     production execution.
 
 Usage:
-    HFM_ENV=prod HFM_DATABASE_URL=<postgres DSN> \
+    HFM_ENV=prod HFM_DATABASE_URL=<postgres DSN to /hfm_prod> \
     HFM_ADMIN_USERNAME=root HFM_ADMIN_PASSWORD=<secret> \
     python initialize-production.py [--env-file PATH]
     # test-only isolated runs: add --test-mode --allow-sqlite
@@ -67,7 +73,12 @@ validator = _load_module(
 # backend gates use; modules are loaded by file path so static checks stay clean.
 sys.path.insert(0, str(BACKEND_DIR / "src"))
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
-from hfm.phase1.auth import ensure_roles_seeded, hash_password
+from hfm.phase1.auth import (
+    MIN_PASSWORD_LENGTH,
+    ensure_roles_seeded,
+    hash_password,
+    password_policy_reasons,
+)
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -76,9 +87,6 @@ from sqlalchemy.ext.asyncio import (
 )
 
 EXPECTED_ROLE_CODES = {role.value for role in UserRoleCode}
-
-#: passwords that are never acceptable for the first admin (never printed).
-_FORBIDDEN_PASSWORDS = {"password", "changeme", "changeme123", "admin", "secret", "hfm"}
 
 
 async def _initialize(
@@ -169,13 +177,30 @@ async def _initialize(
         await engine.dispose()
 
 
-def _validate_password(username: str, password: str) -> list[str]:
-    errors: list[str] = []
-    if len(password) < 12:
-        errors.append("HFM_ADMIN_PASSWORD is shorter than 12 characters")
-    if password.lower() in _FORBIDDEN_PASSWORDS or username.lower() in password.lower():
-        errors.append("HFM_ADMIN_PASSWORD is a known demo/test/default value")
-    return errors
+#: Operator-facing display wording per shared policy code. Accept/reject
+#: semantics live in hfm.phase1.auth.password_policy_reasons (single source);
+#: this map ONLY renders codes for the bootstrap operator (display may differ
+#: from the runtime wording — no validation logic is duplicated here).
+_BOOTSTRAP_POLICY_DISPLAY: dict[str, str] = {
+    "required": "HFM_ADMIN_PASSWORD is missing",
+    "too-short": f"HFM_ADMIN_PASSWORD is shorter than {MIN_PASSWORD_LENGTH} characters",
+    "forbidden-default": "HFM_ADMIN_PASSWORD is a known demo/test/default value",
+    "contains-username": "HFM_ADMIN_PASSWORD must not contain the login name",
+}
+
+
+def validate_bootstrap_password(username: str, password: str) -> list[str]:
+    """Bootstrap display violations (empty list == accepted by the policy).
+
+    The accept/reject decision is delegated to the single shared policy
+    (hfm.phase1.auth.password_policy_reasons) — the same source the runtime
+    change-own-password path uses — so a given password is accepted or
+    rejected identically at both entry points.
+    """
+    return [
+        _BOOTSTRAP_POLICY_DISPLAY[reason]
+        for reason in password_policy_reasons(password, username=username)
+    ]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -231,7 +256,7 @@ def main(argv: list[str] | None = None) -> int:
         )
         print("INITIALIZE_PRODUCTION=FAIL")
         return 1
-    password_errors = _validate_password(admin_username, admin_password)
+    password_errors = validate_bootstrap_password(admin_username, admin_password)
     if password_errors:
         for reason in password_errors:
             print(f"ADMIN_PASSWORD=FAIL ({reason})")

@@ -39,7 +39,7 @@ PYTHON = str(BACKEND_DIR / ".venv" / "bin" / "python")
 def _valid_prod_env() -> dict[str, str]:
     return {
         "HFM_ENV": "prod",
-        "HFM_DATABASE_URL": "postgresql+asyncpg://real:user-secret@db.internal:5432/hfm_prod_main",
+        "HFM_DATABASE_URL": "postgresql+asyncpg://real:user-secret@db.internal:5432/hfm_prod",
         "HFM_TOKEN_SECRET": "x" * 40,
         "LOG_LEVEL": "warn",
     }

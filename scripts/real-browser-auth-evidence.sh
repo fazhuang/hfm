@@ -90,16 +90,22 @@ if ! (cd "$BACKEND" && HFM_DATABASE_URL="$DB_URL" "$PYTHON" -m alembic -c alembi
 fi
 rec MIGRATION PASS
 
-# ---- first admin (B03 initializer, prod env with valid inputs) ------------
+# ---- first admin (B03 initializer) --------------------------------------
+# WR00-B2-R1: the PRODUCTION bootstrap binds the single canonical database
+# (hfm_prod); this harness bootstraps an ISOLATED scratch database, so it
+# runs the initializer in the documented test-only mode (--test-mode) against
+# HFM_ENV=test. The backend runtime below still runs as HFM_ENV=prod (the
+# application runtime fail-closed path is exercised separately); the
+# bootstrap DB allowlist is proven by scripts/tests/test_production_db_allowlist.py.
 ADMIN_ENV="$(mktemp)"
 cat >"$ADMIN_ENV" <<ENV
-HFM_ENV=prod
+HFM_ENV=test
 HFM_DATABASE_URL=$DB_URL
 HFM_TOKEN_SECRET=$(openssl rand -hex 24)
 HFM_ADMIN_USERNAME=$ADMIN_USER
 HFM_ADMIN_PASSWORD=$ADMIN_PW
 ENV
-if ! "$PYTHON" "$ROOT/scripts/initialize-production.py" --env-file "$ADMIN_ENV" | grep -q "INITIALIZE_PRODUCTION=PASS"; then
+if ! "$PYTHON" "$ROOT/scripts/initialize-production.py" --test-mode --env-file "$ADMIN_ENV" | grep -q "INITIALIZE_PRODUCTION=PASS"; then
   echo "G7=FAIL (first admin initialization)"
   rm -f "$ADMIN_ENV"
   exit 1

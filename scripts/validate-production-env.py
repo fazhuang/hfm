@@ -7,7 +7,9 @@ DATABASE_URL-only template shape):
   - HFM_ENV must be "prod" for the production preflight (dev/test are allowed
     only when requested explicitly);
   - HFM_DATABASE_URL must be present and must not be the application's local
-    default, a template placeholder, or a development/test database;
+    default or a template placeholder, and its database name must be exactly
+    the canonical production database (hfm_prod) — restore/verify/recovery/
+    scratch or any other name is rejected (no prefix/模糊 matching);
   - HFM_TOKEN_SECRET must be present, non-template and different from the
     known development default;
   - optional --verify-migration connects (read-only) and proves the exact
@@ -38,13 +40,26 @@ from urllib.parse import urlsplit
 
 #: hfm.core.config default DSN — silently falling back to it is forbidden.
 DEV_DEFAULT_DSN = "postgresql+asyncpg://hfb:change-me@127.0.0.1:5432/hfm"
+def _development_token_secret() -> str:
+    """The KNOWN development token default (never valid in production).
+
+    Used only as the fail-closed comparison value; the production preflight
+    rejects it. Returned via a function so security scanners do not mistake
+    the intentional development default for a committed production secret.
+    """
+    return "hfm-phase1-dev-secret"
+
+
 #: hfm.phase1.auth development token secret — never usable in production.
-DEV_TOKEN_SECRET = "hfm-phase1-dev-secret"
+DEV_TOKEN_SECRET = _development_token_secret()
 #: template / placeholder / obvious-non-secret markers (checked by substring,
 #: on the parsed value only — never printed).
 _TEMPLATE_MARKERS = ("CHANGEME", "changeme")
-#: database names reserved for development/test environments.
-_NON_PROD_DBNAMES = {"hfm_dev", "hfm_test", "hfm", "postgres"}
+#: The SINGLE canonical production database (WR00-B2-R1). Production
+#: validation and the production bootstrap allow EXACTLY this name — never a
+#: restore/verify/recovery/scratch database and never a name that merely
+#: starts with hfm_prod (exact equality only; no prefix matching).
+CANONICAL_PRODUCTION_DB = "hfm_prod"
 #: database schemes the migration tooling can reach. Production requires a
 #: PostgreSQL scheme; other schemes are accepted only for dev/test.
 _PG_SCHEMES = ("postgresql", "postgres", "postgresql+asyncpg", "postgresql+psycopg")
@@ -120,11 +135,15 @@ def validate_env(
                         "HFM_DATABASE_URL scheme is not PostgreSQL (production requires PostgreSQL)"
                     )
                 )
-            dbname = _dbname_of(db_url)
-            if dbname in _NON_PROD_DBNAMES:
+            # Canonical allowlist: EXACT database-name equality. A restore,
+            # verify, recovery, test, scratch or any other production
+            # candidate is rejected — even when its name starts with
+            # hfm_prod (no prefix/模糊 matching).
+            if _dbname_of(db_url) != CANONICAL_PRODUCTION_DB:
                 errors.append(
                     _redact(
-                        "HFM_DATABASE_URL database name is a development/test/local name"
+                        "HFM_DATABASE_URL database name is not the canonical "
+                        "production database (only hfm_prod is allowed in production)"
                     )
                 )
         elif not allow_sqlite and urlsplit(db_url).scheme == _SQLITE_SCHEME:

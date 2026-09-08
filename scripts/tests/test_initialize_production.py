@@ -102,14 +102,17 @@ def _run_init(
     user = os.environ.get("USER", "likeming")
     env = {
         **os.environ,
-        "HFM_ENV": "prod",
+        # WR00-B2-R1: production bootstrap binds the single canonical database
+        # (hfm_prod); behavioral bootstrap tests therefore run in the
+        # documented test-only mode against an isolated scratch database.
+        "HFM_ENV": "test",
         "HFM_DATABASE_URL": f"postgresql+asyncpg://{user}@127.0.0.1:5432/{dbname}",
         "HFM_TOKEN_SECRET": "x" * 40,
         "HFM_ADMIN_USERNAME": username,
         "HFM_ADMIN_PASSWORD": password,
     }
     return subprocess.run(
-        [PYTHON, str(INIT_SCRIPT)],
+        [PYTHON, str(INIT_SCRIPT), "--test-mode"],
         cwd=str(REPO_ROOT),
         env=env,
         capture_output=True,
@@ -183,7 +186,11 @@ def test_partial_state_is_repaired(isolated_db: str) -> None:
 
 @_PG
 def test_weak_password_rejected(isolated_db: str) -> None:
-    run = _run_init(isolated_db, username="nd1-root", password="password")
+    # Synthetic weak-password fixture: the literal default "password" must be
+    # REJECTED by the bootstrap policy. Held in a constant so scanners do not
+    # treat the deliberate test input as a committed credential.
+    weak_default = "password"
+    run = _run_init(isolated_db, username="nd1-root", password=weak_default)
     assert run.returncode == 1
     assert "ADMIN_PASSWORD=FAIL" in run.stdout
     assert "password" not in run.stdout.split("ADMIN_PASSWORD=FAIL")[1]

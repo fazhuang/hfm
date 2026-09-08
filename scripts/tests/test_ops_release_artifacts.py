@@ -80,7 +80,7 @@ def test_pre_release_checklist_records_na_without_target_facts(tmp_path: Path) -
     env_file = tmp_path / "env.prod"
     env_file.write_text(
         "HFM_ENV=prod\n"
-        "HFM_DATABASE_URL=postgresql+asyncpg://u:p@db.internal:5432/hfm_prod_main\n"
+        "HFM_DATABASE_URL=postgresql+asyncpg://u:p@db.internal:5432/hfm_prod\n"
         "HFM_TOKEN_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n",
         encoding="utf-8",
     )

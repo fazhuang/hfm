@@ -97,7 +97,7 @@ def test_smoke_check_args_accepts_valid_inputs() -> None:
         env={
             "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
             "HFM_ENV": "prod",
-            "HFM_DATABASE_URL": "postgresql+asyncpg://real:secret@db.internal:5432/hfm_prod_main",
+            "HFM_DATABASE_URL": "postgresql+asyncpg://real:secret@db.internal:5432/hfm_prod",
             "HFM_TOKEN_SECRET": "x" * 40,
         },
         capture_output=True,

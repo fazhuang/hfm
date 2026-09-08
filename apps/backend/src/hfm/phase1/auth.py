@@ -44,14 +44,15 @@ _SCRYPT_N = 2**14
 _SCRYPT_R = 8
 _SCRYPT_P = 1
 
-#: Minimum password length for every HFM-managed credential (self-service
-#: change and the production first-admin bootstrap share this rule).
+#: Minimum password length — the SINGLE source for every HFM-managed
+#: credential (self-service change AND the production first-admin bootstrap).
 MIN_PASSWORD_LENGTH = 12
 
-#: Passwords that are never acceptable as a real credential (defaults,
-#: demo/test values, trivial sequences). The production initializer keeps its
-#: own operator-facing copy of the rule (scripts/initialize-production.py);
-#: this set is the runtime enforcement for self-service password changes.
+#: The SINGLE canonical list of passwords never acceptable as a real
+#: credential (defaults, demo/test values, trivial sequences). Both the
+#: runtime change-password path and the production bootstrap initializer
+#: derive their accept/reject decision from this list and from
+#: password_policy_reasons() below — no consumer maintains its own copy.
 FORBIDDEN_PASSWORDS: frozenset[str] = frozenset(
     {
         "password",
@@ -77,27 +78,56 @@ FORBIDDEN_PASSWORDS: frozenset[str] = frozenset(
     }
 )
 
+#: Stable policy-violation codes — the single accept/reject vocabulary shared
+#: by the runtime and the production bootstrap. Display wording may differ per
+#: consumer, but whether a password is accepted is decided HERE.
+PW_REQUIRED = "required"
+PW_TOO_SHORT = "too-short"
+PW_FORBIDDEN_DEFAULT = "forbidden-default"
+PW_CONTAINS_USERNAME = "contains-username"
 
-def password_policy_errors(password: str, *, username: str | None = None) -> list[str]:
-    """Return password-policy violations (empty list == policy satisfied).
+#: Runtime (HTTP) wording for each violation code (display only).
+_PW_RUNTIME_MESSAGES: dict[str, str] = {
+    PW_REQUIRED: "a new password is required",
+    PW_TOO_SHORT: f"password must be at least {MIN_PASSWORD_LENGTH} characters",
+    PW_FORBIDDEN_DEFAULT: "password is a known default or demo value",
+    PW_CONTAINS_USERNAME: "password must not contain the username",
+}
 
-    Rules mirror the production bootstrap policy: minimum length, no known
-    default/demo password, and the password never embeds the username. The
-    caller decides whether an additional rule (e.g. differ from the current
-    password) applies; this function only validates the credential itself.
+
+def password_policy_reasons(password: str, *, username: str | None = None) -> list[str]:
+    """Return the stable policy-violation codes (empty == policy satisfied).
+
+    Single source of truth for accept/reject semantics. Runtime
+    (change-own-password) and the production bootstrap initializer both call
+    this function; consumers only map the returned codes to their own display
+    wording. A caller-level rule such as "must differ from the current
+    password" is applied by the caller on top of this credential policy.
     """
-    errors: list[str] = []
+    reasons: list[str] = []
     if not password:
-        errors.append("a new password is required")
-        return errors
+        reasons.append(PW_REQUIRED)
+        return reasons
     if len(password) < MIN_PASSWORD_LENGTH:
-        errors.append(f"password must be at least {MIN_PASSWORD_LENGTH} characters")
+        reasons.append(PW_TOO_SHORT)
     lowered = password.lower()
     if lowered in FORBIDDEN_PASSWORDS:
-        errors.append("password is a known default or demo value")
+        reasons.append(PW_FORBIDDEN_DEFAULT)
     if username and username.lower() in lowered:
-        errors.append("password must not contain the username")
-    return errors
+        reasons.append(PW_CONTAINS_USERNAME)
+    return reasons
+
+
+def password_policy_errors(password: str, *, username: str | None = None) -> list[str]:
+    """Human-readable policy violations (runtime HTTP detail; display only).
+
+    Accept/reject semantics come from password_policy_reasons(); this function
+    only renders the codes for the change-own-password endpoint.
+    """
+    return [
+        _PW_RUNTIME_MESSAGES[reason]
+        for reason in password_policy_reasons(password, username=username)
+    ]
 
 
 @dataclass(frozen=True)
