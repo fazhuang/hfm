@@ -24,11 +24,11 @@ cd <仓库根目录> && pnpm dev
 curl -s http://127.0.0.1:8000/health
 curl -s http://127.0.0.1:8000/version
 
-# 数据库依赖探针（进程存活 + 数据库可达 + 版本正确）
+# 数据库依赖探针（进程存活 + 数据库可达；探针默认读取仓库后端目录，
+# 无需 --backend-dir 参数）
 bash scripts/database-dependency-probe.sh \
   --api-base http://127.0.0.1:8000 \
-  --db-url "postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>" \
-  --backend-dir apps/backend/alembic
+  --db-url "postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>"
 ```
 
 预期输出含 `PROBE_PROCESS=UP`、`PROBE_DATABASE=OK`、`PROBE_RESULT=PASS`。

@@ -28,11 +28,33 @@
 
 ## 迁移与运行核对
 
-| 命令 | 用途 |
-| --- | --- |
-| `HFM_DATABASE_URL=<dsn> .venv/bin/python -m alembic -c alembic.ini current` | 查看当前迁移版本 |
-| `… alembic -c alembic.ini heads` | 查看迁移头（应为单一 0014） |
-| `bash scripts/database-dependency-probe.sh --api-base <base> --db-url <dsn> --backend-dir apps/backend/alembic` | 进程+数据库依赖探针 |
+在 `apps/backend` 目录下执行（`<用户>`、`<库名>` 替换为你的环境；命令为完整
+可执行形式）：
+
+```bash
+HFM_DATABASE_URL="postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>" \
+  .venv/bin/python -m alembic -c alembic.ini current
+```
+
+预期输出：`0014 (head)`（当前迁移版本）。
+
+```bash
+HFM_DATABASE_URL="postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>" \
+  .venv/bin/python -m alembic -c alembic.ini heads
+```
+
+预期输出：仅一行 `0014 (head)`（单一迁移头）。
+
+进程与数据库依赖探针（在仓库根目录执行；后端须运行在 8000 端口）：
+
+```bash
+bash scripts/database-dependency-probe.sh \
+  --api-base http://127.0.0.1:8000 \
+  --db-url "postgresql+asyncpg://<用户>@127.0.0.1:5432/<库名>"
+```
+
+预期输出包含 `PROBE_PROCESS=UP`、`PROBE_DATABASE=OK`、`PROBE_RESULT=PASS`。
+（探针脚本的后端目录参数有默认值，无需另行指定。）
 
 ## 复用范围说明
 
