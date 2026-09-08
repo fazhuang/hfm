@@ -13,6 +13,7 @@
 | 顺序 | 文档 | 目的 |
 | --- | --- | --- |
 | 1 | `DELIVERY-MANIFEST.md` | 交付范围、工作包与门状态总览 |
+| 1b | `10-LOCAL-TESTING/HFM-LOCAL-DEPLOYMENT-AND-TESTING-GUIDE.md` | 本地部署与客户测试（先按此手册在本地把系统跑起来并验收） |
 | 2 | `01-DELIVERY-OVERVIEW.md` | 平台是什么、包含哪两部分 |
 | 3 | `02-INSTALLATION/README.md` | 在本机安装、迁移、启动并确认健康 |
 | 4 | `DEMO-GUIDE.md` | 按确定性步骤走查全部已交付功能 |
