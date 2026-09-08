@@ -82,8 +82,18 @@ onBeforeUnmount(() => {
 
     <header class="public-shell__header">
       <a class="public-shell__brand" href="/" aria-label="皇甫谧人文数字平台 首页">
-        <span class="public-shell__brand-mark" aria-hidden="true">皇甫谧</span>
-        <span class="public-shell__brand-name">人文数字平台</span>
+        <!-- UI3-02C: frozen HFM Knowledge Mark (decorative). The adjacent text
+             already names the brand link, so the symbol is not announced. -->
+        <img
+          class="public-shell__brand-symbol"
+          src="/assets/brand/hfm-knowledge-mark-black.svg"
+          alt=""
+          aria-hidden="true"
+        />
+        <span class="public-shell__brand-text">
+          <span class="public-shell__brand-mark" aria-hidden="true">皇甫谧</span>
+          <span class="public-shell__brand-name">人文数字平台</span>
+        </span>
       </a>
 
       <button
@@ -161,12 +171,25 @@ onBeforeUnmount(() => {
 
 .public-shell__brand {
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--hfm-space-2);
   text-decoration: none;
   color: var(--hfm-color-text);
   white-space: nowrap;
   margin-right: var(--hfm-space-4);
+}
+
+.public-shell__brand-symbol {
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: block;
+}
+
+.public-shell__brand-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .public-shell__brand-mark {

@@ -1,4 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="12" fill="#8a6a2f"/>
-  <text x="32" y="43" text-anchor="middle" font-size="30" fill="#fff">谧</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>HFM</title>
+  <g fill="#000">
+    <path d="M40 32h32v64l40 24v32l-40-24v96H40z"/>
+    <path d="M216 32h-32v64l-40 24v32l40-24v96h32z"/>
+    <path d="m128 104 24 24-24 24-24-24z"/>
+  </g>
 </svg>
