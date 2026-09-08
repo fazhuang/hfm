@@ -29,6 +29,14 @@ for env_name in dev test prod; do
       echo "FAIL: prod environment leaks dev/test values"
       FAILURES=$((FAILURES + 1))
     fi
+    # WR00-B2 canonical runtime binding: the committed prod template must name
+    # the canonical local-production database `hfm_prod` (never an ambiguous
+    # default, the legacy dev database, or a scratch/test database). Operator
+    # env files are additionally guarded by validate-production-env.py.
+    if ! grep -qE "5432/hfm_prod" "$file"; then
+      echo "FAIL: prod environment must bind the canonical runtime database hfm_prod"
+      FAILURES=$((FAILURES + 1))
+    fi
     if grep -qE "^DATABASE_URL=.*CHANGEME" "$file" && ! grep -qE "^HFM_ENV=prod" "$file"; then
       echo "FAIL: prod env declares HFM_ENV incorrectly"
       FAILURES=$((FAILURES + 1))

@@ -21,7 +21,12 @@ from hfm.api.v1.deps import (
 )
 from hfm.core.config import MEDIA_ROOT
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
-from hfm.phase1.auth import hash_password, issue_token, verify_password
+from hfm.phase1.auth import (
+    hash_password,
+    issue_token,
+    password_policy_errors,
+    verify_password,
+)
 from hfm.phase1.c_domain import CDomainService
 from hfm.phase1.evidence_chain import EvidenceChainService
 from hfm.phase1.heritage import HeritageService
@@ -109,6 +114,43 @@ async def logout(session: SessionDep, principal: PrincipalDep) -> dict[str, Any]
         user.token_version += 1
         await session.flush()
     return api_response(data={"ok": True})
+
+
+@auth_router.post("/change-password", dependencies=[Depends(require_authenticated)])
+async def change_own_password(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, str]
+) -> dict[str, Any]:
+    """Self-service change-own-password (WR00-B2; ADR-07 Guard-03).
+
+    The target is ALWAYS the authenticated principal — the body never carries
+    (and never accepts) a user id, so it is impossible to change another
+    user's password through this interface. The current password must verify
+    against the stored hash; the new password must satisfy the shared policy
+    and differ from the current one. On success the stored credential is
+    replaced by a fresh salted scrypt hash (plaintext is never stored) and
+    token_version is bumped so every outstanding token — including the caller's
+    — is revoked and the client re-authenticates with the new password.
+    """
+    user = await session.get(User, str(principal.user_id))
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=401, detail="invalid credentials")
+
+    current_password = body.get("current_password", "")
+    new_password = body.get("new_password", "")
+
+    if not verify_password(current_password, user.password_hash):
+        raise HTTPException(status_code=400, detail="current password is incorrect")
+
+    errors = password_policy_errors(new_password, username=user.username)
+    if new_password and new_password == current_password:
+        errors.append("new password must differ from the current password")
+    if errors:
+        raise HTTPException(status_code=400, detail="; ".join(errors))
+
+    user.password_hash = hash_password(new_password)
+    user.token_version += 1  # Guard-03: revoke outstanding tokens immediately
+    await session.flush()
+    return api_response(data={"ok": True}, message="password changed")
 
 
 @admin_router.post("/users", dependencies=[Depends(require_permission("user:manage"))])

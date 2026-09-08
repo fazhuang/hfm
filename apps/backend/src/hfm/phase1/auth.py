@@ -44,6 +44,61 @@ _SCRYPT_N = 2**14
 _SCRYPT_R = 8
 _SCRYPT_P = 1
 
+#: Minimum password length for every HFM-managed credential (self-service
+#: change and the production first-admin bootstrap share this rule).
+MIN_PASSWORD_LENGTH = 12
+
+#: Passwords that are never acceptable as a real credential (defaults,
+#: demo/test values, trivial sequences). The production initializer keeps its
+#: own operator-facing copy of the rule (scripts/initialize-production.py);
+#: this set is the runtime enforcement for self-service password changes.
+FORBIDDEN_PASSWORDS: frozenset[str] = frozenset(
+    {
+        "password",
+        "changeme",
+        "changeme123",
+        "admin",
+        "admin123",
+        "secret",
+        "hfm",
+        "123456",
+        "12345678",
+        "123456789",
+        "1234567890",
+        "12345",
+        "qwerty",
+        "qwerty123",
+        "letmein",
+        "welcome",
+        "iloveyou",
+        "abc123",
+        "111111",
+        "000000",
+    }
+)
+
+
+def password_policy_errors(password: str, *, username: str | None = None) -> list[str]:
+    """Return password-policy violations (empty list == policy satisfied).
+
+    Rules mirror the production bootstrap policy: minimum length, no known
+    default/demo password, and the password never embeds the username. The
+    caller decides whether an additional rule (e.g. differ from the current
+    password) applies; this function only validates the credential itself.
+    """
+    errors: list[str] = []
+    if not password:
+        errors.append("a new password is required")
+        return errors
+    if len(password) < MIN_PASSWORD_LENGTH:
+        errors.append(f"password must be at least {MIN_PASSWORD_LENGTH} characters")
+    lowered = password.lower()
+    if lowered in FORBIDDEN_PASSWORDS:
+        errors.append("password is a known default or demo value")
+    if username and username.lower() in lowered:
+        errors.append("password must not contain the username")
+    return errors
+
 
 @dataclass(frozen=True)
 class Principal:
