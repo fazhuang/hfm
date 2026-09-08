@@ -171,6 +171,7 @@ run_playwright_owned_frontend() {
     HFM_E2E_BASE="http://localhost:$GOLDEN_FRONTEND_PORT" \
     HFM_E2E_TARGET_SHA="$SOURCE_SHA" \
     CF01_BASE="http://localhost:$GOLDEN_FRONTEND_PORT" \
+    CF01_GATE=1 \
     pnpm exec playwright test e2e/golden-runtime.spec.ts
   ) >"$log" 2>&1 &
   PW_PID=$!

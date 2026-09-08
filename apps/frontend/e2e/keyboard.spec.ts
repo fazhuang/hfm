@@ -5,8 +5,14 @@
  * every keyboard-focused control shows a visible focus indicator (the repo's
  * :focus-visible ring = box-shadow), and that a bounded number of Tabs always
  * lands on a focusable element (no trap). Also checks homepage touch targets at 375.
+ *
+ * WR00-B2-E2E-R1 data isolation: the SEARCH surface renders a deterministic
+ * test-owned result list (see data-fixtures.ts) instead of depending on
+ * pre-existing business data in the runtime database; no writes are made.
  */
 import { expect, test, type Page } from '@playwright/test'
+
+import { stubPublicSearch } from './data-fixtures'
 
 const SURFACES = ['HOME', 'PERSON', 'JIAYI', 'HERITAGE', 'SEARCH', 'RESEARCH_GUARD'] as const
 
@@ -26,6 +32,9 @@ async function gotoSurface(page: Page, surface: string): Promise<void> {
       await page.goto('/heritage')
       break
     case 'SEARCH': {
+      // Deterministic public-search fixture: the result list must exist for the
+      // keyboard traversal to audit real result rows (no runtime-DB dependence).
+      stubPublicSearch(page)
       await page.goto('/search')
       const input = page.locator('input[type="search"], input[type="text"], form input').first()
       await input.fill('皇甫谧')

@@ -180,6 +180,12 @@ test('UI-03 responsive: dark theme and 200% zoom do not overflow', async ({ page
 test('CF-08 Sections 01–04: images load, controls never overlap/off-screen, no page failure (375/768/1440)', async ({
   page,
 }) => {
+  // WR00-B2-E2E-R1: this visual smoke captures full-page + per-section
+  // evidence screenshots at three widths; it needs more than the global 30s
+  // timeout under a loaded dev server, otherwise the runner tears the page
+  // down mid-loop ("page/browser closed"). Runner-lifecycle setting only — no
+  // assertion or product change.
+  test.setTimeout(180_000)
   mkdirSync(EVIDENCE_DIR, { recursive: true })
   const fatal: string[] = []
   page.on('pageerror', (e) => fatal.push(String(e)))

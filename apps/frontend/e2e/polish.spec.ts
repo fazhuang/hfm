@@ -5,10 +5,17 @@
  *   every homepage editorial CTA arrow carries a transform transition (consistent
  *   hover affordance), and the global link colour transition is active, in real
  *   Chromium. Also captures evidence screenshots under docs/audit/evidence/cf11/.
+ *
+ * WR00-B2-E2E-R1 data isolation: the evidence pass renders the data-flow
+ * surfaces (person page, search results) from a deterministic test-owned data
+ * contract (see data-fixtures.ts) instead of depending on pre-existing
+ * business data in the runtime database; no writes are made.
  */
 import { expect, test } from '@playwright/test'
 import { mkdirSync } from 'node:fs'
 import { resolve } from 'node:path'
+
+import { stubPublicPerson, stubPublicSearch } from './data-fixtures'
 
 const EVIDENCE_DIR = resolve(process.cwd(), '../../docs/audit/evidence/cf11')
 
@@ -60,7 +67,16 @@ test('CF-11 link/arrow transitions respect prefers-reduced-motion', async ({ pag
 })
 
 test('CF-11 evidence screenshots (375 / 768 / 1440 + public surfaces)', async ({ page }) => {
+  // WR00-B2-E2E-R1: this evidence pass navigates 13 surfaces and captures
+  // screenshots; under a loaded parallel dev server it can exceed the global
+  // 30s timeout, so the runner tears the page down mid-pass. Per-test
+  // runner-lifecycle ceiling only — no assertion or product change.
+  test.setTimeout(180_000)
   mkdirSync(EVIDENCE_DIR, { recursive: true })
+  // Data-flow surfaces (person page + search results) render deterministic
+  // test-owned content for the evidence pass.
+  stubPublicPerson(page)
+  stubPublicSearch(page)
   const shots: Array<[string, number]> = [
     ['home', 375],
     ['home', 768],

@@ -1,12 +1,19 @@
 /**
- * CF-01 Golden Runtime Regression — real chain, NO mock.
+ * CF-01 Golden Runtime Regression — real chain, NO mock (CF01_GATE mode).
  *
- * Proves the live runtime chain end-to-end with zero network interception:
+ * Executed by `infra/scripts/golden-runtime-gate.sh` (FULL_GOLDEN_GATE) after
+ * a fresh PostgreSQL + alembic upgrade head + deterministic bootstrap, with
+ * CF01_GATE=1: the full real chain is exercised with zero network interception:
  *   Browser → Vite /api proxy → FastAPI :8000 → PostgreSQL → JSON → page.
  *
- * NO page.route fulfillment / fixture server / mocked backend. Executed by
- * `infra/scripts/golden-runtime-gate.sh` (FULL_GOLDEN_GATE) after a fresh
- * PostgreSQL + alembic upgrade head + deterministic bootstrap.
+ * WR00-B2-E2E-R1 data isolation: when the spec runs OUTSIDE the golden gate
+ * (no CF01_GATE marker — e.g. the standard acceptance E2E suite against the
+ * canonical runtime database, which contains no demo content), the two
+ * data-flow journeys (PERSON, SEARCH) use a deterministic test-owned data
+ * contract served at the network boundary. They never depend on pre-existing
+ * business data in hfm_prod and never write to it. Their UI intent is
+ * unchanged: a known person page renders its structured fields and a search
+ * query renders real result rows that navigate canonically.
  *
  * Hard invariants enforced here (CF-01 acceptance):
  *   - every core route is served HTTP 200 (no 404 shell);
@@ -17,9 +24,16 @@
  */
 import { expect, test } from '@playwright/test'
 
+import { stubPublicPerson, stubPublicSearch } from './data-fixtures'
+
 // ND-1 H01: the spec honours the same explicit-port override as the Playwright
 // config (HFM_E2E_BASE) in addition to the CF01_BASE the gate scripts set.
 const BASE = process.env.CF01_BASE || process.env.HFM_E2E_BASE || 'http://localhost:5199'
+
+// Set by infra/scripts/golden-runtime-gate.sh (disposable seeded DB): the
+// PERSON/SEARCH journeys run against the REAL chain. Absent (standard E2E
+// suite, canonical runtime DB) they use deterministic network fixtures.
+const CF01_GATE = process.env.CF01_GATE === '1'
 
 const captured = {
   consoleErrors: [] as string[],
@@ -68,8 +82,15 @@ test('HOME — / served 200 + platform heading', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toContainText('皇甫谧人文数字平台')
 })
 
-test('PERSON — real Browser→/api→FastAPI→PG→JSON→render', async ({ page }) => {
+test('PERSON — known person page renders structured fields (data fixture unless CF01 gate)', async ({
+  page,
+}) => {
   attach(page)
+  // Standard suite: deterministic person projection (test-owned data). The
+  // CF-01 gate keeps the REAL Browser→/api→FastAPI→PG chain under CF01_GATE=1.
+  if (!CF01_GATE) {
+    stubPublicPerson(page)
+  }
   await goto200(page, '/persons/person-huangfu-mi')
   await expect(page.locator('h1')).toBeVisible()
   await expect(page.locator('h1').first()).toContainText('皇甫谧')
@@ -88,18 +109,21 @@ test('HERITAGE — /heritage served 200 + heading', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible()
 })
 
-test('SEARCH — real search behaviour renders real results from Golden data', async ({ page }) => {
+test('SEARCH — search renders deterministic result rows and navigates canonically', async ({
+  page,
+}) => {
   attach(page)
+  // Standard suite: deterministic public-search fixture (test-owned data).
+  // The CF-01 gate keeps the REAL search chain under CF01_GATE=1 (typed query
+  // runs the real published-content search against the seeded database).
+  if (!CF01_GATE) {
+    stubPublicSearch(page)
+    stubPublicPerson(page) // result click lands on the deterministic person page
+  }
   await goto200(page, '/search')
-  // CF-06: the public search page calls the REAL backend search endpoint
-  // (Browser → Vite /api proxy → FastAPI /api/v1/public/search → PostgreSQL
-  // → JSON → render). Typing a query runs the real published-content search.
-  // Assert the real path produces real result rows (no DOM shell, no mock).
   const input = page.locator('input[type="search"], input[type="text"], form input').first()
   await input.fill('皇甫谧')
   await page.keyboard.press('Enter')
-  // Real results must render in .result-list (title contains query) from the
-  // published person record in the golden database.
   const list = page.locator('.result-list, ol.result-list')
   await expect(list).toBeVisible()
   const rows = page.locator(
@@ -107,8 +131,6 @@ test('SEARCH — real search behaviour renders real results from Golden data', a
   )
   await expect(rows.first()).toBeVisible()
   await expect(list).toContainText('皇甫谧')
-  // The person result carries the real canonical route and navigates to the
-  // real person page served by the same runtime chain.
   const rowLink = page.locator('.result-row a.result-row__link').first()
   await expect(rowLink).toHaveAttribute('href', '/persons/person-huangfu-mi')
   await rowLink.click()
