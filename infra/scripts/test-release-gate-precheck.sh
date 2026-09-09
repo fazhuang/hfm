@@ -73,7 +73,7 @@ HFM_SUPERSESSION_REGISTER="$TMP/nomapping-register.md" expect_fail "I governed n
 # E. deselected node not formally authorized (outside superseded scopes)
 HFM_SUPERSESSION_REGISTER="$ROOT/docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md" \
   expect_fail "E unauthorized deselection" \
-  tests/test_phase2_media.py::test_p2_current_migration_head_0014 "${AUTHORIZED_NODES[@]}"
+  tests/test_phase2_media.py::test_p2_current_migration_head_0015 "${AUTHORIZED_NODES[@]}"
 
 # J. extra unregistered deselection injected
 HFM_SUPERSESSION_REGISTER="$ROOT/docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md" \
@@ -83,7 +83,7 @@ HFM_SUPERSESSION_REGISTER="$ROOT/docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSI
 # F. ACTIVE replacement assertion proposed for deselection
 HFM_SUPERSESSION_REGISTER="$ROOT/docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md" \
   expect_fail "F active replacement deselection" \
-  tests/test_phase2_media.py::test_p2_current_migration_head_0014
+  tests/test_phase2_media.py::test_p2_current_migration_head_0015
 
 # Valid state: canonical verifier + canonical register + authorized nodes -> PASS
 if ! HFM_VERIFIER="$ROOT/scripts/verify-invariant-supersessions.py" \

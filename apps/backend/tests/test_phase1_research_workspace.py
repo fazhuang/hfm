@@ -513,7 +513,7 @@ def test_migration_0013_upgrade_downgrade_upgrade_single_head(tmp_path: Path) ->
     tables = _tables(db_file)
     assert {"research_projects", "research_notes"} <= tables
     heads = _alembic(db_file, "heads").stdout.strip()
-    assert heads == "0014 (head)", heads  # single Alembic head
+    assert heads == "0015 (head)", heads  # single Alembic head
 
     # downgrade to 0012: research tables gone, accepted tables intact
     assert _alembic(db_file, "downgrade", "0012").returncode == 0
@@ -524,7 +524,7 @@ def test_migration_0013_upgrade_downgrade_upgrade_single_head(tmp_path: Path) ->
     # upgrade again to head: tables restored
     assert _alembic(db_file, "upgrade", "head").returncode == 0
     assert {"research_projects", "research_notes"} <= _tables(db_file)
-    assert _alembic(db_file, "heads").stdout.strip() == "0014 (head)"
+    assert _alembic(db_file, "heads").stdout.strip() == "0015 (head)"
 
 
 def test_migration_0013_fk_and_checks(tmp_path: Path) -> None:

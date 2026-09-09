@@ -45,6 +45,9 @@ class Edition(BaseModel):
     preface_postscript: Mapped[str | None] = mapped_column(
         Text, nullable=True, comment="序跋考证信息"
     )
+    stable_id: Mapped[str | None] = mapped_column(
+        String(120), nullable=True, unique=True, comment="content stable id (unique)"
+    )
     lineage_parent_edition_id: Mapped[str | None] = mapped_column(
         ForeignKey("editions.id", ondelete="SET NULL"),
         nullable=True,

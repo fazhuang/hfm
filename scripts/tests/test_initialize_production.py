@@ -1,7 +1,7 @@
-"""ND-1 B03 — production initialization tests (isolated PostgreSQL@0014).
+"""ND-1 B03 — production initialization tests (isolated PostgreSQL@0015).
 
 Runs scripts/initialize-production.py against a real, disposable PostgreSQL
-database migrated to 0014 and proves: first-run CREATED, repeat-run
+database migrated to 0015 and proves: first-run CREATED, repeat-run
 ALREADY_PRESENT idempotence, exact 5-role matrix with a single SYSTEM_ADMIN,
 partial-state REPAIR, weak-password rejection, and secret-free output.
 

@@ -66,4 +66,7 @@ class Work(BaseModel):
         server_default="true",
         comment="是否传世全书（佚书为 false）",
     )
+    stable_id: Mapped[str | None] = mapped_column(
+        String(120), nullable=True, unique=True, comment="content stable id (unique)"
+    )
     description: Mapped[str | None] = mapped_column(Text, nullable=True)

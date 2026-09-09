@@ -2,7 +2,7 @@
 # HFM ND-1 G7 — real-browser authentication evidence gate.
 #
 # Stable, repeatable, independent real-browser auth verification:
-#   isolated PostgreSQL → alembic 0014 → initialize-production (first admin)
+#   isolated PostgreSQL → alembic 0015 → initialize-production (first admin)
 #   → admin API creates a STUDENT_RESEARCHER → real backend on :8000
 #   (HFM_ENV=prod with valid inputs — also exercises the ND-1 B01 runtime
 #   fail-closed PASS path) → Playwright-owned Vite → real Chromium runs
@@ -81,7 +81,7 @@ for p in "$BACKEND_PORT" "$FE_PORT"; do
 done
 if ! pg_isready -h 127.0.0.1 -q; then echo "G7=FAIL (PostgreSQL unreachable)"; exit 1; fi
 
-# ---- isolated database at 0014 -------------------------------------------
+# ---- isolated database at 0015 -------------------------------------------
 dropdb -h 127.0.0.1 -U "$PGUSER" --if-exists "$DB_NAME" >/dev/null 2>&1 || true
 createdb -h 127.0.0.1 -U "$PGUSER" "$DB_NAME"
 export HFM_DATABASE_URL="$DB_URL"

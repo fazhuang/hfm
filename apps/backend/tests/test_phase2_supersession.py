@@ -30,7 +30,7 @@ verifier: Any = verifier_module
 P200 = "bd0d39e76fe5a8289006664514af9250a7f84f14"  # P2-00 acceptance baseline
 P205 = "b53c897cfffd287516ecb1ed230df2f8f83687d9"  # P2-05 migration commit
 F2 = "d38f871a230ca56713737b7de82f9111e7e73650"  # corrected frontier-2 candidate
-REPLACEMENT = "apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0014"
+REPLACEMENT = "apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0015"
 AUTHORITY_DOC = "docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md"
 
 

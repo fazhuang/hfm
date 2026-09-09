@@ -5,7 +5,7 @@ Validates scripts/validate-production-env.py and scripts/deploy-gate.sh:
   - missing / template / known-dev / dev-dbname / sqlite-in-prod / weak
     token-secret configurations are rejected with REDACTED diagnostics;
   - a valid synthetic production configuration passes;
-  - the read-only migration verification accepts an isolated database at 0014
+  - the read-only migration verification accepts an isolated database at 0015
     and blocks one at 0013; an unreachable database is a hard failure;
   - the deploy-gate launcher exits non-zero on invalid configs and cannot have
     verification bypassed by --apply-migrations.
@@ -146,7 +146,7 @@ def test_diagnostics_are_redacted(tmp_path: Path) -> None:
 
 
 def _sqlite_at_revision(db_file: Path, revision: str) -> None:
-    """Migrate an isolated sqlite file to the requested revision (0013/0014)."""
+    """Migrate an isolated sqlite file to the requested revision (0013/0014/0015)."""
     env = {**os.environ, "HFM_DATABASE_URL": f"sqlite+aiosqlite:///{db_file}"}
     run = subprocess.run(
         [PYTHON, "-m", "alembic", "-c", "alembic.ini", "upgrade", revision],
@@ -160,20 +160,20 @@ def _sqlite_at_revision(db_file: Path, revision: str) -> None:
     assert run.returncode == 0, run.stderr[-2000:]
 
 
-def test_migration_verification_accepts_0014(tmp_path: Path) -> None:
-    db_file = tmp_path / "at0014.db"
-    _sqlite_at_revision(db_file, "0014")
+def test_migration_verification_accepts_0015(tmp_path: Path) -> None:
+    db_file = tmp_path / "at0015.db"
+    _sqlite_at_revision(db_file, "0015")
     errors = validator.verify_migration(
-        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014"
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0015"
     )
     assert errors == []
 
 
-def test_migration_verification_blocks_0013(tmp_path: Path) -> None:
-    db_file = tmp_path / "at0013.db"
-    _sqlite_at_revision(db_file, "0013")
+def test_migration_verification_blocks_stale_0014(tmp_path: Path) -> None:
+    db_file = tmp_path / "at0014.db"
+    _sqlite_at_revision(db_file, "0014")
     errors = validator.verify_migration(
-        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0014"
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0015"
     )
     assert errors and "current revision" in errors[0]
 
@@ -182,7 +182,7 @@ def test_migration_verification_fails_on_unreachable_database() -> None:
     errors = validator.verify_migration(
         BACKEND_DIR,
         "postgresql+asyncpg://user:secret@127.0.0.1:59999/nope",
-        "0014",
+        "0015",
     )
     assert errors and ("database unreachable" in errors[0] or "heads" in errors[0])
 
@@ -190,9 +190,9 @@ def test_migration_verification_fails_on_unreachable_database() -> None:
 # ------------------------------------------------------- deploy-gate launcher
 
 
-def test_deploy_gate_test_env_0014_passes(tmp_path: Path) -> None:
+def test_deploy_gate_test_env_0015_passes(tmp_path: Path) -> None:
     db_file = tmp_path / "gate-ok.db"
-    _sqlite_at_revision(db_file, "0014")
+    _sqlite_at_revision(db_file, "0015")
     env_file = _write_env(
         tmp_path / "gate-test.env",
         {

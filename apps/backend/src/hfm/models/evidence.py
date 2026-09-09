@@ -112,6 +112,9 @@ class Evidence(BaseModel):
     )
 
     # --- taint lifecycle (CA-024 REUSE) ---
+    stable_id: Mapped[str | None] = mapped_column(
+        String(120), nullable=True, unique=True, comment="content stable id (unique)"
+    )
     taint_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,

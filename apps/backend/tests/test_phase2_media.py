@@ -442,10 +442,10 @@ async def test_p106_derivative_bytes_independently_verified(media: MediaService)
     assert derivative.sha256 != original.sha256
 
 
-def test_p2_current_migration_head_0014() -> None:
+def test_p2_current_migration_head_0015() -> None:
     """Frontier-2 current-state migration verification (not an accepted-file
     modification): the authorized P2-05 schema migration leaves a single
-    linear head 0014 with revisions 0001..0014."""
+    linear head 0015 with revisions 0001..0015."""
     import pathlib
 
     versions = pathlib.Path("/Users/likeming/Sites/hfm/apps/backend/alembic/versions")
@@ -455,5 +455,5 @@ def test_p2_current_migration_head_0014() -> None:
         match = re.search(r'revision\s*=\s*["\']([^"\']+)["\']', text)
         if match:
             revisions.add(match.group(1))
-    assert revisions == {f"{i:04d}" for i in range(1, 15)}
-    assert "0014" in revisions
+    assert revisions == {f"{i:04d}" for i in range(1, 16)}
+    assert "0015" in revisions

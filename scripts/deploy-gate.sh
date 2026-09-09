@@ -5,7 +5,7 @@
 #   1. real HFM_* runtime inputs are validated (redacted) by
 #      scripts/validate-production-env.py — missing/template/known-dev DB and
 #      token-secret values are rejected without printing their values;
-#   2. the exact Alembic current revision must equal the head (0014) with a
+#   2. the exact Alembic current revision must equal the head (0015) with a
 #      single head — verified read-only against the target database;
 #   3. a database/command failure is a non-zero gate failure;
 #   4. --apply-migrations can NEVER bypass verification: the preflight does
@@ -68,11 +68,11 @@ fi
 
 if [[ "$ENV_NAME" == "prod" ]]; then
   if [[ "$APPLY" -eq 0 ]]; then
-    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0014; apply is a separate authorized step)"
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0015; apply is a separate authorized step)"
   else
-    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0014)"
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0015)"
   fi
 else
-  echo "MIGRATION_GATE=PASS (head=0014 current=0014 verified for $ENV_NAME)"
+  echo "MIGRATION_GATE=PASS (head=0015 current=0015 verified for $ENV_NAME)"
 fi
 exit 0

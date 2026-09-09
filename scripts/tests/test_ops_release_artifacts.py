@@ -52,10 +52,10 @@ def api_up() -> int:
     return port
 
 
-def _sqlite_at_0014(tmp_path: Path) -> str:
+def _sqlite_at_head(tmp_path: Path) -> str:
     db_file = tmp_path / "probe.db"
     run = subprocess.run(
-        [PYTHON, "-m", "alembic", "-c", "alembic.ini", "upgrade", "0014"],
+        [PYTHON, "-m", "alembic", "-c", "alembic.ini", "upgrade", "head"],
         cwd=str(BACKEND_DIR),
         env={**os.environ, "HFM_DATABASE_URL": f"sqlite+aiosqlite:///{db_file}"},
         capture_output=True,
@@ -176,7 +176,7 @@ def test_probe_detects_process_down(api_up: int) -> None:
 
 
 def test_probe_passes_when_process_and_database_ok(api_up: int, tmp_path: Path) -> None:
-    db_url = _sqlite_at_0014(tmp_path)
+    db_url = _sqlite_at_head(tmp_path)
     run = subprocess.run(
         [
             "bash",
