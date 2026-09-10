@@ -1,0 +1,42 @@
+{
+  "manifest_version": 1,
+  "task": "HFM-PWE-IT-02-R1",
+  "mapping_baseline_id": "077fd6222eff612978b0aeec93810691f6554f8dbbfe0affa6c4d751ed75594b",
+  "inputs": [
+    {
+      "relative_path": "01-entity-bootstrap.csv",
+      "sha256": "1a75b63dbd2340dafe22b522a32714c536d26ed4bba5e0ea60ca8370483bffcb",
+      "size": 4812
+    },
+    {
+      "relative_path": "02-work-canonical-map.csv",
+      "sha256": "ab1ee7d59e42b64dd349f23479996f93f320354fd704844d9d10a428f3a98d08",
+      "size": 1754
+    },
+    {
+      "relative_path": "03-edition-work-map.csv",
+      "sha256": "d2725d7cdb0d752605bf2e1f9c0a7ce1e2c6b75b3c5c27debdab42fc57ecbfe8",
+      "size": 29651
+    },
+    {
+      "relative_path": "04-person-identity-map.csv",
+      "sha256": "efd95ca43247b7a3afb702602fd7ec1df20f8ec1bd3a552464f995a7c85ff64f",
+      "size": 1859
+    },
+    {
+      "relative_path": "review/PERSON-CONFIRMATION-REVIEW.csv",
+      "sha256": "7c0aaba00f7cb40321ca42981d85328fcb13962dd0ff52a3acb9a4806d990299",
+      "size": 5341
+    },
+    {
+      "relative_path": "review/WORK-CONFIRMATION-REVIEW.csv",
+      "sha256": "507865370bfe4c0bdf9507de567c19f83668d27234b49c0b515560ffd36ed752",
+      "size": 5409
+    },
+    {
+      "relative_path": "review/EDITION-CONFIRMATION-REVIEW.csv",
+      "sha256": "e34df5a30a034a176caa9bb4a81aeff4e4aba9174741a3551a5cdb4d9ac8b2e6",
+      "size": 41856
+    }
+  ]
+}
