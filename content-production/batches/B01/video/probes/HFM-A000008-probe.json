@@ -1,0 +1,20 @@
+{
+  "asset": "HFM-A000008",
+  "duration_s": 109.82,
+  "duration_source": "decode-verified nb_read_frames=2746 @25fps; container duration N/A",
+  "video": {
+    "codec": "mpeg2video",
+    "w": 720,
+    "h": 576,
+    "pix_fmt": "yuv420p"
+  },
+  "audio": {
+    "codec": "ac3",
+    "rate": 48000,
+    "ch": 2
+  },
+  "bytes": 1009262592,
+  "scene_boundary_count": 7,
+  "decoder_notes": "ac-tex damaged / MVs not available warnings (content damage present)",
+  "vad_notes": "silence start 0.0 only"
+}

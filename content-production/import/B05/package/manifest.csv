@@ -1,0 +1,2 @@
+OBJECT_TYPE,PACKAGE_STATUS,REASON
+ALL,EMPTY_BY_DESIGN,BLOCKING_SCHEMA_GAPS (see schema-gaps.csv); no importable content object under current 33-table schema

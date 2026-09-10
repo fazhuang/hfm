@@ -1,0 +1,7 @@
+﻿SCOPE,RULE_NAME,RULE,CONTRACT_EFFECT
+CONTENT_PAGE_OBJECT,import_key,"(ASSET_ID, PAGE_NUMBER)",unique per source page after canonical selection
+CONTENT_PAGE_OBJECT,canonical_output_selection,priority: corpus canonical dir (content-production/corpus/) > batch B03 > B02 > B01; deterministic tie-break lexicographic OUTPUT_FILE,one canonical output per key
+CONTENT_PAGE_OBJECT,alternate_outputs,"non-canonical records for same key kept as provenance references (ALT_OUTPUT_FILE), never imported as separate objects","duplicate keys resolved, not dropped"
+CONTENT_PAGE_OBJECT,uniqueness_after_policy,SELECT count(*) group by key HAVING count(*)>=2 -> 0 after canonical selection,validation gate
+CONTENT_STABLE_ID,db_id_mapping,after schema decision: content stable id stored in new stable_id column; import idempotent by (key) lookup,B05 blocked by schema gap until column authorized
+CROSS_BATCH,B01/B02 same-page outputs,B01 raw-ocr/A000542_p001_raw.txt and B02 raw-ocr/HFM-A000542_p001_raw.txt are two renderings of HFM-A000542 page 1,"one page object, canonical=B02 (rank2), alt=B01 (rank3)"

@@ -1,0 +1,7 @@
+﻿PRODUCT_SURFACE,CONTENT_OBJECT,OBJECT_TYPE,COMPONENT_REF,READINESS,WHAT_IS_MISSING
+PERSON_PROFILE,PERSON,PERSON,PERSON:HFM_HUANGFUMI;person-facts;timeline,PARTIAL,facts/timeline candidate-level;formal titles/作者/日期与卷页校对缺
+JIAYI_READER,JIAYI,WORK,WORK-JIAYI;editions;source-pages,PARTIAL,文本层抽取(PARTIAL 123含大扫描影印);卷篇结构与归一文本待人工核校
+EVIDENCE_VIEW,PERSON,EVIDENCE,evidence.csv(seed 24),PARTIAL,需扩展全量文本证据并人工复核
+HERITAGE,HERITAGE,HERITAGE,heritage-objects/events,PARTIAL,对象为文件级候选;内容需现场/材料核校
+SEARCH,SEARCH,SEARCH,documents.csv;extracted-text,PARTIAL,标题规范化与人审缺
+RESEARCH,RESEARCH,RESEARCH,papers.csv;topics,PARTIAL,作者/期刊元数据缺

@@ -1,0 +1,15 @@
+EVENT_ID,SUBJECT,DATE_OR_PERIOD,EVENT,PLACE,RELATED_PERSON,SOURCE_ASSET_ID,SOURCE_LOCATION,CONFIDENCE,REVIEW_STATUS
+HFM-B01-PT-001,皇甫谧,生年未决（建安/正始两说）,出生；正史本传框架起点,未载,家世（汉魏皇甫氏西北士族）,HFM-A000003,P3/P8,LOW,NEEDS_REVIEW
+HFM-B01-PT-002,皇甫谧,少年时期,年少游荡不学（本传框架）,未载,家族长辈（未点名）,HFM-A000003,P3,LOW,NEEDS_REVIEW
+HFM-B01-PT-003,皇甫谧,青年（约20岁后,依秦腔升级版自20岁写起）,折节向学、发愤读书,未载,叔母任氏（后世通行叙事,本批文档未明载）,HFM-A000005,T1R4,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-004,皇甫谧,中年起,患痹疾困厄（风痹）,未载,自身,HFM-A000003,P3,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-005,皇甫谧,屡征期间,朝廷屡次征召不仕；作《玄守论》《释劝论》申志,未载,朝廷征召方（未点名）,HFM-A000004,P5/P7,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-006,皇甫谧,约268年前后（影片叙事基线）,著《针灸甲乙经》推进至成书,未载（影片主线依"公元268年"叙事）,自身,HFM-A000005,T1R1,LOW,NEEDS_REVIEW
+HFM-B01-PT-007,皇甫谧,西晋太康三年（传统后世叙事,本批文档未直接载年）,卒；临终作《笃终论》主薄葬,未载,自身,HFM-A000004,P9,LOW,NEEDS_REVIEW
+HFM-B01-PT-008,皇甫谧,著书期,著《帝王世纪》《高士传》《逸士传》《列女传》等（辑佚见类书）,未载,自身,HFM-A000004,P10,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-009,皇甫谧,文坛活动期,为左思《三都赋》作序（文学声望事件）,洛阳文坛（未明载）,左思,HFM-A000004,P3,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-010,皇甫谧,日常交往（轶事）,梁柳任太守拒以酒肉饯行,未载,梁柳（姑母之子）,HFM-A000005,T0R12,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-011,皇甫谧,生后叙事,后世评价与形象塑造（晋书赞、李巨来、钱熙祚评）,历代,后世评者,HFM-A000005,T0R2/T0R5/T0R6,MEDIUM,NEEDS_REVIEW
+HFM-B01-PT-012,皇甫谧,现代（2011/2012）,秦腔剧《皇甫谧》/《济世布衣皇甫谧》首演年份并存两说,舞台（未明载）,编演方（未载）,HFM-A000005,T1R3/T1R4,LOW,CONFLICT
+HFM-B01-PT-013,皇甫谧,现代（2016/2018）,电影《皇甫谧》(2016)与电视剧《皇甫谧传奇》(2018)传播,影视,吕一丁/陈浩民,HFM-A000005,T1R1/T1R2,HIGH,NEEDS_REVIEW
+HFM-B01-PT-014,皇甫谧,现代（2020-2025）,纪录片与非遗学术作品（丝路非遗·皇甫谧针灸术2020；皇甫谧针灸2025等）,甘肃/灵台,李志锋等,HFM-A000005,T1R6/T2R6,MEDIUM,NEEDS_REVIEW

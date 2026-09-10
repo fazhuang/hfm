@@ -1,0 +1,19 @@
+﻿SOURCE_CSV,SOURCE_FIELD,OBJECT_TYPE,TARGET_TABLE,TARGET_COLUMN,TRANSFORMATION,REQUIRED,FK_DEPENDENCY,VALIDATION_RULE,IMPORTABLE,REASON
+documents.csv,DOC-*,DOCUMENT,documents,stable_id/title/…,DIRECT_IMPORT,stable_id unique,-,stable_id unique; required title,YES,SG-01 resolved by 0015; doc fields direct
+persons.csv,PERSON-*,PERSON,entities+persons,entity_type/name_zh/stable_id,TRANSFORM_REQUIRED,entity_type enum person; stable_id,entities->persons,enum valid,YES,SG-02 resolved; aliases -> person_aliases(SG-04)
+works.csv,WORK-*,WORK,works,title/entity_id/stable_id,TRANSFORM_REQUIRED,title not null; stable_id,entities->works,-,YES,SG-02 resolved; author dual-track 后续归一
+jiayi-editions.csv,EDITION-*,EDITION,editions,work_id/edition_name/era/stable_id,TRANSFORM_REQUIRED,stable_id,works->editions,edition_name not null,YES,SG-02 resolved; edition_type 分析标签保留于 CSV(reference)
+evidence.csv,EVIDENCE-*,EVIDENCE,evidences,description/evidence_level/source_ref_id/stable_id,TRANSFORM_REQUIRED,source_ref optional,sources->source_refs->evidences,-,NO,REVIEW_GATED: evidence 行需先经 review/归一(非 schema gap)
+person-facts.csv,HFM-B01-PF-*,FACT,assertions(partial),predicate/value/confidence,TRANSFORM_REQUIRED,-,assertions<-evidences,-,NO,REVIEW_GATED: conflict 策略先行(非 schema gap)
+person-timeline.csv,HFM-B01-PT-*,EVENT,events(partial),event_type/年份字段,TRANSFORM_REQUIRED,-,entities->events,-,NO,REVIEW_GATED
+person-relations.csv,REL-*,RELATION,-,-,NOT_SUPPORTED_BY_CURRENT_SCHEMA,-,-,-,NO,FUTURE relation 建模
+jiayi-structure.csv,(0),STRUCTURE,chapters/passages,-,NOT_READY,-,-,-,NO,结构检测待人工
+jiayi-source-pages.csv,JIAYI-PAGE-*,PAGE_LINK,source_refs/evidences(partial),locator,REFERENCE_ONLY,-,sources->source_refs,-,NO,"REFERENCE_ONLY(页面身份=(ASSET,PAGE))"
+papers.csv,PAPER-*,PAPER,-,-,NOT_SUPPORTED_BY_CURRENT_SCHEMA,-,-,-,NO,FUTURE research 模型
+research-topics.csv,topic-*,TOPIC,-,-,NOT_SUPPORTED_BY_CURRENT_SCHEMA,-,-,-,NO,FUTURE
+heritage-objects.csv,HERITAGE-*,HERITAGE,heritage_projects(partial)+persons,project_name/entity_id/stable_id,TRANSFORM_REQUIRED,-,entities->heritage_projects,-,NO,REVIEW_GATED
+heritage-events.csv,HEVENT-*,HEVENT,events(partial),-,TRANSFORM_REQUIRED,-,entities->events,-,NO,REVIEW_GATED
+knowledge-object-candidates.csv,K-*,KNOWLEDGE,c_domain_terms(partial),term_type/term_name,TRANSFORM_REQUIRED,term_type enum,entities->c_domain_terms,enum valid,NO,FUTURE 类型枚举
+product-content-map.csv,-,MAP,-,-,REFERENCE_ONLY,-,-,-,NO,REFERENCE_ONLY
+review-priority.csv,-,REVIEW,audit_log(记录),detail,REFERENCE_ONLY,-,-,-,NO,REFERENCE_ONLY
+citations-candidates.csv,(0),CITATION,citations(partial),quote_text,NOT_READY,-,-,-,NO,待引文解析

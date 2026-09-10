@@ -1,0 +1,12 @@
+﻿TABLE,PRE_COUNT,EXPECTED_INSERT,EXPECTED_UPDATE,EXPECTED_SKIP,EXPECTED_POST_COUNT
+documents,0,675,0,0,675
+persons,0,0,0,0,0
+works,0,0,0,0,0
+editions,0,0,0,0,0
+evidences,0,0,0,0,0
+entities,0,0,0,0,0
+sources,0,0,0,0,0
+source_refs,0,0,0,0,0
+citations,0,0,0,0,0
+content_artifacts,0,0,0,0,0
+publication_records,0,0,0,0,0

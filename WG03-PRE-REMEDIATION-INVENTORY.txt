@@ -1,0 +1,47 @@
+# WG-03 PRE-REMEDIATION INVENTORY (read-only snapshot)
+generated_at=2026-09-10T19:55:58
+PWD=/Users/likeming/Sites/hfm
+REPO_TOPLEVEL=/Users/likeming/Sites/hfm
+BRANCH=hfm-canonical
+HEAD=92f206c85ddbc4a6403c2c323de063aa665ecde3
+TRACKED_DIRTY=0
+UNTRACKED_TOTAL=4021
+SOURCE_UNTRACKED_TOTAL_FROZEN=4019   (current - 2 WG governance docs = 4019)
+
+TRACK_MANIFEST_LISTED=79  PRESENT_UNTRACKED=79
+MOVE_ARCHIVE(VIDEO)=2955
+GOVERNANCE_DOCS=2
+RESIDUAL(=frozen DELETE bucket)=985
+
+## residual decomposition by category
+    458  REGEN corpus/extracted-text
+    392  REGEN corpus/raw-ocr
+    113  MIXED batches/*
+      9  FORMAL import/B05 (non-regenerable)
+      8  REGEN corpus/work
+      3  OTHER "content-production
+      1  REGEN .playwright-cli
+      1  FORMAL pwe-tooling (non-regenerable)
+
+## non-regenerable formal assets found inside the frozen DELETE bucket
+  content-production/import/B05/csv-database-map.csv
+  content-production/import/B05/expected-database-delta.csv
+  content-production/import/B05/identity-policy-check.csv
+  content-production/import/B05/package/documents.csv
+  content-production/import/B05/package/manifest.csv
+  content-production/import/B05/page-output-identity-policy.csv
+  content-production/import/B05/reconciliation.csv
+  content-production/import/B05/schema-gaps.csv
+  content-production/import/B05/validation-report.csv
+  content-production/import/pwe-tooling/PWE-IT-02-R1-CODEX-REACCEPTANCE.md
+
+## plan section 7.4 component counts vs measured filesystem
+  extracted-text plan=458 actual=458
+  raw-ocr       plan=392 actual=392
+  corpus/work   plan=10  actual=8
+  B01/jiayi/raw-ocr plan=7 actual=8
+  B01/jiayi/rendered-pages plan=13 actual=14
+  B01/video/probes plan=2 actual=2
+  B02 (plan 92 json+images) actual B02 residual=65
+  playwright plan=1 actual=1
+  plan component sum = 458+392+7+13+2+92+10+1 = 975  != frozen 985

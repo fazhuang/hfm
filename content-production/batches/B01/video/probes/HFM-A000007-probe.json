@@ -1,0 +1,22 @@
+{
+  "asset": "HFM-A000007",
+  "duration_s": 915.5,
+  "container": "mpeg",
+  "video": {
+    "codec": "mpeg2video",
+    "w": 720,
+    "h": 576,
+    "pix_fmt": "yuv420p",
+    "fps_hint": "25"
+  },
+  "audio": {
+    "codec": "mp2",
+    "rate": 48000,
+    "ch": 2
+  },
+  "bit_rate": 6275139,
+  "bytes": 718133252,
+  "scene_boundary_count": 26,
+  "decoder_notes": "clean decode rc=0",
+  "vad_notes": "silencedetect -38dB d=1.2s: silence starts at 0.0 and ~145.5s"
+}

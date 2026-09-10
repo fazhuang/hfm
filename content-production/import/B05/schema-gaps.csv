@@ -1,0 +1,6 @@
+﻿OBJECT_TYPE,SOURCE_FIELD,MISSING_CAPABILITY,PRODUCT_IMPACT,IMPORT_BLOCKING,RECOMMENDED_RESOLUTION
+SG-01 DOCUMENT,documents 表,"documents(stable_id,title 双轨,溯源列)",docs 导入,RESOLVED_BY_0015,0015_content_import_support
+SG-02 STABLE_ID,stable_id 持久化,persons/works/editions/evidences/documents.stable_id unique,幂等导入,RESOLVED_BY_0015,0015_content_import_support
+SG-03 FACT/evidence 映射,Source/SourceRef/Evidence/Citation 复用,复用现有 provenance 模型,证据溯源,RESOLVED_BY_MAPPING,SG-03 mapping (无新表)
+SG-04 PERSON alias,"person_aliases(person_id,alias,alias_type unique)",别名模型,异称解析,RESOLVED_BY_0015,0015_content_import_support
+SG-05 evidence page/quote,SourceRef/Evidence/Citation 复用,复用现有模型,页级证据,RESOLVED_BY_MAPPING,SG-05 mapping (无新模型)

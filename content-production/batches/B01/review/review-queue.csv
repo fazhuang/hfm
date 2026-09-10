@@ -1,0 +1,13 @@
+BATCH_ID,ASSET_ID,OUTPUT_TYPE,OUTPUT_PATH,REVIEW_STATUS,REVIEW_REASON,NEXT_STEP
+B01,HFM-A000003,PERSON_TEXT,person/extracted-text/HFM-A000003_其传.txt,AUTO_EXTRACTED,规划类文档；非原始传记史料,人工核对内容定位与术语
+B01,HFM-A000004,PERSON_TEXT,person/extracted-text/HFM-A000004_其言.txt,AUTO_EXTRACTED,规划类文档,人工核对
+B01,HFM-A000005,PERSON_TEXT,person/extracted-text/HFM-A000005_后论.txt,AUTO_EXTRACTED,评价/作品/设施汇总表,人工核对
+B01,HFM-A000003/004/005,PERSON_FACTS,person/person-facts.csv,NEEDS_REVIEW,24条候选事实均需人核；3个冲突组待裁决,编辑审读+冲突裁决
+B01,HFM-A000003/004/005,PERSON_TIMELINE,person/person-timeline-candidates.csv,NEEDS_REVIEW,14条年谱候选；多数为框架事件,专家核+权威史料比对
+B01,HFM-A000009,IMAGE_DERIVATIVES,images/derivatives+thumbs,AUTO_EXTRACTED,技术派生完成；权利未决,权利确认后决定是否可用
+B01,HFM-A000542..546,JIAYI_OCR_RAW,jiayi/raw-ocr/*,AUTO_EXTRACTED,7页RAW OCR；木质扫描本辨识度低,更强OCR(PaddleOCR/高精度)或人工转写
+B01,HFM-A000542..546,JIAYI_PAGE_MAP,jiayi/page-map.csv,NEEDS_REVIEW,抽样映射(7页)完成；全册映射未做,全册页级映射
+B01,HFM-A000542..546,JIAYI_STRUCTURE,jiayi/structure.csv,NEEDS_REVIEW,卷/篇标题未可靠检出,人工卷目核对
+B01,HFM-A000007,VIDEO_PROBE,视频/视频段/技术probe,AUTO_EXTRACTED,技术probe完成；画面未审看,ASR转写+人工抽帧审看
+B01,HFM-A000008,VIDEO_PROBE,视频probe,NEEDS_REVIEW,存在解码损伤段；容器时长缺失,损伤定位+技术修复评估
+B01,HFM-A000007/008,VIDEO_TRANSCRIPT,视频/transcripts/TRANSCRIPT-STATUS.md,NEEDS_REVIEW,无ASR引擎；转写未完成,授权ASR/人工转写

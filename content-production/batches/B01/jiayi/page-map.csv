@@ -1,0 +1,8 @@
+BATCH_ID,SOURCE_ASSET_ID,EDITION,PDF_FILE_NAME,PDF_PAGE_NO,SOURCE_PAGE_LABEL,RENDER_FILE,OCR_FILE,OCR_PARAMS,OCR_CJK_CHARS,PROVISIONAL_CATEGORY,REVIEW_STATUS
+B01,HFM-A000542,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书1.pdf,1,册1-第1页,p-001.png,A000542_p001_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,9,短文本页(疑似书名/扉页——需人核),NEEDS_REVIEW
+B01,HFM-A000542,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书1.pdf,2,册1-第2页,p-002.png,A000542_p002_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,1216,密集正文页(疑似序或正文——需人核),NEEDS_REVIEW
+B01,HFM-A000542,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书1.pdf,5,册1-第5页,p-005.png,A000542_p005_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,43,低辨识页(需人核),NEEDS_REVIEW
+B01,HFM-A000542,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书1.pdf,8,册1-第8页,p-008.png,A000542_p008_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,125,中低辨识页(需人核),NEEDS_REVIEW
+B01,HFM-A000542,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书1.pdf,12,册1-第12页,p-012.png,A000542_p012_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,7,极低辨识页(疑似图版/卷末——需人核),NEEDS_REVIEW
+B01,HFM-A000544,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书3.pdf,15,册3-第15页,rendered-pages/A000544_p015.png,HFM-A000544_p015_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,70,低辨识页(需人核),NEEDS_REVIEW
+B01,HFM-A000546,医统正脉全书(明万历29/1601吴勉学),《针灸甲乙经》医统正脉全书5.pdf,20,册5-第20页,rendered-pages/A000546_p020.png,HFM-A000546_p020_raw.txt,tesseract/chi_tra_vert/psm6/300dpi,86,低辨识页(需人核),NEEDS_REVIEW

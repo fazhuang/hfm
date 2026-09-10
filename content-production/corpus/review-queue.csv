@@ -1,0 +1,1078 @@
+﻿REVIEW_TYPE,ASSET_ID,REASON,OUTPUT,STATUS_NOTE
+OCR_REVIEW,HFM-A000416,page 68 low OCR chars=0,corpus/raw-ocr/HFM-A000416_p068_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000418,page 236 low OCR chars=0,corpus/raw-ocr/HFM-A000418_p236_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000491,page 170 low OCR chars=0,corpus/raw-ocr/HFM-A000491_p170_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000492,page 72 low OCR chars=0,corpus/raw-ocr/HFM-A000492_p072_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000530,page 159 low OCR chars=42,corpus/raw-ocr/HFM-A000530_p159_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000531,page 156 low OCR chars=42,corpus/raw-ocr/HFM-A000531_p156_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000535,page 67 low OCR chars=51,corpus/raw-ocr/HFM-A000535_p067_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000536,page 1 low OCR chars=2,corpus/raw-ocr/HFM-A000536_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000538,page 1 low OCR chars=0,corpus/raw-ocr/HFM-A000538_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000538,page 129 low OCR chars=24,corpus/raw-ocr/HFM-A000538_p129_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000539,page 1 low OCR chars=1,corpus/raw-ocr/HFM-A000539_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000539,page 156 low OCR chars=25,corpus/raw-ocr/HFM-A000539_p156_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000540,page 1 low OCR chars=3,corpus/raw-ocr/HFM-A000540_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000548,page 1 low OCR chars=9,corpus/raw-ocr/HFM-A000548_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000548,page 38 low OCR chars=2,corpus/raw-ocr/HFM-A000548_p038_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000550,page 1 low OCR chars=4,corpus/raw-ocr/HFM-A000550_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000550,page 82 low OCR chars=23,corpus/raw-ocr/HFM-A000550_p082_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000552,page 1 low OCR chars=0,corpus/raw-ocr/HFM-A000552_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000553,page 1 low OCR chars=16,corpus/raw-ocr/HFM-A000553_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000554,page 1 low OCR chars=16,corpus/raw-ocr/HFM-A000554_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000555,page 1 low OCR chars=5,corpus/raw-ocr/HFM-A000555_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000555,page 64 low OCR chars=55,corpus/raw-ocr/HFM-A000555_p064_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000555,page 128 low OCR chars=22,corpus/raw-ocr/HFM-A000555_p128_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000556,page 1 low OCR chars=42,corpus/raw-ocr/HFM-A000556_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000559,page 1 low OCR chars=15,corpus/raw-ocr/HFM-A000559_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000559,page 370 low OCR chars=44,corpus/raw-ocr/HFM-A000559_p370_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000561,page 72 low OCR chars=38,corpus/raw-ocr/HFM-A000561_p072_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000561,page 144 low OCR chars=50,corpus/raw-ocr/HFM-A000561_p144_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000562,page 62 low OCR chars=38,corpus/raw-ocr/HFM-A000562_p062_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000562,page 124 low OCR chars=3,corpus/raw-ocr/HFM-A000562_p124_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000563,page 1 low OCR chars=42,corpus/raw-ocr/HFM-A000563_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000565,page 40 low OCR chars=42,corpus/raw-ocr/HFM-A000565_p040_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000565,page 80 low OCR chars=1,corpus/raw-ocr/HFM-A000565_p080_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000566,page 1 low OCR chars=22,corpus/raw-ocr/HFM-A000566_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000566,page 502 low OCR chars=50,corpus/raw-ocr/HFM-A000566_p502_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000567,page 68 low OCR chars=46,corpus/raw-ocr/HFM-A000567_p068_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000568,page 1 low OCR chars=3,corpus/raw-ocr/HFM-A000568_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000568,page 44 low OCR chars=6,corpus/raw-ocr/HFM-A000568_p044_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000568,page 89 low OCR chars=28,corpus/raw-ocr/HFM-A000568_p089_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000571,page 1 low OCR chars=0,corpus/raw-ocr/HFM-A000571_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000573,page 1 low OCR chars=0,corpus/raw-ocr/HFM-A000573_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000573,page 88 low OCR chars=48,corpus/raw-ocr/HFM-A000573_p088_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000575,page 67 low OCR chars=0,corpus/raw-ocr/HFM-A000575_p067_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000577,page 1 low OCR chars=3,corpus/raw-ocr/HFM-A000577_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000578,page 1 low OCR chars=19,corpus/raw-ocr/HFM-A000578_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000579,page 1 low OCR chars=34,corpus/raw-ocr/HFM-A000579_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000580,page 253 low OCR chars=14,corpus/raw-ocr/HFM-A000580_p253_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000582,page 1 low OCR chars=32,corpus/raw-ocr/HFM-A000582_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000582,page 232 low OCR chars=53,corpus/raw-ocr/HFM-A000582_p232_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000583,page 1 low OCR chars=43,corpus/raw-ocr/HFM-A000583_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000583,page 246 low OCR chars=57,corpus/raw-ocr/HFM-A000583_p246_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000584,page 512 low OCR chars=16,corpus/raw-ocr/HFM-A000584_p512_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000585,page 1 low OCR chars=36,corpus/raw-ocr/HFM-A000585_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000589,page 1 low OCR chars=12,corpus/raw-ocr/HFM-A000589_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000590,page 1 low OCR chars=26,corpus/raw-ocr/HFM-A000590_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000590,page 113 low OCR chars=59,corpus/raw-ocr/HFM-A000590_p113_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000591,page 1 low OCR chars=40,corpus/raw-ocr/HFM-A000591_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000591,page 113 low OCR chars=45,corpus/raw-ocr/HFM-A000591_p113_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000592,page 1 low OCR chars=22,corpus/raw-ocr/HFM-A000592_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000593,page 1 low OCR chars=42,corpus/raw-ocr/HFM-A000593_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000593,page 115 low OCR chars=58,corpus/raw-ocr/HFM-A000593_p115_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000595,page 1 low OCR chars=39,corpus/raw-ocr/HFM-A000595_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000595,page 114 low OCR chars=39,corpus/raw-ocr/HFM-A000595_p114_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000597,page 1 low OCR chars=39,corpus/raw-ocr/HFM-A000597_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000598,page 1 low OCR chars=18,corpus/raw-ocr/HFM-A000598_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000599,page 1 low OCR chars=26,corpus/raw-ocr/HFM-A000599_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000601,page 1 low OCR chars=48,corpus/raw-ocr/HFM-A000601_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000603,page 1 low OCR chars=6,corpus/raw-ocr/HFM-A000603_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000604,page 1 low OCR chars=56,corpus/raw-ocr/HFM-A000604_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000609,page 1 low OCR chars=18,corpus/raw-ocr/HFM-A000609_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000609,page 765 low OCR chars=28,corpus/raw-ocr/HFM-A000609_p765_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000610,page 1 low OCR chars=18,corpus/raw-ocr/HFM-A000610_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000610,page 765 low OCR chars=28,corpus/raw-ocr/HFM-A000610_p765_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000611,page 1 low OCR chars=12,corpus/raw-ocr/HFM-A000611_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000612,page 1 low OCR chars=5,corpus/raw-ocr/HFM-A000612_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000614,page 1 low OCR chars=2,corpus/raw-ocr/HFM-A000614_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000615,page 970 low OCR chars=46,corpus/raw-ocr/HFM-A000615_p970_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000616,page 1 low OCR chars=13,corpus/raw-ocr/HFM-A000616_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000618,page 1 low OCR chars=37,corpus/raw-ocr/HFM-A000618_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000619,page 1 low OCR chars=23,corpus/raw-ocr/HFM-A000619_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000621,page 128 low OCR chars=0,corpus/raw-ocr/HFM-A000621_p128_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000626,page 1 low OCR chars=44,corpus/raw-ocr/HFM-A000626_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000628,page 1 low OCR chars=55,corpus/raw-ocr/HFM-A000628_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000635,page 1 low OCR chars=38,corpus/raw-ocr/HFM-A000635_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000669,page 1 low OCR chars=32,corpus/raw-ocr/HFM-A000669_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000670,page 1 low OCR chars=35,corpus/raw-ocr/HFM-A000670_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000672,page 1 low OCR chars=44,corpus/raw-ocr/HFM-A000672_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000673,page 1 low OCR chars=57,corpus/raw-ocr/HFM-A000673_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000675,page 1 low OCR chars=56,corpus/raw-ocr/HFM-A000675_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000677,page 5 low OCR chars=18,corpus/raw-ocr/HFM-A000677_p005_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 1 low OCR chars=2,corpus/raw-ocr/HFM-A000686_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 2 low OCR chars=0,corpus/raw-ocr/HFM-A000686_p002_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 3 low OCR chars=0,corpus/raw-ocr/HFM-A000686_p003_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 4 low OCR chars=0,corpus/raw-ocr/HFM-A000686_p004_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 5 low OCR chars=0,corpus/raw-ocr/HFM-A000686_p005_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000686,page 6 low OCR chars=0,corpus/raw-ocr/HFM-A000686_p006_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 1 low OCR chars=37,corpus/raw-ocr/HFM-A000689_p001_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 2 low OCR chars=7,corpus/raw-ocr/HFM-A000689_p002_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 3 low OCR chars=0,corpus/raw-ocr/HFM-A000689_p003_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 4 low OCR chars=39,corpus/raw-ocr/HFM-A000689_p004_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 5 low OCR chars=8,corpus/raw-ocr/HFM-A000689_p005_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 6 low OCR chars=10,corpus/raw-ocr/HFM-A000689_p006_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 7 low OCR chars=10,corpus/raw-ocr/HFM-A000689_p007_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 8 low OCR chars=22,corpus/raw-ocr/HFM-A000689_p008_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000689,page 9 low OCR chars=0,corpus/raw-ocr/HFM-A000689_p009_raw.txt,LOW_OCR_OUTPUT
+OCR_REVIEW,HFM-A000416,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000416_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000418,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000418_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000420,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000420_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000421,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000421_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000428,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000428_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000490,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000490_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000491,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000491_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000492,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000492_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000497,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000497_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000498,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000498_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000502,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000502_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000504,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000504_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000505,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000505_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000507,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000507_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000508,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000508_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000509,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000509_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000510,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000510_p* x2,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000512,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000512_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000513,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000513_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000529,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000529_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000530,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000530_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000531,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000531_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000532,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000532_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000533,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000533_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000534,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000534_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000535,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000535_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000536,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000536_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000537,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000537_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000538,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000538_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000539,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000539_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000540,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000540_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000541,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000541_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000542,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B01/raw-ocr/HFM-A000542_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000543,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B01/raw-ocr/HFM-A000543_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000544,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B01/raw-ocr/HFM-A000544_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000545,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B01/raw-ocr/HFM-A000545_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000546,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B01/raw-ocr/HFM-A000546_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000547,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000547_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000548,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000548_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000549,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000549_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000550,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000550_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000551,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000551_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000552,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000552_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000553,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000553_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000554,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000554_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000555,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000555_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000556,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000556_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000557,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000557_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000558,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000558_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000559,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000559_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000560,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000560_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000561,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000561_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000562,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000562_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000563,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000563_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000564,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000564_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000565,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000565_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000566,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000566_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000567,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000567_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000568,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000568_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000569,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000569_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000570,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000570_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000571,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000571_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000573,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000573_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000574,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000574_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000575,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000575_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000576,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000576_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000577,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000577_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000578,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000578_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000579,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000579_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000580,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000580_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000581,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000581_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000582,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000582_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000583,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000583_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000584,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000584_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000585,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000585_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000586,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000586_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000587,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000587_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000588,mixed doc: 4 text pages + 2 OCR samples; image pages pending,corpus/extracted-text/HFM-A000588_raw.txt,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000589,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000589_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000590,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000590_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000591,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000591_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000592,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000592_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000593,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000593_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000594,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000594_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000595,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000595_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000596,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000596_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000597,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000597_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000598,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000598_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000599,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000599_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000600,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000600_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000601,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000601_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000602,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000602_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000603,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000603_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000604,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000604_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000605,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000605_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000606,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000606_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000607,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000607_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000608,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000608_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000609,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000609_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000610,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000610_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000611,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000611_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000612,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000612_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000613,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,batches/B02/raw-ocr/HFM-A000613_p*,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000614,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000614_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000615,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000615_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000616,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000616_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000617,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000617_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000618,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000618_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000619,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000619_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000620,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000620_p* x3,FULL_OCR_PENDING
+OCR_REVIEW,HFM-A000621,big scanned doc: sampled RAW OCR produced; full-page OCR pending compute budget,raw-ocr/HFM-A000621_p* x3,FULL_OCR_PENDING
+ENCRYPTED,HFM-A000013,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000013,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000014,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000014,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000015,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000015,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000016,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000017,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000017,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000018,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000018,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000019,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000019,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000020,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000021,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000021,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000022,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000023,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000023,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000024,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000024,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000025,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000025,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000026,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000026,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000027,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000027,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000028,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000028,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000029,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000029,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000030,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000030,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000031,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000031,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000032,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000032,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000033,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000033,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000034,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000034,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000035,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000035,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000036,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000036,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000037,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000038,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000038,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000039,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000039,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000040,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000040,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000041,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000041,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000042,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000043,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000043,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000044,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000045,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+ENCRYPTED,HFM-A000046,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000046,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000047,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000047,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000048,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000048,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000049,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000050,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000051,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000051,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000052,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000052,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000053,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000054,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000054,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000055,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000056,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000056,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000057,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000057,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000058,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000058,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000059,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000059,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000060,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000060,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000061,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000061,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000062,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000062,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000063,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000063,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000064,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000064,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000065,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000065,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000066,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000066,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000067,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000068,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000068,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000069,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000069,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000070,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000071,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000071,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000072,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000072,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000073,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000073,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000074,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000074,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000075,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000076,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000077,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000078,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000078,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000079,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000079,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000080,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000080,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000081,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000082,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000082,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000083,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000084,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000085,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000085,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000086,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000086,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000087,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000087,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000088,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000089,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000090,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000090,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000091,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000091,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000092,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000092,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000093,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000093,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000094,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000094,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000095,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000095,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000096,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000096,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000097,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000098,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000098,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000099,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000099,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000100,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000100,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000101,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000101,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000102,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000102,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000103,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000103,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000104,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000104,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000105,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000105,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000106,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000106,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000107,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000107,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000108,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000109,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000109,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000110,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000110,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000111,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000111,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000112,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000112,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000113,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000114,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000114,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000115,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000115,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000116,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000116,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000117,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000117,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000118,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000118,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000119,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000119,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000120,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000120,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000121,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000121,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000122,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000123,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000123,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000124,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000124,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000125,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000125,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000126,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000126,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000127,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000127,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000128,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000129,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000129,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000130,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000131,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000131,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000132,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000132,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000133,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000133,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000134,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000134,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000135,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000135,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000136,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000137,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000137,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000138,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000138,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000139,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000139,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000140,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000141,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000141,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000142,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000142,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000143,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000143,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000144,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000144,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000145,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000145,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000146,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000146,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000147,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000147,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000148,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000148,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000149,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000149,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000150,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000150,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000151,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000151,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000152,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000152,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000153,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000153,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000154,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000155,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000155,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000156,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000156,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000157,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000157,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000158,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000158,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000159,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000159,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000160,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000160,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000161,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000161,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000162,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000162,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000163,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000163,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000164,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000165,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000165,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000166,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000166,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000167,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000167,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000168,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000168,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000169,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000169,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000170,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000170,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000171,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000171,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000172,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000172,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000173,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000173,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000174,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000174,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000175,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000175,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000176,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000176,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000177,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000177,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000178,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000178,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000179,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000180,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000181,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000181,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000182,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000182,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000183,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000183,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000184,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000184,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000185,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000185,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000186,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000186,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000187,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000188,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000189,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000189,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000190,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000190,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000191,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000191,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000192,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000192,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000193,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000193,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000194,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000194,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000195,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000195,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000196,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000196,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000197,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000197,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000198,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000198,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000199,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000199,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000200,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000200,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000201,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000201,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000202,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000202,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000203,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000203,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000204,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000204,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000205,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000205,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000206,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000206,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000207,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000207,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000208,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000208,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000209,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000209,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000210,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000210,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000211,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000211,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000212,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000213,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000213,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000214,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000214,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000215,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000215,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000216,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000216,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000217,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000217,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000218,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000218,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000219,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000219,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000220,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000221,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000221,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000222,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000222,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000223,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000224,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000224,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000225,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000225,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000226,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000226,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000227,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000227,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000228,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000228,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000229,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000229,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000230,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000230,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000231,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000231,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000232,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000233,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000234,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000234,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000235,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000235,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000236,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000236,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000237,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000237,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000238,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000238,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000239,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000240,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000241,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000242,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000242,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000243,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000243,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000244,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000244,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000245,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000245,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000246,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000247,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000247,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000248,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000248,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000249,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000249,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000250,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000250,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000251,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000251,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000252,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000252,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000253,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000253,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000254,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000255,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+ENCRYPTED,HFM-A000256,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000256,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000257,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000257,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000258,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000258,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000259,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000259,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000260,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000261,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000261,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000262,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000262,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000263,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000263,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000264,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000264,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000265,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000265,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000266,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000266,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000267,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000267,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000268,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000269,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000269,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000270,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000271,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000271,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000272,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000272,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000273,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000274,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000274,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000275,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000276,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000276,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000277,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000277,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000278,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000278,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000279,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000279,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000280,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000281,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000281,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000282,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000283,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000284,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000285,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000285,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000286,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000287,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000288,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000289,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000289,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000290,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000290,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000291,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000291,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000292,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000293,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000294,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000294,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000295,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000295,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000296,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000297,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000297,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000298,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000299,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000299,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000300,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+ENCRYPTED,HFM-A000301,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000301,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000302,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000302,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000303,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000303,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000304,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000304,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000305,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000305,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000306,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000306,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000307,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000307,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000308,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000308,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000309,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000309,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000310,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000310,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000311,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000311,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000312,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000312,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000313,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000313,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000314,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000314,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000315,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000315,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000316,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000316,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000317,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000317,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000318,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000318,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000319,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000319,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000320,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000320,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000321,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000321,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000322,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000322,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000323,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000323,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000324,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000324,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000325,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000325,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000326,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000326,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000327,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000327,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000328,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000328,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000329,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000329,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000330,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000330,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000331,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000331,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000332,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000332,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000333,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000333,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000334,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000334,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000335,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000335,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000336,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000336,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000337,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000337,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000338,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000338,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000339,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000340,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000340,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000341,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000341,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000342,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000342,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000343,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000343,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000344,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000344,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000345,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000345,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000346,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000346,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000347,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000347,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000348,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000348,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000349,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000350,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000350,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000351,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000351,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000352,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000353,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000353,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000354,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000354,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000355,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000355,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000356,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000356,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000357,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000357,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000358,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000358,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000359,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000359,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000360,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000360,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000361,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000361,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000362,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000362,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000363,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000363,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000364,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000364,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000365,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000365,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000366,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000366,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000367,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000367,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000368,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000368,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000369,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000369,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000370,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000370,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000371,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000371,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000372,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000372,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000373,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000373,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000374,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000374,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000375,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000376,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000376,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000377,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000377,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000378,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000378,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000379,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000379,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000380,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000380,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000381,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000381,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000382,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000382,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000383,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000383,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000384,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000384,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000385,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000385,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000386,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000386,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000387,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000387,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000388,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000388,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000389,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000389,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000390,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000390,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000391,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000391,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000392,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000392,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000393,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000393,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000394,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000394,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000395,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000395,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000396,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000396,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000397,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000397,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000398,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000398,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000399,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000399,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000400,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000400,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000401,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000401,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000402,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000402,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000403,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000403,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000404,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000404,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000405,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000405,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000406,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000406,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000407,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000407,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000408,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000408,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000409,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000409,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000410,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000410,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000411,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000411,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000412,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000412,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000413,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000413,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000414,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000414,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000415,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000415,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000417,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000417,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000419,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000419,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000422,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000423,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+ENCRYPTED,HFM-A000424,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000424,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000425,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000425,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000426,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000426,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000427,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000427,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000429,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000430,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000430,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000431,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000431,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000432,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000432,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000433,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000433,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000434,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000434,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000435,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000435,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000436,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000436,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000437,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000437,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000438,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000438,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000439,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000439,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000440,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000440,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000441,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000442,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000443,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000443,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000444,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000445,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000446,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000447,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000448,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000448,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000449,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000449,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000452,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000453,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000454,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000455,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000455,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000456,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000457,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000459,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000460,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000461,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000462,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000463,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000465,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000465,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000466,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000466,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000469,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000470,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000471,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000473,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000473,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000474,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000475,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000475,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000476,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000477,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000477,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000478,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000478,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000479,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000479,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000481,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000481,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000482,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000483,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000484,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000485,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000485,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000486,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000487,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000487,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000488,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000488,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000489,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000493,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000493,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000495,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000499,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000499,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000501,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000506,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000506,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000511,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000516,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000516,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000519,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000520,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000520,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000521,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000522,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000522,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000523,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000523,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000524,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000525,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000525,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+ENCRYPTED,HFM-A000526,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+ENCRYPTED,HFM-A000527,encrypted pdf listed; extraction/render status in review-encrypted.csv,-,RIGHTS/TECH_REVIEW
+METADATA_REVIEW,HFM-A000527,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000679,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+METADATA_REVIEW,HFM-A000680,title/author/date heuristics need expert confirmation,-,AUTO_EXTRACTED
+SOURCE_REVIEW,ALL_ASSETS,SOURCE_STATUS stays NEEDS_REVIEW for all 667 (no auto promotion),-,MANUAL_REVIEW
+RIGHTS_REVIEW,ALL_ASSETS,RIGHTS_STATUS stays NEEDS_CUSTOMER_CONFIRMATION for all 667,-,MANUAL_REVIEW

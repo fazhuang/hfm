@@ -1,0 +1,2 @@
+﻿ASSET_ID,PAGE,CANONICAL_OUTPUT,ALT_OUTPUTS,UNIQUENESS_AFTER_POLICY,NOTE
+HFM-A000542,1,content-production/batches/B02/raw-ocr/HFM-A000542_p001_raw.txt,content-production/batches/B01/jiayi/raw-ocr/A000542_p001_raw.txt,PASS,1 canonical + 1 alternate; unique page keys=1818
