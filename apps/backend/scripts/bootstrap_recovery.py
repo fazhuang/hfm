@@ -30,7 +30,6 @@ import hfm.models.research_workspace  # noqa: F401
 import hfm.models.source_ref  # noqa: F401
 import hfm.models.version  # noqa: F401
 import hfm.models.work  # noqa: F401
-
 from hfm.db.session import SessionFactory
 from hfm.models.content_artifact import (
     ContentAdmissionState,
