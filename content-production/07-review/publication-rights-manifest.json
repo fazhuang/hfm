@@ -1,0 +1,16 @@
+{
+  "_comment": "P1 权利复核决定：现代著作/现代学者传记 = customer_owned；古籍/历史人物 = public_domain（--rights-status 兜底）。键格式 {kind}:{stable_id}。",
+  "work:WORK-HUANGFUMI-ZHENJIU": "customer_owned",
+  "work:WORK-HUANGFUMI-YANJIU-JICHENG": "customer_owned",
+  "work:WORK-HUANGFUMI-YIZHU-JI": "customer_owned",
+  "person:PERSON-LIU-JUNQI": "customer_owned",
+  "person:PERSON-SHI-XINGHAI": "customer_owned",
+  "person:PERSON-ZHANG-FARONG": "customer_owned",
+  "person:PERSON-LI-ZHIFENG": "customer_owned",
+  "person:PERSON-LI-DING": "customer_owned",
+  "person:PERSON-WEN-CHANGLU": "customer_owned",
+  "person:PERSON-WANG-JUN": "customer_owned",
+  "person:PERSON-QIAN-CHAOCHEN": "customer_owned",
+  "person:PERSON-GAO-SHUZHONG": "customer_owned",
+  "person:PERSON-HUANGLONGXIANG": "customer_owned"
+}
