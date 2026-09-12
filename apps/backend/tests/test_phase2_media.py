@@ -448,7 +448,7 @@ def test_p2_current_migration_head_0015() -> None:
     linear head 0015 with revisions 0001..0015."""
     import pathlib
 
-    versions = pathlib.Path("/Users/likeming/Sites/hfm/apps/backend/alembic/versions")
+    versions = pathlib.Path(__file__).resolve().parents[1] / "alembic" / "versions"
     revisions = set()
     for path in versions.glob("*.py"):
         text = path.read_text(encoding="utf-8")
