@@ -407,6 +407,9 @@ def test_committed_evidence_artifact_corrected() -> None:
     assert evidence["silent_failure_paths"] == 0
 
 
+@pytest.mark.skipif(
+    not HFB_ROOT.exists(), reason="HFB snapshot checkout not available (CI/local path)"
+)
 def test_source_digest_and_evidence_consistent() -> None:
     evidence = json.loads(EVIDENCE_PATH.read_text(encoding="utf-8"))
     assert evidence["source_sha256"] == EXPECTED_SOURCE_SHA256

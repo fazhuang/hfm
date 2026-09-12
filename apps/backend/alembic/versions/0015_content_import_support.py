@@ -48,9 +48,7 @@ def upgrade() -> None:
         sa.Column("source_asset_id", sa.String(36), nullable=True),
         sa.Column("source_pages", sa.String(200), nullable=True),
         sa.Column("source_sha256", sa.String(64), nullable=True),
-        sa.Column(
-            "processing_status", sa.String(40), nullable=True, server_default="auto"
-        ),
+        sa.Column("processing_status", sa.String(40), nullable=True, server_default="auto"),
         sa.Column(
             "review_status",
             sa.String(40),

@@ -201,9 +201,7 @@ async def public_search(
     documented envelope (CF-06 P1-SEARCH-01 closure).
     """
     try:
-        result = await SearchService(session).public_search(
-            query=q, page=page, page_size=page_size
-        )
+        result = await SearchService(session).public_search(query=q, page=page, page_size=page_size)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return api_response(

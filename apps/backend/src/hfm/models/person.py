@@ -73,6 +73,7 @@ class Person(BaseModel):
         Text, nullable=True, comment="皇甫谧研究域关系摘要"
     )
 
+
 class PersonAlias(BaseModel):
     """Person alias (SG-04). Maps a canonical Person to alternative names."""
 
@@ -85,15 +86,13 @@ class PersonAlias(BaseModel):
     )
     alias: Mapped[str] = mapped_column(String(200), nullable=False)
     alias_type: Mapped[str] = mapped_column(
-        String(30), nullable=False, default="alias",
+        String(30),
+        nullable=False,
+        default="alias",
         comment="alias type: name/zi/hao/alias/variant",
     )
-    source_asset_id: Mapped[str | None] = mapped_column(
-        String(36), nullable=True
-    )
-    source_location: Mapped[str | None] = mapped_column(
-        String(200), nullable=True
-    )
+    source_asset_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    source_location: Mapped[str | None] = mapped_column(String(200), nullable=True)
     __table_args__ = (
         UniqueConstraint(
             "person_id",
