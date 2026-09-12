@@ -103,10 +103,10 @@ async def main():
     async with factory() as s:
         e1 = Entity(entity_type=EntityType.work, name="Test Work")
         s.add(e1); await s.flush()
-        s.add(Work(title="Test Work", entity_id=e1.id))
+        s.add(Work(title="Test Work", entity_id=e1.id, stable_id="WORK-TEST"))
         e2 = Entity(entity_type=EntityType.person, name="Test Person")
         s.add(e2); await s.flush()
-        s.add(Person(entity_id=e2.id, name_zh="Test Person"))
+        s.add(Person(entity_id=e2.id, name_zh="Test Person", stable_id="PERSON-TEST"))
         await s.commit()
     await engine.dispose()
 
@@ -197,3 +197,39 @@ def test_unknown_rights_rejected_at_cli(isolated_db: str) -> None:
     run = _run_publish(isolated_db, "--rights-status", "unknown", "--scope", "all")
     assert run.returncode == 2  # argparse choices rejects UNKNOWN before any write
     assert _psql(isolated_db, "select count(*) from publication_records;") == "0"
+
+
+@_PG
+def test_rights_manifest_overrides_fallback(isolated_db: str, tmp_path: Path) -> None:
+    _seed(isolated_db)
+    manifest = tmp_path / "rights.json"
+    manifest.write_text(
+        '{"work:WORK-TEST": "licensed", "person:PERSON-TEST": "customer_owned"}',
+        encoding="utf-8",
+    )
+    run = _run_publish(
+        isolated_db,
+        "--rights-status",
+        "public_domain",
+        "--rights-file",
+        str(manifest),
+        "--scope",
+        "all",
+    )
+    assert run.returncode == 0, run.stdout + run.stderr
+    assert (
+        _psql(
+            isolated_db,
+            "select rights_status from content_artifacts "
+            "where subject_entity_id = (select entity_id from works where stable_id='WORK-TEST');",
+        )
+        == "licensed"
+    )
+    assert (
+        _psql(
+            isolated_db,
+            "select rights_status from content_artifacts "
+            "where subject_entity_id = (select entity_id from persons where stable_id='PERSON-TEST');",
+        )
+        == "customer_owned"
+    )

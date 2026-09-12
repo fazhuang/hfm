@@ -127,6 +127,34 @@ def _source_key(kind: str, stable_id: str | None, fallback_id: str) -> str:
     return f"canonical-{kind}:{stable_id or fallback_id}"
 
 
+def _resolve_rights(
+    manifest: dict[str, str],
+    kind: str,
+    stable_id: str | None,
+    fallback: RightsStatus,
+) -> RightsStatus:
+    """Per-entity rights from a manifest, falling back to the CLI default.
+
+    Manifest keys are ``"{kind}:{stable_id}"``; a missing key uses the
+    fallback. A value that is not an admissible RightsStatus is rejected
+    fail-closed rather than silently coerced (UNKNOWN is never admissible).
+    """
+    if stable_id is None:
+        return fallback
+    raw = manifest.get(f"{kind}:{stable_id}")
+    if raw is None:
+        return fallback
+    try:
+        value = RightsStatus(raw)
+    except ValueError as exc:
+        raise ValueError(
+            f"rights manifest has invalid value for {kind}:{stable_id}: {raw}"
+        ) from exc
+    if value is RightsStatus.UNKNOWN:
+        raise ValueError(f"rights manifest must not use UNKNOWN for {kind}:{stable_id}")
+    return value
+
+
 async def _ensure_service_user(
     session: AsyncSession, username: str, role_code: UserRoleCode
 ) -> User:
@@ -241,6 +269,7 @@ async def _publish_one(
 async def _run(
     db_url: str,
     rights_status: RightsStatus,
+    rights_manifest: dict[str, str],
     scope: str,
     rights_basis: str | None,
     allowed_scope: str | None,
@@ -273,7 +302,7 @@ async def _run(
                     session, reviewer_user, UserRoleCode.CONTENT_REVIEWER
                 )
 
-                tasks: list[tuple[str, str, str | None, str, bytes]] = []
+                tasks: list[tuple[str, str, str | None, str, bytes, RightsStatus]] = []
                 if scope in ("works", "all"):
                     for work in (
                         (await session.execute(select(Work).order_by(Work.title)))
@@ -297,6 +326,12 @@ async def _run(
                                     category=work.category,
                                     stable_id=work.stable_id,
                                 ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "work",
+                                    work.stable_id,
+                                    rights_status,
+                                ),
                             )
                         )
                 if scope in ("persons", "all"):
@@ -318,10 +353,16 @@ async def _run(
                                     dynasty=person.dynasty,
                                     stable_id=person.stable_id,
                                 ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "person",
+                                    person.stable_id,
+                                    rights_status,
+                                ),
                             )
                         )
 
-                for kind, entity_id, stable_id, title, content in tasks:
+                for kind, entity_id, stable_id, title, content, rights in tasks:
                     state, detail = await _publish_one(
                         session,
                         kind=kind,
@@ -329,7 +370,7 @@ async def _run(
                         title=title,
                         stable_id=stable_id,
                         content=content,
-                        rights_status=rights_status,
+                        rights_status=rights,
                         rights_basis=rights_basis,
                         allowed_scope=allowed_scope,
                         creator=creator,
@@ -377,6 +418,12 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--rights-basis", default=None)
     parser.add_argument("--allowed-scope", default=None)
     parser.add_argument(
+        "--rights-file",
+        type=Path,
+        default=None,
+        help="JSON manifest keyed by '{kind}:{stable_id}' overriding --rights-status",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="run every read and write then roll back (report only)",
@@ -419,11 +466,27 @@ def main(argv: list[str] | None = None) -> int:
             return 1
 
     rights_status = RightsStatus(args.rights_status)
+    rights_manifest: dict[str, str] = {}
+    if args.rights_file is not None:
+        if not args.rights_file.is_file():
+            print(f"RIGHTS_FILE=FAIL (not found: {args.rights_file.name})")
+            return 1
+        try:
+            loaded = json.loads(args.rights_file.read_text(encoding="utf-8"))
+            if not isinstance(loaded, dict) or not all(
+                isinstance(k, str) and isinstance(v, str) for k, v in loaded.items()
+            ):
+                raise ValueError("manifest must be a JSON object of string -> string")
+            rights_manifest = loaded
+        except (json.JSONDecodeError, ValueError, OSError) as exc:
+            print(f"RIGHTS_FILE=FAIL ({exc})")
+            return 1
     try:
         summary, lines = asyncio.run(
             _run(
                 db_url,
                 rights_status,
+                rights_manifest,
                 args.scope,
                 args.rights_basis,
                 args.allowed_scope,
