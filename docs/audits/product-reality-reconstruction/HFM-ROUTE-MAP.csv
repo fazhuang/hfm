@@ -1,0 +1,21 @@
+ROUTE,ROUTE_NAME,VIEW,LAYOUT,USER_TYPE,PUBLIC_OR_PROTECTED,DATA_DEPENDENCY,PRIMARY_API,FALLBACK_STATE,ERROR_STATE,LOADING_STATE,CURRENT_STATUS,RUNTIME_VERIFIED
+/,home,HomeView.vue,PublicLayout,Public,PUBLIC,homeProjection.ts (Static),NONE,Static Sections,Global Error,Instant,COMPLETE,YES
+/reader,reader,ReaderView.vue,PublicLayout,Public,PUBLIC,API / Static,/api/v1/public/works,Local doc list,Error banner,Skeleton/Spinner,COMPLETE,YES
+/reader/:id,reader-doc,ReaderDocView.vue,PublicLayout,Public,PUBLIC,readerDocuments.ts + API,/api/v1/public/reader/resolve,Local documents,NotFound banner,Loading indicator,COMPLETE,YES
+/search,search,SearchView.vue,PublicLayout,Public,PUBLIC,API + searchIndex.ts,/api/v1/public/search,Empty state copy,Error message,Busy state,COMPLETE,YES
+/heritage,heritage,HeritageView.vue,PublicLayout,Public,PUBLIC,heritageView.ts + API,/api/v1/public/heritage,Static heritage info,Error notice,Placeholder,COMPLETE,YES
+/library,library,MediaLibraryView.vue,PublicLayout,Public,PUBLIC,API / MediaAssets,/api/v1/public/media,Empty grid,Error notice,Skeleton,COMPLETE,YES
+/persons/:id,person,PersonDetailView.vue,PublicLayout,Public,PUBLIC,API + corePerson.ts,/api/v1/public/persons/{id},Static corePerson,NotFound prompt,Loading pulse,COMPLETE,YES
+/works/:id,work,WorkDetailView.vue,PublicLayout,Public,PUBLIC,API + workCollection.ts,/api/v1/public/works/{id},Static work data,NotFound message,Loading pulse,COMPLETE,YES
+/yan,yan,YanView.vue,PublicLayout,Public,PUBLIC,yanCollection.ts (Static),NONE,Static collection,None,Instant,COMPLETE,YES
+/works,works,WorksView.vue,PublicLayout,Public,PUBLIC,workCollection.ts + API,/api/v1/public/works,Static catalog,Error banner,Instant,COMPLETE,YES
+/archive,archive,ArchiveView.vue,PublicLayout,Public,PUBLIC,archiveInventory.ts (Static),NONE,Static inventory,None,Instant,COMPLETE,YES
+/jiayi,jiayi,JiayiView.vue,PublicLayout,Public,PUBLIC,jiayiView.ts + API,/api/v1/public/works/{id}/structure,Static chapters,Error prompt,Instant,COMPLETE,YES
+/about,about,AboutView.vue,PublicLayout,Public,PUBLIC,Static content,NONE,Static text,None,Instant,COMPLETE,YES
+/login,login,LoginView.vue,PublicLayout,Public/Unauthenticated,PUBLIC,auth.ts (API),/api/v1/auth/login,Form clean,Invalid credentials alert,Submitting spinner,COMPLETE,YES
+/denied,denied,DeniedView.vue,PublicLayout,Public,PUBLIC,Static,NONE,Permission denied text,None,Instant,COMPLETE,YES
+/research,research-home,ResearchHomeView.vue,ResearchLayout,Researcher,PROTECTED (Roles: SCHOLAR/STUDENT),researchProjection.ts,NONE (Client projection),Scope summary,None,Instant,PARTIAL,YES
+/research/search,research-search,ResearchSearchView.vue,ResearchLayout,Researcher,PROTECTED (Roles: SCHOLAR/STUDENT),searchIndex.ts,NONE (Client index),Empty prompt,None,Instant,COMPLETE,YES
+/research/entity/:type/:id,research-entity,ResearchEntityView.vue,ResearchLayout,Researcher,PROTECTED (Roles: SCHOLAR/STUDENT),researchProjection.ts,NONE (Client projection),NotFound alert,None,Instant,COMPLETE,YES
+/admin,admin-home,AdminHomeView.vue,AdminLayout,Administrator,PROTECTED (Roles: SYSTEM_ADMIN),admin.ts (API),/api/v1/admin/users,Static dashboard links,Error banner,Loading indicator,COMPLETE,YES
+/admin/audit,admin-audit,AuditLogView.vue,AdminLayout,Administrator,PROTECTED (Roles: SYSTEM_ADMIN),audit.ts (API),/api/v1/admin/audit-log,Empty table,Error prompt,Spinner,COMPLETE,YES

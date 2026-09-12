@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>HFM</title>
+  <g fill="#000">
+    <path d="M40 32h32v64l40 24v32l-40-24v96H40z"/>
+    <path d="M216 32h-32v64l-40 24v32l40-24v96h32z"/>
+    <path d="m128 104 24 24-24 24-24-24z"/>
+  </g>
+</svg>

@@ -1,0 +1,647 @@
+{
+ "alembic_version": {
+  "cols": [
+   "version_num|character varying|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "alembic_version_pkc->PRIMARY KEY (version_num)"
+  ]
+ },
+ "assertion_evidences": {
+  "cols": [
+   "assertion_id|character varying|NO",
+   "evidence_id|character varying|NO"
+  ],
+  "fk": [
+   "assertion_evidences_assertion_id_fkey->FOREIGN KEY (assertion_id) REFERENCES assertions(id) ON DELETE CASCADE",
+   "assertion_evidences_evidence_id_fkey->FOREIGN KEY (evidence_id) REFERENCES evidences(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "assertion_evidences_pkey->PRIMARY KEY (assertion_id, evidence_id)"
+  ]
+ },
+ "assertions": {
+  "cols": [
+   "id|character varying|NO",
+   "subject_entity_id|character varying|NO",
+   "predicate|character varying|NO",
+   "value|text|YES",
+   "object_entity_id|character varying|YES",
+   "assertion_type|character varying|NO",
+   "confidence|character varying|NO",
+   "editorial_status|character varying|NO",
+   "created_by|character varying|YES",
+   "revision|integer|NO",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "assertions_object_entity_id_fkey->FOREIGN KEY (object_entity_id) REFERENCES entities(id) ON DELETE SET NULL",
+   "assertions_subject_entity_id_fkey->FOREIGN KEY (subject_entity_id) REFERENCES entities(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "assertions_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "audit_log": {
+  "cols": [
+   "id|character varying|NO",
+   "actor_id|character varying|YES",
+   "action|character varying|NO",
+   "target_type|character varying|NO",
+   "target_id|character varying|NO",
+   "detail|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "audit_log_actor_id_fkey->FOREIGN KEY (actor_id) REFERENCES users(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "audit_log_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "c_domain_relations": {
+  "cols": [
+   "id|character varying|NO",
+   "source_term_entity_id|character varying|NO",
+   "target_term_entity_id|character varying|NO",
+   "relation_type|character varying|NO",
+   "evidence_id|character varying|YES",
+   "description|text|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "c_domain_relations_source_term_entity_id_fkey->FOREIGN KEY (source_term_entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "c_domain_relations_target_term_entity_id_fkey->FOREIGN KEY (target_term_entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "c_domain_relations_evidence_id_fkey->FOREIGN KEY (evidence_id) REFERENCES evidences(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "c_domain_relations_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "c_domain_terms": {
+  "cols": [
+   "id|character varying|NO",
+   "entity_id|character varying|NO",
+   "term_type|character varying|NO",
+   "term_name|character varying|NO",
+   "canonical_passage_id|character varying|YES",
+   "description|text|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "c_domain_terms_entity_id_fkey->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "c_domain_terms_canonical_passage_id_fkey->FOREIGN KEY (canonical_passage_id) REFERENCES passages(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "c_domain_terms_pkey->PRIMARY KEY (id)",
+   "uq_c_domain_terms_entity_id->UNIQUE (entity_id)"
+  ]
+ },
+ "chapters": {
+  "cols": [
+   "id|character varying|NO",
+   "work_id|character varying|NO",
+   "parent_id|character varying|YES",
+   "title|character varying|NO",
+   "order|integer|NO",
+   "description|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "chapters_parent_id_fkey->FOREIGN KEY (parent_id) REFERENCES chapters(id) ON DELETE CASCADE",
+   "chapters_work_id_fkey->FOREIGN KEY (work_id) REFERENCES works(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "chapters_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "citations": {
+  "cols": [
+   "id|character varying|NO",
+   "target_assertion_id|character varying|NO",
+   "evidence_id|character varying|YES",
+   "version_id|character varying|YES",
+   "passage_id|character varying|YES",
+   "quote_text|text|YES",
+   "note|text|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "citations_evidence_id_fkey->FOREIGN KEY (evidence_id) REFERENCES evidences(id) ON DELETE SET NULL",
+   "citations_passage_id_fkey->FOREIGN KEY (passage_id) REFERENCES passages(id) ON DELETE SET NULL",
+   "citations_target_assertion_id_fkey->FOREIGN KEY (target_assertion_id) REFERENCES assertions(id) ON DELETE RESTRICT",
+   "citations_version_id_fkey->FOREIGN KEY (version_id) REFERENCES versions(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "citations_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "content_artifacts": {
+  "cols": [
+   "id|character varying|NO",
+   "source_id|character varying|YES",
+   "content_hash|character varying|NO",
+   "format|character varying|YES",
+   "provenance_status|character varying|NO",
+   "rights_status|character varying|NO",
+   "validation_result|character varying|NO",
+   "admission_state|character varying|NO",
+   "rejection_reason|text|YES",
+   "version_id|character varying|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "subject_entity_id|character varying|YES"
+  ],
+  "fk": [
+   "content_artifacts_source_id_fkey->FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE RESTRICT",
+   "content_artifacts_version_id_fkey->FOREIGN KEY (version_id) REFERENCES versions(id) ON DELETE SET NULL",
+   "fk_content_artifacts_subject_entity_id->FOREIGN KEY (subject_entity_id) REFERENCES entities(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "content_artifacts_pkey->PRIMARY KEY (id)",
+   "uq_content_artifacts_source_hash->UNIQUE (source_id, content_hash)"
+  ]
+ },
+ "editions": {
+  "cols": [
+   "id|character varying|NO",
+   "work_id|character varying|NO",
+   "edition_name|character varying|NO",
+   "era|character varying|YES",
+   "publisher_block|character varying|YES",
+   "preface_postscript|text|YES",
+   "lineage_parent_edition_id|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "editions_lineage_parent_edition_id_fkey->FOREIGN KEY (lineage_parent_edition_id) REFERENCES editions(id) ON DELETE SET NULL",
+   "editions_work_id_fkey->FOREIGN KEY (work_id) REFERENCES works(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "editions_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "entities": {
+  "cols": [
+   "id|character varying|NO",
+   "entity_type|character varying|NO",
+   "name|character varying|NO",
+   "name_zh|character varying|YES",
+   "description|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "entities_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "event_assertions": {
+  "cols": [
+   "event_id|character varying|NO",
+   "assertion_id|character varying|NO"
+  ],
+  "fk": [
+   "event_assertions_event_id_fkey->FOREIGN KEY (event_id) REFERENCES events(entity_id) ON DELETE CASCADE",
+   "event_assertions_assertion_id_fkey->FOREIGN KEY (assertion_id) REFERENCES assertions(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "event_assertions_pkey->PRIMARY KEY (event_id, assertion_id)"
+  ]
+ },
+ "event_relations": {
+  "cols": [
+   "id|character varying|NO",
+   "entity_id|character varying|NO",
+   "event_id|character varying|NO",
+   "relation_role|character varying|NO",
+   "description|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "event_relations_entity_id_fkey->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "event_relations_event_id_fkey->FOREIGN KEY (event_id) REFERENCES events(entity_id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "event_relations_pkey->PRIMARY KEY (id)",
+   "uq_event_relations->UNIQUE (entity_id, event_id, relation_role)"
+  ]
+ },
+ "events": {
+  "cols": [
+   "id|character varying|NO",
+   "entity_id|character varying|NO",
+   "event_type|character varying|NO",
+   "start_year|integer|YES",
+   "start_month|integer|YES",
+   "start_day|integer|YES",
+   "start_precision|character varying|NO",
+   "start_approximate|boolean|NO",
+   "end_year|integer|YES",
+   "end_month|integer|YES",
+   "end_day|integer|YES",
+   "end_precision|character varying|NO",
+   "end_approximate|boolean|NO",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "events_entity_id_fkey->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "events_pkey->PRIMARY KEY (id)",
+   "uq_events_entity_id->UNIQUE (entity_id)"
+  ]
+ },
+ "evidences": {
+  "cols": [
+   "id|character varying|NO",
+   "description|text|NO",
+   "evidence_level|character varying|NO",
+   "source_ref_id|character varying|YES",
+   "source_passage_id|character varying|YES",
+   "content_hash|character varying|YES",
+   "taint_status|character varying|NO",
+   "tainted_at|timestamp with time zone|YES",
+   "taint_reason|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "artifact_id|character varying|YES"
+  ],
+  "fk": [
+   "evidences_source_passage_id_fkey->FOREIGN KEY (source_passage_id) REFERENCES passages(id) ON DELETE SET NULL",
+   "evidences_source_ref_id_fkey->FOREIGN KEY (source_ref_id) REFERENCES source_refs(id) ON DELETE RESTRICT",
+   "fk_evidences_artifact_id->FOREIGN KEY (artifact_id) REFERENCES content_artifacts(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "evidences_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "heritage_projects": {
+  "cols": [
+   "id|character varying|NO",
+   "entity_id|character varying|NO",
+   "project_name|character varying|NO",
+   "official_name|character varying|YES",
+   "category|character varying|YES",
+   "description|text|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "heritage_projects_entity_id_fkey->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "heritage_projects_pkey->PRIMARY KEY (id)",
+   "uq_heritage_projects_entity_id->UNIQUE (entity_id)"
+  ]
+ },
+ "heritage_relations": {
+  "cols": [
+   "id|character varying|NO",
+   "project_entity_id|character varying|NO",
+   "subject_entity_id|character varying|NO",
+   "relation_role|character varying|NO",
+   "official_name|character varying|YES",
+   "start_year|integer|YES",
+   "end_year|integer|YES",
+   "evidence_id|character varying|YES",
+   "description|text|YES",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "heritage_relations_project_entity_id_fkey->FOREIGN KEY (project_entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "heritage_relations_subject_entity_id_fkey->FOREIGN KEY (subject_entity_id) REFERENCES entities(id) ON DELETE RESTRICT",
+   "heritage_relations_evidence_id_fkey->FOREIGN KEY (evidence_id) REFERENCES evidences(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "heritage_relations_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "institutions": {
+  "cols": [
+   "id|character varying|NO",
+   "name|character varying|NO",
+   "type|character varying|NO",
+   "location|character varying|YES",
+   "description|text|YES",
+   "status|character varying|NO",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "institutions_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "media_assets": {
+  "cols": [
+   "id|character varying|NO",
+   "object_key|character varying|NO",
+   "original_object_key|character varying|YES",
+   "mime_type|character varying|NO",
+   "byte_size|integer|NO",
+   "sha256|character varying|NO",
+   "rights_holder|character varying|NO",
+   "license_basis|character varying|NO",
+   "restriction|character varying|YES",
+   "rights_expiry|date|YES",
+   "publication_permission|boolean|NO",
+   "publication_state|character varying|NO",
+   "redaction_token|character varying|YES",
+   "provenance|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "media_assets_original_object_key_fkey->FOREIGN KEY (original_object_key) REFERENCES media_assets(object_key) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "media_assets_pkey->PRIMARY KEY (id)",
+   "uq_media_assets_object_key->UNIQUE (object_key)"
+  ]
+ },
+ "passages": {
+  "cols": [
+   "id|character varying|NO",
+   "chapter_id|character varying|NO",
+   "version_id|character varying|YES",
+   "content_text|text|NO",
+   "translation|text|YES",
+   "notes|text|YES",
+   "order|integer|NO",
+   "tags|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "passages_version_id_fkey->FOREIGN KEY (version_id) REFERENCES versions(id) ON DELETE SET NULL",
+   "passages_chapter_id_fkey->FOREIGN KEY (chapter_id) REFERENCES chapters(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "passages_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "persons": {
+  "cols": [
+   "entity_id|character varying|NO",
+   "name_pinyin|character varying|YES",
+   "name_zh|character varying|YES",
+   "courtesy_name|character varying|YES",
+   "pseudonym|character varying|YES",
+   "dynasty|character varying|YES",
+   "domain_status|character varying|NO",
+   "anchor_path|text|YES",
+   "research_relation_role|character varying|YES",
+   "domain_relation_summary|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "id|character varying|YES"
+  ],
+  "fk": [
+   "persons_entity_id_fkey->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "persons_pkey->PRIMARY KEY (entity_id)"
+  ]
+ },
+ "publication_records": {
+  "cols": [
+   "id|character varying|NO",
+   "artifact_id|character varying|NO",
+   "publication_status|character varying|NO",
+   "creator_id|character varying|NO",
+   "reviewed_by|character varying|YES",
+   "review_decision|character varying|YES",
+   "reviewed_at|timestamp with time zone|YES",
+   "published_at|timestamp with time zone|YES",
+   "withdrawn_at|timestamp with time zone|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "publication_records_artifact_id_fkey->FOREIGN KEY (artifact_id) REFERENCES content_artifacts(id) ON DELETE RESTRICT",
+   "publication_records_creator_id_fkey->FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE RESTRICT",
+   "publication_records_reviewed_by_fkey->FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "publication_records_pkey->PRIMARY KEY (id)",
+   "uq_publication_records_artifact->UNIQUE (artifact_id)"
+  ]
+ },
+ "reconciliation_runs": {
+  "cols": [
+   "id|character varying|NO",
+   "scope|character varying|NO",
+   "expected_count|integer|NO",
+   "expected_hash|character varying|NO",
+   "actual_count|integer|NO",
+   "actual_hash|character varying|NO",
+   "status|character varying|NO",
+   "checked_at|timestamp with time zone|NO",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "reconciliation_runs_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "research_notes": {
+  "cols": [
+   "id|character varying|NO",
+   "owner_id|character varying|NO",
+   "project_id|character varying|YES",
+   "title|character varying|YES",
+   "content|text|NO",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "research_notes_owner_id_fkey->FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT",
+   "research_notes_project_id_fkey->FOREIGN KEY (project_id) REFERENCES research_projects(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "research_notes_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "research_projects": {
+  "cols": [
+   "id|character varying|NO",
+   "owner_id|character varying|NO",
+   "title|character varying|NO",
+   "description|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "research_projects_owner_id_fkey->FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "research_projects_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "role_permissions": {
+  "cols": [
+   "role_id|character varying|NO",
+   "permission_code|character varying|NO"
+  ],
+  "fk": [
+   "role_permissions_role_id_fkey->FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "role_permissions_pkey->PRIMARY KEY (role_id, permission_code)"
+  ]
+ },
+ "roles": {
+  "cols": [
+   "id|character varying|NO",
+   "code|character varying|NO",
+   "name|character varying|NO",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "roles_pkey->PRIMARY KEY (id)",
+   "uq_roles_code->UNIQUE (code)"
+  ]
+ },
+ "source_refs": {
+  "cols": [
+   "id|character varying|NO",
+   "source_id|character varying|NO",
+   "title|character varying|NO",
+   "author|character varying|YES",
+   "edition_info|character varying|YES",
+   "url|character varying|YES",
+   "locator|json|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [
+   "source_refs_source_id_fkey->FOREIGN KEY (source_id) REFERENCES sources(id) ON DELETE RESTRICT"
+  ],
+  "uniq": [
+   "source_refs_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "sources": {
+  "cols": [
+   "id|character varying|NO",
+   "source_key|character varying|NO",
+   "source_type|character varying|YES",
+   "source_uri|character varying|YES",
+   "title|character varying|YES",
+   "rights_basis|character varying|YES",
+   "allowed_scope|character varying|YES",
+   "authorization_basis|text|YES",
+   "legacy_source_key|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "withdrawn_at|timestamp with time zone|YES"
+  ],
+  "fk": [],
+  "uniq": [
+   "sources_pkey->PRIMARY KEY (id)",
+   "uq_sources_source_key->UNIQUE (source_key)"
+  ]
+ },
+ "user_roles": {
+  "cols": [
+   "user_id|character varying|NO",
+   "role_id|character varying|NO"
+  ],
+  "fk": [
+   "user_roles_user_id_fkey->FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+   "user_roles_role_id_fkey->FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE"
+  ],
+  "uniq": [
+   "user_roles_pkey->PRIMARY KEY (user_id, role_id)"
+  ]
+ },
+ "users": {
+  "cols": [
+   "id|character varying|NO",
+   "username|character varying|NO",
+   "password_hash|character varying|NO",
+   "token_version|integer|NO",
+   "is_active|boolean|NO",
+   "created_by|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO"
+  ],
+  "fk": [],
+  "uniq": [
+   "users_pkey->PRIMARY KEY (id)",
+   "uq_users_username->UNIQUE (username)"
+  ]
+ },
+ "versions": {
+  "cols": [
+   "id|character varying|NO",
+   "edition_id|character varying|NO",
+   "version_name|character varying|NO",
+   "era|character varying|YES",
+   "year|integer|YES",
+   "repository|character varying|YES",
+   "shelf_mark|character varying|YES",
+   "editor|character varying|YES",
+   "description|text|YES",
+   "source_url|character varying|YES",
+   "is_formal_source|boolean|NO",
+   "parent_version_id|character varying|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "withdrawn_at|timestamp with time zone|YES"
+  ],
+  "fk": [
+   "versions_edition_id_fkey->FOREIGN KEY (edition_id) REFERENCES editions(id) ON DELETE CASCADE",
+   "versions_parent_version_id_fkey->FOREIGN KEY (parent_version_id) REFERENCES versions(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "versions_pkey->PRIMARY KEY (id)"
+  ]
+ },
+ "works": {
+  "cols": [
+   "id|character varying|NO",
+   "title|character varying|NO",
+   "author_entity_id|character varying|YES",
+   "dynasty|character varying|YES",
+   "composition_year_start|integer|YES",
+   "composition_year_end|integer|YES",
+   "category|character varying|YES",
+   "is_extant|boolean|NO",
+   "description|text|YES",
+   "created_at|timestamp with time zone|NO",
+   "updated_at|timestamp with time zone|NO",
+   "entity_id|character varying|YES"
+  ],
+  "fk": [
+   "works_author_entity_id_fkey->FOREIGN KEY (author_entity_id) REFERENCES entities(id) ON DELETE SET NULL",
+   "fk_works_entity_id->FOREIGN KEY (entity_id) REFERENCES entities(id) ON DELETE SET NULL"
+  ],
+  "uniq": [
+   "works_pkey->PRIMARY KEY (id)",
+   "uq_works_entity_id->UNIQUE (entity_id)"
+  ]
+ }
+}

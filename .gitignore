@@ -44,3 +44,35 @@ secrets/
 # Playwright
 playwright-report/
 test-results/
+
+# ==============================================================================
+# Workspace governance — long-term ignore rules (WG-02-R1 FINAL-IGNORE-RULE-PLAN)
+# Only deterministic/regenerable intermediates; formal assets are NEVER ignored.
+# ==============================================================================
+
+# Video production workspace (relocated outside the HFM repository)
+video-production/
+
+# Content OCR / text-extraction intermediate dumps
+content-production/corpus/extracted-text/
+content-production/corpus/raw-ocr/
+content-production/corpus/work/
+
+# Batch OCR / frame-extraction intermediates
+content-production/batches/*/raw-ocr/
+content-production/batches/*/extracted-text/
+content-production/batches/*/rendered-pages/
+content-production/batches/*/*/raw-ocr/
+content-production/batches/*/*/rendered-pages/
+content-production/batches/*/video/frames/
+content-production/batches/*/images/derivatives/
+content-production/batches/*/images/thumbs/
+
+# Intermediate run statistics / execution profiles
+content-production/batches/*/ocr-run-stats.json
+content-production/batches/*/pdf-profile.json
+content-production/batches/*/performance.json
+content-production/batches/*/routeA-stats.json
+
+# Temporary automation artifacts
+.playwright-cli/

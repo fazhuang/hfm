@@ -1,0 +1,49 @@
+# HFM backend systemd unit — production topology (ND-1 B04) EXAMPLE.
+#
+# Private Uvicorn on 127.0.0.1:8000 behind the Nginx reverse proxy, against a
+# private PostgreSQL. The environment file carries the REAL HFM_* inputs
+# (HFM_DATABASE_URL / HFM_TOKEN_SECRET / HFM_MEDIA_ROOT) and is validated by
+# scripts/validate-production-env.py before any deploy (see deploy-gate.sh).
+#
+# OPERATOR INPUTS (required values — never invented here):
+#   * /etc/hfm/prod.env : production environment (mode 0600, root-owned)
+#   * /opt/hfm          : release root (wheel-installed backend + alembic tree)
+#   * /var/lib/hfm/media: persistent media volume (HFM_MEDIA_ROOT)
+#
+# Persistent state lives ONLY in PostgreSQL + the media volume; the backend
+# itself is stateless, so restart/reboot recovery is Restart= + this unit.
+#
+# ND2_EXECUTION_REQUIRED: applied and proven on the real target during ND-2.
+# ND-1 keeps this file unapplied.
+
+[Unit]
+Description=HFM backend (private Uvicorn API)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=hfm
+Group=hfm
+WorkingDirectory=/opt/hfm
+# Real HFM_* inputs only; validated by scripts/validate-production-env.py.
+EnvironmentFile=/etc/hfm/prod.env
+# ND-1 B01 mechanical fail-closed start dependency: the production env +
+# exact-migration preflight runs BEFORE the process starts; any failure
+# (missing/placeholder env, unreachable DB, current != 0014) prevents start.
+# OPERATOR INPUT: place validate-production-env.py at /opt/hfm/bin/ during ND-2
+# (the backend itself also fails closed at import when prod env is invalid).
+ExecStartPre=/opt/hfm/bin/validate-production-env.py --env prod --verify-migration --backend-dir /opt/hfm/alembic
+ExecStart=/opt/hfm/venv/bin/python -m uvicorn hfm.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+# Logging/status: journalctl -u hfm-backend
+StandardOutput=journal
+StandardError=journal
+# Persistent paths (media volume; the DB is external).
+ReadWritePaths=/var/lib/hfm/media
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

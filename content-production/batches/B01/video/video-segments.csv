@@ -1,0 +1,36 @@
+﻿VIDEO_ID,START_TIME,END_TIME,CONTENT_DESCRIPTION,PEOPLE,PLACE,EVENT,SPEECH_PRESENT,TRANSCRIPT_REFERENCE,HFM_RELEVANCE,RECOMMENDED_USAGE,REVIEW_STATUS
+HFM-A000007,0.0,66.2,(未检视：需人工审看+转写),,,,UNKNOWN (VAD silence at start or in segment),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,66.2,70.4,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,70.4,73.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,73.0,75.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,75.6,78.4,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,78.4,85.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,85.0,101.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,101.0,160.0,(未检视：需人工审看+转写),,,,UNKNOWN (VAD silence at start or in segment),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,160.0,267.9,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,267.9,269.8,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,269.8,275.2,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,275.2,277.5,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,277.5,368.8,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,368.8,374.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,374.6,412.5,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,412.5,479.3,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,479.3,639.5,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,639.5,646.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,646.0,649.5,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,649.5,659.3,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,659.3,702.3,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,702.3,704.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,704.6,735.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,735.6,776.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,776.6,780.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,780.0,835.8,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000007,835.8,915.5,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,0.0,66.2,(未检视：需人工审看+转写),,,,UNKNOWN (VAD silence at start or in segment),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,66.2,70.3,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,70.3,72.9,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,72.9,75.6,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,75.6,78.3,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,78.3,85.0,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,85.0,100.9,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW
+HFM-A000008,100.9,109.8,(未检视：需人工审看+转写),,,,Y (VAD: no long silence),,UNKNOWN,UNKNOWN,NEEDS_REVIEW

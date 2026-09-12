@@ -1,0 +1,15 @@
+﻿WORK_ID,TITLE,TITLE_ALIAS,AUTHOR_ORIGINAL,WORK_TYPE,SOURCE_FORMS,CORPUS_MENTIONS,EVIDENCE_REF,REVIEW_STATUS
+WORK-JIAYI,针灸甲乙经,甲乙经,黄甫谧(据B01规划文档;待权威核),ancient-work,甲乙经;针灸甲乙经,2538,"HFM-A000003/4/5,B01;语料",NEEDS_REVIEW
+WORK-DIWANG-SHIJI,帝王世纪,,皇甫谧(据规划文档;待核),ancient-work,帝王世纪,13,HFM-A000004[P10]等,NEEDS_REVIEW
+WORK-GAOSHIZHUAN,高士传,,皇甫谧(据规划文档;待核),ancient-work,高士传,0,HFM-A000004[P10],NEEDS_REVIEW
+WORK-LIENVZHUAN,列女传,,皇甫谧(据规划文档;待核),ancient-work,列女传,0,HFM-A000004[P10],NEEDS_REVIEW
+WORK-YISHIZHUAN,逸士传,,皇甫谧(据规划文档;待核),ancient-work,逸士传,0,HFM-A000004[P10],NEEDS_REVIEW
+WORK-XUANSHOULUN,玄守论,,皇甫谧,treatise,玄守论,6,HFM-A000004[P5],NEEDS_REVIEW
+WORK-SHIQUANLUN,释劝论,,皇甫谧,treatise,释劝论,8,HFM-A000004[P7],NEEDS_REVIEW
+WORK-DUZHONGLUN,笃终论,,皇甫谧,treatise,笃终论,0,HFM-A000004[P9],NEEDS_REVIEW
+WORK-SANDUFUXU,三都赋序,,"皇甫谧(著者归属有学术争议,待核)",preface,三都赋序,7,HFM-A000004[P3],CONFLICT
+WORK-XUANYANCHUNQIU,玄晏春秋,,(未见直接来源),UNKNOWN,玄晏春秋,0,,NEEDS_REVIEW
+WORK-YITONG-ZHENGMAI,医统正脉全书(丛书),,吴勉学(明)辑刊,series,医统正脉全书,7,版本目录,AUTO_EXTRACTED
+WORK-HUANGFUMI-YANJIU-JICHENG,皇甫谧研究集成(现代),,钱超尘/温长路主编2011,modern-compilation,皇甫谧研究集成,0,HFM-A000005[T2R4],NEEDS_REVIEW
+WORK-HUANGFUMI-YIZHU-JI,皇甫谧遗著集(现代),,史星海主编,modern-compilation,皇甫谧遗著集,0,HFM-A000005[T2R5],NEEDS_REVIEW
+WORK-HUANGFUMI-ZHENJIU,"皇甫谧针灸(现代,李志锋2025)",,李志锋,modern-book,皇甫谧针灸,11,HFM-A000005[T2R6],NEEDS_REVIEW

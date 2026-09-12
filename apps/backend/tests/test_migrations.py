@@ -384,3 +384,134 @@ def test_migration_0008_fresh_chain_preserves_history(tmp_path: Path) -> None:
         assert "ck_event_relations_not_self" in rel_checks
     finally:
         engine.dispose()
+
+
+def test_migration_0009_content_artifacts(tmp_path: Path) -> None:
+    """0009 adds content_artifacts; downgrade removes them; 0001→head works."""
+    db_file = tmp_path / "p1-admission.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert "content_artifacts" in tables
+    assert {
+        "source_id",
+        "content_hash",
+        "provenance_status",
+        "rights_status",
+        "validation_result",
+        "admission_state",
+        "rejection_reason",
+        "version_id",
+    } <= _columns(db_file, "content_artifacts")
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        checks = {c["name"] for c in inspector.get_check_constraints("content_artifacts")}
+        assert "ck_content_artifacts_rejection_has_reason" in checks
+        assert "ck_content_artifacts_source_present" in checks
+        uniques = {c["name"] for c in inspector.get_unique_constraints("content_artifacts")}
+        assert "uq_content_artifacts_source_hash" in uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0008")
+    assert result.returncode == 0, result.stderr
+    assert "content_artifacts" not in _tables(db_file)
+
+
+def test_migration_0010_frontier2(tmp_path: Path) -> None:
+    """0010 adds identity/publication tables + evidences.artifact_id; downgrade."""
+    db_file = tmp_path / "p1-frontier2.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {"users", "roles", "user_roles", "role_permissions", "publication_records"} <= tables
+    assert "artifact_id" in _columns(db_file, "evidences")
+    result = _alembic(db_file, "downgrade", "0009")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "publication_records" not in tables
+    assert "users" not in tables
+    assert "artifact_id" not in _columns(db_file, "evidences")
+
+
+def test_migration_0011_frontier3(tmp_path: Path) -> None:
+    """0011 adds A/B domain binding + audit/reconciliation tables; downgrade."""
+    db_file = tmp_path / "p1-frontier3.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {"audit_log", "reconciliation_runs"} <= tables
+    assert "subject_entity_id" in _columns(db_file, "content_artifacts")
+    assert "entity_id" in _columns(db_file, "works")
+    assert "id" in _columns(db_file, "persons")  # CD-1 schema-drift alignment
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        audit_checks = {c["name"] for c in inspector.get_check_constraints("audit_log")}
+        assert "ck_audit_log_action_present" in audit_checks
+        rec_checks = {c["name"] for c in inspector.get_check_constraints("reconciliation_runs")}
+        assert "ck_reconciliation_runs_status" in rec_checks
+        assert "ck_reconciliation_runs_hashes" in rec_checks
+        work_uniques = {c["name"] for c in inspector.get_unique_constraints("works")}
+        assert "uq_works_entity_id" in work_uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0010")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "audit_log" not in tables
+    assert "reconciliation_runs" not in tables
+    assert "subject_entity_id" not in _columns(db_file, "content_artifacts")
+    assert "entity_id" not in _columns(db_file, "works")
+    assert "id" not in _columns(db_file, "persons")
+
+
+def test_migration_0012_frontier4(tmp_path: Path) -> None:
+    """0012 adds C-domain terms/relations + heritage projects/relations; downgrade."""
+    db_file = tmp_path / "p1-frontier4.db"
+    assert _alembic(db_file, "upgrade", "head").returncode == 0
+    tables = _tables(db_file)
+    assert {
+        "c_domain_terms",
+        "c_domain_relations",
+        "heritage_projects",
+        "heritage_relations",
+    } <= tables
+    assert {"id", "entity_id", "term_type", "term_name", "canonical_passage_id"} <= _columns(
+        db_file, "c_domain_terms"
+    )
+    assert {
+        "id",
+        "source_term_entity_id",
+        "target_term_entity_id",
+        "relation_type",
+        "evidence_id",
+    } <= _columns(db_file, "c_domain_relations")
+    assert {"id", "entity_id", "project_name", "official_name"} <= _columns(
+        db_file, "heritage_projects"
+    )
+    assert {
+        "id",
+        "project_entity_id",
+        "subject_entity_id",
+        "relation_role",
+        "official_name",
+        "evidence_id",
+    } <= _columns(db_file, "heritage_relations")
+    engine = sa.create_engine(f"sqlite:///{db_file}")
+    try:
+        inspector = sa.inspect(engine)
+        term_checks = {c["name"] for c in inspector.get_check_constraints("c_domain_terms")}
+        assert "ck_c_domain_terms_term_type" in term_checks
+        rel_checks = {c["name"] for c in inspector.get_check_constraints("c_domain_relations")}
+        assert "ck_c_domain_relations_not_self" in rel_checks
+        her_checks = {c["name"] for c in inspector.get_check_constraints("heritage_relations")}
+        assert "ck_heritage_relations_year_order" in her_checks
+        term_uniques = {c["name"] for c in inspector.get_unique_constraints("c_domain_terms")}
+        assert "uq_c_domain_terms_entity_id" in term_uniques
+    finally:
+        engine.dispose()
+    result = _alembic(db_file, "downgrade", "0011")
+    assert result.returncode == 0, result.stderr
+    tables = _tables(db_file)
+    assert "c_domain_terms" not in tables
+    assert "c_domain_relations" not in tables
+    assert "heritage_projects" not in tables
+    assert "heritage_relations" not in tables

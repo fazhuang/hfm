@@ -1,0 +1,23 @@
+person_stable_id,work_stable_id,raw_role_text,normalized_candidate_role,evidence,confidence,production_relation_authorized
+PERSON-HFM-HUANGFUMI,WORK-JIAYI,黄甫谧(据B01规划文档;待权威核),author,works.csv AUTHOR_ORIGINAL: 黄甫谧(据B01规划文档;待权威核),HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-DIWANG-SHIJI,皇甫谧(据规划文档;待核),author,works.csv AUTHOR_ORIGINAL: 皇甫谧(据规划文档;待核),HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-GAOSHIZHUAN,皇甫谧(据规划文档;待核),author,works.csv AUTHOR_ORIGINAL: 皇甫谧(据规划文档;待核),HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-LIENVZHUAN,皇甫谧(据规划文档;待核),author,works.csv AUTHOR_ORIGINAL: 皇甫谧(据规划文档;待核),HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-YISHIZHUAN,皇甫谧(据规划文档;待核),author,works.csv AUTHOR_ORIGINAL: 皇甫谧(据规划文档;待核),HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-XUANSHOULUN,皇甫谧,author,works.csv AUTHOR_ORIGINAL: 皇甫谧,HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-SHIQUANLUN,皇甫谧,author,works.csv AUTHOR_ORIGINAL: 皇甫谧,HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-DUZHONGLUN,皇甫谧,author,works.csv AUTHOR_ORIGINAL: 皇甫谧,HIGH,NO
+PERSON-HFM-HUANGFUMI,WORK-SANDUFUXU,"皇甫谧(著者归属有学术争议,待核)",controversial_author,"works.csv AUTHOR_ORIGINAL: 皇甫谧(著者归属有学术争议,待核)",AMBIGUOUS,NO
+PERSON-WU-MIANXUE,WORK-YITONG-ZHENGMAI,吴勉学(明)辑刊,compiler_publisher,works.csv AUTHOR_ORIGINAL: 吴勉学(明)辑刊,HIGH,NO
+PERSON-QIAN-CHAOCHEN,WORK-HUANGFUMI-YANJIU-JICHENG,钱超尘/温长路主编2011,editor_in_chief,works.csv AUTHOR_ORIGINAL: 钱超尘/温长路主编2011,HIGH,NO
+PERSON-WEN-CHANGLU,WORK-HUANGFUMI-YANJIU-JICHENG,钱超尘/温长路主编2011,editor_in_chief,works.csv AUTHOR_ORIGINAL: 钱超尘/温长路主编2011,HIGH,NO
+PERSON-SHI-XINGHAI,WORK-HUANGFUMI-YIZHU-JI,史星海主编,editor_in_chief,works.csv AUTHOR_ORIGINAL: 史星海主编,HIGH,NO
+PERSON-LI-ZHIFENG,WORK-HUANGFUMI-ZHENJIU,李志锋,author,works.csv AUTHOR_ORIGINAL: 李志锋,HIGH,NO
+PERSON-HUANGLONGXIANG,WORK-JIAYI,《黄帝针灸甲乙经新校本》作者,modern_annotator,persons.csv ROLE: 《黄帝针灸甲乙经新校本》作者,HIGH,NO
+PERSON-LI-DING,WORK-JIAYI,《针灸甲乙经理论与实践》作者,modern_author,persons.csv ROLE: 《针灸甲乙经理论与实践》作者,HIGH,NO
+PERSON-GAO-SHUZHONG,WORK-JIAYI,《针灸甲乙经理论与实践》作者(2017),modern_author,persons.csv ROLE: 《针灸甲乙经理论与实践》作者(2017),HIGH,NO
+PERSON-WANG-JUN,WORK-JIAYI,《针灸甲乙经新校版》作者,modern_annotator,persons.csv ROLE: 《针灸甲乙经新校版》作者,HIGH,NO
+PERSON-LEFT-SI,WORK-SANDUFUXU,三都赋序关联,related_author,persons.csv ROLE: 三都赋序关联,MEDIUM,NO
+PERSON-SIMA-YAN,WORK-JIAYI,评价者,evaluator,persons.csv ROLE: 评价者,MEDIUM,NO
+PERSON-LI-JULAI,WORK-JIAYI,评价者,evaluator,persons.csv ROLE: 评价者,MEDIUM,NO
+PERSON-QIAN-XIZUO,WORK-JIAYI,评价者,evaluator,persons.csv ROLE: 评价者,MEDIUM,NO

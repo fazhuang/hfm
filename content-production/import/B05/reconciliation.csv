@@ -1,0 +1,5 @@
+﻿METRIC,EXPECTED,ACTUAL,UNEXPLAINED
+documents INSERT(run1),675,675,0
+documents DUPLICATE(run2),0,0,0
+documents UPDATE,0,0,0
+rollback partial rows after failure,0,0,0

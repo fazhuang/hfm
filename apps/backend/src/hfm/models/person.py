@@ -17,7 +17,7 @@ from __future__ import annotations
 
 import enum
 
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from hfm.db.base import BaseModel
@@ -63,9 +63,42 @@ class Person(BaseModel):
     anchor_path: Mapped[str | None] = mapped_column(
         Text, nullable=True, comment="锚点回溯路径 JSON 序列"
     )
+    stable_id: Mapped[str | None] = mapped_column(
+        String(120), nullable=True, unique=True, comment="content stable id (unique)"
+    )
     research_relation_role: Mapped[str | None] = mapped_column(
         String(100), nullable=True, comment="皇甫谧研究域角色"
     )
     domain_relation_summary: Mapped[str | None] = mapped_column(
         Text, nullable=True, comment="皇甫谧研究域关系摘要"
+    )
+
+class PersonAlias(BaseModel):
+    """Person alias (SG-04). Maps a canonical Person to alternative names."""
+
+    __tablename__ = "person_aliases"
+
+    person_id: Mapped[str] = mapped_column(
+        ForeignKey("persons.entity_id", ondelete="CASCADE"),
+        primary_key=True,
+        comment="canonical person entity id",
+    )
+    alias: Mapped[str] = mapped_column(String(200), nullable=False)
+    alias_type: Mapped[str] = mapped_column(
+        String(30), nullable=False, default="alias",
+        comment="alias type: name/zi/hao/alias/variant",
+    )
+    source_asset_id: Mapped[str | None] = mapped_column(
+        String(36), nullable=True
+    )
+    source_location: Mapped[str | None] = mapped_column(
+        String(200), nullable=True
+    )
+    __table_args__ = (
+        UniqueConstraint(
+            "person_id",
+            "alias",
+            "alias_type",
+            name="uq_person_aliases_person_alias_type",
+        ),
     )

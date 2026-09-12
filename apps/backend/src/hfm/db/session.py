@@ -13,6 +13,17 @@ SessionFactory = async_sessionmaker(engine, expire_on_commit=False, class_=Async
 
 
 async def get_session() -> AsyncIterator[AsyncSession]:
-    """FastAPI dependency yielding a session (CD-0 has no APIs yet, kept for readiness)."""
+    """FastAPI dependency yielding a session; commits on success, rolls back on error.
+
+    Deployment finding (2026-08-31): the previous dependency only yielded the
+    session without committing, so every HTTP write endpoint returned flushed
+    IDs but rolled back on close — nothing persisted. Commit/rollback is the
+    canonical single-point fix for all write endpoints.
+    """
     async with SessionFactory() as session:
-        yield session
+        try:
+            yield session
+            await session.commit()
+        except BaseException:
+            await session.rollback()
+            raise

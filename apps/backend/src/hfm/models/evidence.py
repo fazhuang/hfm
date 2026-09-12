@@ -99,6 +99,12 @@ class Evidence(BaseModel):
         index=True,
         comment="系统内数字文献段落（I1 锚点之一）",
     )
+    artifact_id: Mapped[str | None] = mapped_column(
+        ForeignKey("content_artifacts.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
+        comment="P1-02: 已准入内容工件绑定（Source→Artifact→Version→Evidence 链）",
+    )
     content_hash: Mapped[str | None] = mapped_column(
         String(64),
         nullable=True,
@@ -106,6 +112,9 @@ class Evidence(BaseModel):
     )
 
     # --- taint lifecycle (CA-024 REUSE) ---
+    stable_id: Mapped[str | None] = mapped_column(
+        String(120), nullable=True, unique=True, comment="content stable id (unique)"
+    )
     taint_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,

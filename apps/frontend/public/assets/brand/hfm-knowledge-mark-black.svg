@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">HFM Knowledge Mark</title>
+  <desc id="desc">A monochrome geometric mark built from two page-coordinate modules and a central knowledge node.</desc>
+  <g fill="#000" fill-rule="evenodd">
+    <path d="M40 32h32v64l40 24v32l-40-24v96H40z"/>
+    <path d="M216 32h-32v64l-40 24v32l40-24v96h32z"/>
+    <path d="m128 104 24 24-24 24-24-24z"/>
+  </g>
+</svg>

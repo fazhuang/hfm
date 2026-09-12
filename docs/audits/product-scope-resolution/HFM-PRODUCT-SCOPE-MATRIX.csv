@@ -1,0 +1,26 @@
+ITEM_ID,DOMAIN,FEATURE_OR_DELIVERABLE,CURRENT_REALITY,EXPECTED_PRODUCT_BEHAVIOR,SCOPE_CLASS,RELEASE_BLOCKING,DELIVERY_BLOCKING,CONTENT_DEPENDENCY,EVIDENCE,RATIONALE,FINAL_DECISION
+SC-01,Homepage,Homepage backend integration,8个Section由homeProjection.ts静态驱动渲染,首页直接或平滑接入/api/v1/public/home接口,R1,NO,YES,NO,HomeView.vue; phase1.py:244,当前前端可离线展示但未接通后端接口作为高保真展示可运行但作为完整系统应打通,REQUIRED_BEFORE_FINAL_DELIVERY_NOT_RELEASE_BLOCKING
+SC-02,Person,皇甫谧人物生平展示,API与前端DetailView连通且有静态兜底,展示生卒年、四阶段轨迹与纪事轴,R0,NO,NO,YES (Minimum),PersonDetailView.vue; test_phase1_person.py,核心旗舰功能已完全实现且通过测试,COMPLETE
+SC-03,Documents,古籍文献与版本展示,API与前端Views连通,展示作品版本流变与目录,R0,NO,NO,YES (Minimum),WorksView.vue; JiayiView.vue,典籍版本与目录结构完备,COMPLETE
+SC-04,Reader,古籍文献阅读器,API与ReaderDocView连通,阅读古籍条文查看引用溯源卡片,R0,NO,NO,YES (Sample),ReaderDocView.vue; phase1.py:218,已有后论其传高精结构化条文和12条引文,COMPLETE
+SC-05,Jiayi,针灸甲乙经128篇结构,前端完整呈现128篇目录及版本考据,浏览12卷128篇体系及版本流变,R0,NO,NO,NO,JiayiView.vue; workCollection.ts,甲乙经宏观知识架构已完整呈现,COMPLETE
+SC-06,Knowledge,甲乙经核心知识对象,分类模型与骨干条文引文已具备,展示穴位经络病候分类与样本,R0,NO,NO,YES (Skeleton),CDomainTerm; searchIndex.ts,核心框架与样板条文已就绪,COMPLETE
+SC-07,Heritage,针灸非遗活态传承,传承谱系与刘君奇名医档案已完整呈现,展示国家级非遗名录与代表传承人档案,R0,NO,NO,NO,HeritageView.vue; phase1.py:278,非遗与当代代表性名医档案完整,COMPLETE
+SC-08,Search,跨域全局分面检索,后端API与前端检索界面均支持分面高亮,支持人物/作品/版本/非遗分面检索,R0,NO,NO,NO,SearchView.vue; phase1.py:150,检索功能完整健壮支持多实体类型,COMPLETE
+SC-09,Media,数字媒体资产网格浏览,API与MediaLibraryView连通,浏览文物影印画卷与元数据,R0,NO,NO,YES (Baseline),MediaLibraryView.vue; phase1.py:291,公开媒体列表与元数据查看完整,COMPLETE
+SC-10,Auth,多角色登录认证与守卫,后端JWT签发与前端Pinia/Guards完整闭环,支持学者/管理员登录与权限隔离,R0,NO,NO,NO,LoginView.vue; phase1.py:75,登录与RBAC已完全实现并通过测试,COMPLETE
+SC-11,Research,研究工作台高密检索与浏览,已实现只读检索、实体关联图谱与数据盘点,学者可检索学术实体并查看证据链,R0,NO,NO,NO,ResearchHomeView.vue; ResearchSearchView.vue,研究端阅读与检索能力完全就绪,COMPLETE
+SC-12,Research,学术成果Markdown/打印导出,ExportPanel组件支持客户端导出,一键导出结构化Markdown或打印页面,R0,NO,NO,NO,ExportPanel.vue; export.ts,导出功能完全可用,COMPLETE
+SC-13,Research,研究工作台项目在线创建(写UI),后端API完备前端无新建项目表单界面,学者可在工作台创建专属研究项目,R1,NO,YES,NO,ResearchHomeView.vue; phase1.py:770,后端具备完整API但前端缺少输入表单导致普通学者无法自助建项目,REQUIRED_FOR_CURRENT_DELIVERY
+SC-14,Research,研究工作台笔记在线录入(写UI),后端API完备前端无新增笔记表单界面,学者可在工作台记录考证笔记,R1,NO,YES,NO,phase1.py:860,与项目创建同理属于研究端写闭环,REQUIRED_FOR_CURRENT_DELIVERY
+SC-15,Research,研究成果提交流程UI,后端submit_for_review就绪前端无提交按钮,学者可提交成果供管理员审核,R3,NO,NO,NO,phase1.py:735,属于进阶学术协作流前期可通过线下或工作台内部沉淀,FUTURE_ENHANCEMENT
+SC-16,Admin,管理端审核审批工作流UI,后端approve/reject就绪前端仅有AuditView,管理员可视化审核学者提交的成果,R3,NO,NO,NO,AdminHomeView.vue; phase1.py:927,进阶学术治理流前期不阻塞交付,FUTURE_ENHANCEMENT
+SC-17,Media,多媒体文件在线上传UI,后端存储服务就绪前端无上传组件,支持管理员在线上传图片/扫描件,R3,NO,NO,NO,MediaService.py,前期由运维/数据团队通过批量脚本入库,FUTURE_ENHANCEMENT
+SC-18,Media,多媒体审核与版权管理UI,后端RightsStatus状态机完备前端无审核流,管理员审核媒体资产版权状态,R3,NO,NO,NO,MediaAsset.py,前期不影响前台展示,FUTURE_ENHANCEMENT
+SC-19,Admin,审计日志与数据对账,已完整实现AuditLogView与Reconciliation,查看操作日志并一键触发跨实体对账,R0,NO,NO,NO,AuditLogView.vue; phase1.py:1000,管理端审计与一致性保障已就绪,COMPLETE
+SC-20,Data,最低可交付数据集 (Minimum Dataset),核心纪年、版本、传承人、骨干引文已就绪,支撑平台所有公开页面高保真渲染,R0,NO,NO,YES,corePerson.ts; jiayiView.ts,满足最低运行与初验标准,COMPLETE
+SC-21,Data,515篇论文全文与深度数字化,仅检索10篇代表论文全文未全录入,515篇全部建立全文检索与索引,R2,NO,NO,YES (Heavy),searchIndex.ts:SEARCHABLE_PAPER_TOTAL,属于交付后持续内容加工工程不阻塞软件交付,POST_DELIVERY_CONTENT_WORK
+SC-22,Data,349穴位全本经文细粒度数字化,卷篇骨架就绪349穴未全结构化灌库,349穴及万条经文全部入库与打标,R2,NO,NO,YES (Heavy),JiayiView.vue; CDomainTerm,属于典籍数字化深加工工程不阻塞软件交付,POST_DELIVERY_CONTENT_WORK
+SC-23,Ops,生产部署脚本与环境验证器,initialize-production与validate-env完备,一键验证环境并建立首个管理员,R0,NO,NO,NO,initialize-production.py; validate-production-env.py,已通过测试验证具备交付能力,COMPLETE
+SC-24,Docs,运维与开发者技术手册,Runbook与ND1文档已构建,指导开发者与运维部署和启动系统,R0,NO,NO,NO,HFM-LOCAL-RUNTIME-RUNBOOK.md,技术文档完备,COMPLETE
+SC-25,Docs,终端用户使用手册 (用户/学者指南),暂无面向终端读者的图文说明文档,指导非技术用户如何使用平台功能,R1,NO,YES,NO,None,交付给客户时必须附带业务操作说明,REQUIRED_FOR_CURRENT_DELIVERY

@@ -1,0 +1,7 @@
+ITEM,MODULE,CLAIMED_OR_EXPECTED_BEHAVIOR,CURRENT_REALITY,GAP_TYPE,SEVERITY,EVIDENCE,DELIVERY_IMPACT
+GAP-01,ResearchWorkspace,研究人员能在工作台自建研究项目并记录笔记,后端API与数据表完整但前端界面仅提供只读展示与导出无表单UI,FRONTEND_WITHOUT_BACKEND,P1,apps/frontend/src/views/research/ResearchHomeView.vue,研究工作台当前无法直接在浏览器端进行写操作
+GAP-02,Homepage,首页数据应当由后端动态数据库驱动,当前全部8个板块100%由前端静态Projection渲染未调用后端/public/home接口,STATIC_INSTEAD_OF_DYNAMIC,P1,apps/frontend/src/views/HomeView.vue,后台修改数据无法实时反映在首页需改前端文件
+GAP-03,Literature/Papers,515篇论文全部可全文检索与引用,仅审计了515篇的存在性实际结构化建立检索索引的仅有10篇代表论文,MODEL_WITHOUT_DATA,P2,apps/frontend/src/data/searchIndex.ts:SEARCHABLE_PAPER_TOTAL,论文检索覆盖面有限为精选集
+GAP-04,Acupoints/Meridians,《针灸甲乙经》349穴位及全部条文完整结构化入库,仅对骨干概念和后论其传条文做了高精结构化全量条文未全录入,MODEL_WITHOUT_DATA,P2,apps/frontend/src/data/jiayiView.ts,典籍数字化深加工未完成
+GAP-05,MediaAssetUpload,研究员或管理员可在线上传文物影印与多媒体,后端具备存储与校验逻辑前端无可视化文件上传按钮,BACKEND_WITHOUT_UI,P2,apps/backend/src/hfm/phase2/media/service.py,媒体资源需通过命令行或代码导入
+GAP-06,AdminPublication,管理员在后台可视界面审核通过研究成果,后端有approve/reject接口但前端Admin页面仅有AuditLog和Reconciliation,BACKEND_WITHOUT_UI,P2,apps/frontend/src/views/admin/AdminHomeView.vue,审核发布目前缺乏专用前端面板
