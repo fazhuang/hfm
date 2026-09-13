@@ -10,7 +10,7 @@ Targets the migration-0015 ``documents`` table only, from the frozen
     production authorization condition is met;
   * verifies the target's real identity (engine + actual connected database
     name via ``current_database()``) rather than trusting the DSN string;
-  * verifies the target is on the single expected migration head (0015);
+  * verifies the target is on the single expected migration head (0016);
   * writes all rows in ONE database transaction (all-or-nothing);
   * rejects a re-run of the same frozen package (REJECT_DUPLICATE) instead of
     creating duplicates;
@@ -50,7 +50,7 @@ from sqlalchemy.ext.asyncio import (
 
 from hfm.models.document import ContentDocument
 
-EXPECTED_MIGRATION_HEAD = "0015"
+EXPECTED_MIGRATION_HEAD = "0016"
 PRODUCTION_DB = "hfm_prod"
 #: Frozen B05 package size; production authorization additionally requires
 #: ``--expected-count`` to equal this exact value.

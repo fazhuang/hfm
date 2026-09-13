@@ -154,6 +154,73 @@ async def test_note_crud_owner_scoped(session: AsyncSession) -> None:
     assert (await svc.list_notes(principal=a))["total"] == 0
 
 
+async def test_annotation_crud_owner_scoped(session: AsyncSession) -> None:
+    """P4: highlight annotations bound to a passage, owner-scoped."""
+    a = await _user_a(session)
+    lit = LiteratureService(session)
+    work = await lit.create_work(principal=a, title="甲乙经", dynasty="西晋")
+    edition = await lit.create_edition(principal=a, work_id=work.id, edition_name="宋刻本")
+    version = await lit.create_version(principal=a, edition_id=edition.id, version_name="北宋本")
+    chapter = await lit.create_chapter(principal=a, work_id=work.id, title="卷一", order=0)
+    passage = await lit.create_passage(
+        principal=a,
+        chapter_id=chapter.id,
+        content_text="夫医道所兴，其来久矣",
+        version_id=version.id,
+    )
+    svc = ResearchWorkspaceService(session)
+    project = await svc.create_project(principal=a, title="校勘项目")
+    ann = await svc.create_annotation(
+        principal=a,
+        passage_id=passage.id,
+        quote_text="医道所兴",
+        start_offset=1,
+        end_offset=5,
+        note="关键句",
+        project_id=project["project_id"],
+    )
+    assert ann["annotation_id"]
+    assert ann["passage_id"] == passage.id
+    assert ann["quote_text"] == "医道所兴"
+    assert ann["start_offset"] == 1
+    assert ann["end_offset"] == 5
+    assert ann["note"] == "关键句"
+
+    listed = await svc.list_annotations(principal=a, passage_id=passage.id)
+    assert listed["total"] == 1
+    assert listed["annotations"][0]["annotation_id"] == ann["annotation_id"]
+
+    await svc.delete_annotation(principal=a, annotation_id=ann["annotation_id"])
+    assert (await svc.list_annotations(principal=a))["total"] == 0
+
+
+async def test_annotation_isolation_and_validation(session: AsyncSession) -> None:
+    """P4: cross-user annotations fail closed; bad offsets/passage rejected."""
+    a = await _user_a(session)
+    b = await _user_b(session)
+    lit = LiteratureService(session)
+    work = await lit.create_work(principal=a, title="甲乙经", dynasty="西晋")
+    chapter = await lit.create_chapter(principal=a, work_id=work.id, title="卷一", order=0)
+    passage = await lit.create_passage(
+        principal=a, chapter_id=chapter.id, content_text="夫医道所兴"
+    )
+    svc = ResearchWorkspaceService(session)
+    ann = await svc.create_annotation(principal=a, passage_id=passage.id, note="A 的标注")
+
+    # isolation: B cannot list or delete A's annotation
+    assert (await svc.list_annotations(principal=b))["total"] == 0
+    with pytest.raises(KeyError):
+        await svc.delete_annotation(principal=b, annotation_id=ann["annotation_id"])
+
+    # validation: unknown passage + inverted offsets rejected
+    with pytest.raises(ValueError):
+        await svc.create_annotation(principal=a, passage_id="missing-passage")
+    with pytest.raises(ValueError):
+        await svc.create_annotation(
+            principal=a, passage_id=passage.id, start_offset=5, end_offset=1
+        )
+
+
 async def test_project_delete_cascades_notes(session: AsyncSession) -> None:
     """Deleting a project deletes its notes (CASCADE)."""
     a = await _user_a(session)
@@ -511,20 +578,20 @@ def test_migration_0013_upgrade_downgrade_upgrade_single_head(tmp_path: Path) ->
     # upgrade head from empty: research tables exist; single head
     assert _alembic(db_file, "upgrade", "head").returncode == 0
     tables = _tables(db_file)
-    assert {"research_projects", "research_notes"} <= tables
+    assert {"research_projects", "research_notes", "research_annotations"} <= tables
     heads = _alembic(db_file, "heads").stdout.strip()
-    assert heads == "0015 (head)", heads  # single Alembic head
+    assert heads == "0016 (head)", heads  # single Alembic head
 
     # downgrade to 0012: research tables gone, accepted tables intact
     assert _alembic(db_file, "downgrade", "0012").returncode == 0
     after_down = _tables(db_file)
-    assert not {"research_projects", "research_notes"} & after_down
+    assert not {"research_projects", "research_notes", "research_annotations"} & after_down
     assert {"works", "passages", "publication_records", "users"} <= after_down
 
     # upgrade again to head: tables restored
     assert _alembic(db_file, "upgrade", "head").returncode == 0
-    assert {"research_projects", "research_notes"} <= _tables(db_file)
-    assert _alembic(db_file, "heads").stdout.strip() == "0015 (head)"
+    assert {"research_projects", "research_notes", "research_annotations"} <= _tables(db_file)
+    assert _alembic(db_file, "heads").stdout.strip() == "0016 (head)"
 
 
 def test_migration_0013_fk_and_checks(tmp_path: Path) -> None:
@@ -543,5 +610,11 @@ def test_migration_0013_fk_and_checks(tmp_path: Path) -> None:
         assert {"id", "owner_id", "project_id", "title", "content"} <= notes
         fks = {fk["referred_table"] for fk in inspector.get_foreign_keys("research_notes")}
         assert {"users", "research_projects"} <= fks
+        ann = {c["name"] for c in inspector.get_columns("research_annotations")}
+        assert {"id", "owner_id", "passage_id", "project_id", "quote_text", "note"} <= ann
+        ann_fks = {
+            fk["referred_table"] for fk in inspector.get_foreign_keys("research_annotations")
+        }
+        assert {"users", "passages", "research_projects"} <= ann_fks
     finally:
         engine.dispose()

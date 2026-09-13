@@ -45,7 +45,7 @@ from sqlalchemy import select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
-EXPECTED_MIGRATION_HEAD = "0015"
+EXPECTED_MIGRATION_HEAD = "0016"
 PRODUCTION_DB = "hfm_prod"
 FROZEN_DOCUMENT_COUNT = 675
 

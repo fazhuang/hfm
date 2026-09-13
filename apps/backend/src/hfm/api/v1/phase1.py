@@ -975,6 +975,70 @@ async def research_delete_note(
     return api_response(data={"ok": True})
 
 
+@research_router.get(
+    "/annotations", dependencies=[Depends(require_permission("research:note:read"))]
+)
+async def research_list_annotations(
+    session: SessionDep,
+    principal: PrincipalDep,
+    passage_id: str = "",
+    project_id: str = "",
+    page: int = 1,
+    page_size: int = 20,
+) -> dict[str, Any]:
+    """P4: owner-scoped highlight annotations (optional passage/project filter)."""
+    try:
+        data = await ResearchWorkspaceService(session).list_annotations(
+            principal=principal,
+            passage_id=passage_id or None,
+            project_id=project_id or None,
+            page=page,
+            page_size=page_size,
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.post(
+    "/annotations", dependencies=[Depends(require_permission("research:note:create"))]
+)
+async def research_create_annotation(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P4: create an owner-scoped highlight annotation on a passage."""
+    try:
+        data = await ResearchWorkspaceService(session).create_annotation(
+            principal=principal,
+            passage_id=str(body.get("passage_id", "")),
+            note=body.get("note"),
+            project_id=body.get("project_id"),
+            quote_text=body.get("quote_text"),
+            start_offset=body.get("start_offset"),
+            end_offset=body.get("end_offset"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.delete(
+    "/annotations/{annotation_id}",
+    dependencies=[Depends(require_permission("research:note:delete"))],
+)
+async def research_delete_annotation(
+    session: SessionDep, principal: PrincipalDep, annotation_id: str
+) -> dict[str, Any]:
+    """P4: owner-scoped highlight annotation delete."""
+    try:
+        await ResearchWorkspaceService(session).delete_annotation(
+            principal=principal, annotation_id=annotation_id
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data={"ok": True})
+
+
 # ---------------------------------------------------------------- admin
 @admin_router.post(
     "/publication/review", dependencies=[Depends(require_permission("content:review"))]
