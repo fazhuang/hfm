@@ -38,11 +38,10 @@ customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
 C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗项目
 69 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取已基本落地
 （667 篇中 593 篇 Route A 数字文本层直提 + 66 篇 Route B 影像型 OCR 完成；
-余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）。剩余未完成：
-《针灸甲乙经》篇章段落 / citations / versions —— 木刻版竖排 OCR 引擎已本机验证
-（PaddleOCR 2.10 对四库本/五车楼正文均能正确识别篇章标题，间歇性分配器崩溃
-可加重试绕过），但 CPU 逐页极慢（~30–60s/页），全量 92 部论著需 GPU/云 OCR
-或权威数字文本校录，属基础设施决策。详见 §3/§4。
+余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）；《针灸甲乙经》
+篇章段落已入库（维基文库宋校本·公有领域：`chapters` 146 = 12 卷 + 134 篇、
+`passages` 965 段；已知缺口卷03 篇八/九/十 + 卷02 篇五标题，待补录）。剩余未完成：
+`citations`（待 passages 挂接）/ `versions`（具体文本版本层，待 OCR 证据）。详见 §3/§4。
 
 ---
 
@@ -54,7 +53,7 @@ C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗�
 | `content_artifacts` | 31（全 PUBLISHED） | P1 为 14 著作 + 17 人物生成工件 ✅ |
 | `publication_records` | 31（全 PUBLISHED） | P1 生成 PUBLISHED 记录 ✅ |
 | `documents` | 667（593 Route A + 66 Route B OCR；8 非遗佐证照片/证书无文字层） | P2 全文落地 ✅ 基本完成 |
-| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 ⚠️ 待木刻版 OCR（引擎已验证，待基础设施） |
+| `chapters` / `passages` | 146 / 965（134 篇；卷03 缺 3 篇待补） | P2 《针灸甲乙经》篇章段落 ✅ 基本完成 |
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
 | `assertions` / `evidences` / `citations` | 23 / 23 / 0 | P2/P4 证据链 ✅（citations 待 passages） |
 | `heritage_projects` / `heritage_relations` | 69 / 2 | P3 非遗项目 ✅ |
@@ -136,13 +135,12 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
   证明），tesseract 无文字层输出，属影像证据、已入 `media_assets`，不阻塞全文目标。
 - **经穴/词条（工作项 3）✅**、**证据链 assertions/evidences（工作项 4）✅**：
   见 §0 计数（`citations` 仍待 `passages`）。
-- **篇章段落（工作项 2）🔄 权威数字文本已落地结构、待入库**：改走「权威数字
-  文本」路径 —— 维基文库《针灸甲乙经·宋校本》（公有领域）12 卷已抓取，
-  `scripts/parse-jiayi-wikisource.py` 解析产出 `jiayi-chapters.csv`（卷 12 +
-  篇 134）与 `jiayi-passages.csv`（段 968）。来源+权利+完整性复核见
-  `content-production/reports/HFM-CONTENT-P2-JIAYI-STRUCTURE-SOURCE.md`。
+- **篇章段落（工作项 2）✅ 已入库**：改走「权威数字文本」路径 —— 维基文库
+  《针灸甲乙经·宋校本》（公有领域）12 卷抓取，`scripts/parse-jiayi-wikisource.py`
+  解析产出 `jiayi-chapters.csv`（卷 12 + 篇 134）与 `jiayi-passages.csv`（段 965），
+  `scripts/import-jiayi-structure.py` 已入库（`chapters` 146 / `passages` 965）。
+  来源+权利+完整性复核见 `content-production/reports/HFM-CONTENT-P2-JIAYI-STRUCTURE-SOURCE.md`。
   已知缺口：卷03 篇八/九/十缺失（背穴三篇）、卷02 篇五标题残缺，后续补齐。
-  尚未写入 `chapters`/`passages` 生产表（待入库脚本 + 授权）。
 
 ### 3.2 门禁
 

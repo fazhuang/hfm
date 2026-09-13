@@ -153,15 +153,28 @@ def main() -> int:
                 "title": title,
                 "order": i,
             })
-            for j, para in enumerate(paras, start=1):
+            pian_passages: list[dict[str, object]] = []
+            for para in paras:
                 content, notes = extract_notes_and_text(para)
                 if not content and not notes:
                     continue
+                if not content:
+                    # note-only paragraph: merge its collation note into the previous
+                    # passage (a trailing 注 in 卷03 穴 entries).
+                    if pian_passages and notes:
+                        extra = " | ".join(notes)
+                        prev_notes = pian_passages[-1].get("notes") or ""
+                        pian_passages[-1]["notes"] = (
+                            f"{prev_notes} | {extra}" if prev_notes else extra
+                        )
+                    continue
+                pian_passages.append({"content_text": content, "notes": " | ".join(notes)})
+            for j, pp in enumerate(pian_passages, start=1):
                 passages.append({
                     "passage_id": f"{pian_id}-D{j:03d}",
                     "chapter_id": pian_id,
-                    "content_text": content,
-                    "notes": " | ".join(notes),
+                    "content_text": pp["content_text"],
+                    "notes": pp["notes"],
                     "order": j,
                 })
 
