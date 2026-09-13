@@ -1,0 +1,150 @@
+/* ==========================================================================
+   《刻度 / THE SCALE》 — homepage ledger system
+   ==========================================================================
+   Derived visual language for the redesigned public homepage. A ruled,
+   numbered record: hairline rules sampled from the inspiration string's only
+   hex-like run, marginal index numerals in cinnabar (the source is 17%
+   digits), wide-tracked latin labels (its case alternates almost every
+   character — 110 of 171 runs are length 1), and tabular numerals throughout.
+   Chinese display stays serif; the latin register is monospaced.
+   ========================================================================== */
+
+.xl {
+  background: var(--wl-paper);
+  color: var(--wl-ink);
+}
+
+.xl-sec {
+  background: var(--wl-paper);
+  color: var(--wl-ink);
+  padding: clamp(3.5rem, 9vw, 8rem) var(--hfm-space-6);
+}
+/* 方案3 light-top / dark-bottom: a deep ink band for the closing movements. */
+.xl-sec--dark {
+  background: var(--wl-deep);
+  color: var(--wl-paper);
+  --wl-ink: #f2f0ea;
+  --wl-ink-2: rgba(242, 240, 234, 0.82);
+  --wl-mute: rgba(242, 240, 234, 0.58);
+  --wl-rule: rgba(242, 240, 234, 0.22);
+  --wl-light: rgba(255, 255, 255, 0.04);
+  --wl-mark: #d98a6a;
+  --wl-mark-strong: #e8a084;
+}
+.xl-sec--paper {
+  background: var(--wl-paper);
+}
+.xl-inner {
+  max-width: 78rem;
+  margin: 0 auto;
+}
+
+/* ---- ruled header: marginal index │ label · title · lede ---- */
+.xl-head {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--hfm-space-6);
+  padding-top: var(--hfm-space-5);
+  border-top: 1px solid var(--wl-rule);
+  margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+}
+.xl-head__aside {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hfm-space-2);
+}
+.xl-index {
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.06em;
+  color: var(--wl-mark);
+}
+.xl-label {
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: 0.6875rem;
+  color: var(--wl-mute);
+}
+.xl-title {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: clamp(1.75rem, 4.2vw, 2.9rem);
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  color: var(--wl-ink);
+}
+.xl-lede {
+  margin: var(--hfm-space-4) 0 0;
+  max-width: 40ch;
+  font-size: var(--hfm-text-lg);
+  line-height: 1.9;
+  color: var(--wl-ink-2);
+}
+
+/* ---- tabular numerals + cinnabar marks ---- */
+.xl-num {
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+.xl-mark {
+  color: var(--wl-mark);
+}
+
+/* ---- ruled row (a ledger line) ---- */
+.xl-rows {
+  border-top: 1px solid var(--wl-rule);
+}
+.xl-row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--hfm-space-6);
+  align-items: baseline;
+  padding: var(--hfm-space-5) 0;
+  border-bottom: 1px solid var(--wl-rule);
+}
+.xl-row__index {
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--hfm-text-sm);
+  color: var(--wl-mark);
+}
+.xl-row__body {
+  min-width: 0;
+}
+
+/* ---- link / action in the ledger voice ---- */
+.xl-go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  min-height: 24px;
+  font-family: var(--wl-latin);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.06em;
+  color: var(--wl-mark);
+  text-decoration: none;
+}
+.xl-go:hover {
+  color: var(--wl-mark-strong);
+}
+.xl-go__arr {
+  transition: transform 0.18s ease;
+}
+.xl-go:hover .xl-go__arr {
+  transform: translateX(3px);
+}
+
+@media (max-width: 599px) {
+  .xl-sec {
+    padding: var(--hfm-space-16) var(--hfm-space-4);
+  }
+  .xl-head,
+  .xl-row {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    gap: var(--hfm-space-3);
+  }
+}

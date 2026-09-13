@@ -278,7 +278,7 @@ test('CF-08 desktop composition at 1440 — sections render, display scale, cent
   // Sections are full-width; the content column is centred and clamped (no page clamp).
   const geom = await page.evaluate(() => {
     const section = document.getElementById('home-life')!.getBoundingClientRect()
-    const inner = document.querySelector('.home-life__inner')!.getBoundingClientRect()
+    const inner = document.querySelector('#home-life .xl-inner')!.getBoundingClientRect()
     return { sectionWidth: section.width, innerWidth: inner.width, innerLeft: inner.left }
   })
   expect(geom.sectionWidth).toBeGreaterThanOrEqual(1380)
