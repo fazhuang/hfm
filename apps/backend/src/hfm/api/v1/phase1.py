@@ -241,6 +241,18 @@ async def public_work(session: SessionDep, work_id: str) -> dict[str, Any]:
     return api_response(data=record)
 
 
+@public_router.get("/c-terms")
+async def public_c_terms(session: SessionDep, q: str = "") -> dict[str, Any]:
+    """P1-05: public C-domain terms list — PUBLISHED terms only (E-05).
+
+    Optional ``q`` filters by term name (case-insensitive substring). This is
+    the browse entry for the C-domain (acupoints/meridians/diseases/techniques);
+    the single-term projection stays at ``/c-terms/{entity_id}``.
+    """
+    terms = await CDomainService(session).list_public_terms(query=q or None)
+    return api_response(data={"terms": terms, "total": len(terms)})
+
+
 @public_router.get("/c-terms/{entity_id}")
 async def public_c_term(session: SessionDep, entity_id: str) -> dict[str, Any]:
     """P1-05: public C-domain term — PUBLISHED, evidenced relations only.

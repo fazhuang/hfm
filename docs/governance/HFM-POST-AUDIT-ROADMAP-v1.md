@@ -40,8 +40,10 @@ C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗�
 （667 篇中 593 篇 Route A 数字文本层直提 + 66 篇 Route B 影像型 OCR 完成；
 余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）；《针灸甲乙经》
 篇章段落已入库（维基文库宋校本·公有领域：`chapters` 146 = 12 卷 + 134 篇、
-`passages` 965 段；已知缺口卷03 篇八/九/十 + 卷02 篇五标题，待补录）。剩余未完成：
-`citations`（待 passages 挂接）/ `versions`（具体文本版本层，待 OCR 证据）。详见 §3/§4。
+`passages` 965 段；已知缺口卷03 篇八/九/十 + 卷02 篇五标题，待补录）；30 条
+C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/单条端点。
+**P2 EXIT 已达成**。剩余未完成：`citations`（待 passages 挂接）/ `versions`
+（具体文本版本层，待 OCR 证据）。详见 §3/§4。
 
 ---
 
@@ -147,7 +149,7 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 | | |
 | :--- | :--- |
 | **ENTRY** | P1 完成（内容已发布，公众可感知增量）；全文抽取管道就绪 |
-| **EXIT** | 《针灸甲乙经》篇章段落 + 经穴词条 + 关系图谱有真实数据，`/public/c-terms` 可查 |
+| **EXIT** | 《针灸甲乙经》篇章段落 + 经穴词条 + 关系图谱有真实数据，`/public/c-terms` 可查 ✅ **已达成**（2026-09-13） |
 | **AUTHORIZATION** | 需显式授权（中医结构化提取的范围与质量标准） |
 
 ---

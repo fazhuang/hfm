@@ -72,6 +72,7 @@ validator = _load_module(
 # checks stay clean.
 sys.path.insert(0, str(BACKEND_DIR / "src"))
 
+from hfm.models.c_domain import CDomainTerm
 from hfm.models.content_artifact import (
     ContentAdmissionState,
     ProvenanceStatus,
@@ -362,6 +363,33 @@ async def _run(
                             )
                         )
 
+                if scope in ("c-terms", "all"):
+                    for term in (
+                        (await session.execute(select(CDomainTerm).order_by(CDomainTerm.term_name)))
+                        .scalars()
+                        .all()
+                    ):
+                        tasks.append(
+                            (
+                                "c_term",
+                                term.entity_id,
+                                None,
+                                term.term_name,
+                                canonical_content(
+                                    "c_term",
+                                    entity_id=term.entity_id,
+                                    term_name=term.term_name,
+                                    term_type=term.term_type,
+                                ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "c_term",
+                                    None,
+                                    rights_status,
+                                ),
+                            )
+                        )
+
                 for kind, entity_id, stable_id, title, content, rights in tasks:
                     state, detail = await _publish_one(
                         session,
@@ -412,7 +440,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--scope",
         default="works",
-        choices=("works", "persons", "all"),
+        choices=("works", "persons", "c-terms", "all"),
         help="which canonical entities to publish (default: works)",
     )
     parser.add_argument("--rights-basis", default=None)
