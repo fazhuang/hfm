@@ -10,7 +10,7 @@ import { expect, test } from '@playwright/test'
 
 const NAV_TARGETS = [
   { label: '首页', href: '/' },
-  { label: '人物（皇甫谧）', href: '/persons/person-huangfu-mi' },
+  { label: '人物（皇甫谧）', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
   { label: '其言', href: '/yan' },
   { label: '《针灸甲乙经》', href: '/jiayi' },
   { label: '皇甫谧针灸非遗的传承', href: '/heritage' },
@@ -24,7 +24,7 @@ async function mockPublicApi(page: import('@playwright/test').Page): Promise<voi
       body = { works: [], counts: { works: 0, persons: 0, heritage_projects: 0, c_terms: 0 } }
     } else if (url.includes('/persons/')) {
       body = {
-        entity_id: 'person-huangfu-mi',
+        entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
         name_zh: '皇甫谧',
         name_pinyin: null,
         courtesy_name: null,

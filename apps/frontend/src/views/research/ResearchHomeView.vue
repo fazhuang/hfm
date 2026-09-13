@@ -70,7 +70,7 @@ function onSearch(): void {
           <a href="/research/entity/reader/houlun">后论 · 历史评价汇编（含 12 条可引用引文）</a>
         </li>
         <li><a href="/research/entity/reader/qichuan">其传 · 史料来源整理</a></li>
-        <li><a href="/research/entity/person/person-huangfu-mi">皇甫谧研究视图</a></li>
+        <li><a href="/research/entity/person/ENT-PERSON-HFM-HUANGFUMI">皇甫谧研究视图</a></li>
         <li>
           <a href="/research/entity/heritage/liujunqi"
             >皇甫谧针灸非遗研究视图（第六代名医·刘君奇）</a

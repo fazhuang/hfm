@@ -28,7 +28,7 @@ export const READER_DOCUMENTS: ReaderDocument[] = [
     readingStatus: 'FULL_TEXT',
     contentStatus: 'AVAILABLE',
     relatedEntities: [
-      { label: '皇甫谧人物档案', href: '/persons/person-huangfu-mi' },
+      { label: '皇甫谧人物档案', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
       { label: '其言', href: '/yan' },
       { label: '《针灸甲乙经》', href: '/jiayi' },
       { label: '非遗传承', href: '/heritage' },
@@ -338,7 +338,7 @@ export const READER_DOCUMENTS: ReaderDocument[] = [
     readingStatus: 'FULL_TEXT',
     contentStatus: 'AVAILABLE',
     relatedEntities: [
-      { label: '皇甫谧人物档案', href: '/persons/person-huangfu-mi' },
+      { label: '皇甫谧人物档案', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
       { label: '后论 · 历史评价汇编', href: '/reader/houlun' },
       { label: '《针灸甲乙经》', href: '/jiayi' },
     ],

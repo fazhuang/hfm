@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test'
 
 const SURFACES = [
   '/',
-  '/persons/person-huangfu-mi',
+  '/persons/ENT-PERSON-HFM-HUANGFUMI',
   '/yan',
   '/jiayi',
   '/heritage',

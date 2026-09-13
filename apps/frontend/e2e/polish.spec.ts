@@ -98,7 +98,7 @@ test('CF-11 evidence screenshots (375 / 768 / 1440 + public surfaces)', async ({
       name === 'home'
         ? '/'
         : name === 'person'
-          ? '/persons/person-huangfu-mi'
+          ? '/persons/ENT-PERSON-HFM-HUANGFUMI'
           : name === 'jiayi'
             ? '/jiayi'
             : name === 'heritage'

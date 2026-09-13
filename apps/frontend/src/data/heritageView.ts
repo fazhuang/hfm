@@ -278,7 +278,7 @@ export const HERITAGE_LINEAGE: ConfirmedLineageNode[] = [
     generation: '源头',
     role: '针灸鼻祖 · 《针灸甲乙经》作者',
     evidence: '平台人物档案（其传/史料依据）',
-    href: '/persons/person-huangfu-mi',
+    href: '/persons/ENT-PERSON-HFM-HUANGFUMI',
   },
   {
     id: 'n-gap',

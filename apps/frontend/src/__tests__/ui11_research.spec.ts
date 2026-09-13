@@ -26,7 +26,7 @@ import ResearchBreadcrumb from '../components/research/ResearchBreadcrumb.vue'
 
 describe('UI-11 research projection & domain reuse', () => {
   it('resolves entity research views from existing domain data', () => {
-    expect(researchEntity('person', 'person-huangfu-mi')?.title).toBe('皇甫谧')
+    expect(researchEntity('person', 'ENT-PERSON-HFM-HUANGFUMI')?.title).toBe('皇甫谧')
     expect(researchEntity('person', 'person-liujunqi')?.title).toBe('刘君奇')
     expect(researchEntity('work', 'w-jiayi')?.title).toBe('《针灸甲乙经》')
     expect(researchEntity('work', 'w-diwangshiji')?.title).toBe('《帝王世纪》')
@@ -45,7 +45,7 @@ describe('UI-11 research projection & domain reuse', () => {
     expect(jiayi).not.toHaveProperty('editionCount')
     expect(jiayi).not.toHaveProperty('workType')
     expect(jiayi).not.toHaveProperty('editionType')
-    const huangfu = researchEntity('person', 'person-huangfu-mi')!
+    const huangfu = researchEntity('person', 'ENT-PERSON-HFM-HUANGFUMI')!
     expect(huangfu).not.toHaveProperty('assertions')
   })
 
@@ -75,7 +75,7 @@ describe('UI-11 research projection & domain reuse', () => {
 
   it('no internal paths or fabricated evidence states in projections', () => {
     const all = JSON.stringify([
-      researchEntity('person', 'person-huangfu-mi'),
+      researchEntity('person', 'ENT-PERSON-HFM-HUANGFUMI'),
       researchEntity('work', 'w-jiayi'),
       researchEntity('heritage', 'liujunqi'),
       researchEntity('reader', 'houlun'),

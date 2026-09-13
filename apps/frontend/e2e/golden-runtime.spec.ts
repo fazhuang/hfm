@@ -91,7 +91,7 @@ test('PERSON — known person page renders structured fields (data fixture unles
   if (!CF01_GATE) {
     stubPublicPerson(page)
   }
-  await goto200(page, '/persons/person-huangfu-mi')
+  await goto200(page, '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await expect(page.locator('h1')).toBeVisible()
   await expect(page.locator('h1').first()).toContainText('皇甫谧')
   await expect(page.locator('body')).toBeVisible()
@@ -132,7 +132,7 @@ test('SEARCH — search renders deterministic result rows and navigates canonica
   await expect(rows.first()).toBeVisible()
   await expect(list).toContainText('皇甫谧')
   const rowLink = page.locator('.result-row a.result-row__link').first()
-  await expect(rowLink).toHaveAttribute('href', '/persons/person-huangfu-mi')
+  await expect(rowLink).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await rowLink.click()
   await expect(page.getByRole('heading', { level: 1 }).first()).toContainText('皇甫谧')
 })

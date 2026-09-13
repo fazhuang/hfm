@@ -54,7 +54,7 @@ const dates = CORE_PERSON_DATES
         <p class="hero__roles">西晋 · 医学家 · 文学家 · 史学家</p>
 
         <div class="hero__actions">
-          <a class="hero__cta" href="/persons/person-huangfu-mi">
+          <a class="hero__cta" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
             进入人物档案 <span class="hero__cta-arr" aria-hidden="true">→</span>
           </a>
           <a class="hero__cta hero__cta--ghost" href="/jiayi">

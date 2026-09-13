@@ -69,7 +69,7 @@ test('UI-03 exactly one global footer — Section 08 is a closing section, not a
 test('UI-03 CTA targets are real routes', async ({ page }) => {
   await page.goto('/')
   const targets = [
-    '/persons/person-huangfu-mi',
+    '/persons/ENT-PERSON-HFM-HUANGFUMI',
     '/reader/qichuan',
     '/yan',
     '/reader/houlun',
@@ -358,7 +358,7 @@ test('CF-09 Sections 05–08: render in order, single-footer handoff, no overflo
 test('CF-09 Section 07 route truth: the four domain CTAs resolve to real current routes', async ({
   page,
 }) => {
-  const targets = ['/persons/person-huangfu-mi', '/archive', '/jiayi', '/heritage']
+  const targets = ['/persons/ENT-PERSON-HFM-HUANGFUMI', '/archive', '/jiayi', '/heritage']
   for (const target of targets) {
     const resp = await page.goto(target)
     expect(resp?.status(), `${target} must be 200`).toBe(200)

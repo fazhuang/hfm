@@ -9,7 +9,7 @@
  * runs inside FAST_RUNTIME_GATE.
  *
  * Coverage (CF-03 §12):
- *   - successful API load / person-huangfu-mi render;
+ *   - successful API load / ENT-PERSON-HFM-HUANGFUMI render;
  *   - partial & missing optional fields are never a page failure;
  *   - 404 is discriminated from a generic server/network error;
  *   - loading state is programmatically exposed;
@@ -23,7 +23,7 @@ import PersonDetailView from '../views/persons/PersonDetailView.vue'
 import type { PublicPerson } from '../types/public'
 
 const PERSON: PublicPerson = {
-  entity_id: 'person-huangfu-mi',
+  entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
   name_zh: '皇甫谧',
   name_pinyin: 'Huangfu Mi',
   courtesy_name: '士安',
@@ -61,7 +61,7 @@ afterEach(() => {
 
 async function mountPerson(
   handler: FetchHandler,
-  routeId = 'person-huangfu-mi',
+  routeId = 'ENT-PERSON-HFM-HUANGFUMI',
 ): Promise<ReturnType<typeof mount>> {
   stubFetch(handler)
   const router = createRouter({
@@ -96,7 +96,7 @@ function findAll(page: ReturnType<typeof mount>, selector: string): string[] {
 }
 
 describe('CF-03 person archive — real-API identity & metadata', () => {
-  it('renders identity + metadata from the person API for person-huangfu-mi', async () => {
+  it('renders identity + metadata from the person API for ENT-PERSON-HFM-HUANGFUMI', async () => {
     const wrapper = await mountPersonOk()
     expect(wrapper.find('h1.dh-object__title').text()).toBe('皇甫谧')
     const meta = findAll(wrapper, '.dh-object__meta')
@@ -122,7 +122,7 @@ describe('CF-03 person archive — real-API identity & metadata', () => {
 
   it('treats missing optional fields as absence, never as a failure', async () => {
     const minimal: PublicPerson = {
-      entity_id: 'person-huangfu-mi',
+      entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
       name_zh: '皇甫谧',
       name_pinyin: null,
       courtesy_name: null,
@@ -236,14 +236,14 @@ describe('CF-03 person archive — CF-02 primitive integration & accessibility',
     const handler: FetchHandler = (url) => {
       ids.push(url)
       const id = url.split('/').pop()
-      return envelope(id === 'person-huangfu-mi' ? PERSON : { ...PERSON, name_zh: '某人物' })
+      return envelope(id === 'ENT-PERSON-HFM-HUANGFUMI' ? PERSON : { ...PERSON, name_zh: '某人物' })
     }
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/persons/:id', component: PersonDetailView }],
     })
     stubFetch(handler)
-    router.push('/persons/person-huangfu-mi')
+    router.push('/persons/ENT-PERSON-HFM-HUANGFUMI')
     await router.isReady()
     const wrapper = mount(PersonDetailView, {
       attachTo: document.body,

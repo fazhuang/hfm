@@ -18,7 +18,7 @@ import type { Page } from '@playwright/test'
 /** Deterministic search hit (person) matching the public search projection. */
 export const PERSON_HIT = {
   kind: 'person',
-  id: 'person-huangfu-mi',
+  id: 'ENT-PERSON-HFM-HUANGFUMI',
   title: '皇甫谧',
   snippet: '',
   version_id: null,
@@ -27,7 +27,7 @@ export const PERSON_HIT = {
 
 /** Deterministic public person projection matching GET /public/persons/:id. */
 export const PERSON_PROJECTION = {
-  entity_id: 'person-huangfu-mi',
+  entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
   name_zh: '皇甫谧',
   name_pinyin: null,
   courtesy_name: null,

@@ -71,7 +71,7 @@ async function gotoSurface(page: Page, surface: string, viewport: number): Promi
       await page.goto('/')
       break
     case 'PERSON':
-      await page.goto('/persons/person-huangfu-mi')
+      await page.goto('/persons/ENT-PERSON-HFM-HUANGFUMI')
       // Deterministic readiness: the fixture person page must render its title
       // before the audit runs (replaces a networkidle dependency).
       await expect(page.locator('h1').first()).toBeVisible()

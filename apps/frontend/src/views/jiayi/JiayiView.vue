@@ -322,7 +322,7 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
 
     <!-- 10 RELATED NAVIGATION -->
     <nav class="jiayi-related-nav" aria-label="相关导航">
-      <a href="/persons/person-huangfu-mi">皇甫谧人物档案</a>
+      <a href="/persons/ENT-PERSON-HFM-HUANGFUMI">皇甫谧人物档案</a>
       <a href="/yan">其言</a>
       <a href="/reader">阅读</a>
       <a href="/heritage">非遗传承</a>

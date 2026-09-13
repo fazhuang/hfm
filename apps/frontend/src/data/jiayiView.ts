@@ -322,7 +322,7 @@ export const JIAYI_RELATED_WORKS: RelatedWork[] = [
     title: '皇甫谧人物档案',
     kind: 'work',
     note: '生平 · 身份 · 史料依据',
-    href: '/persons/person-huangfu-mi',
+    href: '/persons/ENT-PERSON-HFM-HUANGFUMI',
   },
   {
     id: 'heritage',

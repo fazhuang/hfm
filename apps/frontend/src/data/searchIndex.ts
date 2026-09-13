@@ -101,12 +101,12 @@ export const SEARCH_INDEX: readonly SearchIndexEntry[] = (() => {
 
   // PERSON — reuse UI-04 core-person data source (no new fact model).
   entries.push(
-    entry('person-huangfu-mi', 'person', CORE_PERSON_NAME, {
+    entry('ENT-PERSON-HFM-HUANGFUMI', 'person', CORE_PERSON_NAME, {
       subtitle: `${CORE_PERSON_DATES} · 西晋`,
       themes: [...CORE_PERSON_IDENTITIES],
       relatedEntities: ['其传', '其言', '《针灸甲乙经》', '《帝王世纪》', '《高士传》'],
       status: 'AVAILABLE',
-      route: '/persons/person-huangfu-mi',
+      route: '/persons/ENT-PERSON-HFM-HUANGFUMI',
       body: [CORE_PERSON_DEFINITION, '医学家', '文学家', '史学家', '学者', '针灸鼻祖'],
     }),
   )

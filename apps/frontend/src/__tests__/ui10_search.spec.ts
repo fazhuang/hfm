@@ -41,7 +41,7 @@ function page(hits: PublicSearchPage['hits'], total?: number): PublicSearchPage 
 
 const PERSON_HIT = {
   kind: 'person',
-  id: 'person-huangfu-mi',
+  id: 'ENT-PERSON-HFM-HUANGFUMI',
   title: '皇甫谧',
   snippet: '',
   version_id: null,
@@ -109,7 +109,7 @@ describe('CF-06 ready results & navigation', () => {
       expect(wrapper.find('.result-row__type').text()).toBe('人物')
     })
     const link = wrapper.find('.result-row__link')
-    expect(link.attributes('href')).toBe('/persons/person-huangfu-mi')
+    expect(link.attributes('href')).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
     expect(wrapper.find('.search-summary').text()).toContain('找到 1 条结果')
     expect(searchPublicHitsMock).toHaveBeenCalledWith('皇甫谧', 1, 20)
   })
@@ -149,7 +149,7 @@ describe('CF-06 ready results & navigation', () => {
       expect(wrapper.findAll('.result-row').length).toBe(4)
     })
     const hrefs = wrapper.findAll('.result-row__link').map((n) => n.attributes('href'))
-    expect(hrefs).toContain('/persons/person-huangfu-mi')
+    expect(hrefs).toContain('/persons/ENT-PERSON-HFM-HUANGFUMI')
     expect(hrefs).toContain('/works/work-1')
     // Route-less kinds never fabricate a link.
     expect(hrefs).not.toContain('/reader/p-1')

@@ -1,7 +1,7 @@
 /**
  * UI-12 correction regression tests.
  *
- *  - P1-01: primary nav person href === canonical /persons/person-huangfu-mi;
+ *  - P1-01: primary nav person href === canonical /persons/ENT-PERSON-HFM-HUANGFUMI;
  *    no stale /persons/huangfu-mi CTA remains in the public UI;
  *  - P1-02: public-facing projections render no internal provenance
  *    (hfmzl/ / zzcl/ / registerKey); Jiayi public source labels readable;
@@ -19,9 +19,9 @@ import { JIAYI_PUBLIC_SOURCES } from '../data/jiayiView'
 
 describe('UI-12 P1-01 primary person route', () => {
   it('navigation config points 人物（皇甫谧） to the canonical route', () => {
-    expect(CORE_PERSON_ROUTE).toBe('/persons/person-huangfu-mi')
+    expect(CORE_PERSON_ROUTE).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
     const personItem = PUBLIC_NAV_ITEMS.find((i) => i.label === '人物（皇甫谧）')
-    expect(personItem?.href).toBe('/persons/person-huangfu-mi')
+    expect(personItem?.href).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
     // No stale CTA remains.
     expect(PUBLIC_NAV_ITEMS.some((i) => i.href === '/persons/huangfu-mi')).toBe(false)
   })
@@ -33,12 +33,12 @@ describe('UI-12 P1-01 primary person route', () => {
       },
     })
     const personLink = wrapper.findAll('a.nav-link').find((a) => a.text() === '人物（皇甫谧）')
-    expect(personLink?.attributes('href')).toBe('/persons/person-huangfu-mi')
+    expect(personLink?.attributes('href')).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
     expect(wrapper.text()).not.toContain('/persons/huangfu-mi')
   })
 
   it('all public person CTAs use the canonical route', () => {
-    const canonical = '/persons/person-huangfu-mi'
+    const canonical = '/persons/ENT-PERSON-HFM-HUANGFUMI'
     expect(CORE_PERSON_ROUTE).toBe(canonical)
   })
 })

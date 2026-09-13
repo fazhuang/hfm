@@ -228,7 +228,7 @@ describe('UI-03 CF-07 homepage renders the accepted 8-section structure', () => 
     const wrapper = mountHome()
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     for (const target of [
-      '/persons/person-huangfu-mi',
+      '/persons/ENT-PERSON-HFM-HUANGFUMI',
       '/reader/qichuan',
       '/yan',
       '/reader/houlun',
@@ -435,7 +435,7 @@ describe('UI-03 CF-09 Sections 05–08 production contract', () => {
     const doors = dm.findAll('.home-domains__door')
     expect(doors).toHaveLength(4)
     const hrefs = doors.map((d) => d.find('.home-domains__go').attributes('href'))
-    expect(hrefs).toEqual(['/persons/person-huangfu-mi', '/archive', '/jiayi', '/heritage'])
+    expect(hrefs).toEqual(['/persons/ENT-PERSON-HFM-HUANGFUMI', '/archive', '/jiayi', '/heritage'])
     // Holdings rows + medical bibliographic register are rendered (informational).
     expect(dm.findAll('.home-domains__pv').length).toBeGreaterThanOrEqual(3)
     expect(dm.findAll('.home-domains__b')).toHaveLength(3)

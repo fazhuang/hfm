@@ -52,7 +52,7 @@ test('UI-11 research search reuses the unified index with denser metadata', asyn
 test('UI-11 entity research views: 皇甫谧 / 甲乙经 / 刘君奇 / 后论', async ({ page }) => {
   const cases = [
     {
-      path: '/research/entity/person/person-huangfu-mi',
+      path: '/research/entity/person/ENT-PERSON-HFM-HUANGFUMI',
       title: '皇甫谧',
       public: '查看公众人物页',
     },
@@ -79,7 +79,7 @@ test('UI-11 evidence explorer shows real statuses (no invented states)', async (
 })
 
 test('UI-11 public ↔ research round trip keeps context', async ({ page }) => {
-  await loginAt(page, '/research/entity/person/person-huangfu-mi')
+  await loginAt(page, '/research/entity/person/ENT-PERSON-HFM-HUANGFUMI')
   await page.route('**/api/v1/public/persons/**', (route) =>
     route.fulfill({
       status: 200,
@@ -87,7 +87,7 @@ test('UI-11 public ↔ research round trip keeps context', async ({ page }) => {
       body: JSON.stringify({
         success: true,
         data: {
-          entity_id: 'person-huangfu-mi',
+          entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
           name_zh: '皇甫谧',
           name_pinyin: null,
           courtesy_name: null,
