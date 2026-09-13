@@ -36,7 +36,7 @@ customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
 
 **P2/P3 进度（2026-09-13 本次会话）**：数据导入缺口已基本修复 ——
 C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗项目
-69 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取已基本落地
+56 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取已基本落地
 （667 篇中 593 篇 Route A 数字文本层直提 + 66 篇 Route B 影像型 OCR 完成；
 余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）；《针灸甲乙经》
 篇章段落已入库（维基文库宋校本·公有领域：`chapters` 149 = 12 卷 + 137 篇、
@@ -59,8 +59,8 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 | `chapters` / `passages` | 149 / 1007（137 篇，12 卷完整） | P2 《针灸甲乙经》篇章段落 ✅ 完整 |
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
 | `assertions` / `evidences` / `citations` | 23 / 23 / 23 | P2/P4 证据链 ✅（citations 挂接；passage_id 空 — 传记性断言源自晋书/论文，非甲乙经正文） |
-| `heritage_projects` / `heritage_relations` | 69 / 2 | P3 非遗项目 ✅ |
-| `media_assets` | 681 | P3 媒体资产 ✅ |
+| `heritage_projects` / `heritage_relations` | 56 / 2 | P3 非遗项目 ✅（`/public/heritage` total 56） |
+| `media_assets` | 681（**published 0**，全 `draft`） | P3 媒体资产 ⚠️ 已入库未发布 |
 | `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
 
 ---
@@ -161,9 +161,54 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 **目标**：`heritage_projects` / `heritage_relations` / `media_assets` 从 0 → 有数据，
 非遗专栏从静态映射层转为受控入库。
 
-- 非遗佐证材料已就绪（`hfmzl/非遗佐证/` 68 文件）；媒体版权模型（P2-05）已完整。
+- 非遗佐证材料已就绪（`hfmzl/非遗佐证/` 68 文件，其中 67 个为媒体文件 +
+  1 个 `.lnk` 快捷方式被导入器跳过）；媒体版权模型（P2-05）已完整。
 - 工作项：非遗项目 + 传承谱系入库；媒体资产（图片/视频/PDF）带 rights 元数据入库。
 - **ENTRY**：P1 完成；**EXIT**：`/public/heritage` `/public/media` 返回生产数据。
+
+#### 核实记录（2026-09-14）— 更正「媒体资产已发布」的错误记录
+
+针对「已发布 614 条 P0/P1 媒体资产、`/public/media` 返回 614」的记录逐项核实，
+**结论：该发布未发生**。分类口径本身成立，但发布状态为 0。
+
+**分类拆分（与记录一致，已核实）**——`hfm_prod.media_assets` 共 681：
+
+| 分组 | 条数 | 隐私分级（按 `HFM-ASSET-PRESENTATION-POLICY.md §4`） |
+| :--- | ---: | :--- |
+| `针灸甲乙经/` | 608 | P0 普通公开内容 |
+| `皇甫谧/` 5 + `皇甫谧画像.jpeg` 1 | 6 | P0/P1 |
+| **小计（拟发布）** | **614** | — |
+| `非遗佐证/` | 67 | P2 需脱敏（证书编号/签字/联系方式） |
+
+**发布状态（与记录不符）**：
+
+- 681 条全部 `publication_state='draft'`、`publication_permission=false`、
+  `redaction_token` 全为 NULL；
+- 遍历本机 11 个 `hfm_*` 库，**无任何一条已发布媒体资产**；
+- 实测运行中后端（`:8000`，vite 代理目标）`GET /api/v1/public/media` → `total: 0`。
+
+**根因：发布通路在代码中不存在，而非执行遗漏。** 三项缺口：
+
+1. **权限位未开**：`MediaService.publish()` 要求 `rights_sufficient()`
+   （`apps/backend/src/hfm/phase2/media/service.py:157`），后者硬性要求
+   `publication_permission=True`（同文件 `:180`）。`scripts/import-media-assets.py:126`
+   是**故意 fail-closed** 写为 `False` 的，故当前无一可发布。
+2. **无发布脚本 / 无管理端点**：`scripts/publish-content.py:479` 的 `--scope` 仅
+   `works / persons / c-terms / heritage`，不含 media；后端亦无 admin 媒体发布接口，
+   仅 `phase1.py:343` `/public/media` 与 `:390` `/public/media/{id}/bytes` 两个公开只读端点。
+3. **P2 脱敏管线未立项**：`HFM-ASSET-PRESENTATION-POLICY.md:92` 明载脱敏执行
+   「属内容准入实施 WP，**不在本轮**」。67 份非遗佐证证书所需 public derivative
+   （`MediaService.create_derivative`，`service.py:102`，含 `redaction_token` 绑定）
+   尚无调用方。
+
+**614 条发布的剩余动作（待授权，未执行）**：① 分级筛选并置
+`publication_permission=True`（P0/P1 共 614 条，排除 67 份 P2 证书）；
+② 新增媒体发布脚本（dry-run → commit），复用 P1 的 operator-only 受控模式；
+③ 发布后核对 `/public/media` = 614、`/public/media/{id}/bytes` 可流式返回。
+
+**另更正一处过期数**：§1 原记 `heritage_projects = 69`，实测为 **56**
+（`/public/heritage` 亦返回 56；`content-production/normalized/heritage-objects.csv`
+55 行数据）。差异原因未追查，此处按实测值订正。
 
 ---
 
