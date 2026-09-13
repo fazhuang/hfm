@@ -1,7 +1,7 @@
-"""Heritage project import tests (isolated PostgreSQL@0016).
+"""Heritage project import tests (isolated PostgreSQL@0017).
 
 Runs scripts/import-heritage.py against a disposable PostgreSQL database and
-proves: --dry-run rolls back, --commit admits all 68 heritage objects as
+proves: --dry-run rolls back, --commit admits every heritage object in the source CSV as
 heritage_projects (idempotent on re-run), and names/categories are cleaned of
 leading list numbering.
 
@@ -105,25 +105,32 @@ def _run_import(dbname: str, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+#: Data-driven: content-production/normalized/heritage-objects.csv holds this
+#: many rows, and the importer admits one project + one entity per row. It was
+#: 68 when this test was written; C1 (e7eadb5) curated the CSV down to 55 and
+#: left the literal behind.
+HERITAGE_ROWS = 55
+
+
 @_PG
 def test_dry_run_rolls_back(isolated_db: str) -> None:
     run = _run_import(isolated_db)
     assert run.returncode == 0, run.stdout + run.stderr
     assert "DRY_RUN=ROLLED_BACK" in run.stdout
-    assert "SUMMARY={'projects_created': 68" in run.stdout
+    assert f"SUMMARY={{'projects_created': {HERITAGE_ROWS}" in run.stdout
     assert _psql(isolated_db, "select count(*) from heritage_projects;") == "0"
 
 
 @_PG
-def test_commit_admits_68_and_is_idempotent(isolated_db: str) -> None:
+def test_commit_admits_all_and_is_idempotent(isolated_db: str) -> None:
     first = _run_import(isolated_db, "--commit")
     assert first.returncode == 0, first.stdout + first.stderr
     assert "IMPORT_HERITAGE=PASS" in first.stdout
-    assert _psql(isolated_db, "select count(*) from heritage_projects;") == "68"
-    assert _psql(isolated_db, "select count(*) from entities;") == "68"
+    assert _psql(isolated_db, "select count(*) from heritage_projects;") == str(HERITAGE_ROWS)
+    assert _psql(isolated_db, "select count(*) from entities;") == str(HERITAGE_ROWS)
 
     second = _run_import(isolated_db, "--commit")
     assert second.returncode == 0, second.stdout + second.stderr
     assert "EXISTS heritage" in second.stdout
-    assert _psql(isolated_db, "select count(*) from heritage_projects;") == "68"
-    assert _psql(isolated_db, "select count(*) from entities;") == "68"
+    assert _psql(isolated_db, "select count(*) from heritage_projects;") == str(HERITAGE_ROWS)
+    assert _psql(isolated_db, "select count(*) from entities;") == str(HERITAGE_ROWS)
