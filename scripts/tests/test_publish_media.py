@@ -1,7 +1,7 @@
-"""Media publication pipeline tests (isolated PostgreSQL@0016).
+"""Media publication pipeline tests (isolated PostgreSQL@0017).
 
 Runs scripts/publish-media.py against a real, disposable PostgreSQL database
-migrated to 0016 and proves: only manifest-cleared P0/P1 assets are published,
+migrated to 0017 and proves: only manifest-cleared P0/P1 assets are published,
 P2 assets stay draft, re-run is an idempotent no-op, the default dry-run rolls
 back without committing, an expected_count mismatch fails closed, a P2
 declaration is rejected at the manifest boundary, and an already-published
@@ -99,17 +99,22 @@ from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, Asyn
 from hfm.phase2.media.models import MediaAsset, MediaAssetState
 
 ROWS = [
-    ("针灸甲乙经/juan01.pdf", "application/pdf"),
-    ("针灸甲乙经/juan02.pdf", "application/pdf"),
-    ("皇甫谧/portrait.jpg", "image/jpeg"),
-    ("非遗佐证/cert.pdf", "application/pdf"),
+    ("针灸甲乙经/juan01.pdf", "application/pdf", "P0"),
+    ("针灸甲乙经/juan02.pdf", "application/pdf", "P0"),
+    ("皇甫谧/portrait.jpg", "image/jpeg", "P1"),
+    ("非遗佐证/cert.pdf", "application/pdf", "P2"),
+    # Not covered by DEFAULT_RULES: used to construct the "published but
+    # uncleared" drift state. It has to be a class that CAN be published —
+    # the P2 certificate above is now refused by the schema, which is the
+    # point of the privacy gate, so it can no longer play that role.
+    ("其他材料/extra.pdf", "application/pdf", "P0"),
 ]
 
 async def main():
     engine = create_async_engine(os.environ["HFM_DATABASE_URL"])
     factory = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
     async with factory() as s:
-        for i, (key, mime) in enumerate(ROWS):
+        for i, (key, mime, privacy) in enumerate(ROWS):
             s.add(MediaAsset(
                 object_key=key,
                 mime_type=mime,
@@ -118,6 +123,7 @@ async def main():
                 rights_holder="皇甫谧文化（客户提供）",
                 license_basis="customer_owned",
                 publication_permission=False,
+                privacy_class=privacy,
                 publication_state=MediaAssetState.DRAFT,
             ))
         await s.commit()
@@ -267,7 +273,7 @@ def test_uncleared_published_asset_is_drift(isolated_db: str, tmp_path: Path) ->
     _psql(
         isolated_db,
         "update media_assets set publication_state='published', publication_permission=true "
-        "where object_key='非遗佐证/cert.pdf';",
+        "where object_key='其他材料/extra.pdf';",
     )
     run = _run_publish(
         isolated_db,

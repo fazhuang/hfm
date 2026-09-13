@@ -19,7 +19,7 @@ from hfm.api.v1.deps import (
     require_authenticated,
     require_permission,
 )
-from hfm.core.config import MEDIA_ROOT
+from hfm.core.config import DERIVATIVE_ROOT, MEDIA_ROOT
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import (
     hash_password,
@@ -372,12 +372,21 @@ async def public_media(session: SessionDep, kind: str = "") -> dict[str, Any]:
 
 
 def _resolve_media_file(object_key: str) -> str:
-    """Resolve an object key under MEDIA_ROOT with traversal protection (sync)."""
-    root = os.path.realpath(MEDIA_ROOT)
-    target = os.path.realpath(os.path.join(root, object_key))
-    if os.path.commonpath([root, target]) != root or not os.path.isfile(target):
-        raise HTTPException(status_code=403, detail="media path outside media root")
-    return target
+    """Resolve an object key under the media roots with traversal protection (sync).
+
+    Originals live under ``MEDIA_ROOT``; generated public derivatives (redacted
+    P2 material, policy §4.1) live under ``DERIVATIVE_ROOT``. Keys never collide
+    because derivatives are written only under the derivative root, so the
+    first root that both contains the key and stays inside itself wins.
+    """
+    for root in (MEDIA_ROOT, DERIVATIVE_ROOT):
+        real_root = os.path.realpath(root)
+        target = os.path.realpath(os.path.join(real_root, object_key))
+        if os.path.commonpath([real_root, target]) != real_root:
+            raise HTTPException(status_code=403, detail="media path outside media root")
+        if os.path.isfile(target):
+            return target
+    raise HTTPException(status_code=404, detail="media bytes not found")
 
 
 @public_router.get("/media/{asset_id}/bytes")

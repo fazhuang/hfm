@@ -24,7 +24,7 @@ Validates docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md:
   - current replacement tests: machine-executed (pytest only).
 
 Migration-agnostic: no 0013/0014 literals — the framework generalizes to any
-future authorized evolution (0014 -> 0015 -> 0016 -> ...).
+future authorized evolution (0014 -> 0015 -> 0016 -> 0017 -> ...).
 """
 
 from __future__ import annotations

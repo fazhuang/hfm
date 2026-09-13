@@ -50,7 +50,12 @@ from sqlalchemy.ext.asyncio import (
 
 from hfm.models.document import ContentDocument
 
-EXPECTED_MIGRATION_HEAD = "0016"
+#: The database migration head this tool refuses to run below. It tracks the
+#: SCHEMA the import writes into, not the frozen mapping/import logic: when
+#: 0017 (P2 redaction pipeline) advanced the head, leaving this at the previous
+#: revision would make the tool refuse to run against the migrated database at
+#: all. The frozen counts below are unchanged.
+EXPECTED_MIGRATION_HEAD = "0017"
 PRODUCTION_DB = "hfm_prod"
 #: Frozen B05 package size; production authorization additionally requires
 #: ``--expected-count`` to equal this exact value.

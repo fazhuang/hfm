@@ -69,9 +69,9 @@ def test_sqlite_fresh_upgrade_bool_defaults_and_single_head(tmp_path: Path) -> N
         assert d[c] in ("0", "false", "False", "None", "NULL")
     # is_active (0010) defaults to TRUE in SQLite
     assert _user_active_default(db_file) in ("1", "true", "True")
-    # single head == 0016
+    # single head == 0017
     heads = _heads(db_file)
-    assert "0016 (head)" in heads, heads
+    assert "0017 (head)" in heads, heads
 
 
 def test_sqlite_downgrade_upgrade_chain_repeatable(tmp_path: Path) -> None:

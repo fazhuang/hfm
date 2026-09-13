@@ -48,8 +48,9 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 
 **P3 媒体发布（2026-09-14）**：`media_assets` 681 条中 **614 条已发布**
 （针灸甲乙经 608 + 皇甫谧 6），`/public/media` 实测返回 614，P3 EXIT 达成；
-剩余 **67 条非遗佐证证书**属隐私分级 P2，须先走脱敏 derivative 管线，保持
-`draft`。详见 §4 执行记录。
+剩余 **67 条非遗佐证**按隐私政策 §4 逐件分级为 **P1 28 / P2 35 / P3 4**（原记
+「67 条全为 P2」有误 —— P3 按政策不进入公共投影）。P2 脱敏管线已立项并打通
+金丝雀，`hfm_prod` 已在迁移 `0017`。详见 §4 执行记录。
 
 ---
 
@@ -65,7 +66,7 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
 | `assertions` / `evidences` / `citations` | 23 / 23 / 23 | P2/P4 证据链 ✅（citations 挂接；passage_id 空 — 传记性断言源自晋书/论文，非甲乙经正文） |
 | `heritage_projects` / `heritage_relations` | 56 / 2 | P3 非遗项目 ✅（`/public/heritage` total 56） |
-| `media_assets` | 681（published **614** / draft 67） | P3 媒体资产 ✅ 已发布（P2 证书待脱敏） |
+| `media_assets` | 681（published **614** / draft 67） | P3 媒体资产 ✅ 已发布；67 条非遗佐证分级 P1 28 / P2 35 / P3 4，P2 脱敏管线已建 |
 | `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
 
 ---
@@ -242,6 +243,76 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 桶（前端标签「人物材料」），并按「先匹配先赢」保证 `皇甫谧电影/` 仍归 `movie`。
 差分核验：681 个 key 中**仅这 4 条**由 `other → person`，其余 677 条不变；
 已发布子集现为 `paper 515 / classic 93 / person 4 / movie 2`，`other` 归零。
+
+#### 执行记录（2026-09-14）— P2 脱敏管线立项并打通金丝雀
+
+授权：分级按政策 §4 逐件判定（P3 归档不公开）；脱敏件采用 **derivative 专用
+授权位**；起步节奏为金丝雀 1 份端到端先通。
+
+**订正三处此前记录未载的事实**（均经实测）：
+
+1. **67 条不是同一个隐私级。** roadmap 原记「67 条非遗佐证属 P2」，按政策 §4 逐件
+   判定实为 **P1 28 / P2 35 / P3 4**。那 4 条 P3 正是政策 §4 点名的
+   「不进入公共投影」材料：`08申报单位资质/1、甘肃医学院事业单位法人证书复印件.pdf`、
+   `08…/2、不动产证明.pdf`、`09…/1、…备案信息采集表、认定函、承诺书.pdf`、
+   `09…/2、职业技能等级认定考评员名单.pdf`。原「67 条全走脱敏」的口径按客户自己的
+   政策是错的 —— 那会把 P3 材料推进公众投影。
+2. **脱敏件即使写出来也发布不了（代码级闸门，非「缺调用方」）。**
+   `MediaService.create_derivative`（`service.py`）把 `publication_permission`
+   从原件继承，而 67 条原件全是 `False`；`publish()` 经 `rights_sufficient()`
+   要求该位为 `True`。原件又必须保持 `False`。故 derivative 被永久锁死 ——
+   这不是「无调用方」，是**闸门在调用方之上就关着**。
+3. **扫描件比例远高于记录。** pymupdf 权威复核：60 个 PDF 中**仅 2 个**有真实
+   文字层（`07…/3、传承工作室及国医馆名单及基本情况.pdf` 482 字、
+   `07…/4、带教师承学生名单带教基医生名单.pdf` 2650 字），其余 58 个为纯图像
+   扫描件（文字层仅有 8 字节「扫描全能王 创建」水印）。
+
+**已建成的管线**（迁移 `0017`，已应用到 `hfm_prod`，头部已推进 0016→0017）：
+
+| 件 | 作用 |
+| :--- | :--- |
+| `alembic/versions/0017_p2_redaction_derivatives.py` | `privacy_class` + `derivative_publication_permission` + 5 条 CHECK |
+| `scripts/classify-heritage-evidence.py` | Stage 0 逐件分级；未匹配规则 fail-closed 归 P3 |
+| `scripts/redact-media-derivative.py` | `--detect` 提议区域 → 人工签署 → `--apply` 真脱敏 + 强制校验 |
+| `scripts/publish-media-derivatives.py` | Stage 3 发布脱敏件；字节绑定 + 原件封存复核 |
+
+**隐私模型现在是数据库不变量，不再是文档约定。** 5 条 CHECK 中三条是承重的：
+
+- `ck_media_assets_p3_never_published` —— P3 永不可发布，derivative 也不例外；
+- `ck_media_assets_p2_original_never_published` —— P2 **原件**永不可发布；
+- `ck_media_assets_derivative_grant` —— 授权位只能落在有原件的行上。
+
+已在生产 schema 上反证：`UPDATE … SET publication_state='published' WHERE
+privacy_class='P3'` → `ERROR: violates check constraint
+"ck_media_assets_p3_never_published"`。
+
+**金丝雀已验证**（`07…/4、带教师承学生名单带教基医生名单.pdf`，含 20+ 名第三方
+学生的姓名/单位/手机号）：脱敏后原件文字层可还原的 **70 处** 11 位号码降为 **0 处**
+（字符数 2654→1744），而姓名/职称/单位保留 —— 即政策要求的字段级脱敏，未因一个
+敏感字段废弃整份材料。发布后 derivative `published`（grant=t），**原件
+`draft` + `permission=false` + 无授权位**，非脱敏字节经任何公开端点不可达。
+
+**已知限制（须在推进全量前解决）**：
+
+- **扫描件无法自动定位敏感区。** tesseract `chi_sim` 在本批证书上基本只输出乱码
+  （如 `TOP0EN8008`），既定位不到证书编号/签字，也不能当校验探针。58 份扫描件的
+  区域必须由**人工看图圈定**；`--apply` 已支持任意区域，缺的是标注工作流。
+  同理，扫描区域的校验只能到「渲染像素填充校验」，弱于矢量区域的文本层精确校验，
+  脚本会打印 NOTE 明确标注这一证据等级差异。
+- **非 PDF 资产尚无通路**：5 个 docx + 1 个 doc + 1 个 jpg。这 7 件须单独处理，
+  `--detect` 目前直接跳过。
+- **一处已更正的错误依据**：本次会话曾报「`师承教育拜师大会新闻稿.docx` 正文内嵌
+  3 个手机号」。**该结论错误。** 那三个数字是 `<wp:posOffset>` 图像定位值
+  （`158750`/`47625`/`34925`），由**我自己**用「`re.sub(r"<[^>]+>","",xml)` 去标签
+  再拼接」的粗提取造成的跨元素假阳性，原文中并不存在这三个号码（`w:t` 节点内
+  无任何 11 位号码）。该文件现仍保持 P2，但依据改为「内嵌 3 张未复核图片」，
+  不再是手机号。金丝雀 `带教师承学生名单.pdf` 的号码发现不受影响 —— 它是用
+  PyMuPDF 真实文字层提取的，复核为 **70 个真实 10 位号码片段**（末位折行）
+  加「姓名/电话」表头。
+- **全量 spec 尚未签署**：金丝雀用的是测试标记，正式 `reviewed_by` 需具名。
+
+**`hfm_prod` 当前状态**：`privacy_class` — P0 608 published / P1 6 published +
+28 draft / P2 35 draft / P3 4 draft；已发布总数仍为 **614**，与迁移前一致。
 
 ---
 

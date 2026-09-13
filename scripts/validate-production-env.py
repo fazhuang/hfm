@@ -13,7 +13,7 @@ DATABASE_URL-only template shape):
   - HFM_TOKEN_SECRET must be present, non-template and different from the
     known development default;
   - optional --verify-migration connects (read-only) and proves the exact
-    Alembic current revision equals the expected head (0016) with exactly one
+    Alembic current revision equals the expected head (0017) with exactly one
     head; an unreachable or failing database is a hard failure and an
     "apply" flag can never bypass this verification (this preflight never
     applies a migration).
@@ -23,7 +23,7 @@ the variable name and the rule that failed.
 
 Usage:
     python validate-production-env.py [--env-file PATH] [--env dev|test|prod]
-        [--verify-migration] [--expected-head 0016]
+        [--verify-migration] [--expected-head 0017]
         [--backend-dir PATH]
 
 Exit codes: 0 = PASS, 1 = FAIL, 2 = usage error.
@@ -225,7 +225,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--env", choices=("dev", "test", "prod"), default="prod")
     parser.add_argument("--verify-migration", action="store_true")
-    parser.add_argument("--expected-head", default="0016")
+    parser.add_argument("--expected-head", default="0017")
     parser.add_argument(
         "--backend-dir",
         type=Path,

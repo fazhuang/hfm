@@ -77,3 +77,6 @@ content-production/batches/*/routeA-stats.json
 
 # Temporary automation artifacts
 .playwright-cli/
+
+# Generated public derivatives (redacted P2 material, policy §4.1)
+public-derivatives/

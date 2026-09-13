@@ -180,6 +180,16 @@ def _plan(assets: list[MediaAsset], manifest: dict[str, Any]) -> tuple[list[Medi
             if key in cleared:
                 errors.append(f"rules[{index}] re-clears {key} (duplicate coverage)")
                 continue
+            # The manifest's declared class must match the registry's. A rule
+            # that says P0 while the row says P2 is drift: the row would be
+            # refused by the schema anyway, but silently publishing it under a
+            # P0 rule would misreport what was cleared.
+            if str(asset.privacy_class) != rule["privacy_class"]:
+                errors.append(
+                    f"{key} is registered {asset.privacy_class} but rules[{index}] "
+                    f"clears it as {rule['privacy_class']} — resolve the class drift"
+                )
+                continue
             cleared[key] = asset
 
     # Rights precondition: publication is impossible without holder + basis.
@@ -318,11 +328,11 @@ def main(argv: list[str] | None = None) -> int:
 
     db_url = env.get("HFM_DATABASE_URL", "")
     if not args.allow_sqlite:
-        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0016")
+        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
         if migration_errors:
             for reason in migration_errors:
                 print(f"MIGRATION_VERIFY=FAIL ({reason})")
-            print("PUBLISH_MEDIA=FAIL (database must be migrated at 0016)")
+            print("PUBLISH_MEDIA=FAIL (database must be migrated at 0017)")
             return 1
 
     try:

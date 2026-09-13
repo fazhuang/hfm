@@ -176,11 +176,11 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     db_url = env.get("HFM_DATABASE_URL", "")
-    migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0016")
+    migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
     if migration_errors:
         for reason in migration_errors:
             print(f"MIGRATION_VERIFY=FAIL ({reason})")
-        print("IMPORT_MEDIA_ASSETS=FAIL (database must be migrated at 0016)")
+        print("IMPORT_MEDIA_ASSETS=FAIL (database must be migrated at 0017)")
         return 1
 
     try:

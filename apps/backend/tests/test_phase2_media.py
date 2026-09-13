@@ -22,7 +22,13 @@ from datetime import date
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from hfm.phase2.media import MediaAsset, MediaAssetState, MediaRights, MediaService
+from hfm.phase2.media import (
+    MediaAsset,
+    MediaAssetState,
+    MediaRights,
+    MediaService,
+    PrivacyClass,
+)
 from hfm.phase2.media.service import (
     compute_sha256,
     hash_matches,
@@ -443,10 +449,10 @@ async def test_p106_derivative_bytes_independently_verified(media: MediaService)
     assert derivative.sha256 != original.sha256
 
 
-def test_p2_current_migration_head_0016() -> None:
+def test_p2_current_migration_head_0017() -> None:
     """Frontier-2 current-state migration verification (not an accepted-file
     modification): the authorized P2-05 schema migration leaves a single
-    linear head 0016 with revisions 0001..0016."""
+    linear head 0017 with revisions 0001..0017."""
     import pathlib
 
     versions = pathlib.Path(__file__).resolve().parents[1] / "alembic" / "versions"
@@ -456,8 +462,8 @@ def test_p2_current_migration_head_0016() -> None:
         match = re.search(r'revision\s*=\s*["\']([^"\']+)["\']', text)
         if match:
             revisions.add(match.group(1))
-    assert revisions == {f"{i:04d}" for i in range(1, 17)}
-    assert "0016" in revisions
+    assert revisions == {f"{i:04d}" for i in range(1, 18)}
+    assert "0017" in revisions
 
 
 def test_public_category_person_material() -> None:
@@ -483,3 +489,224 @@ def test_public_category_existing_buckets_unchanged() -> None:
     assert public_category("针灸甲乙经/论著/版本/某版本.pdf") == "classic"
     assert public_category("非遗佐证/证书/某证书.pdf") == "other"
     assert public_category("unknown.pdf") == "other"
+
+
+# ------------------------------------------------- P2 redaction pipeline (0017)
+
+P2_CERT = "非遗佐证/09职业技能等级认定资质/2、职业技能等级认定考评员名单.pdf"
+P2_DERIV = "非遗佐证-脱敏/09职业技能等级认定资质/2、职业技能等级认定考评员名单.pdf"
+
+
+async def _ingest_p2(media: MediaService, object_key: str = P2_CERT) -> MediaAsset:
+    """Ingest a P2 asset the way ``import-media-assets.py`` does: fail-closed."""
+    return await media.ingest(
+        object_key=object_key,
+        mime_type="application/pdf",
+        byte_size=4096,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="皇甫谧文化（客户提供）",
+            license_basis="customer_owned",
+            publication_permission=False,
+            privacy_class=PrivacyClass.P2,
+        ),
+    )
+
+
+async def _redacted_derivative(
+    media: MediaService, *, object_key: str = P2_DERIV, privacy_class: str = PrivacyClass.P2
+) -> MediaAsset:
+    original = await _ingest_p2(media)
+    return await media.create_derivative(
+        original_object_key=original.object_key,
+        object_key=object_key,
+        mime_type="application/pdf",
+        byte_size=2048,
+        sha256=SHA_D,
+        redaction_rule="rasterize-and-mask",
+    )
+
+
+async def test_p2_original_cannot_carry_publication_permission(media: MediaService) -> None:
+    """P2 material can never be granted direct publication at ingestion."""
+    try:
+        await media.ingest(
+            object_key=P2_CERT,
+            mime_type="application/pdf",
+            byte_size=1,
+            sha256=SHA_A,
+            rights=MediaRights(
+                holder="皇甫谧文化（客户提供）",
+                license_basis="customer_owned",
+                publication_permission=True,
+                privacy_class=PrivacyClass.P2,
+            ),
+        )
+        raise AssertionError("P2 material must not accept a publication permission")
+    except ValueError:
+        pass
+
+
+async def test_p2_original_cannot_be_published(media: MediaService) -> None:
+    """No route publishes a P2 original — even carrying a stray grant.
+
+    Either the schema rejects the stray grant outright or the service refuses
+    the publication; both are fail-closed, so the test accepts whichever
+    fires first.
+    """
+    from sqlalchemy.exc import IntegrityError
+
+    original = await _ingest_p2(media)
+    original.publication_permission = True  # simulate a stray grant
+    try:
+        await media.publish(original.object_key)
+        raise AssertionError("a P2 original must never be publishable")
+    except (ValueError, IntegrityError):
+        pass
+    assert original.publication_state == MediaAssetState.DRAFT
+
+
+async def test_p2_derivative_publishes_only_after_explicit_grant(media: MediaService) -> None:
+    """The derivative inherits nothing publishable; the grant is the gate."""
+    derivative = await _redacted_derivative(media)
+    assert derivative.publication_permission is False
+    assert derivative.derivative_publication_permission is False
+    assert not rights_sufficient(derivative)
+    try:
+        await media.publish(derivative.object_key)
+        raise AssertionError("an ungranted derivative must not publish")
+    except ValueError:
+        pass
+
+    granted = await media.grant_derivative_publication(derivative.object_key)
+    assert rights_sufficient(granted)
+    published = await media.publish(granted.object_key)
+    assert published.publication_state == MediaAssetState.PUBLISHED
+
+
+async def test_derivative_inherits_privacy_class_and_original_stays_draft(
+    media: MediaService,
+) -> None:
+    """Publishing the redacted derivative never moves the original."""
+    original = await _ingest_p2(media)
+    derivative = await media.create_derivative(
+        original_object_key=original.object_key,
+        object_key=P2_DERIV,
+        mime_type="application/pdf",
+        byte_size=2048,
+        sha256=SHA_D,
+        redaction_rule="rasterize-and-mask",
+    )
+    assert derivative.privacy_class == PrivacyClass.P2
+    await media.grant_derivative_publication(derivative.object_key)
+    await media.publish(derivative.object_key)
+
+    assert original.publication_state == MediaAssetState.DRAFT
+    assert original.publication_permission is False
+    projection = await media.public_projection()
+    assert [a.object_key for a in projection] == [P2_DERIV]
+
+
+async def test_grant_rejects_anything_that_is_not_a_redacted_derivative(
+    media: MediaService,
+) -> None:
+    original = await _ingest_p2(media)
+    try:
+        await media.grant_derivative_publication(original.object_key)
+        raise AssertionError("an original must never receive a derivative grant")
+    except ValueError:
+        pass
+
+    derivative = await media.create_derivative(
+        original_object_key=original.object_key,
+        object_key=P2_DERIV,
+        mime_type="application/pdf",
+        byte_size=2048,
+        sha256=SHA_D,
+        redaction_rule="rasterize-and-mask",
+    )
+    derivative.redaction_token = None
+    try:
+        await media.grant_derivative_publication(derivative.object_key)
+        raise AssertionError("a derivative without a redaction token must not be granted")
+    except ValueError:
+        pass
+
+
+async def test_p3_is_never_publishable_by_any_route(media: MediaService) -> None:
+    """P3 material (法人证照 / 不动产证明 / 考评员名单) stays out of the
+    public projection even as a derivative."""
+    original = await media.ingest(
+        object_key="非遗佐证/08申报单位资质/2、不动产证明.pdf",
+        mime_type="application/pdf",
+        byte_size=4096,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="皇甫谧文化（客户提供）",
+            license_basis="customer_owned",
+            privacy_class=PrivacyClass.P3,
+        ),
+    )
+    derivative = await media.create_derivative(
+        original_object_key=original.object_key,
+        object_key="非遗佐证-脱敏/08申报单位资质/2、不动产证明.pdf",
+        mime_type="application/pdf",
+        byte_size=2048,
+        sha256=SHA_D,
+        redaction_rule="rasterize-and-mask",
+    )
+    try:
+        await media.grant_derivative_publication(derivative.object_key)
+        raise AssertionError("P3 must not receive a publication grant")
+    except ValueError:
+        pass
+    try:
+        await media.publish(derivative.object_key)
+        raise AssertionError("P3 must never publish")
+    except ValueError:
+        pass
+    assert derivative.publication_state == MediaAssetState.DRAFT
+
+
+async def test_db_check_p2_original_never_published(
+    media: MediaService, session: AsyncSession
+) -> None:
+    """The schema — not just the service — refuses a published P2 original."""
+    from sqlalchemy import text
+    from sqlalchemy.exc import IntegrityError
+
+    original = await _ingest_p2(media)
+    try:
+        await session.execute(
+            text(
+                "UPDATE media_assets SET publication_state = 'published', "
+                "publication_permission = 0 WHERE object_key = :k"
+            ),
+            {"k": original.object_key},
+        )
+        await session.flush()
+        raise AssertionError("the DB must reject a published P2 original")
+    except IntegrityError:
+        pass
+
+
+async def test_db_check_derivative_grant_requires_an_original(
+    media: MediaService, session: AsyncSession
+) -> None:
+    """The schema refuses a derivative grant on a row without an original."""
+    from sqlalchemy import text
+    from sqlalchemy.exc import IntegrityError
+
+    original = await _ingest_p2(media)
+    try:
+        await session.execute(
+            text(
+                "UPDATE media_assets SET derivative_publication_permission = 1 "
+                "WHERE object_key = :k"
+            ),
+            {"k": original.object_key},
+        )
+        await session.flush()
+        raise AssertionError("the DB must reject a grant on an original")
+    except IntegrityError:
+        pass

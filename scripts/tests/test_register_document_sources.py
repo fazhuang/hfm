@@ -1,4 +1,4 @@
-"""Document source registration tests (isolated PostgreSQL@0016).
+"""Document source registration tests (isolated PostgreSQL@0017).
 
 Runs scripts/register-document-sources.py against a real, disposable
 PostgreSQL database migrated to head and proves: --dry-run rolls back without

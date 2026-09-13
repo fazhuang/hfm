@@ -8,7 +8,7 @@
 # is unreachable (or not at the expected revision) is detected as FAIL.
 #
 #   database-dependency-probe.sh --api-base URL --db-url DSN
-#       [--backend-dir DIR] [--expected-head 0016]
+#       [--backend-dir DIR] [--expected-head 0017]
 #
 # Output lines: PROBE_PROCESS=UP|DOWN, PROBE_DATABASE=OK|FAIL, PROBE_RESULT=PASS|FAIL.
 set -euo pipefail
@@ -17,7 +17,7 @@ PYTHON="$REPO_ROOT/apps/backend/.venv/bin/python"
 API_BASE=""
 DB_URL=""
 BACKEND_DIR="$REPO_ROOT/apps/backend"
-EXPECTED_HEAD="0016"
+EXPECTED_HEAD="0017"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in

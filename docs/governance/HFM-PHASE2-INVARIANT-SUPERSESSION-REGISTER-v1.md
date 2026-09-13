@@ -62,7 +62,7 @@ HISTORICAL_TEST: apps/backend/tests/test_phase2_guardrails.py::test_migration_in
 INTRODUCED_AT_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
 INTRODUCED_AT_ROLE: P2_00_ACCEPTANCE_BASELINE
 HISTORICAL_EXPECTATION: P2-00 acceptance-time migration literal head == 0013 ("0013" in migration_heads; guardrails.migration_ok expects revisions 0001..0013)
-SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0016-HEAD
+SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0017-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
@@ -70,7 +70,7 @@ AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
 AUTHORITY_RULE: ALLOWED_MODULE
 AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
-CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0016
+CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0017
 REPLAY_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
 REPLAY_BASELINE_ROLE: P2_00_ACCEPTANCE_BASELINE
 REPLAY_KIND: PYTEST
@@ -88,7 +88,7 @@ HISTORICAL_TEST: apps/backend/tests/test_phase2_guardrails.py::test_migration_in
 INTRODUCED_AT_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
 INTRODUCED_AT_ROLE: P2_00_ACCEPTANCE_BASELINE
 HISTORICAL_EXPECTATION: P2-00 acceptance-time migration revisions exclude 0014 ("0014" not in migration_revisions)
-SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0016-HEAD
+SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0017-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
@@ -96,7 +96,7 @@ AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
 AUTHORITY_RULE: ALLOWED_MODULE
 AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
-CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0016
+CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0017
 REPLAY_BASELINE: bd0d39e76fe5a8289006664514af9250a7f84f14
 REPLAY_BASELINE_ROLE: P2_00_ACCEPTANCE_BASELINE
 REPLAY_KIND: PYTEST
@@ -114,7 +114,7 @@ HISTORICAL_TEST: apps/backend/tests/test_phase1_research_workspace.py::test_migr
 INTRODUCED_AT_BASELINE: c17be40be6f055498fde11c0042e71d3a1056a7c
 INTRODUCED_AT_ROLE: PHASE1_COMPLETION_BASELINE
 HISTORICAL_EXPECTATION: Phase-1 research workspace single-head assertion: alembic heads == "0013 (head)"
-SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0016-HEAD
+SUPERSEDED_BY_ASSERTION_ID: ASN-SG-MIG-0017-HEAD
 AUTHORITY_TYPE: WP_CONTRACT
 AUTHORITY_ID: P2-05
 AUTHORITY_DOCUMENT: docs/governance/HFM-PHASE2-WORK-PACKAGE-CONTRACT-v1.md
@@ -122,7 +122,7 @@ AUTHORITY_LOCATOR: ## P2-05 Media & Rights Lifecycle
 AUTHORITY_RULE: ALLOWED_MODULE
 AUTHORITY_VALUE: apps/backend/alembic/versions/00XX_p2_*
 EFFECTIVE_FROM: b53c897cfffd287516ecb1ed230df2f8f83687d9
-CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0016
+CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0017
 REPLAY_BASELINE: c17be40be6f055498fde11c0042e71d3a1056a7c
 REPLAY_BASELINE_ROLE: PHASE1_COMPLETION_BASELINE
 REPLAY_KIND: PYTEST
@@ -130,27 +130,27 @@ REPLAY_TEST: tests/test_phase1_research_workspace.py::test_migration_0013_upgrad
 RATIONALE: The literal head=="0013" expectation is a Phase-1 acceptance-time snapshot; the P2-05-authorized migration 0014 advances the single linear head to 0014 while preserving the single-head permanent invariant (ASN-P200-SINGLE-HEAD).
 ```
 
-### ASN-SG-MIG-0016-HEAD
+### ASN-SG-MIG-0017-HEAD
 
 ```
-ASSERTION_ID: ASN-SG-MIG-0016-HEAD
+ASSERTION_ID: ASN-SG-MIG-0017-HEAD
 CLASS: C
 STATUS: ACTIVE
 HISTORICAL_TEST: N/A (current-state assertion, not a historical test)
-INTRODUCED_AT_BASELINE: 03f1624dd47377129f291dde38a599eae8bb8ea5
-INTRODUCED_AT_ROLE: P4_RESEARCH_ANNOTATION_MIGRATION
+INTRODUCED_AT_BASELINE: affa612615a239abd2c24f486ea91bef3b8de049
+INTRODUCED_AT_ROLE: P2_REDACTION_PIPELINE_MIGRATION
 HISTORICAL_EXPECTATION: N/A
 SUPERSEDED_BY_ASSERTION_ID: N/A
 AUTHORITY_TYPE: N/A
 AUTHORITY_ID: N/A
 AUTHORITY_DOCUMENT: N/A
-EFFECTIVE_FROM: 03f1624dd47377129f291dde38a599eae8bb8ea5
-CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0016
+EFFECTIVE_FROM: affa612615a239abd2c24f486ea91bef3b8de049
+CURRENT_REPLACEMENT_TEST: apps/backend/tests/test_phase2_media.py::test_p2_current_migration_head_0017
 REPLAY_BASELINE: N/A
 REPLAY_BASELINE_ROLE: N/A
 REPLAY_KIND: N/A
 REPLAY_TEST: N/A
-RATIONALE: Current-state replacement: single linear Alembic head 0016, revisions 0001..0016, chain linear, authorized by governed supersession 0015->0016 (P4 research-annotations schema evolution); HFB M0-M7 executed = 0.
+RATIONALE: Current-state replacement: single linear Alembic head 0017, revisions 0001..0017, chain linear, authorized by governed supersession 0016->0017 (P2 redaction-pipeline schema evolution: privacy_class + derivative publication grant, making the policy §4 P2/P3 publication gates a database invariant); HFB M0-M7 executed = 0.
 ```
 
 ### ASN-P200-SINGLE-HEAD
@@ -307,4 +307,4 @@ DECLARED_SUPERSEDED: 3
 The verifier derives counts mechanically from the parsed records and requires
 `actual rows = declared total`, `category sum = total`, `status sum = total`.
 Supersession chain: ASN-P200-MIG-0013-HEAD, ASN-P200-MIG-NO0014, ASN-P1RW-MIG-0013-HEAD
-→ ASN-SG-MIG-0016-HEAD (no cycles; each resolves to exactly one ACTIVE terminal).
+→ ASN-SG-MIG-0017-HEAD (no cycles; each resolves to exactly one ACTIVE terminal).
