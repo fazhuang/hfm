@@ -42,8 +42,9 @@ C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗�
 篇章段落已入库（维基文库宋校本·公有领域：`chapters` 146 = 12 卷 + 134 篇、
 `passages` 965 段；已知缺口卷03 篇八/九/十 + 卷02 篇五标题，待补录）；30 条
 C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/单条端点。
-**P2 EXIT 已达成**。剩余未完成：`citations`（待 passages 挂接）/ `versions`
-（具体文本版本层，待 OCR 证据）。详见 §3/§4。
+**P2 EXIT 已达成**；`citations` 23 条已挂接（断言↔证据 + 原文引用，passage_id
+空 — 传记性断言源自晋书/论文，非甲乙经正文）。剩余未完成：`versions`
+（具体文本版本层，待 OCR 证据）与卷03 篇八/九/十补录。详见 §3/§4。
 
 ---
 
@@ -57,7 +58,7 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 | `documents` | 667（593 Route A + 66 Route B OCR；8 非遗佐证照片/证书无文字层） | P2 全文落地 ✅ 基本完成 |
 | `chapters` / `passages` | 146 / 965（134 篇；卷03 缺 3 篇待补） | P2 《针灸甲乙经》篇章段落 ✅ 基本完成 |
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
-| `assertions` / `evidences` / `citations` | 23 / 23 / 0 | P2/P4 证据链 ✅（citations 待 passages） |
+| `assertions` / `evidences` / `citations` | 23 / 23 / 23 | P2/P4 证据链 ✅（citations 挂接；passage_id 空 — 传记性断言源自晋书/论文，非甲乙经正文） |
 | `heritage_projects` / `heritage_relations` | 69 / 2 | P3 非遗项目 ✅ |
 | `media_assets` | 681 | P3 媒体资产 ✅ |
 | `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
