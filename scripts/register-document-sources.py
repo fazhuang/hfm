@@ -204,7 +204,12 @@ def main(argv: list[str] | None = None) -> int:
         if not args.env_file.is_file():
             print(f"ENV_FILE=FAIL (not found: {args.env_file.name})")
             return 1
-        env.update(validator.parse_env_file(args.env_file))
+        try:
+            env = validator.merge_env(env, args.env_file)
+        except validator.EnvConflictError as exc:
+            print(f"ENV_FILE=FAIL ({exc})")
+            return 1
+    print(f"DB_TARGET={validator.describe_db_target(env)}")
 
     environment = "prod" if not args.test_mode else env.get("HFM_ENV", "test")
     errors = validator.validate_env(env, environment=environment, allow_sqlite=False)

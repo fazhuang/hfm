@@ -261,3 +261,71 @@ def test_deploy_gate_rejects_template_prod_config(tmp_path: Path) -> None:
     assert "MIGRATION_GATE=FAIL" in run.stdout
     # Redacted: the placeholder value itself never appears after the FAIL line.
     assert "CHANGEME:CHANGEME" not in run.stdout.split("MIGRATION_GATE=FAIL")[1]
+
+
+# --------------------------------------------------- operator env-file guardrail
+
+
+def _env_file(tmp_path: Path, values: dict[str, str]) -> Path:
+    path = tmp_path / "operator.env"
+    path.write_text(
+        "\n".join(f"{k}={v}" for k, v in values.items()) + "\n", encoding="utf-8"
+    )
+    return path
+
+
+def test_env_file_may_not_silently_override_an_explicit_database_url(tmp_path: Path) -> None:
+    """The bug this guards: a run aimed at a scratch database landing on prod.
+
+    The operator sets HFM_DATABASE_URL, passes the production --env-file, and
+    the file used to replace it with nothing said. Now the two must agree.
+    """
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_prod"})
+    base = {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_scratch"}
+
+    try:
+        validator.merge_env(base, env_file)
+        raise AssertionError("a differing HFM_DATABASE_URL must not be silently overridden")
+    except validator.EnvConflictError as exc:
+        assert "HFM_DATABASE_URL" in str(exc)
+        # Values may carry credentials, so the message must not echo them.
+        assert "hfm_prod" not in str(exc) and "hfm_scratch" not in str(exc)
+
+
+def test_env_file_conflict_message_names_only_keys(tmp_path: Path) -> None:
+    env_file = _env_file(
+        tmp_path,
+        {"HFM_DATABASE_URL": "postgresql+asyncpg://u:pw@db/hfm_prod", "HFM_ENV": "prod"},
+    )
+    base = {"HFM_DATABASE_URL": "postgresql+asyncpg://u:pw@db/hfm_other", "HFM_ENV": "dev"}
+    try:
+        validator.merge_env(base, env_file)
+        raise AssertionError("expected a conflict")
+    except validator.EnvConflictError as exc:
+        assert "pw" not in str(exc)
+        assert "HFM_DATABASE_URL" in str(exc) and "HFM_ENV" in str(exc)
+
+
+def test_env_file_fills_keys_absent_from_the_environment(tmp_path: Path) -> None:
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_prod"})
+    merged = validator.merge_env({}, env_file)
+    assert merged["HFM_DATABASE_URL"] == "postgresql+asyncpg://db/hfm_prod"
+
+
+def test_env_file_agreeing_with_the_environment_is_allowed(tmp_path: Path) -> None:
+    """The documented invocation sets both to the same DSN; that must keep working."""
+    dsn = "postgresql+asyncpg://db/hfm_prod"
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": dsn})
+    assert validator.merge_env({"HFM_DATABASE_URL": dsn}, env_file)["HFM_DATABASE_URL"] == dsn
+
+
+def test_db_target_never_echoes_credentials() -> None:
+    described = validator.describe_db_target(
+        {"HFM_DATABASE_URL": "postgresql+asyncpg://hfm_user:S3cr3t@db.internal:5432/hfm_prod"}
+    )
+    assert described == "postgresql+asyncpg://db.internal:5432/hfm_prod"
+    assert "S3cr3t" not in described and "hfm_user" not in described
+
+
+def test_db_target_reports_a_missing_url_rather_than_guessing() -> None:
+    assert "not set" in validator.describe_db_target({})

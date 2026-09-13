@@ -87,6 +87,64 @@ def parse_env_file(path: Path) -> dict[str, str]:
     return values
 
 
+class EnvConflictError(ValueError):
+    """An operator env file would silently override an explicit environment variable."""
+
+
+#: Keys where a silent override changes which system the run touches. Overriding
+#: HFM_DATABASE_URL from a file is how a run aimed at a scratch database landed
+#: on production: the operator set the variable, passed the production
+#: ``--env-file``, and the file's value replaced it with nothing said.
+GUARDED_KEYS: tuple[str, ...] = ("HFM_DATABASE_URL", "HFM_ENV")
+
+
+def merge_env(base: dict[str, str], env_file: Path) -> dict[str, str]:
+    """Merge an operator env file over the process environment.
+
+    The file used to win unconditionally. It now refuses to override a guarded
+    key that the process environment already sets to a *different* value: the
+    operator must pick one rather than discover the target from the damage.
+    Identical values stay allowed, because the documented invocations pass both
+    the variable and the file with the same DSN.
+
+    Raises :class:`EnvConflictError` naming the keys only — never the values,
+    which may carry credentials.
+    """
+    from_file = parse_env_file(env_file)
+    conflicts = [
+        key
+        for key in GUARDED_KEYS
+        if key in base and key in from_file and base[key] != from_file[key]
+    ]
+    if conflicts:
+        raise EnvConflictError(
+            f"{env_file.name} would override {', '.join(conflicts)} already set in the "
+            f"environment with a different value — unset one, or make them agree "
+            f"(values are not shown here because they may carry credentials)"
+        )
+    merged = dict(base)
+    merged.update(from_file)
+    return merged
+
+
+def describe_db_target(env: dict[str, str]) -> str:
+    """Resolved database target as ``scheme://host:port/database``, never credentials.
+
+    Printed by every operator script so the target of a run is visible before
+    it does anything, rather than inferred afterwards.
+    """
+    url = env.get("HFM_DATABASE_URL", "")
+    if not url:
+        return "(HFM_DATABASE_URL not set — the application would use its local default)"
+    parts = urlsplit(url)
+    if not parts.hostname:  # sqlite and other path-shaped DSNs
+        return f"{parts.scheme}://{parts.path}"
+    netloc = parts.hostname
+    if parts.port:
+        netloc = f"{netloc}:{parts.port}"
+    return f"{parts.scheme}://{netloc}{parts.path}"
+
+
 def _looks_template(value: str) -> bool:
     lowered = value.lower()
     return any(marker in lowered for marker in _TEMPLATE_MARKERS)
@@ -241,7 +299,12 @@ def main(argv: list[str] | None = None) -> int:
         if not args.env_file.is_file():
             print(f"ENV_FILE=FAIL (not found: {args.env_file.name})")
             return 1
-        env.update(parse_env_file(args.env_file))
+        try:
+            env = merge_env(env, args.env_file)
+        except EnvConflictError as exc:
+            print(f"ENV_FILE=FAIL ({exc})")
+            return 1
+    print(f"DB_TARGET={describe_db_target(env)}")
 
     errors = validate_env(env, environment=args.env, allow_sqlite=args.allow_sqlite)
     for reason in errors:
