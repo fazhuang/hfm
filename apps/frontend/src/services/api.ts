@@ -75,9 +75,15 @@ export async function fetchPublicHome(signal?: AbortSignal): Promise<HomeProject
   return unwrap<HomeProjection>(body)
 }
 
-/** Published works list. */
-export async function fetchPublicWorks(page = 1): Promise<{ works: WorkSummary[]; total: number }> {
-  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works?page=${page}&page_size=20`)
+/** Published works list (page ≥ 1; optional abort signal for graceful-degradation timeouts). */
+export async function fetchPublicWorks(
+  page = 1,
+  signal?: AbortSignal,
+): Promise<{ works: WorkSummary[]; total: number }> {
+  const body = await publicGet<unknown>(
+    `${PUBLIC_NAMESPACE}/works?page=${page}&page_size=20`,
+    signal,
+  )
   return unwrap<{ works: WorkSummary[]; total: number }>(body)
 }
 
