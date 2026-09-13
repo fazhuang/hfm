@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "status": "DRAFT — 待授权方签批；签批前不得以 --commit 运行",
-  "basis": "客户授权公开发布（docs/design/HFM-ASSET-PRESENTATION-POLICY.md §4：P0 普通公开内容 / P1 职业·学术·公共身份信息 正常公开）。P2（非遗佐证证书，需脱敏 derivative）与 P3 不在本清单内，保持 draft。",
+  "status": "SIGNED — 授权方 2026-09-14 批准（分两步执行：金丝雀 6 条 → 全量 614 条）",
+  "basis": "客户声明授权公开发布（docs/design/HFM-ASSET-PRESENTATION-POLICY.md §0：CUSTOMER_PROVIDED = TRUE → PUBLICATION_AUTHORIZATION = GRANTED）；按 §4 隐私模型，仅 P0（普通公开内容）与 P1（职业·学术·公共身份信息）直接公开。P2（非遗佐证证书，需脱敏 derivative，§4.1）与 P3 不在本清单内，保持 draft。",
   "rules": [
     {
       "privacy_class": "P0",

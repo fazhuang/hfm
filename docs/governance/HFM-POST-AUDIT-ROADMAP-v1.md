@@ -46,6 +46,11 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 空 — 传记性断言源自晋书/论文，非甲乙经正文）。剩余未完成：`versions`
 （具体文本版本层，待 OCR 证据）。详见 §3/§4。
 
+**P3 媒体发布（2026-09-14）**：`media_assets` 681 条中 **614 条已发布**
+（针灸甲乙经 608 + 皇甫谧 6），`/public/media` 实测返回 614，P3 EXIT 达成；
+剩余 **67 条非遗佐证证书**属隐私分级 P2，须先走脱敏 derivative 管线，保持
+`draft`。详见 §4 执行记录。
+
 ---
 
 ## 1. 关键事实基线（来自审计，用于每阶段验收对照）
@@ -60,7 +65,7 @@ C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
 | `assertions` / `evidences` / `citations` | 23 / 23 / 23 | P2/P4 证据链 ✅（citations 挂接；passage_id 空 — 传记性断言源自晋书/论文，非甲乙经正文） |
 | `heritage_projects` / `heritage_relations` | 56 / 2 | P3 非遗项目 ✅（`/public/heritage` total 56） |
-| `media_assets` | 681（**published 0**，全 `draft`） | P3 媒体资产 ⚠️ 已入库未发布 |
+| `media_assets` | 681（published **614** / draft 67） | P3 媒体资产 ✅ 已发布（P2 证书待脱敏） |
 | `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
 
 ---
@@ -164,7 +169,8 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 - 非遗佐证材料已就绪（`hfmzl/非遗佐证/` 68 文件，其中 67 个为媒体文件 +
   1 个 `.lnk` 快捷方式被导入器跳过）；媒体版权模型（P2-05）已完整。
 - 工作项：非遗项目 + 传承谱系入库；媒体资产（图片/视频/PDF）带 rights 元数据入库。
-- **ENTRY**：P1 完成；**EXIT**：`/public/heritage` `/public/media` 返回生产数据。
+- **ENTRY**：P1 完成；**EXIT**：`/public/heritage` `/public/media` 返回生产数据
+  ✅ **已达成**（2026-09-14：`/public/heritage` total 56；`/public/media` total 614）。
 
 #### 核实记录（2026-09-14）— 更正「媒体资产已发布」的错误记录
 
@@ -209,6 +215,31 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 **另更正一处过期数**：§1 原记 `heritage_projects = 69`，实测为 **56**
 （`/public/heritage` 亦返回 56；`content-production/normalized/heritage-objects.csv`
 55 行数据）。差异原因未追查，此处按实测值订正。
+
+#### 执行记录（2026-09-14）— 614 条已发布
+
+经授权方批准后执行（分两步：金丝雀 6 条 → 全量 614 条）。发布通路为新增的
+`scripts/publish-media.py`，授权依据
+`content-production/07-review/media-publication-clearance.json`（客户声明授权，
+`HFM-ASSET-PRESENTATION-POLICY.md` §0）。
+
+| 阶段 | 内容 | 结果 |
+| :--- | :--- | :--- |
+| 金丝雀 | `皇甫谧/` 5 + `皇甫谧画像.jpeg` 1 | 6 条 published；字节接口逐条核验通过（含 1GB 影片，sha256/content-type 全吻合） |
+| 全量 | 补发 `针灸甲乙经/` 608 条 | 608 条 published（6 条 already_published），合计 **614** |
+
+**发布后实测**：`/public/media` → `total: 614`
+（`paper 515 / classic 93 / movie 2 / other 4`）；随机抽检 6 条新发布资产，
+`/public/media/{id}/bytes` 字节 sha256 与 MIME 全部吻合；全库
+`published 614 / draft 67`。
+
+**仍未发布**：`非遗佐证/` **67 条**（`draft`，`publication_permission` 全 false）
+—— 属 P2，须先按 §4.1 生成脱敏 public derivative，管线尚未立项（见下）。
+
+**遗留项（不阻塞）**：4 条资产在 `/public/media` 落入 `other` 桶
+（`皇甫谧画像.jpeg`、`皇甫谧/{其传,其言,后论}/*.docx`）—— 该端点按路径子串
+分类（`api/v1/phase1.py:353-361`），不识别人物材料目录。属展示层问题，待定是否
+补分类分支。
 
 ---
 
