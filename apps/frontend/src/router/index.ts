@@ -5,6 +5,7 @@ import AdminLayout from '../layouts/AdminLayout.vue'
 import HomeView from '../views/HomeView.vue'
 import ReaderView from '../views/reader/ReaderView.vue'
 import ReaderDocView from '../views/reader/ReaderDocView.vue'
+import JiayiStructureView from '../views/reader/JiayiStructureView.vue'
 import SearchView from '../views/search/SearchView.vue'
 import HeritageView from '../views/heritage/HeritageView.vue'
 import MediaLibraryView from '../views/library/MediaLibraryView.vue'
@@ -41,6 +42,7 @@ export const routes: RouteRecordRaw[] = [
       { path: '', name: 'home', component: HomeView },
       { path: 'reader', name: 'reader', component: ReaderView },
       { path: 'reader/:id', name: 'reader-doc', component: ReaderDocView },
+      { path: 'jiayi/reader', name: 'jiayi-reader', component: JiayiStructureView },
       { path: 'search', name: 'search', component: SearchView },
       { path: 'heritage', name: 'heritage', component: HeritageView },
       { path: 'library', name: 'library', component: MediaLibraryView },

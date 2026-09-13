@@ -19,6 +19,7 @@ import type {
   WorkSummary,
 } from '../types/public'
 import type { MediaAssetItem, MediaCategory } from '../types/media'
+import type { WorkStructure } from '../types/reader'
 
 /** Accepted public namespace prefix. */
 export const PUBLIC_NAMESPACE = '/api/v1/public'
@@ -105,6 +106,12 @@ export async function fetchPublicWorkEditions(
 ): Promise<{ work_id: string; editions: EditionSummary[] }> {
   const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works/${workId}/editions`)
   return unwrap<{ work_id: string; editions: EditionSummary[] }>(body)
+}
+
+/** Nested structure (卷 → 篇 → 段) of a published work (P4 reader). */
+export async function fetchPublicWorkStructure(workId: string): Promise<WorkStructure> {
+  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works/${workId}/structure`)
+  return unwrap<WorkStructure>(body)
 }
 
 /** Published person detail. */

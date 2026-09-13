@@ -44,3 +44,24 @@ export async function searchPublished(query: string): Promise<SearchResultItem[]
   )
   return result.items.filter((item) => item.publicationState === 'published')
 }
+
+/** Reader resolve projection (P1-07) — the fields the P4 reader uses. */
+export interface ResolvedPassage {
+  passage_id: string
+  quotation: string
+  translation: string | null
+  notes: string | null
+  chapter: { chapter_id: string; title: string; order: number }
+  work: { work_id: string | null; title: string | null }
+  publication_status: string
+}
+
+/** Resolve a passage to its full text + context by id (public projection). */
+export async function resolvePassageById(passageId: string): Promise<ResolvedPassage> {
+  const params = new URLSearchParams({ passage_id: passageId })
+  const body = await publicGet<{ success?: boolean; data?: ResolvedPassage }>(
+    `/api/v1/public/reader/resolve?${params.toString()}`,
+  )
+  if (body && typeof body === 'object' && 'data' in body && body.data) return body.data
+  return body as unknown as ResolvedPassage
+}

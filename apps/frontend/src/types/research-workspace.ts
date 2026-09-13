@@ -35,3 +35,21 @@ export interface ResearchNoteList {
   total: number
   page: number
 }
+
+/** A researcher's highlight annotation on a passage (P4). */
+export interface ResearchAnnotation {
+  annotation_id: string
+  passage_id: string
+  project_id: string | null
+  quote_text: string | null
+  start_offset: number | null
+  end_offset: number | null
+  note: string | null
+  created_at: string
+}
+
+export interface ResearchAnnotationList {
+  annotations: ResearchAnnotation[]
+  total: number
+  page: number
+}

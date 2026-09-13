@@ -73,3 +73,37 @@ export interface ReaderDocument {
   /** Edition context — only when the text is bound to a specific edition. */
   editionContext?: { work: string; edition?: string; period?: string; note?: string }
 }
+
+/* ===== P4 live work structure (/public/works/{id}/structure) ===== */
+
+/** A passage preview within a 篇 (段). */
+export interface StructurePassage {
+  passage_id: string
+  order: number
+  version_id: string | null
+  preview: string
+}
+
+/**
+ * A chapter node in the structure tree. Level-1 卷 carry `children` (篇);
+ * level-2 篇 carry `passages` (段).
+ */
+export interface StructureChapter {
+  chapter_id: string
+  title: string
+  order: number
+  children?: StructureChapter[]
+  passages?: StructurePassage[]
+}
+
+/** Nested work structure (卷 → 篇 → 段). */
+export interface WorkStructure {
+  work_id: string
+  title: string
+  editions: Array<{
+    edition_id: string
+    edition_name: string
+    versions: Array<{ version_id: string; version_name: string; era: string | null }>
+  }>
+  chapters: StructureChapter[]
+}

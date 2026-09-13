@@ -269,7 +269,8 @@ class PortalService:
                     ],
                 }
             )
-        chapters = []
+        chapters: list[dict[str, Any]] = []
+        volumes: dict[str, dict[str, Any]] = {}
         for ch in (
             (
                 await self.session.execute(
@@ -281,6 +282,18 @@ class PortalService:
             .scalars()
             .all()
         ):
+            if ch.parent_id is None:
+                # level-1 卷 (no passages of its own)
+                volume = {
+                    "chapter_id": ch.id,
+                    "title": ch.title,
+                    "order": ch.order,
+                    "children": [],
+                }
+                volumes[ch.id] = volume
+                chapters.append(volume)
+                continue
+            # level-2 篇 (nested under its 卷)
             passages = (
                 (
                     await self.session.execute(
@@ -293,22 +306,25 @@ class PortalService:
                 .scalars()
                 .all()
             )
-            chapters.append(
-                {
-                    "chapter_id": ch.id,
-                    "title": ch.title,
-                    "order": ch.order,
-                    "passages": [
-                        {
-                            "passage_id": p.id,
-                            "order": p.order,
-                            "version_id": p.version_id,
-                            "preview": _clip_passage(p.content_text),
-                        }
-                        for p in passages
-                    ],
-                }
-            )
+            pian = {
+                "chapter_id": ch.id,
+                "title": ch.title,
+                "order": ch.order,
+                "passages": [
+                    {
+                        "passage_id": p.id,
+                        "order": p.order,
+                        "version_id": p.version_id,
+                        "preview": _clip_passage(p.content_text),
+                    }
+                    for p in passages
+                ],
+            }
+            parent = volumes.get(ch.parent_id) if ch.parent_id else None
+            if parent is not None:
+                parent["children"].append(pian)
+            else:
+                chapters.append(pian)  # orphan 篇 (no 卷) — keep top-level, fail safe
         return {"work_id": work.id, "title": work.title, "editions": editions, "chapters": chapters}
 
     async def work_editions(self, work_id: str) -> list[dict[str, Any]] | None:
