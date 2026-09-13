@@ -34,22 +34,29 @@ PUBLISHED（14 works + 17 persons；权利拆分 18 public_domain / 13
 customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
 `/api/v1/public/*` 分页流并带静态兜底。详见 §2。
 
+**P2/P3 进度（2026-09-13 本次会话）**：数据导入缺口已基本修复 ——
+C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗项目
+69 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取 Route A
+已落地 588/667 篇（数字文本层直提），余 74 篇影像型待 OCR。剩余未完成：
+《针灸甲乙经》篇章段落 / citations / versions，均依赖古籍木刻版高质量 OCR
+（tesseract 竖排精度不足，需更强引擎或人工校录）。详见 §3/§4。
+
 ---
 
 ## 1. 关键事实基线（来自审计，用于每阶段验收对照）
 
 | 表 | 现状 | 阶段目标 |
 | :--- | :--- | :--- |
-| `sources` | 31（全 PUBLISHED） | P1 建立源注册表 ✅ |
+| `sources` | 34 | P1 建立源注册表 ✅ |
 | `content_artifacts` | 31（全 PUBLISHED） | P1 为 14 著作 + 17 人物生成工件 ✅ |
 | `publication_records` | 31（全 PUBLISHED） | P1 生成 PUBLISHED 记录 ✅ |
-| `documents` | 675（全文未抽取，磁盘 `extracted-text/` 空） | P2 全文落地 |
-| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 |
-| `c_domain_terms` / `c_domain_relations` | 0 / 0 | P2 经穴/词条 + 关系图谱 |
-| `assertions` / `evidences` / `citations` | 0 / 0 / 0 | P2/P4 证据链 |
-| `heritage_projects` / `heritage_relations` | 0 / 0 | P3 非遗项目 |
-| `media_assets` | 0 | P3 媒体资产 |
-| `versions` | 0（87 是 editions） | P6 具体文本版本层 |
+| `documents` | 675（588 篇全文已抽 Route A，74 篇待 OCR） | P2 全文落地 ⚠️ 部分 |
+| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 ⚠️ 待高质量 OCR |
+| `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
+| `assertions` / `evidences` / `citations` | 23 / 23 / 0 | P2/P4 证据链 ✅（citations 待 passages） |
+| `heritage_projects` / `heritage_relations` | 69 / 2 | P3 非遗项目 ✅ |
+| `media_assets` | 681 | P3 媒体资产 ✅ |
+| `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
 
 ---
 
