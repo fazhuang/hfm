@@ -57,6 +57,7 @@ video-production/
 content-production/corpus/extracted-text/
 content-production/corpus/raw-ocr/
 content-production/corpus/work/
+content-production/corpus/jiayi-wikisource/
 
 # Batch OCR / frame-extraction intermediates
 content-production/batches/*/raw-ocr/

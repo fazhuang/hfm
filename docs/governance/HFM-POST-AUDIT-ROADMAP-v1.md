@@ -136,12 +136,13 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
   证明），tesseract 无文字层输出，属影像证据、已入 `media_assets`，不阻塞全文目标。
 - **经穴/词条（工作项 3）✅**、**证据链 assertions/evidences（工作项 4）✅**：
   见 §0 计数（`citations` 仍待 `passages`）。
-- **篇章段落（工作项 2）⚠️ 引擎已验证、待基础设施**：木刻版竖排 OCR 引擎在本机
-  验证 —— PaddleOCR 2.10（paddle 3.0.0 CPU）对《四库全书本》提要页与《五车楼
-  藏板》正文页均能正确识别篇章标题（如「手太陰及臂九一十八穴第二十四」），
-  间歇性 `No allocator found` 分配器崩溃可加重试绕过；但 CPU 逐页 ~30–60s，
-  全量 92 部论著（数千页）本地跑不可行，需 GPU/云 OCR 或权威数字文本校录（另需
-  来源+权利复核）。属基础设施+授权决策，未擅自启动。
+- **篇章段落（工作项 2）🔄 权威数字文本已落地结构、待入库**：改走「权威数字
+  文本」路径 —— 维基文库《针灸甲乙经·宋校本》（公有领域）12 卷已抓取，
+  `scripts/parse-jiayi-wikisource.py` 解析产出 `jiayi-chapters.csv`（卷 12 +
+  篇 134）与 `jiayi-passages.csv`（段 968）。来源+权利+完整性复核见
+  `content-production/reports/HFM-CONTENT-P2-JIAYI-STRUCTURE-SOURCE.md`。
+  已知缺口：卷03 篇八/九/十缺失（背穴三篇）、卷02 篇五标题残缺，后续补齐。
+  尚未写入 `chapters`/`passages` 生产表（待入库脚本 + 授权）。
 
 ### 3.2 门禁
 
