@@ -200,7 +200,10 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 - **A000529–532 补录 ✅ 已签批并执行**：mapping/review CSV 已改、manifest 已重签
   （`bb2524…3ff6`）、importer 常量 87→91 / 5→1；`hfm_prod` 正式 apply 通过
   （`editions` 87→91，DOCUMENT 基线 675 不变）。4 条现挂 `WORK-JIAYI`。
-- **A000541 合刊四书 ⏸ 维持 DEFERRED**（已签批继续延后）：待建模方向裁决后再处理。
+- **A000541 合刊四书 ⏸ 已裁决：继续延后**（维持 `DEFERRED`，不启动 N:N 扩展与
+  新增 3 著作）。合订本多对多建模方向已留档于 `P6-COMPOUND-WORK-DESIGN.md`，作为
+  未来可选工作项，不在本阶段推进。
+- **P6 状态**：本阶段可执行项已收尾（4/5 补录完成；合订本依裁决延后）。
 
 ---
 
