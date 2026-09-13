@@ -28,9 +28,11 @@ P1 内容发布执行 ──────► 公众门户显示真实生产数据
 P6 收尾：5 条 DEFERRED 版本补录 + 合订本分类规则（R3，不阻塞）
 ```
 
-**当前已完成（本次会话新增）**：P1 的工具链已就绪 —— `scripts/publish-content.py`
-（受控幂等发布脚本）与 `scripts/tests/test_publish_content.py`（3 用例，隔离
-Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_prod` 执行发布。**
+**P1 状态（已收尾）**：P1「内容发布执行」完整闭环并经端到端验证 —— `hfm_prod`
+上 `sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+PUBLISHED（14 works + 17 persons；权利拆分 18 public_domain / 13
+customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
+`/api/v1/public/*` 分页流并带静态兜底。详见 §2。
 
 ---
 
@@ -38,9 +40,9 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 
 | 表 | 现状 | 阶段目标 |
 | :--- | :--- | :--- |
-| `sources` | 0 | P1 建立源注册表 |
-| `content_artifacts` | 0 | P1 为 14 著作 + 17 人物生成工件 |
-| `publication_records` | 0 | P1 生成 PUBLISHED 记录 |
+| `sources` | 31（全 PUBLISHED） | P1 建立源注册表 ✅ |
+| `content_artifacts` | 31（全 PUBLISHED） | P1 为 14 著作 + 17 人物生成工件 ✅ |
+| `publication_records` | 31（全 PUBLISHED） | P1 生成 PUBLISHED 记录 ✅ |
 | `documents` | 675（全文未抽取，磁盘 `extracted-text/` 空） | P2 全文落地 |
 | `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 |
 | `c_domain_terms` / `c_domain_relations` | 0 / 0 | P2 经穴/词条 + 关系图谱 |
@@ -51,13 +53,14 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 
 ---
 
-## 2. P1 — 内容发布执行（关键路径，立即）
+## 2. P1 — 内容发布执行（关键路径）✅ 已完成
 
 **目标**：使 `/api/v1/public/home`、`/works`、`/persons` 返回真实生产数据，
 公众门户从静态 fallback 切换为真实数据。
 
-**当前状态**：发布脚本已建并测试通过，但 `hfm_prod` 上 `sources` /
-`content_artifacts` / `publication_records` 仍为 0。
+**当前状态（已收尾）**：4 项工作项全部完成并经端到端验证 —— `hfm_prod` 上
+`sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数据。
 
 ### 2.1 工作项
 
@@ -73,6 +76,21 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
    `WORK_COLLECTION` / `searchIndex`，需接入真实 `/api/v1/public/*` 分页流。
    - 首页已具备 `useHomePublicData` 优雅降级，发布后自动生效；其余页面需 UI 内容传播改造。
 
+#### 完成记录（2026-09-13）
+
+1. **权利复核 ✅**：`content-production/07-review/publication-rights-manifest.json`
+   判定 13 现代著作/学者 = `customer_owned`，其余 11 古籍 + 7 历史人物 =
+   `public_domain` 兜底。
+2. **执行发布 ✅**：先 `--dry-run` 预演，后正式 `--scope all`（commit `7fefb37`）；
+   `sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+   `PUBLISHED`。文档级 `sources` 注册仍为独立补强项（发布实体已用「每实体一个
+   canonical source」方案闭合 FK）。
+3. **前端连通 ✅**：`WorksView` 接入真实 `/public/works`（commit `0f8c50d`，静态
+   `WORK_COLLECTION` 兜底）；首页 / `SearchView` 此前已接入。
+4. **端到端验证 ✅**：起 HFM 后端于 `:8001`（`~/.hfm/secrets/prod.env`）实测
+   `/public/home`、`/works`（total 14）、`/persons`（total 17）、`/works/{id}`、
+   `/search?q=皇甫谧`（total 4）均返回真实生产数据。
+
 ### 2.2 门禁
 
 | | |
@@ -80,7 +98,7 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 | **ENTRY** | 权利复核完成；`PWE_IMPORT_PHASE=CLOSED` 保持不变；发布脚本就绪（已满足） |
 | **AUTHORIZED_SCOPE** | 权利判定表、发布脚本执行、前端 public API 接入、对应测试 |
 | **FORBIDDEN_SCOPE** | 不改冻结的 PWE 映射基线/导入逻辑；不开放外网；不发布未经复核的内容 |
-| **EXIT** | `/public/home` `/works` `/persons` 稳定返回生产数据；零草稿/私有数据泄露 |
+| **EXIT** | ✅ 已验证：`/public/home` `/works` `/persons` 稳定返回生产数据；零草稿/私有数据泄露 |
 | **AUTHORIZATION** | 需显式授权（权利复核结论 + 发布范围由授权方确认） |
 
 ---
@@ -148,10 +166,11 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 
 ---
 
-## 8. 立即行动（本周）
+## 8. 立即行动（本周）✅ 全部完成
 
-1. **权利复核**：产出 14 著作 / 17 人物的权利判定表（P1 前置）。
-2. **对 `hfm_prod` 跑 `--dry-run`**：验证发布脚本在真实 675/14/87 数据上的行为（只读、回滚、不落库）。
-3. **P1 前端接入设计**：`WorksView`/`SearchView` 从静态数据切换到真实分页流的最小改造方案。
+1. **权利复核 ✅**：产出 `content-production/07-review/publication-rights-manifest.json`
+   （13 现代著作/学者 = `customer_owned`，其余 11 古籍 + 7 历史人物 = `public_domain` 兜底）。
+2. **对 `hfm_prod` 执行发布 ✅**：`--dry-run` 预演后正式 `--scope all`，31 条全部 `PUBLISHED`。
+3. **P1 前端接入 ✅**：首页（`useHomePublicData`）/ SearchView / WorksView 均接入真实分页流并带静态兜底。
 
 > 本计划随每阶段授权与完成情况更新；阶段间不自动启动，须逐段显式授权。
