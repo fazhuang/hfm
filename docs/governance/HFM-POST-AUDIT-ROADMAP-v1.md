@@ -36,10 +36,13 @@ customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
 
 **P2/P3 进度（2026-09-13 本次会话）**：数据导入缺口已基本修复 ——
 C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗项目
-69 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取 Route A
-已落地 588/667 篇（数字文本层直提），余 74 篇影像型待 OCR。剩余未完成：
-《针灸甲乙经》篇章段落 / citations / versions，均依赖古籍木刻版高质量 OCR
-（tesseract 竖排精度不足，需更强引擎或人工校录）。详见 §3/§4。
+69 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取已基本落地
+（667 篇中 593 篇 Route A 数字文本层直提 + 66 篇 Route B 影像型 OCR 完成；
+余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）。剩余未完成：
+《针灸甲乙经》篇章段落 / citations / versions —— 木刻版竖排 OCR 引擎已本机验证
+（PaddleOCR 2.10 对四库本/五车楼正文均能正确识别篇章标题，间歇性分配器崩溃
+可加重试绕过），但 CPU 逐页极慢（~30–60s/页），全量 92 部论著需 GPU/云 OCR
+或权威数字文本校录，属基础设施决策。详见 §3/§4。
 
 ---
 
@@ -50,8 +53,8 @@ C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗�
 | `sources` | 34 | P1 建立源注册表 ✅ |
 | `content_artifacts` | 31（全 PUBLISHED） | P1 为 14 著作 + 17 人物生成工件 ✅ |
 | `publication_records` | 31（全 PUBLISHED） | P1 生成 PUBLISHED 记录 ✅ |
-| `documents` | 675（588 篇全文已抽 Route A，74 篇待 OCR） | P2 全文落地 ⚠️ 部分 |
-| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 ⚠️ 待高质量 OCR |
+| `documents` | 667（593 Route A + 66 Route B OCR；8 非遗佐证照片/证书无文字层） | P2 全文落地 ✅ 基本完成 |
+| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 ⚠️ 待木刻版 OCR（引擎已验证，待基础设施） |
 | `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
 | `assertions` / `evidences` / `citations` | 23 / 23 / 0 | P2/P4 证据链 ✅（citations 待 passages） |
 | `heritage_projects` / `heritage_relations` | 69 / 2 | P3 非遗项目 ✅ |
@@ -124,6 +127,21 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
    候选）→ `c_domain_terms` + `c_domain_relations`。
 4. **证据链**：`normalized/evidence.csv`（已有 24 条候选）→ `assertions` /
    `evidences` / `citations`。
+
+#### 完成记录（2026-09-13）
+
+- **全文抽取（工作项 1）✅ 基本完成**：667 篇中 593 篇 Route A（数字文本层
+  直提，`corpus/extracted-text/`）+ 66 篇 Route B（影像型 tesseract OCR，
+  `corpus/raw-ocr/`）。余 8 篇为非遗佐证照片/证书（TV 报道截图、奖证、不动产
+  证明），tesseract 无文字层输出，属影像证据、已入 `media_assets`，不阻塞全文目标。
+- **经穴/词条（工作项 3）✅**、**证据链 assertions/evidences（工作项 4）✅**：
+  见 §0 计数（`citations` 仍待 `passages`）。
+- **篇章段落（工作项 2）⚠️ 引擎已验证、待基础设施**：木刻版竖排 OCR 引擎在本机
+  验证 —— PaddleOCR 2.10（paddle 3.0.0 CPU）对《四库全书本》提要页与《五车楼
+  藏板》正文页均能正确识别篇章标题（如「手太陰及臂九一十八穴第二十四」），
+  间歇性 `No allocator found` 分配器崩溃可加重试绕过；但 CPU 逐页 ~30–60s，
+  全量 92 部论著（数千页）本地跑不可行，需 GPU/云 OCR 或权威数字文本校录（另需
+  来源+权利复核）。属基础设施+授权决策，未擅自启动。
 
 ### 3.2 门禁
 
