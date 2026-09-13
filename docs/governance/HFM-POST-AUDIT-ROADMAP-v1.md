@@ -189,6 +189,19 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 - 5 条 `DEFERRED` 版本补录（缺失版权页 OCR 证据）。
 - 合订本（如《针灸甲乙经、伤寒论…》四书合刊）多对多 Work 关联规则扩展。
 
+### 7.1 进度（2026-09-13 本次会话）
+
+- **证据已备齐**：4 条数字文件名版本（A000529–532）经 PaddleOCR 卷端/序页/正文
+  独立证实均为《针灸甲乙经》（→ `WORK-JIAYI`），不再依赖文件名猜测。证据、
+  补录方案、合订本设计三件已落盘于 `content-production/import/pwe-mapping/review/`：
+  - `P6-DEFERRED-EDITION-EVIDENCE.md`（证据卷）
+  - `P6-BACKFILL-PLAN.md`（4 条补录方案 + 签批单；改动清单：mapping CSV、review CSV、
+    importer 常量 87→91 / 5→1、重签 manifest）
+  - `P6-COMPOUND-WORK-DESIGN.md`（合订本 N:N schema 草案 + 决策选项）
+- **待授权**：A000529–532 补录须人工签批 `DEFERRED→CONFIRMED`；A000541 合刊四书
+  建模方向（继续 DEFER / 单 FK 挂靠 / N:N + 新增 3 著作）须裁决，且「温病学」
+  非单一著作需先目录 OCR 确认确切文本。均未擅自执行。
+
 ---
 
 ## 8. 立即行动（本周）✅ 全部完成
