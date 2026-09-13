@@ -1,7 +1,7 @@
-"""Content publication pipeline tests (isolated PostgreSQL@0015).
+"""Content publication pipeline tests (isolated PostgreSQL@0016).
 
 Runs scripts/publish-content.py against a real, disposable PostgreSQL
-database migrated to 0015 and proves: end-to-end admit → submit → review →
+database migrated to 0016 and proves: end-to-end admit → submit → review →
 publish populates sources/content_artifacts/publication_records, re-run is an
 idempotent no-op, --dry-run rolls back without committing, and UNKNOWN rights
 are rejected at the CLI boundary.

@@ -1,4 +1,4 @@
-"""C-domain term import tests (isolated PostgreSQL@0015).
+"""C-domain term import tests (isolated PostgreSQL@0016).
 
 Runs scripts/import-cdomain-terms.py against a real, disposable PostgreSQL
 database migrated to head and proves: --dry-run rolls back without writing,

@@ -46,7 +46,7 @@ def test_qualification_doc_distinguishes_rollback_terms() -> None:
     assert "APPLICATION_ROLLBACK" in text
     assert "DATABASE_ROLLBACK" in text
     assert "DATABASE_RESTORE" in text
-    assert "0015 → 0014 downgrade is not supported as a release path" in text
+    assert "0016 → 0015 downgrade is not supported as a release path" in text
     assert "ND2_EXECUTION_REQUIRED" in text
     # RV-P0-01: media served only via the published endpoint; direct alias forbidden.
     assert "media/{asset_id}/bytes" in text
