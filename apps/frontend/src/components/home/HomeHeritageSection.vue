@@ -19,6 +19,8 @@ const t0Projects = computed(() =>
   props.block?.source === 'backend' ? (props.block.data ?? []) : [],
 )
 const hasT0 = computed(() => t0Projects.value.length > 0)
+/** First N rendered; the block states the real total (contract §4: ≥1 T0 item). */
+const shown = computed(() => t0Projects.value.slice(0, 6))
 </script>
 
 <template>
@@ -37,12 +39,22 @@ const hasT0 = computed(() => t0Projects.value.length > 0)
 
       <!-- T0 — published heritage records (empty until C1) -->
       <ul v-if="hasT0" class="heritage__t0 xl-rows" data-source="backend">
-        <li v-for="(proj, i) in t0Projects" :key="i" class="xl-row">
+        <li v-for="(proj, i) in shown" :key="i" class="xl-row heritage__t0-row">
           <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
-          <div class="xl-row__body">{{ (proj as Record<string, unknown>).name ?? '' }}</div>
+          <div class="xl-row__body heritage__t0-body">
+            <span class="heritage__t0-name">
+              {{ (proj as Record<string, unknown>).project_name ?? '' }}
+            </span>
+            <span class="heritage__t0-cat">
+              {{ (proj as Record<string, unknown>).category ?? '' }}
+            </span>
+          </div>
         </li>
       </ul>
-      <p v-else class="fallback-note" data-fallback-note>
+      <p v-if="hasT0 && t0Projects.length > shown.length" class="heritage__t0-more" data-t0-total>
+        共 {{ t0Projects.length }} 项已发布非遗档案
+      </p>
+      <p v-else-if="!hasT0" class="fallback-note" data-fallback-note>
         数据库非遗档案尚未发布（待 C1 发布）· 以下为离线兜底（客户材料）
       </p>
 
@@ -101,7 +113,30 @@ const hasT0 = computed(() => t0Projects.value.length > 0)
   color: var(--wl-mute);
 }
 .heritage__t0 {
-  margin-bottom: var(--hfm-space-8);
+  margin-bottom: var(--hfm-space-12);
+}
+.heritage__t0-body {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--hfm-space-4);
+  flex-wrap: wrap;
+}
+.heritage__t0-name {
+  font-size: var(--hfm-text-base);
+  color: var(--wl-ink);
+}
+.heritage__t0-more {
+  margin: calc(-1 * var(--hfm-space-4)) 0 var(--hfm-space-8);
+  font-family: var(--wl-latin);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.06em;
+  color: var(--wl-mark);
+}
+.heritage__t0-cat {
+  font-family: var(--wl-latin);
+  font-size: var(--hfm-text-xs);
+  color: var(--wl-mute);
 }
 .heritage__grid {
   display: grid;

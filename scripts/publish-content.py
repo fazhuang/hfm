@@ -73,6 +73,7 @@ validator = _load_module(
 sys.path.insert(0, str(BACKEND_DIR / "src"))
 
 from hfm.models.c_domain import CDomainTerm
+from hfm.models.heritage import HeritageProject
 from hfm.models.content_artifact import (
     ContentAdmissionState,
     ProvenanceStatus,
@@ -390,6 +391,40 @@ async def _run(
                             )
                         )
 
+                if scope in ("heritage", "all"):
+                    for proj in (
+                        (
+                            await session.execute(
+                                select(HeritageProject).order_by(HeritageProject.project_name)
+                            )
+                        )
+                        .scalars()
+                        .all()
+                    ):
+                        if proj.entity_id is None:
+                            lines.append(f"SKIP heritage {proj.project_name}: no entity_id")
+                            continue
+                        tasks.append(
+                            (
+                                "heritage",
+                                proj.entity_id,
+                                None,
+                                proj.official_name or proj.project_name,
+                                canonical_content(
+                                    "heritage",
+                                    entity_id=proj.entity_id,
+                                    project_name=proj.project_name,
+                                    official_name=proj.official_name,
+                                ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "heritage",
+                                    None,
+                                    rights_status,
+                                ),
+                            )
+                        )
+
                 for kind, entity_id, stable_id, title, content, rights in tasks:
                     state, detail = await _publish_one(
                         session,
@@ -440,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--scope",
         default="works",
-        choices=("works", "persons", "c-terms", "all"),
+        choices=("works", "persons", "c-terms", "heritage", "all"),
         help="which canonical entities to publish (default: works)",
     )
     parser.add_argument("--rights-basis", default=None)

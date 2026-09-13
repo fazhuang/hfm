@@ -59,8 +59,10 @@ test('every block carries a data-source marker; T1 fallbacks are visible', async
   }
   // 其言 is un-admitted → honest state, never fabricated full text.
   await expect(page.locator('#home-yan [data-empty-state]')).toBeVisible()
-  // 非遗 has no T0 yet (C1 pending) → visible fallback note.
-  await expect(page.locator('#home-heritage [data-fallback-note]')).toBeVisible()
+  // 非遗 T0 is published (C1) → real rows + a stated total, no fallback note.
+  await expect(page.locator('#home-heritage')).toHaveAttribute('data-source', 'backend')
+  expect(await page.locator('#home-heritage .heritage__t0-row').count()).toBeGreaterThanOrEqual(1)
+  await expect(page.locator('#home-heritage [data-t0-total]')).toBeVisible()
 })
 
 test('exactly one global footer; the close is a section', async ({ page }) => {
