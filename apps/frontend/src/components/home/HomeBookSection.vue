@@ -4,14 +4,32 @@
  * the book as a catalogued object — ruled header, specimen leaf, the audited
  * edition register (DATA-GAP honest) and the lineage plate.
  */
+import { computed } from 'vue'
 import { HOME_BOOK, HOME_CHAPTERS } from '../../data/homeProjection'
 import { INVENTORY_EDITION_RECORDS } from '../../data/contentInventory'
+import type { BlockData } from '../../composables/useHomeContractData'
+import type { EditionSummary, WorkDetail } from '../../types/public'
 
 defineOptions({ name: 'HomeBookSection' })
+
+const props = defineProps<{
+  work?: BlockData<WorkDetail> | null
+  editions?: BlockData<EditionSummary[]> | null
+}>()
+
+/** T0 — the real published work + its edition count. */
+const t0 = computed(() => {
+  if (props.work?.source !== 'backend' || !props.work.data) return null
+  return {
+    title: props.work.data.title,
+    category: props.work.data.category,
+    editions: props.editions?.data?.length ?? 0,
+  }
+})
 </script>
 
 <template>
-  <section id="home-book" class="xl-sec" aria-labelledby="home-book-title">
+  <section id="home-book" class="xl-sec" aria-labelledby="home-book-title" :data-source="t0 ? 'backend' : 'fallback'">
     <div class="xl-inner">
       <header class="xl-head">
         <div class="xl-head__aside">
@@ -23,6 +41,21 @@ defineOptions({ name: 'HomeBookSection' })
           <p class="xl-lede">{{ HOME_BOOK.book.lede }}</p>
         </div>
       </header>
+
+      <!-- T0 — real published work + edition count -->
+      <div v-if="t0" class="book__t0" data-source="backend">
+        <p class="book__t0-row">
+          <span class="book__meta-line"><b>著作</b> {{ t0.title }}</span>
+          <span class="book__meta-note">{{ t0.category ?? '' }}</span>
+        </p>
+        <p class="book__t0-row">
+          <span class="book__meta-line"><b>已发布版本</b> {{ t0.editions }} 种</span>
+          <span class="book__meta-note">来自数据库（已发布投影）</span>
+        </p>
+      </div>
+      <p v-else class="fallback-note" data-fallback-note>
+        数据库作品投影暂不可用 · 以下为离线兜底（客户材料）
+      </p>
 
       <div class="book__grid">
         <figure class="book__leaf">
@@ -62,6 +95,18 @@ defineOptions({ name: 'HomeBookSection' })
 </template>
 
 <style scoped>
+.book__t0 {
+  margin-bottom: var(--hfm-space-8);
+}
+.book__t0-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--hfm-space-4);
+  margin: 0;
+  padding: var(--hfm-space-3) 0;
+  border-top: 1px solid var(--wl-rule);
+}
 .book__grid {
   display: grid;
   grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);

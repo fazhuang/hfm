@@ -17,12 +17,10 @@ import { useHomePublicData } from '../composables/useHomePublicData'
 const STUB = { template: '<div />' }
 const SECTION_IDS = [
   'home-hero',
-  'home-life',
+  'home-person',
+  'home-yan',
   'home-book',
-  'home-knowledge',
-  'home-evidence',
   'home-heritage',
-  'home-domains',
   'home-closing',
 ]
 
@@ -150,7 +148,7 @@ describe('HomeView integration', () => {
     vi.unstubAllGlobals()
   })
 
-  it('backend failure degrades to fallback and the frozen 8 sections still render', async () => {
+  it('backend failure degrades to fallback and the contract blocks still render', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network down')))
     const wrapper = mountHome()
     await flushPromises()
@@ -165,7 +163,7 @@ describe('HomeView integration', () => {
     vi.unstubAllGlobals()
   })
 
-  it('empty backend payload renders static content and marks fallback (no visible backend data)', async () => {
+  it('empty backend payload marks fallback (no visible backend data)', async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValue(
@@ -179,38 +177,63 @@ describe('HomeView integration', () => {
     await flushPromises()
     // Nothing from the backend participates visually -> truthful fallback marker.
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('fallback')
-    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(8)
+    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(6)
     expect(wrapper.text()).not.toContain('已上线公开人物')
     wrapper.unmount()
     vi.unstubAllGlobals()
   })
 
-  it('PARTICIPATION: backend persons/works values render visibly in the matching domain doors', async () => {
-    const payload = {
-      works: [
-        {
-          work_id: 'w-live',
-          title: '皇甫谧新刊论著',
-          dynasty: '西晋',
-          category: '医书',
-          edition_count: 2,
-          publication_status: 'published',
-        },
-      ],
-      counts: { works: 1, persons: 2, heritage_projects: 0, c_terms: 0 },
-    }
-    const fetchMock = vi.fn().mockResolvedValue(okResponse(payload))
+  it('PARTICIPATION: the published person projection renders its assertions in the 人物 block', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url.includes('/public/persons/')) {
+        return Promise.resolve(
+          okResponse({
+            entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
+            name_zh: '皇甫谧',
+            name_pinyin: null,
+            courtesy_name: null,
+            pseudonym: null,
+            dynasty: null,
+            publication_status: 'PUBLISHED',
+            assertions: [
+              {
+                id: 'a1',
+                predicate: '医学地位',
+                value: '针灸鼻祖；《针灸甲乙经》为规范千年之医学经典',
+                object_entity_id: null,
+                editorial_status: 'draft',
+                confidence: 'medium',
+              },
+            ],
+            events: [],
+          }),
+        )
+      }
+      if (url.includes('/public/home')) {
+        return Promise.resolve(
+          okResponse({ works: [], counts: { works: 14, persons: 17, heritage_projects: 0, c_terms: 30 } }),
+        )
+      }
+      if (url.includes('/public/works/')) {
+        return Promise.resolve(
+          okResponse({ work_id: 'WORK-JIAYI', title: '针灸甲乙经', dynasty: null, category: 'classic', publication_status: 'PUBLISHED', rights_status: 'public_domain', editions: [] }),
+        )
+      }
+      if (url.includes('/public/heritage')) return Promise.resolve(okResponse({ projects: [], total: 0 }))
+      return Promise.resolve(okResponse({}))
+    })
     vi.stubGlobal('fetch', fetchMock)
     const wrapper = mountHome()
     await flushPromises()
+
+    // T0 participates visibly in the 人物 block
+    expect(wrapper.find('#home-person').attributes('data-source')).toBe('backend')
+    expect(wrapper.find('#home-person').text()).toContain('针灸鼻祖')
+    // T0 participates visibly in the hero register
+    expect(wrapper.find('#home-hero').text()).toContain('已发布著作')
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('backend')
-    // visible backend-derived content inside the existing door holdings
-    expect(wrapper.text()).toContain('已上线公开人物')
-    expect(wrapper.text()).toContain('2 条档案')
-    expect(wrapper.text()).toContain('皇甫谧新刊论著')
-    expect(wrapper.text()).toContain('已发布文献')
-    // frozen structure still intact alongside participation
-    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(8)
+    // contract structure intact alongside participation
+    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(6)
     expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
     expect(wrapper.find('#home-search-input').exists()).toBe(true)
     wrapper.unmount()

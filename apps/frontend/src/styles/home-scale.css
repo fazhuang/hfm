@@ -148,3 +148,15 @@
     gap: var(--hfm-space-3);
   }
 }
+
+/* ---- contract §2 R3: the visible T1-fallback note ---- */
+.fallback-note {
+  margin: 0 0 var(--hfm-space-6);
+  padding: var(--hfm-space-3) var(--hfm-space-4);
+  border-left: 2px solid var(--wl-mark);
+  background: var(--wl-light);
+  font-family: var(--wl-latin);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.06em;
+  color: var(--wl-mark);
+}

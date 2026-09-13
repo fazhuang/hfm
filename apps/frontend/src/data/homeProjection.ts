@@ -188,7 +188,7 @@ export const HOME_BOOK = {
   headline: '一部书，成为历史中的物。',
   book: HOME_JIAYI,
   editionsTotal: HOME_EDITIONS_TOTAL,
-  lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）',
+  lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中',
   cta: { label: '进入古籍库', href: '/jiayi' },
 } as const
 

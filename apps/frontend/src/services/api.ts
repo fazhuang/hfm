@@ -108,6 +108,12 @@ export async function fetchPublicWorkEditions(
   return unwrap<{ work_id: string; editions: EditionSummary[] }>(body)
 }
 
+/** Published heritage projects (T0 for the homepage 非遗 block). */
+export async function fetchPublicHeritage(): Promise<{ projects: unknown[]; total: number }> {
+  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/heritage`)
+  return unwrap<{ projects: unknown[]; total: number }>(body)
+}
+
 /** Nested structure (卷 → 篇 → 段) of a published work (P4 reader). */
 export async function fetchPublicWorkStructure(workId: string): Promise<WorkStructure> {
   const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works/${workId}/structure`)

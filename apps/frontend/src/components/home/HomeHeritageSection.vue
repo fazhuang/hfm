@@ -4,15 +4,25 @@
  * the living transmission — ceremony plate, the carrier line, an honest
  * PARTIAL status, and the transmission traces as ruled entries.
  */
+import { computed } from 'vue'
 import { HOME_HERITAGE_LIVING, HOME_CHAPTERS } from '../../data/homeProjection'
+import type { BlockData } from '../../composables/useHomeContractData'
 
 defineOptions({ name: 'HomeHeritageSection' })
 
+const props = defineProps<{ block?: BlockData<unknown[]> | null }>()
+
 const person = HOME_HERITAGE_LIVING.person
+
+/** T0 — published heritage projects; empty until C1 publishes them (contract §6). */
+const t0Projects = computed(() =>
+  props.block?.source === 'backend' ? (props.block.data ?? []) : [],
+)
+const hasT0 = computed(() => t0Projects.value.length > 0)
 </script>
 
 <template>
-  <section id="home-heritage" class="xl-sec" aria-labelledby="home-heritage-title">
+  <section id="home-heritage" class="xl-sec" aria-labelledby="home-heritage-title" :data-source="hasT0 ? 'backend' : 'fallback'">
     <div class="xl-inner">
       <header class="xl-head">
         <div class="xl-head__aside">
@@ -24,6 +34,17 @@ const person = HOME_HERITAGE_LIVING.person
           <p class="heritage__project">{{ HOME_HERITAGE_LIVING.project }}</p>
         </div>
       </header>
+
+      <!-- T0 — published heritage records (empty until C1) -->
+      <ul v-if="hasT0" class="heritage__t0 xl-rows" data-source="backend">
+        <li v-for="(proj, i) in t0Projects" :key="i" class="xl-row">
+          <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
+          <div class="xl-row__body">{{ (proj as Record<string, unknown>).name ?? '' }}</div>
+        </li>
+      </ul>
+      <p v-else class="fallback-note" data-fallback-note>
+        数据库非遗档案尚未发布（待 C1 发布）· 以下为离线兜底（客户材料）
+      </p>
 
       <div class="heritage__grid">
         <figure class="heritage__visual">
@@ -78,6 +99,9 @@ const person = HOME_HERITAGE_LIVING.person
   font-size: var(--hfm-text-sm);
   letter-spacing: 0.06em;
   color: var(--wl-mute);
+}
+.heritage__t0 {
+  margin-bottom: var(--hfm-space-8);
 }
 .heritage__grid {
   display: grid;

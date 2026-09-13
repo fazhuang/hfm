@@ -11,6 +11,9 @@
 
 export const CORE_PERSON_NAME = '皇甫谧'
 
+/** Canonical admitted entity id (DB truth; T0 fetch key for the person block). */
+export const CORE_PERSON_ENTITY_ID = 'ENT-PERSON-HFM-HUANGFUMI'
+
 /** 生卒年（客户确认内容模型 PersonHero.dates = 215—282） */
 export const CORE_PERSON_DATES = '215—282'
 

@@ -11,8 +11,11 @@
  * monument is a non-heading decorative block). #home-search-input is the only
  * homepage search input.
  */
+import { computed } from 'vue'
 import { HOME_HERO } from '../../data/homeProjection'
 import { CORE_PERSON_DATES } from '../../config/corePerson'
+import type { BlockData } from '../../composables/useHomeContractData'
+import type { HomeProjection } from '../../types/public'
 import XlScaleBand from './XlScaleBand.vue'
 
 defineOptions({ name: 'HomeHeroSection' })
@@ -21,14 +24,27 @@ interface Props {
   searchValue?: string
   onSearch?: () => void
   searchLabel?: string
+  block?: BlockData<HomeProjection> | null
 }
 const props = defineProps<Props>()
+
+/** T0 platform register — real published counts (contract §4 block 01). */
+const counts = computed(() => {
+  const c = props.block?.data?.counts
+  if (!c || props.block?.source !== 'backend') return null
+  if (c.works + c.persons + c.c_terms + c.heritage_projects <= 0) return null
+  return [
+    { label: '已发布著作', value: c.works },
+    { label: '已发布人物', value: c.persons },
+    { label: '已发布术语', value: c.c_terms },
+  ]
+})
 const emit = defineEmits<{ (e: 'update:searchValue', value: string): void }>()
 const dates = CORE_PERSON_DATES
 </script>
 
 <template>
-  <section id="home-hero" class="hero" aria-labelledby="home-hero-title">
+  <section id="home-hero" class="hero" aria-labelledby="home-hero-title" :data-source="counts ? 'backend' : 'fallback'">
     <div class="hero__inner">
       <p class="hero__bar">
         <span class="xl-index">00</span>
@@ -37,6 +53,14 @@ const dates = CORE_PERSON_DATES
       </p>
 
       <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
+
+      <!-- T0 platform register (real published counts) -->
+      <dl v-if="counts" class="hero__counts" data-source="backend">
+        <div v-for="c in counts" :key="c.label" class="hero__count">
+          <dt class="xl-label">{{ c.label }}</dt>
+          <dd class="xl-num hero__count-value">{{ c.value }}</dd>
+        </div>
+      </dl>
 
       <p class="home-hero__name hero__name" aria-hidden="true">
         <span class="home-hero__glyph">皇</span><span class="home-hero__glyph">甫</span
@@ -120,6 +144,20 @@ const dates = CORE_PERSON_DATES
 }
 
 /* ---- the platform register (single H1, quiet) ---- */
+.hero__counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-8);
+  margin: 0 0 var(--hfm-space-6);
+}
+.hero__count dt {
+  margin-bottom: var(--hfm-space-1);
+}
+.hero__count-value {
+  margin: 0;
+  font-size: var(--hfm-text-2xl);
+  color: var(--wl-ink);
+}
 .hero__brand {
   margin: 0 0 var(--hfm-space-6);
   font-family: var(--wl-latin);
