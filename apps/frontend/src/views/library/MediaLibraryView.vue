@@ -32,7 +32,7 @@ onMounted(async () => {
   }
 })
 
-const categories: Array<MediaCategory | 'all'> = ['all', 'paper', 'classic', 'movie']
+const categories: Array<MediaCategory | 'all'> = ['all', 'paper', 'classic', 'movie', 'person']
 
 const filtered = computed(() => {
   const kw = keyword.value.trim()

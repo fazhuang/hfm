@@ -222,3 +222,28 @@ async def verify_asset_bytes(asset: MediaAsset, store: ObjectStore) -> bool:
 def redaction_token(object_key: str, sha256: str, rule: str) -> str:
     """Deterministic redaction/watermark token (P2-05-AC-04)."""
     return hashlib.sha256(f"{object_key}:{sha256}:{rule}".encode()).hexdigest()
+
+
+#: Object-key markers per public projection category. Order matters: the first
+#: match wins, so a person's film folder classifies as a film rather than as
+#: person material.
+_PUBLIC_CATEGORY_MARKERS: tuple[tuple[str, tuple[str, ...]], ...] = (
+    ("paper", ("论文",)),
+    ("movie", ("电影",)),
+    ("classic", ("论著", "版本")),
+    ("person", ("其传", "其言", "后论", "画像")),
+)
+
+
+def public_category(object_key: str) -> str:
+    """Public projection category for a media object key.
+
+    Derived from the object-key path, which mirrors how the client delivery
+    directory is organised: papers, classics and films, plus a person's own
+    biography (其传), words (其言), later discourse (后论) and portrait (画像).
+    Keys matching nothing fall back to ``"other"``.
+    """
+    for category, markers in _PUBLIC_CATEGORY_MARKERS:
+        if any(marker in object_key for marker in markers):
+            return category
+    return "other"

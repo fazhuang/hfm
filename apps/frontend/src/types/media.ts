@@ -1,8 +1,8 @@
 /**
- * Media asset types (pre-acceptance demo: published papers/classics/movies).
+ * Media asset types (pre-acceptance demo: published papers/classics/movies/person).
  */
 
-export type MediaCategory = 'paper' | 'classic' | 'movie' | 'other'
+export type MediaCategory = 'paper' | 'classic' | 'movie' | 'person' | 'other'
 
 /** Published media asset (public projection). */
 export interface MediaAssetItem {

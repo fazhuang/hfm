@@ -39,7 +39,7 @@ from hfm.phase1.research_workspace import ResearchWorkspaceService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
 from hfm.phase2.media.models import MediaAsset, MediaAssetState
-from hfm.phase2.media.service import MediaService
+from hfm.phase2.media.service import MediaService, public_category
 from hfm.utils.response import api_response
 
 PrincipalDep = Annotated[Any, Depends(current_principal)]
@@ -342,23 +342,16 @@ async def public_persons(session: SessionDep, page: int = 1, page_size: int = 20
 
 @public_router.get("/media")
 async def public_media(session: SessionDep, kind: str = "") -> dict[str, Any]:
-    """Pre-acceptance demo: published media assets (papers/classics/movies).
+    """Pre-acceptance demo: published media assets (papers/classics/movies/person).
 
-    Optional ``kind`` filter: paper | classic | movie (derived from the
-    object key path); fail-closed: published assets only.
+    Optional ``kind`` filter: paper | classic | movie | person | other (derived
+    from the object key path); fail-closed: published assets only.
     """
     assets = await MediaService(session).public_projection()
     items = []
     for a in assets:
         key = str(a.object_key)
-        if "论文" in key:
-            cat = "paper"
-        elif "电影" in key:
-            cat = "movie"
-        elif "论著" in key or "版本" in key:
-            cat = "classic"
-        else:
-            cat = "other"
+        cat = public_category(key)
         if kind and cat != kind:
             continue
         items.append(

@@ -22,6 +22,7 @@ export const MEDIA_CATEGORY_LABELS: Record<MediaCategory, string> = {
   paper: '学术论文',
   classic: '古籍版本',
   movie: '影视资料',
+  person: '人物材料',
   other: '其他',
 }
 

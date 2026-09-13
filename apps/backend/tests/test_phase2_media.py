@@ -26,6 +26,7 @@ from hfm.phase2.media import MediaAsset, MediaAssetState, MediaRights, MediaServ
 from hfm.phase2.media.service import (
     compute_sha256,
     hash_matches,
+    public_category,
     redaction_token,
     rights_sufficient,
     verify_asset_bytes,
@@ -457,3 +458,28 @@ def test_p2_current_migration_head_0016() -> None:
             revisions.add(match.group(1))
     assert revisions == {f"{i:04d}" for i in range(1, 17)}
     assert "0016" in revisions
+
+
+def test_public_category_person_material() -> None:
+    """A person's own material (biography / words / later discourse / portrait)
+    classifies as `person` instead of falling through to `other`."""
+    assert public_category("皇甫谧/其传/其传.docx") == "person"
+    assert public_category("皇甫谧/其言/其言.docx") == "person"
+    assert public_category("皇甫谧/后论/后论.docx") == "person"
+    assert public_category("皇甫谧画像.jpeg") == "person"
+
+
+def test_public_category_marker_order_is_significant() -> None:
+    """A person's film folder is a film, not person material — the movie marker
+    is matched first."""
+    assert public_category("皇甫谧/皇甫谧电影/皇甫谧一.mpg") == "movie"
+    assert public_category("皇甫谧/皇甫谧电影/《针灸鼻祖皇甫谧》第1集 大器晚成.mpg") == "movie"
+
+
+def test_public_category_existing_buckets_unchanged() -> None:
+    """The pre-existing paper/classic/other classification is preserved."""
+    assert public_category("针灸甲乙经/论文/针灸甲乙经/621-关于龈交穴.pdf") == "paper"
+    assert public_category("针灸甲乙经/论著/高士传/《高士传》中华书局1985.pdf") == "classic"
+    assert public_category("针灸甲乙经/论著/版本/某版本.pdf") == "classic"
+    assert public_category("非遗佐证/证书/某证书.pdf") == "other"
+    assert public_category("unknown.pdf") == "other"

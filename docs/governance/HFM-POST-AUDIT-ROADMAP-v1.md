@@ -236,10 +236,12 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 **仍未发布**：`非遗佐证/` **67 条**（`draft`，`publication_permission` 全 false）
 —— 属 P2，须先按 §4.1 生成脱敏 public derivative，管线尚未立项（见下）。
 
-**遗留项（不阻塞）**：4 条资产在 `/public/media` 落入 `other` 桶
-（`皇甫谧画像.jpeg`、`皇甫谧/{其传,其言,后论}/*.docx`）—— 该端点按路径子串
-分类（`api/v1/phase1.py:353-361`），不识别人物材料目录。属展示层问题，待定是否
-补分类分支。
+**分类分支（2026-09-14 已补）**：原 4 条资产在 `/public/media` 落入 `other` 桶
+（`皇甫谧画像.jpeg`、`皇甫谧/{其传,其言,后论}/*.docx`）。分类逻辑已从端点内联
+抽为媒体域纯函数 `public_category`（`phase2/media/service.py`），新增 `person`
+桶（前端标签「人物材料」），并按「先匹配先赢」保证 `皇甫谧电影/` 仍归 `movie`。
+差分核验：681 个 key 中**仅这 4 条**由 `other → person`，其余 677 条不变；
+已发布子集现为 `paper 515 / classic 93 / person 4 / movie 2`，`other` 归零。
 
 ---
 
