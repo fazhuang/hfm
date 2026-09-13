@@ -124,6 +124,9 @@ def parse_volume(n: int) -> tuple[list[tuple[str, list[str]]], list[str]]:
     return result, warnings
 
 
+_VOLUME_NUMERALS = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"]
+
+
 def main() -> int:
     chapters: list[dict[str, object]] = []
     passages: list[dict[str, object]] = []
@@ -138,7 +141,7 @@ def main() -> int:
             "work_id": WORK_ID,
             "level": 1,
             "parent_id": "",
-            "title": f"卷之{'一二三四五六七八九十十一十二'[n-1]}",
+            "title": f"卷之{_VOLUME_NUMERALS[n - 1]}",
             "order": vol_order,
         })
         pieces, warnings = parse_volume(n)

@@ -271,29 +271,42 @@ class PortalService:
             )
         chapters: list[dict[str, Any]] = []
         volumes: dict[str, dict[str, Any]] = {}
-        for ch in (
+        # level-1 卷 first (parent_id IS NULL), then level-2 篇 nested by parent_id.
+        # Separate queries: 篇 `order` restarts per 卷, so a single (order,id)
+        # sort would interleave 篇 ahead of their 卷 and orphan them.
+        volume_rows = (
             (
                 await self.session.execute(
                     select(Chapter)
-                    .where(Chapter.work_id == work.id)
+                    .where(Chapter.work_id == work.id, Chapter.parent_id.is_(None))
                     .order_by(Chapter.order, Chapter.id)
                 )
             )
             .scalars()
             .all()
-        ):
-            if ch.parent_id is None:
-                # level-1 卷 (no passages of its own)
-                volume = {
-                    "chapter_id": ch.id,
-                    "title": ch.title,
-                    "order": ch.order,
-                    "children": [],
-                }
-                volumes[ch.id] = volume
-                chapters.append(volume)
-                continue
-            # level-2 篇 (nested under its 卷)
+        )
+        for ch in volume_rows:
+            volume = {
+                "chapter_id": ch.id,
+                "title": ch.title,
+                "order": ch.order,
+                "children": [],
+            }
+            volumes[ch.id] = volume
+            chapters.append(volume)
+
+        pian_rows = (
+            (
+                await self.session.execute(
+                    select(Chapter)
+                    .where(Chapter.work_id == work.id, Chapter.parent_id.is_not(None))
+                    .order_by(Chapter.order, Chapter.id)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        for ch in pian_rows:
             passages = (
                 (
                     await self.session.execute(

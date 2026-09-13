@@ -36,6 +36,7 @@ const error = ref('')
 const expanded = ref<Record<string, boolean>>({})
 const selectedPassageId = ref<string | null>(null)
 const selectedChapter = ref<StructureChapter | null>(null)
+const selectedVolume = ref<StructureChapter | null>(null)
 const passageText = ref<string | null>(null)
 const passageLoading = ref(false)
 
@@ -63,9 +64,14 @@ function toggle(id: string): void {
   expanded.value[id] = !expanded.value[id]
 }
 
-async function selectPassage(passage: StructurePassage, chapter: StructureChapter): Promise<void> {
+async function selectPassage(
+  passage: StructurePassage,
+  chapter: StructureChapter,
+  volume: StructureChapter,
+): Promise<void> {
   selectedPassageId.value = passage.passage_id
   selectedChapter.value = chapter
+  selectedVolume.value = volume
   passageText.value = null
   passageLoading.value = true
   annotationNote.value = ''
@@ -132,8 +138,9 @@ async function removeAnnotation(annotationId: string): Promise<void> {
 const citation = computed<string>(() => {
   if (!selectedChapter.value || !selectedPassageId.value) return ''
   const workTitle = structure.value?.title ?? '针灸甲乙经'
+  const volumeTitle = selectedVolume.value?.title ?? ''
   const order = passageOrder(selectedChapter.value, selectedPassageId.value)
-  return `《${workTitle}》${selectedChapter.value.title}·第${order}段`
+  return `《${workTitle}》${volumeTitle}·${selectedChapter.value.title}·第${order}段`
 })
 
 function passageOrder(chapter: StructureChapter, passageId: string): number {
@@ -180,7 +187,7 @@ onMounted(loadStructure)
                     type="button"
                     class="duan__link"
                     :class="{ 'duan__link--active': selectedPassageId === p.passage_id }"
-                    @click="selectPassage(p, pian)"
+                    @click="selectPassage(p, pian, volume)"
                   >
                     第{{ p.order }}段 · {{ p.preview }}
                   </button>
