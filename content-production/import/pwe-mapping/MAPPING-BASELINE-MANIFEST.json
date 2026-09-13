@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "task": "HFM-PWE-IT-02-R1",
-  "mapping_baseline_id": "077fd6222eff612978b0aeec93810691f6554f8dbbfe0affa6c4d751ed75594b",
+  "mapping_baseline_id": "bb252408b84ed0369912ba7f310329e459811dbabcea0ce4f929ea201afa3ff6",
   "inputs": [
     {
       "relative_path": "01-entity-bootstrap.csv",
@@ -15,8 +15,8 @@
     },
     {
       "relative_path": "03-edition-work-map.csv",
-      "sha256": "d2725d7cdb0d752605bf2e1f9c0a7ce1e2c6b75b3c5c27debdab42fc57ecbfe8",
-      "size": 29651
+      "sha256": "953a4497fe90fce97c116b545bffac9a10467e71a3512aa4df13fb390ba4a85d",
+      "size": 29719
     },
     {
       "relative_path": "04-person-identity-map.csv",
@@ -35,8 +35,8 @@
     },
     {
       "relative_path": "review/EDITION-CONFIRMATION-REVIEW.csv",
-      "sha256": "e34df5a30a034a176caa9bb4a81aeff4e4aba9174741a3551a5cdb4d9ac8b2e6",
-      "size": 41856
+      "sha256": "2f2daacae89d5481afc2365f48d4a2f3e795fedd9a8fc13024318797de0e241a",
+      "size": 41676
     }
   ]
 }

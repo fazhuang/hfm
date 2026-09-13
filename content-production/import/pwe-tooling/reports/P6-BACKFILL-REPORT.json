@@ -1,0 +1,26 @@
+{
+  "run_id": "pwe-20260913T150230Z-82e376c5",
+  "timestamp": "2026-09-13T15:02:30.389108+00:00",
+  "mode": "apply",
+  "database_identity": "hfm_prod",
+  "database_target_class": "PRODUCTION",
+  "migration_current": "0015",
+  "baseline_identity": "bb252408b84ed0369912ba7f310329e459811dbabcea0ce4f929ea201afa3ff6",
+  "baseline_hashes": {
+    "01-entity-bootstrap.csv": "1a75b63dbd2340dafe22b522a32714c536d26ed4bba5e0ea60ca8370483bffcb",
+    "02-work-canonical-map.csv": "ab1ee7d59e42b64dd349f23479996f93f320354fd704844d9d10a428f3a98d08",
+    "03-edition-work-map.csv": "953a4497fe90fce97c116b545bffac9a10467e71a3512aa4df13fb390ba4a85d",
+    "04-person-identity-map.csv": "efd95ca43247b7a3afb702602fd7ec1df20f8ec1bd3a552464f995a7c85ff64f"
+  },
+  "entity": "Counters(expected=31, created=0, existing=31, skipped=0, deferred=0, conflict=0, failed=0)",
+  "person": "Counters(expected=17, created=0, existing=17, skipped=1, deferred=0, conflict=0, failed=0)",
+  "work": "Counters(expected=14, created=0, existing=14, skipped=0, deferred=0, conflict=0, failed=0)",
+  "edition": "Counters(expected=91, created=4, existing=87, skipped=0, deferred=1, conflict=0, failed=0)",
+  "document_before": 675,
+  "document_after": 675,
+  "document_changed": 0,
+  "transaction_result": "COMMITTED",
+  "result": "PASS",
+  "failed": 0,
+  "errors": []
+}

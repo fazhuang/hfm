@@ -193,14 +193,14 @@ PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数�
 
 - **证据已备齐**：4 条数字文件名版本（A000529–532）经 PaddleOCR 卷端/序页/正文
   独立证实均为《针灸甲乙经》（→ `WORK-JIAYI`），不再依赖文件名猜测。证据、
-  补录方案、合订本设计三件已落盘于 `content-production/import/pwe-mapping/review/`：
+  补录方案、合订本设计三件落盘于 `content-production/import/pwe-mapping/review/`：
   - `P6-DEFERRED-EDITION-EVIDENCE.md`（证据卷）
-  - `P6-BACKFILL-PLAN.md`（4 条补录方案 + 签批单；改动清单：mapping CSV、review CSV、
-    importer 常量 87→91 / 5→1、重签 manifest）
+  - `P6-BACKFILL-PLAN.md`（4 条补录方案 + 签批单）
   - `P6-COMPOUND-WORK-DESIGN.md`（合订本 N:N schema 草案 + 决策选项）
-- **待授权**：A000529–532 补录须人工签批 `DEFERRED→CONFIRMED`；A000541 合刊四书
-  建模方向（继续 DEFER / 单 FK 挂靠 / N:N + 新增 3 著作）须裁决，且「温病学」
-  非单一著作需先目录 OCR 确认确切文本。均未擅自执行。
+- **A000529–532 补录 ✅ 已签批并执行**：mapping/review CSV 已改、manifest 已重签
+  （`bb2524…3ff6`）、importer 常量 87→91 / 5→1；`hfm_prod` 正式 apply 通过
+  （`editions` 87→91，DOCUMENT 基线 675 不变）。4 条现挂 `WORK-JIAYI`。
+- **A000541 合刊四书 ⏸ 维持 DEFERRED**（已签批继续延后）：待建模方向裁决后再处理。
 
 ---
 
