@@ -1,460 +1,227 @@
 <script setup lang="ts">
 /**
- * HomeLifeSection — homepage Section 02 (一生 / Life L2, refined).
+ * HomeLifeSection — homepage Section 02 (一生 / the life).
  *
- * CF-08: production visual fidelity for the accepted
- * HFM_HOMEPAGE_SECTION02_VISUAL_BASELINE_L2_REFINED composition (1440×1240).
- * Concept: A LIFE DESCENDS THROUGH TIME, WHILE THE TEXT HE LEFT SURVIVES BESIDE
- * IT. LEFT — 皇甫谧的一生 / 215 → 282 descending the life axis (four narrative
- * stages, not a stack); RIGHT — an approved Siku manuscript column entering
- * the page (decorative) + the scholarly register row + the honest dispute line.
+ * REDESIGN: editorial life narrative on the warm canvas — a head (eyebrow,
+ * H2, intro, dates), an ordered four-stage life axis, the source-entry list
+ * (其传 / 其言 / 后论), and a person-archive CTA. Replaces the previous
+ * absolutely-positioned timeline composition.
  *
- * DATA TRUTH (CF-08): stages/dates/intro come from the verified config/projection
- * (CORE_PERSON_LIFE_PHASES / HOME_LIFE); nothing is fabricated. The date-anchor
- * captions annotate the two life endpoints and are the accepted editorial copy.
- * The register row links to the real 其传 document; the meta line documents the
- * documented 建安/正始 dispute as the platform does (see 史料依据).
+ * CONTRACT PRESERVED (ui03_home.spec.ts): <section id="home-life"> with the
+ * single H2 「从带经而农，到著书传世。」; real CTA targets
+ * /persons/ENT-PERSON-HFM-HUANGFUMI, /reader/qichuan, /yan, /reader/houlun.
+ * DATA: HOME_LIFE (CORE_PERSON_LIFE_PHASES) — no new facts.
  */
 import { HOME_LIFE, HOME_CHAPTERS } from '../../data/homeProjection'
 
 defineOptions({ name: 'HomeLifeSection' })
-
-const stages = HOME_LIFE.stages
-const dateParts = HOME_LIFE.dates.split('—')
-const yearStart = dateParts[0] ?? ''
-const yearEnd = dateParts[1] ?? ''
-
-const items = HOME_LIFE.items ?? []
-const main = items.find((item) => item.href === '/reader/qichuan')
-const otherEntries = items.filter((item) => item.href !== '/reader/qichuan')
-
-const claimText = `其传考据另载建安 / 正始两说（《晋书》等史料）；平台以 ${HOME_LIFE.dates} 为准并明示争议存在（见「史料依据」）。`
 </script>
 
 <template>
-  <section id="home-life" class="home-section home-section--life" aria-labelledby="home-life-title">
-    <div class="home-life__grain" aria-hidden="true" />
-    <div class="home-life__inner">
-      <!-- header: compact left title block + intro at right -->
-      <div class="home-life__head">
-        <p class="home-life__eyebrow">
-          <span class="home-life__no">{{ HOME_CHAPTERS.life.no }}</span
-          >{{ HOME_CHAPTERS.life.label }}
+  <section id="home-life" class="life" aria-labelledby="home-life-title">
+    <div class="home-life__inner life__inner">
+      <header class="life__head">
+        <p class="life__eyebrow">
+          <span class="life__no">{{ HOME_CHAPTERS.life.no }}</span>{{ HOME_CHAPTERS.life.label }}
         </p>
-        <h2 id="home-life-title" class="home-life__statement">
-          {{ HOME_LIFE.headline }}
-        </h2>
-        <p class="home-life__intro">
-          {{ HOME_LIFE.intro }}
-        </p>
-      </div>
+        <h2 id="home-life-title" class="life__title">{{ HOME_LIFE.headline }}</h2>
+        <p class="life__intro">{{ HOME_LIFE.intro }}</p>
+      </header>
 
-      <!-- descending life axis -->
-      <div class="home-life__axis" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--open" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--p1" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--p2" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--p3" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--p4" aria-hidden="true" />
-      <span class="home-life__junction home-life__junction--close" aria-hidden="true" />
-
-      <!-- date anchors -->
-      <div class="home-life__anchor home-life__anchor--a">
-        {{ yearStart }}<span class="home-life__anchor-cap">生于乱世</span>
-      </div>
-      <div class="home-life__anchor home-life__anchor--b">
-        {{ yearEnd }}<span class="home-life__anchor-cap">终于著述</span>
-      </div>
-
-      <!-- life stages (narrative rhythm, unequal) -->
-      <div
-        v-for="(stage, i) in stages"
-        :key="stage.title"
-        class="home-life__stage"
-        :class="'home-life__stage--' + (i + 1)"
-      >
-        <span class="home-life__stage-name">{{ stage.title }}</span>
-        <p class="home-life__stage-note">
-          {{ stage.note }}
-        </p>
-      </div>
-
-      <!-- manuscript column — partially-visible marginal band (decorative) -->
-      <figure class="home-life__manuscript" aria-hidden="true">
-        <img src="/assets/jiayi/frag-band1.jpg" alt="" />
+      <figure class="life__manuscript" aria-hidden="true">
+        <img src="/assets/jiayi/frag-band1.jpg" alt="" aria-hidden="true" />
       </figure>
 
-      <!-- consolidated scholarly source register -->
-      <div class="home-life__register">
-        <div class="home-life__register-row">
-          <b>{{ main ? main.title : '其传 · 史料来源整理' }}</b>
-          <span class="home-life__register-src">本源史料 / 地方志 / 类书 · 全文已整理</span>
-          <a class="home-life__register-go" :href="main ? main.href : '/reader/qichuan'"
-            >阅读全文 →</a
-          >
-        </div>
-        <div class="home-life__register-sub">
-          <a
-            v-for="entry in otherEntries"
-            :key="entry.title"
-            class="home-life__register-entry"
-            :href="entry.href"
-            >{{ entry.title }} →</a
-          >
-        </div>
-        <p class="home-life__register-meta">
-          《针灸甲乙经》四库全书本 · 清乾隆 · 卷一 · 客户授权资料<span
-            class="home-life__register-sep"
-            >｜</span
-          >{{ claimText }}
+      <ol class="life__stages">
+        <li v-for="(stage, i) in HOME_LIFE.stages" :key="stage.title" class="life__stage">
+          <p class="life__stage-no" aria-hidden="true">{{ String(i + 1).padStart(2, '0') }}</p>
+          <h3 class="life__stage-name">{{ stage.title }}</h3>
+          <p class="life__stage-note">{{ stage.note }}</p>
+        </li>
+      </ol>
+
+      <div class="life__foot">
+        <ul class="life__items">
+          <li v-for="item in HOME_LIFE.items" :key="item.title" class="life__item">
+            <a class="life__item-link" :href="item.href">{{ item.title }}</a>
+            <span class="life__item-meta">{{ item.meta }}</span>
+          </li>
+        </ul>
+        <p class="life__dates">
+          <span class="life__dates-label">生卒</span>{{ HOME_LIFE.dates }}
         </p>
+        <a class="life__cta" :href="HOME_LIFE.cta.href">
+          {{ HOME_LIFE.cta.label }} <span class="life__cta-arr" aria-hidden="true">→</span>
+        </a>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* ===== Section 02 Life (L2 Refined) — production fidelity, 1440×1240 ===== */
-.home-section--life {
-  position: relative;
-  overflow: hidden;
-  min-height: 1240px;
-  margin-inline: calc(-1 * var(--hfm-space-6));
-  background:
-    radial-gradient(
-      980px 640px at 90% -8%,
-      color-mix(in srgb, var(--hfm-color-heritage) 5%, transparent) 0%,
-      transparent 62%
-    ),
-    radial-gradient(
-      700px 520px at -4% 114%,
-      color-mix(in srgb, var(--hfm-color-accent) 4%, transparent) 0%,
-      transparent 60%
-    ),
-    var(--hfm-color-canvas);
+.life {
+  background: var(--hfm-color-surface);
+  padding: var(--hfm-space-24) var(--hfm-space-6);
 }
-.home-life__grain {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.05;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.home-life__inner {
-  position: relative;
-  max-width: 1272px;
+.life__inner {
+  max-width: var(--hfm-content-max);
   margin: 0 auto;
-  width: 100%;
-  height: 100%;
 }
-
-.home-life__head {
-  position: absolute;
-  left: 0;
-  top: 130px;
-  width: 1272px;
+.life__head {
+  max-width: 44rem;
+  margin-bottom: var(--hfm-space-16);
 }
-.home-life__eyebrow {
-  font-size: 11px;
-  letter-spacing: 0.42em;
+.life__eyebrow {
+  margin: 0 0 var(--hfm-space-4);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.4em;
   color: var(--hfm-color-heritage);
-  margin: 0;
 }
-.home-life__no {
+.life__no {
   color: var(--hfm-color-text-muted);
   margin-right: 0.5em;
 }
-.home-life__statement {
+.life__title {
+  margin: 0 0 var(--hfm-space-4);
   font-family: var(--hfm-font-heading);
   font-weight: 500;
-  font-size: 82px;
-  line-height: 1.2;
-  letter-spacing: 0.04em;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: var(--hfm-leading-tight);
   color: var(--hfm-color-text);
-  margin: 32px 0 0;
-  max-width: 6.6ch;
 }
-.home-life__intro {
-  position: absolute;
-  left: 560px;
-  top: 44px;
-  width: 360px;
-  max-width: 34ch;
-  font-size: 15px;
-  line-height: 2.1;
-  color: var(--hfm-color-text-secondary);
+.life__intro {
   margin: 0;
-}
-
-.home-life__axis {
-  position: absolute;
-  left: 130px;
-  top: 470px;
-  width: 1px;
-  height: 550px;
-  background: linear-gradient(
-    180deg,
-    var(--hfm-color-border-strong) 0,
-    var(--hfm-color-text) 10%,
-    var(--hfm-color-text) 90%,
-    var(--hfm-color-border-strong) 100%
-  );
-}
-.home-life__junction {
-  position: absolute;
-  left: 126px;
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  border: 1px solid var(--hfm-color-text);
-  background: var(--hfm-color-canvas);
-}
-.home-life__junction--open {
-  top: 466px;
-}
-.home-life__junction--p1 {
-  top: 562px;
-}
-.home-life__junction--p2 {
-  top: 686px;
-}
-.home-life__junction--p3 {
-  top: 802px;
-}
-.home-life__junction--p4 {
-  top: 896px;
-}
-.home-life__junction--close {
-  top: 1016px;
-}
-
-.home-life__anchor {
-  position: absolute;
-  left: 34px;
-  font-family: var(--hfm-font-display);
-  font-weight: 500;
-  line-height: 1;
-  color: var(--hfm-color-text);
-  font-variant-numeric: tabular-nums;
-}
-.home-life__anchor--a {
-  top: 408px;
-  font-size: 104px;
-}
-.home-life__anchor--b {
-  top: 962px;
-  font-size: 104px;
-}
-.home-life__anchor-cap {
-  display: block;
-  margin-top: 14px;
-  font-family: var(--hfm-font-sans);
-  font-weight: 400;
-  font-size: 12px;
-  letter-spacing: 0.3em;
-  color: var(--hfm-color-text-muted);
-}
-
-.home-life__stage {
-  position: absolute;
-  left: 210px;
-  font-family: var(--hfm-font-display);
-  color: var(--hfm-color-text);
-}
-.home-life__stage-name {
-  font-weight: 500;
-  line-height: 1.2;
-}
-.home-life__stage-note {
-  font-family: var(--hfm-font-sans);
-  font-weight: 400;
-  color: var(--hfm-color-text-secondary);
-  line-height: 1.9;
-  margin-top: 12px;
-  max-width: 36ch;
-}
-.home-life__stage--1 {
-  top: 540px;
-}
-.home-life__stage--1 .home-life__stage-name {
-  font-size: 46px;
-}
-.home-life__stage--1 .home-life__stage-note {
-  font-size: 13px;
-}
-.home-life__stage--2 {
-  top: 664px;
-}
-.home-life__stage--2 .home-life__stage-name {
-  font-size: 33px;
+  font-size: var(--hfm-text-lg);
+  line-height: var(--hfm-leading-normal);
   color: var(--hfm-color-text-secondary);
 }
-.home-life__stage--2 .home-life__stage-note {
-  font-size: 12.5px;
-}
-.home-life__stage--3 {
-  top: 780px;
-}
-.home-life__stage--3 .home-life__stage-name {
-  font-size: 44px;
-}
-.home-life__stage--3 .home-life__stage-note {
-  font-size: 12.5px;
-}
-.home-life__stage--4 {
-  top: 874px;
-  width: 700px;
-}
-.home-life__stage--4 .home-life__stage-name {
-  font-size: 47px;
-}
-.home-life__stage--4 .home-life__stage-note {
-  font-size: 12.5px;
-}
-
-.home-life__manuscript {
-  position: absolute;
-  right: -80px;
-  top: -180px;
-  width: 300px;
-  height: 1520px;
+.life__manuscript {
+  margin: 0 0 var(--hfm-space-12);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
   overflow: hidden;
-  pointer-events: none;
-  margin: 0;
 }
-.home-life__manuscript img {
+.life__manuscript img {
+  display: block;
   width: 100%;
-  height: 100%;
+  height: clamp(10rem, 24vw, 16rem);
   object-fit: cover;
-  object-position: center 26%;
-  filter: sepia(0.15) saturate(0.86) contrast(1.03);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 120px);
-  mask-image: linear-gradient(90deg, transparent 0, #000 120px);
+  filter: sepia(0.14) saturate(0.9) contrast(1.02);
 }
 
-.home-life__register {
-  position: absolute;
-  left: 0;
-  bottom: 52px;
-  width: 1272px;
-  border-top: 1px solid var(--hfm-color-border);
-  padding-top: 22px;
+/* four-stage life axis */
+.life__stages {
+  list-style: none;
+  margin: 0 0 var(--hfm-space-16);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--hfm-space-8);
 }
-.home-life__register-row {
-  display: flex;
-  align-items: baseline;
-  gap: 18px;
-  font-size: 13px;
-  color: var(--hfm-color-text-secondary);
+.life__stage {
+  padding-top: var(--hfm-space-5);
+  border-top: 1px solid var(--hfm-color-border-strong);
 }
-.home-life__register-row b {
-  font-family: var(--hfm-font-display);
-  font-size: 17px;
-  letter-spacing: 0.06em;
+.life__stage-no {
+  margin: 0 0 var(--hfm-space-3);
+  font-family: var(--hfm-font-numeric);
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-heritage);
+}
+.life__stage-name {
+  margin: 0 0 var(--hfm-space-2);
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-xl);
+  font-weight: 500;
   color: var(--hfm-color-text);
 }
-.home-life__register-src {
-  font-size: 12px;
+.life__stage-note {
+  margin: 0;
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
   color: var(--hfm-color-text-muted);
-  letter-spacing: 0.02em;
 }
-.home-life__register-go {
-  color: var(--hfm-color-accent);
-  letter-spacing: 0.1em;
-  white-space: nowrap;
-}
-.home-life__register-sub {
+
+/* source entries + cta */
+.life__foot {
   display: flex;
-  gap: 22px;
-  margin-top: 6px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--hfm-space-8);
+  padding-top: var(--hfm-space-8);
+  border-top: 1px solid var(--hfm-color-border);
 }
-.home-life__register-entry {
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  color: var(--hfm-color-text-secondary);
+.life__items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-8);
 }
-.home-life__register-meta {
-  margin-top: 8px;
-  font-size: 11.5px;
-  letter-spacing: 0.02em;
+.life__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hfm-space-1);
+}
+.life__item-link {
+  font-size: var(--hfm-text-base);
+  color: var(--hfm-color-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hfm-color-border-strong);
+  padding-bottom: 2px;
+}
+.life__item-link:hover {
+  color: var(--hfm-color-accent);
+  border-color: var(--hfm-color-accent);
+}
+.life__item-meta {
+  font-size: var(--hfm-text-xs);
   color: var(--hfm-color-text-muted);
-  line-height: 1.8;
 }
-.home-life__register-sep {
-  margin: 0 10px;
-  color: var(--hfm-color-border-strong);
+.life__dates {
+  margin: 0;
+  font-family: var(--hfm-font-numeric);
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text-muted);
 }
-
-/* ===== Responsive (CF-08): reflow below 1200px so content stays readable. ===== */
-@media (max-width: 1199px) {
-  .home-section--life {
-    min-height: auto;
-    margin-inline: 0;
-    padding: var(--hfm-space-12) var(--hfm-space-5);
-  }
-  .home-life__inner {
-    max-width: none;
-    height: auto;
-  }
-  .home-life__head {
-    position: static;
-    width: auto;
-  }
-  .home-life__statement {
-    font-size: clamp(40px, 7vw, 82px);
-    max-width: none;
-  }
-  .home-life__intro {
-    position: static;
-    width: auto;
-    max-width: 46ch;
-    margin-top: var(--hfm-space-4);
-  }
-  .home-life__axis,
-  .home-life__junction {
-    display: none;
-  }
-  .home-life__anchor {
-    position: static;
-    display: inline-block;
-    font-size: clamp(56px, 12vw, 104px);
-  }
-  .home-life__anchor--b {
-    margin-left: var(--hfm-space-5);
-  }
-  .home-life__stage {
-    position: static;
-    width: auto;
-    max-width: 46ch;
-    padding: var(--hfm-space-3) 0;
-    border-top: 1px solid var(--hfm-color-border);
-  }
-  .home-life__stage .home-life__stage-name {
-    font-size: clamp(26px, 5vw, 44px);
-  }
-  .home-life__stage .home-life__stage-note {
-    font-size: 13px;
-  }
-  .home-life__manuscript {
-    position: static;
-    width: 200px;
-    height: 220px;
-    margin: var(--hfm-space-5) 0 0;
-  }
-  .home-life__register {
-    position: static;
-    width: auto;
-    margin-top: var(--hfm-space-6);
-  }
+.life__dates-label {
+  margin-right: var(--hfm-space-2);
+  letter-spacing: 0.2em;
+}
+.life__cta {
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.1em;
+  color: var(--hfm-color-accent);
+  text-decoration: none;
+}
+.life__cta-arr {
+  transition: transform 0.18s ease;
+}
+.life__cta:hover .life__cta-arr {
+  transform: translateX(3px);
 }
 
+@media (max-width: 1023px) {
+  .life__stages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 599px) {
-  .home-section--life {
-    padding: var(--hfm-space-8) var(--hfm-space-4);
+  .life {
+    padding: var(--hfm-space-16) var(--hfm-space-4);
   }
-  .home-life__register-row {
-    flex-wrap: wrap;
-    gap: 10px;
+  .life__stages {
+    grid-template-columns: 1fr;
+  }
+  .life__foot {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 </style>

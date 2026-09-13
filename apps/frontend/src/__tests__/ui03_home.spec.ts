@@ -320,17 +320,18 @@ describe('UI-03 CF-07 homepage renders the accepted 8-section structure', () => 
 })
 
 describe('UI-03 CF-08 Sections 01–04 production contract', () => {
-  it('Section 02 Life renders the accepted two-plane documentary form (4 stages, dated anchors)', () => {
+  it('Section 02 Life renders the accepted life narrative (4 stages, dated entries)', () => {
     const wrapper = mountHome()
     const life = wrapper.find('#home-life')
-    expect(life.findAll('.home-life__stage')).toHaveLength(4)
-    expect(life.findAll('.home-life__junction')).toHaveLength(6)
-    expect(life.findAll('.home-life__anchor')).toHaveLength(2)
+    expect(life.findAll('.life__stage')).toHaveLength(4)
     expect(life.text()).toContain('215')
     expect(life.text()).toContain('282')
-    // Narrative plane + documentary/register plane both present.
-    expect(life.find('.home-life__register').exists()).toBe(true)
-    expect(life.find('.home-life__register-row').exists()).toBe(true)
+    // Documentary plane (manuscript) + source-entry register both present.
+    expect(life.find('.life__manuscript img').attributes('src')).toBe(
+      '/assets/jiayi/frag-band1.jpg',
+    )
+    expect(life.find('.life__items').exists()).toBe(true)
+    expect(life.find('.life__cta').attributes('href')).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
   })
 
   it('Section 03 Book keeps WORK ≠ EDITION (no false 19-works claim)', () => {
@@ -340,10 +341,10 @@ describe('UI-03 CF-08 Sections 01–04 production contract', () => {
     expect(book.text()).toContain('版本记录')
     expect(book.text()).toContain(String(INVENTORY_EDITION_RECORDS))
     expect(book.text()).not.toMatch(/部著作|部作品/)
-    // Single WORK object heading + edition chain + lineage entry preserved.
-    expect(book.find('.home-book__title-glyphs').text()).toBe('《针灸甲乙经》')
-    expect(book.findAll('.home-book__prov-chain b').length).toBeGreaterThanOrEqual(4)
-    expect(book.find('.home-lineage img').attributes('src')).toContain('edition-lineage.png')
+    // Single WORK object heading + lineage entry preserved.
+    expect(book.find('.book__leaf-cap').text()).toBe('《针灸甲乙经》')
+    expect(book.find('.book__lineage img').attributes('src')).toContain('edition-lineage.png')
+    expect(book.find('.book__cta').attributes('href')).toBe('/jiayi')
   })
 
   it('Section 04 Knowledge derives every count from data and keeps taxonomy + evidence register', () => {
@@ -356,8 +357,9 @@ describe('UI-03 CF-08 Sections 01–04 production contract', () => {
 
     const wrapper = mountHome()
     const knowledge = wrapper.find('#home-knowledge')
-    expect(knowledge.findAll('.home-knowledge__prim-item')).toHaveLength(3)
-    expect(knowledge.text()).toContain('版本记录')
+    expect(knowledge.findAll('.knowledge__register-row')).toHaveLength(3)
+    expect(knowledge.findAll('.knowledge__category')).toHaveLength(6)
+    expect(knowledge.text()).toContain('论著资料')
     // No invented corpus/evidence count is displayed beyond the real ones.
     expect(knowledge.text()).not.toMatch(/\d+\s*万|99\s*%|100\s*%|\.\d+\s*%/)
   })
@@ -392,8 +394,8 @@ describe('UI-03 CF-09 Sections 05–08 production contract', () => {
     const wrapper = mountHome()
     const ev = wrapper.find('#home-evidence')
     expect(ev.exists()).toBe(true)
-    // ONE argument held open: 结论 / 出处 / 争议 (3 indented blocks).
-    expect(ev.findAll('.home-evidence__st')).toHaveLength(3)
+    // The argument is held open: 结论 / 争议 blocks + the real witness quote.
+    expect(ev.findAll('.evidence__cell')).toHaveLength(2)
     expect(ev.text()).toContain('结论')
     expect(ev.text()).toContain('出处')
     expect(ev.text()).toContain('争议')
@@ -404,8 +406,8 @@ describe('UI-03 CF-09 Sections 05–08 production contract', () => {
     expect(ev.text()).toContain('建安')
     expect(ev.text()).toContain('正始')
     // Provenance register links to the real source document; CTA to 后论.
-    expect(ev.find('.home-evidence__src-link').attributes('href')).toBe('/reader/qichuan')
-    expect(ev.find('.home-evidence__act').attributes('href')).toBe('/reader/houlun')
+    expect(ev.find('.evidence__source-link').attributes('href')).toBe('/reader/qichuan')
+    expect(ev.find('.evidence__cta').attributes('href')).toBe('/reader/houlun')
   })
 
   it('Section 06 Heritage: living link renders, 刘君奇·第六代名医 correct, PARTIAL truthful', () => {
@@ -413,13 +415,13 @@ describe('UI-03 CF-09 Sections 05–08 production contract', () => {
     const hg = wrapper.find('#home-heritage')
     expect(hg.exists()).toBe(true)
     // Documentary act (photo + caption) + transmission records + carrier.
-    expect(hg.find('.home-heritage__act-pic img').attributes('src')).toBe(
+    expect(hg.find('.heritage__visual img').attributes('src')).toBe(
       '/assets/heritage/heritage-baishi-ceremony.jpg',
     )
-    expect(hg.find('.home-heritage__trace').exists()).toBe(true)
-    expect(hg.find('.home-heritage__carrier').exists()).toBe(true)
+    expect(hg.find('.heritage__trace').exists()).toBe(true)
+    expect(hg.find('.heritage__person-name').exists()).toBe(true)
     // 刘君奇 = 第六代名医 stays correct.
-    expect(hg.find('.home-heritage__name').text()).toBe('刘君奇')
+    expect(hg.find('.heritage__person-name').text()).toBe('刘君奇')
     expect(hg.text()).toContain('第六代名医')
     // PARTIAL lineage is honest — no fabricated generation/completeness.
     const status = hg.find('.hfm-status')
@@ -428,17 +430,14 @@ describe('UI-03 CF-09 Sections 05–08 production contract', () => {
     expect(hg.text()).not.toMatch(/第二代主|第三代|第四代主|第五代主|已确认完整谱系|谱系完整/)
   })
 
-  it('Section 07 Domains: real route CTAs, holdings rows, rejected line absent', () => {
+  it('Section 07 Domains: real route CTAs, rejected line absent', () => {
     const wrapper = mountHome()
     const dm = wrapper.find('#home-domains')
     expect(dm.exists()).toBe(true)
-    const doors = dm.findAll('.home-domains__door')
+    const doors = dm.findAll('.domains__card')
     expect(doors).toHaveLength(4)
-    const hrefs = doors.map((d) => d.find('.home-domains__go').attributes('href'))
+    const hrefs = doors.map((d) => d.find('.domains__card-cta').attributes('href'))
     expect(hrefs).toEqual(['/persons/ENT-PERSON-HFM-HUANGFUMI', '/archive', '/jiayi', '/heritage'])
-    // Holdings rows + medical bibliographic register are rendered (informational).
-    expect(dm.findAll('.home-domains__pv').length).toBeGreaterThanOrEqual(3)
-    expect(dm.findAll('.home-domains__b')).toHaveLength(3)
     // Rejected line never restored.
     expect(dm.text()).not.toMatch(/NARRATIVE|USABLE ARCHIVE|叙事之后/)
   })

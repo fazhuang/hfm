@@ -48,14 +48,17 @@ const dates = CORE_PERSON_DATES
         <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
 
         <!-- the name — decorative monument (the H1 carries the platform brand) -->
-        <p class="home-hero__name hero__name" aria-hidden="true">皇甫谧</p>
+        <p class="home-hero__name hero__name" aria-hidden="true">
+          <span class="home-hero__glyph">皇</span><span class="home-hero__glyph">甫</span
+          ><span class="home-hero__glyph">谧</span>
+        </p>
 
         <p class="hero__statement">{{ HOME_HERO.definition }}</p>
         <p class="hero__roles">西晋 · 医学家 · 文学家 · 史学家</p>
 
         <div class="hero__actions">
-          <a class="hero__cta" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
-            进入人物档案 <span class="hero__cta-arr" aria-hidden="true">→</span>
+          <a class="home-hero__act hero__cta" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
+            进入人物档案 <span class="home-hero__act-arr hero__cta-arr" aria-hidden="true">→</span>
           </a>
           <a class="hero__cta hero__cta--ghost" href="/jiayi">
             进入《针灸甲乙经》 <span class="hero__cta-arr" aria-hidden="true">→</span>
