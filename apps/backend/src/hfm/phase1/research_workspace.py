@@ -272,9 +272,7 @@ class ResearchWorkspaceService:
         """Owner-scoped annotations; optional passage / project filter."""
         _require_permission(principal, "research:note:read")
         _validate_paging(page, page_size)
-        base = select(ResearchAnnotation).where(
-            ResearchAnnotation.owner_id == principal.user_id
-        )
+        base = select(ResearchAnnotation).where(ResearchAnnotation.owner_id == principal.user_id)
         if passage_id is not None:
             base = base.where(ResearchAnnotation.passage_id == passage_id)
         if project_id is not None:
@@ -288,9 +286,7 @@ class ResearchWorkspaceService:
         rows = (
             (
                 await self.session.execute(
-                    base.order_by(
-                        ResearchAnnotation.created_at.desc(), ResearchAnnotation.id
-                    )
+                    base.order_by(ResearchAnnotation.created_at.desc(), ResearchAnnotation.id)
                     .limit(page_size)
                     .offset((page - 1) * page_size)
                 )
@@ -344,9 +340,7 @@ class ResearchWorkspaceService:
         await self.session.flush()
         return self._serialize_annotation(annotation)
 
-    async def delete_annotation(
-        self, *, principal: Principal, annotation_id: str
-    ) -> None:
+    async def delete_annotation(self, *, principal: Principal, annotation_id: str) -> None:
         """Owner-scoped delete."""
         _require_permission(principal, "research:note:delete")
         annotation = await self.session.get(ResearchAnnotation, annotation_id)

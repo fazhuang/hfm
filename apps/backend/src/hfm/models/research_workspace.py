@@ -102,9 +102,7 @@ class ResearchAnnotation(BaseModel):
     )
 
     #: owner + passage binding are immutable (I4/I5 stable identity).
-    immutable_fields: ClassVar[frozenset[str]] = frozenset(
-        {"id", "owner_id", "passage_id"}
-    )
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "owner_id", "passage_id"})
 
     @validates("owner_id", "passage_id")
     def _validate_immutable_binding(self, key: str, value: object) -> object:

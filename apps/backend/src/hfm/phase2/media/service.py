@@ -171,8 +171,7 @@ class MediaService:
             raise MediaRightsError(f"media not found: {object_key}")
         if asset.original_object_key is None:
             raise MediaRightsError(
-                "a publication grant can only be set on a derivative — "
-                f"{object_key} is an original"
+                f"a publication grant can only be set on a derivative — {object_key} is an original"
             )
         if not asset.redaction_token:
             raise MediaRightsError(f"derivative {object_key} carries no redaction token")
