@@ -1,8 +1,8 @@
 # HFM 设计原则 — Design Principles
 
 Status: DESIGN INPUT（提案，非治理文档）
-Date: 2026-08-31 · 配套文档: HFM-UI-DESIGN-AUDIT / HFM-VISUAL-DIRECTION / HFM-DESIGN-TOKENS-PROPOSAL / HFM-INFORMATION-ARCHITECTURE / HFM-UI-OPTIMIZATION-DAG
-适用对象: 本轮 UI 优化全部 WP（UI-01…UI-15）的设计与验收基准。
+Date: 2026-08-31 · 配套文档: HFM-UI-DESIGN-AUDIT / HFM-VISUAL-DIRECTION / HFM-DESIGN-TOKENS-PROPOSAL / HFM-INFORMATION-ARCHITECTURE
+适用对象: UI 的设计与验收基准。视觉基准与页型骨架以 `docs/governance/HFM-UI-CONTRACT-v2.md` 为准（本文档 P1–P10 与之冲突处，以 v2 契约优先）。
 
 ---
 

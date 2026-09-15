@@ -25,7 +25,8 @@
 | 能力/里程碑 | 归档文件（仓库路径） | 说明 |
 | --- | --- | --- |
 | 研究端登录/权限/研究工作台后端（P1-12 里程碑） | `docs/audit/HFM-PHASE1-FRONTIER6-P1-12-IMPLEMENTATION.md` | 该里程碑实现与验收说明 |
-| 公共门户 UI 与响应式/无障碍验收 | `docs/design/HFM-UI-FINAL-ACCEPTANCE-EVIDENCE.md` | 界面验收记录 |
+| 公共门户 UI 与信息架构契约 | `docs/governance/HFM-UI-CONTRACT-v2.md` | 当前生效的 UI 契约（2026-09-16 起，取代此前的 UI 验收记录） |
+| 门户界面自动化验收 | `apps/frontend/e2e/`（Playwright）· `apps/frontend/src/__tests__/`（Vitest） | 每次改动跑 `pnpm e2e` / `pnpm test` |
 | 公共端界面证据截图 | `docs/audit/evidence/`（对应界面验收截图） | 视觉验收制品 |
 | 运行/运维/恢复契约 | `docs/operations/ND1-RELEASE-QUALIFICATION.md` | 发布、备份、恢复、回滚说明 |
 | 用户与学者操作手册 | `docs/user-guide/HFM-USER-AND-SCHOLAR-GUIDE.md` | 随本次交付提交 |

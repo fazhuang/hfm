@@ -246,7 +246,7 @@ frontend: lint · typecheck · build
 | **C-01** | `roadmap §4` | 「金丝雀已验证…发布后 derivative published」 | 生产库 `derivatives = 0`;证据库(克隆库)**已删除**,不可复现 | OPEN |
 | **C-02** | `roadmap:352` | 「A000529–532 补录 ✅ **已签批**并执行」 | 签批单**空白**:四行 `[ ] 同意` 未勾,签署人栏 `__________________` | OPEN |
 | **C-03** | `ND1-RELEASE-QUALIFICATION.md` | 当前运维权威文档,9 处版本号 | 8 行写 `0014` + **1 行写 `0017`** —— **自相矛盾**,其中 1 行是本轮改坏的 | OPEN |
-| **C-04** | `HFM-FRONTEND-CONTENT-CONTRACT-v1.md` | 标 `EFFECTIVE`,称 `/heritage` 与 `/media` 「❌ 返回 0」 | 实测 56 与 614 | OPEN |
+| **C-04** | `HFM-FRONTEND-CONTENT-CONTRACT-v1.md` | 标 `EFFECTIVE`,称 `/heritage` 与 `/media` 「❌ 返回 0」 | 实测 56 与 614 | **CLOSED (2026-09-16)** —— 该契约已被 `docs/governance/HFM-UI-CONTRACT-v2.md` 取代并删除,出处不复存在 |
 | **C-05** | `roadmap §1` 基线表 | sources 31/34、artifacts 31、pub_records 31、editions 87、documents 667 | **120 / 117 / 117 / 91 / 675** —— 7 行中 5 行过期 | OPEN |
 | **C-06** | `BASELINE-MANAGEMENT.md:193` | 「Ruff/Ruff Format/mypy/pytest/ESLint/**Prettier**/vue-tsc/**Vitest**/Build 全部 PASS」 | Prettier 与 Vitest **不属于任何门禁** | OPEN |
 | **C-07** | `GAP-MAP.md` / `IMPLEMENTATION-TRUTH-GAPS.csv` | `GAP-01` 研究工作台无写表单 | **已交付**(交付清单 B3–B6) | **已失效但仍在册** |
@@ -312,3 +312,22 @@ hfm_prod @ alembic 0017 → 0018
 **证据**：`scripts/deploy-gate.sh prod` 迁移后 `MIGRATION_VERIFY=PASS (single head == current == 0018)`；`/api/v1/public/{works,persons,media,heritage,c-terms}` 全部 200。
 
 **留给授权方**：本节只更动作废的事实与一处已核实关闭的风险。登记册其余条目（A-1 / A-2 / A-5 等）的状态推进需起草方或授权方确认，本人未改。
+
+---
+
+## 14. 2026-09-16 状态变更：UI 契约体系重建
+
+本节依维护规则 1 记入。**未改动任何运行时代码、API、数据库或内容数据。**
+
+| 变更 | 内容 |
+| :--- | :--- |
+| 新增 | `docs/governance/HFM-UI-CONTRACT-v2.md` —— UI 的唯一裁决契约，视觉基准为参考图（方案六 沉浸体验·未来展厅） |
+| 删除 | `HFM-FRONTEND-CONTENT-CONTRACT-v1.md`（内容契约 v1/v1.1）、`HFM-UI-FREEZE-CANDIDATE.md`、`HFM-UI-FINAL-ACCEPTANCE-ARCHIVE.md`、`HFM-UI-FINAL-ACCEPTANCE-EVIDENCE.md`、`HFM-UI-OPTIMIZATION-DAG.md`、`design-qa.md`（工作树删除，历史保留于 git） |
+| 重写 | `HFM-VISUAL-DIRECTION.md` v2（深色展厅）· `HFM-DESIGN-TOKENS-PROPOSAL.md` v2（落盘 token 现状 + 收敛方案） |
+| 修订 | `HFM-INFORMATION-ARCHITECTURE.md` §0.1 —— 主导航由 5 链接改为参考图的 8 项 |
+| 放宽 | `ui02_shell` / `ui03_home` / `ui02-shell` / `ui03-home` / `ui12_correction` 中把旧版式写成断言的用例（区块 id、H2 字面量、主导航长度、导航标签、逐段 data-source） |
+| 关闭 | **C-04** —— 出处文档已删除 |
+
+**已决（项目方，2026-09-16）**：主导航按参考图改为 8 项；门户内容结构按参考图（人物 / 典籍 / 知识图谱 / 数字资源）。2026-08-31 的"客户强制 5 链接"与《公众门户宪章》四模块由此不再是 UI 依据（契约 v2 §7 D1–D3）。
+
+**未改的事**：§6.3 的授权冲突（A-7 所记）仍然存在，本次未触及。

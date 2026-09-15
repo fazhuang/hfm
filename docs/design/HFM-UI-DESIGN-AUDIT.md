@@ -253,7 +253,7 @@ Date: 2026-08-31 · 范围: `apps/frontend` 只读审计 + 首页/人物页/Read
 5. 新增 MISSING 项：其言区（`/yan`）、甲乙经区（`/jiayi`）、证书展示、传承人物档案页（第六代名医·刘君奇）。
 6. 新数据缺口（均须治理裁决后实施）：其言四篇文本准入、版本脉络结构化（JIAYI_EDITION_RELATIONS）、CONTENT_METADATA、ENTITY_RELATIONS、PRIVACY_REVIEW、证书媒体类别。
 
-完整 IA 映射见 `HFM-INFORMATION-ARCHITECTURE.md §0.1/§3`；WP 调整见 `HFM-UI-OPTIMIZATION-DAG.md`。
+完整 IA 映射见 `HFM-INFORMATION-ARCHITECTURE.md §0.1/§3`。本审计的 UI-XX 工作包规划文档（`HFM-UI-OPTIMIZATION-DAG.md`）已于 2026-09-16 随视觉方向变更删除；现行契约见 `docs/governance/HFM-UI-CONTRACT-v2.md`。
 
 ### 12.1 客户材料审阅与授权结论（2026-09-01，`zzcl/` + `hfmzl/`）
 
