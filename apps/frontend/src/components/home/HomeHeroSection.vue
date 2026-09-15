@@ -103,13 +103,15 @@ const dates = CORE_PERSON_DATES
 
         <div class="hero__aside">
           <XlScaleBand class="hero__band" />
-          <figure class="hero__specimen">
-            <img src="/assets/jiayi/frag-macro.jpg" alt="" aria-hidden="true" />
+          <figure class="hero__figure">
+            <div class="hero__specimen">
+              <img src="/assets/jiayi/frag-macro.jpg" alt="" aria-hidden="true" />
+            </div>
+            <figcaption class="home-hero__spec-caption hero__caption">
+              <span class="hero__caption-title">《针灸甲乙经》</span>
+              <span class="hero__caption-sub">四库全书本 · 卷一 · 清乾隆抄本 · 客户授权资料</span>
+            </figcaption>
           </figure>
-          <figcaption class="home-hero__spec-caption hero__caption">
-            <span class="hero__caption-title">《针灸甲乙经》</span>
-            <span class="hero__caption-sub">四库全书本 · 卷一 · 清乾隆抄本 · 客户授权资料</span>
-          </figcaption>
         </div>
       </div>
     </div>
@@ -294,6 +296,9 @@ const dates = CORE_PERSON_DATES
 .hero__band {
   color: var(--wl-ink);
 }
+.hero__figure {
+  margin: 0;
+}
 .hero__specimen {
   margin: 0;
   border: 1px solid var(--wl-rule);
@@ -306,6 +311,9 @@ const dates = CORE_PERSON_DATES
   filter: sepia(0.12) saturate(0.85) contrast(1.02);
 }
 .hero__caption {
+  /* Replaces the .hero__aside flex gap the caption used to sit across,
+     now that it is nested inside .hero__figure to keep it a real figcaption. */
+  margin-top: var(--hfm-space-5);
   padding-top: var(--hfm-space-3);
   border-top: 1px solid var(--wl-rule);
 }
