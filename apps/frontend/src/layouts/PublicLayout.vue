@@ -449,4 +449,30 @@ onBeforeUnmount(() => {
     margin-left: 0;
   }
 }
+
+/* ---- 窄屏页头工具区 ----
+   工具区有四件（检索 / 中|EN / 研究工作台），挤在一行会把按钮压成竖排单字。
+   分两行：检索独占一行，语言标记与工作台入口占下一行。 */
+@media (max-width: 767px) {
+  .public-shell__tools {
+    flex-wrap: wrap;
+    gap: var(--hfm-space-2) var(--hfm-space-3);
+  }
+  .header-search {
+    flex: 1 1 100%;
+  }
+  .header-search input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+  .header-search__submit,
+  .header-workbench {
+    white-space: nowrap;
+  }
+  .header-workbench {
+    padding: 0.3rem 0.7rem;
+    font-size: var(--hfm-text-xs);
+  }
+}
 </style>

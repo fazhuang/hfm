@@ -68,6 +68,21 @@ test.describe('UI-02 main-nav targets', () => {
   })
 })
 
+test.describe('UI-02 narrow header', () => {
+  // 页头工具区有四件（检索 / 中|EN / 研究工作台）。挤在一行时按钮会被压成
+  // 竖排单字 —— 实测高度 200px 以上，整条页头占掉小半屏。这里守住「一行一个」。
+  test('keeps each header control on one line at 390px', async ({ page }) => {
+    await mockPublicApi(page)
+    await page.setViewportSize({ width: 390, height: 844 })
+    await page.goto('/')
+    for (const sel of ['.header-search__submit', '.header-workbench', '.nav-toggle']) {
+      const box = await page.locator(sel).boundingBox()
+      expect(box, sel).not.toBeNull()
+      expect(box!.height, sel).toBeLessThan(60)
+    }
+  })
+})
+
 test.describe('UI-02 keyboard navigation (mobile drawer)', () => {
   test.beforeEach(async ({ page }) => {
     await mockPublicApi(page)
