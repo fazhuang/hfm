@@ -48,9 +48,19 @@ import EditionLineageImage from '../../components/jiayi/EditionLineageImage.vue'
 import Timeline from '../../components/Timeline.vue'
 import BibliographicRecord from '../../components/primitives/BibliographicRecord.vue'
 import type { TimelineEvent } from '../../types/timeline'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { mediaBytesUrl } from '../../services/media'
-import { JIAYI_IMPRINTS, type JiayiImprint, type JiayiImprintEdition } from '../../data/jiayiImprints'
+import { fetchPublicMedia } from '../../services/api'
+import { isPublished } from '../../utils/publication'
+import type { MediaAssetItem } from '../../types/media'
+import type { PublicationState } from '../../types/public'
+import {
+  JIAYI_EDITIONS,
+  editionOf,
+  volumeLabel,
+  volumeOrder,
+  type JiayiEditionMeta,
+} from '../../data/jiayiImprints'
 
 defineOptions({ name: 'JiayiView' })
 
@@ -60,18 +70,82 @@ defineOptions({ name: 'JiayiView' })
  * 就地展开而非弹窗：弹窗要配焦点陷阱、Esc、滚动锁，而这张页面上同时只有
  * 一卷被打开，就地展开少一半代码、也少一半出错的地方。
  */
-const activeImprint = ref<{ imprint: JiayiImprint; edition: JiayiImprintEdition } | null>(null)
+const activeImprint = ref<{ id: string; label: string; edition: JiayiEditionMeta } | null>(null)
 
-function openImprint(imprint: JiayiImprint, edition: JiayiImprintEdition): void {
-  activeImprint.value = { imprint, edition }
+function openImprint(id: string, label: string, edition: JiayiEditionMeta): void {
+  activeImprint.value = { id, label, edition }
 }
 
 function closeImprint(): void {
   activeImprint.value = null
 }
 
-/** 影印总数（去重后）。 */
-const imprintTotal = JIAYI_IMPRINTS.reduce((n, e) => n + e.imprints.length, 0)
+/**
+ * 影印件目**从公开接口现取**，不写死在前端。
+ *
+ * 与非遗陈列同理：哪些件能公开是随发布状态变的，固化进构建产物会让下架的件
+ * 仍以名称出现在页面上。四个版本名与说明留在 `jiayiImprints.ts` —— 那是编辑
+ * 内容，不随发布状态变。
+ *
+ * **按 (版本, 卷次标签) 去重**：客户台账里「四库全书本卷十至十二」有两份逐字节
+ * 相同的文件（同 sha256、同大小，两个库行）。接口不返回 sha256，所以按推导出的
+ * 卷次标签去重 —— 两份解析出同一个标签，保留先到的一条。
+ */
+type ImprintStatus = 'loading' | 'ready' | 'error'
+const imprintStatus = ref<ImprintStatus>('loading')
+const mediaItems = ref<MediaAssetItem[]>([])
+
+interface ImprintItem {
+  id: string
+  label: string
+  filename: string
+}
+interface ImprintEdition {
+  edition: JiayiEditionMeta
+  imprints: ImprintItem[]
+}
+
+const imprintEditions = computed<ImprintEdition[]>(() => {
+  const byFolder = new Map<string, Map<string, ImprintItem>>()
+  for (const item of mediaItems.value) {
+    const meta = editionOf(item.object_key)
+    if (!meta) continue
+    if (
+      !isPublished({
+        id: item.id,
+        title: item.name,
+        publicationState: item.publication_state as PublicationState,
+      })
+    ) {
+      continue
+    }
+    const label = volumeLabel(item.object_key, meta.folder)
+    const seen = byFolder.get(meta.folder) ?? new Map<string, ImprintItem>()
+    if (!seen.has(label)) {
+      seen.set(label, { id: item.id, label, filename: item.name })
+    }
+    byFolder.set(meta.folder, seen)
+  }
+  return JIAYI_EDITIONS.map((edition) => ({
+    edition,
+    imprints: [...(byFolder.get(edition.folder)?.values() ?? [])].sort(
+      (a, b) => volumeOrder(a.label) - volumeOrder(b.label) || a.filename.localeCompare(b.filename),
+    ),
+  })).filter((group) => group.imprints.length > 0)
+})
+
+const imprintTotal = computed(() =>
+  imprintEditions.value.reduce((n, e) => n + e.imprints.length, 0),
+)
+
+onMounted(async () => {
+  try {
+    mediaItems.value = await fetchPublicMedia()
+    imprintStatus.value = 'ready'
+  } catch {
+    imprintStatus.value = 'error'
+  }
+})
 
 /* Shared WORK-level record (作品本体 — distinct from edition records). */
 const JIAYI_WORK = WORK_COLLECTION.find((work) => work.id === 'w-jiayi')
@@ -230,27 +304,40 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
     </section>
 
     <!-- 03b 原刻影印 — 四种公版版本，浏览器原生 PDF 查看器（P-5） -->
-    <section id="imprints" class="jiayi-section" aria-labelledby="imprints-heading">
+    <section
+      id="imprints"
+      class="jiayi-section"
+      :data-source="imprintStatus === 'ready' ? 'backend' : 'static'"
+      aria-labelledby="imprints-heading"
+    >
       <h2 id="imprints-heading" class="section-title">原刻影印</h2>
-      <p class="section-note">
+      <p v-if="imprintStatus === 'ready'" class="section-note">
         四种公版版本的原刻影印，共 {{ imprintTotal }} 件 —— 明万历吴勉学的刻本、清乾隆的四库全书本、
         清光绪的行素草堂藏板。这是今天能看到的最接近原书的样子。点即翻阅，无需下载。
       </p>
+      <p v-else-if="imprintStatus === 'error'" class="section-note" data-empty-state>
+        影印件目暂时取不到（接口未响应）。此处不显示旧清单 —— 可公开的件目以接口为准。
+      </p>
+      <p v-else class="section-note">正在载入影印件目…</p>
 
-      <div v-for="edition in JIAYI_IMPRINTS" :key="edition.edition" class="imprint-edition">
+      <div
+        v-for="group in imprintEditions"
+        :key="group.edition.folder"
+        class="imprint-edition"
+      >
         <h3 class="imprint-edition__title">
-          {{ edition.edition }}
-          <span class="imprint-edition__era">{{ edition.era }}</span>
+          {{ group.edition.folder.replace(/^《|》$/g, '') }}
+          <span class="imprint-edition__era">{{ group.edition.era }}</span>
         </h3>
-        <p class="imprint-edition__note">{{ edition.note }}</p>
+        <p class="imprint-edition__note">{{ group.edition.note }}</p>
         <ul class="imprint-grid">
-          <li v-for="imprint in edition.imprints" :key="imprint.id">
+          <li v-for="imprint in group.imprints" :key="imprint.id">
             <button
               type="button"
               class="imprint"
-              :class="{ 'imprint--active': activeImprint?.imprint.id === imprint.id }"
-              :aria-pressed="activeImprint?.imprint.id === imprint.id"
-              @click="openImprint(imprint, edition)"
+              :class="{ 'imprint--active': activeImprint?.id === imprint.id }"
+              :aria-pressed="activeImprint?.id === imprint.id"
+              @click="openImprint(imprint.id, imprint.label, group.edition)"
             >
               <span class="imprint__label">{{ imprint.label }}</span>
               <span class="imprint__hint">翻阅</span>
@@ -259,17 +346,21 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
         </ul>
       </div>
 
-      <div v-if="activeImprint" class="imprint-viewer" data-source="backend">
+      <div
+        v-if="activeImprint"
+        class="imprint-viewer"
+        :data-source="imprintStatus === 'ready' ? 'backend' : 'static'"
+      >
         <div class="imprint-viewer__bar">
           <p class="imprint-viewer__title">
-            {{ activeImprint.edition.edition }} · {{ activeImprint.imprint.label }}
+            {{ activeImprint.edition.folder.replace(/^《|》$/g, '') }} · {{ activeImprint.label }}
           </p>
           <button type="button" class="imprint-viewer__close" @click="closeImprint">收起</button>
         </div>
         <iframe
           class="imprint-viewer__frame"
-          :src="mediaBytesUrl(activeImprint.imprint.id)"
-          :title="`${activeImprint.edition.edition} ${activeImprint.imprint.label} 影印`"
+          :src="mediaBytesUrl(activeImprint.id)"
+          :title="`${activeImprint.edition.folder} ${activeImprint.label} 影印`"
         ></iframe>
       </div>
     </section>

@@ -35,14 +35,98 @@ import {
 import { presentationStatusLabel } from '../../presentation/stateMapping'
 import type { TimelineEvent } from '../../types/timeline'
 import LineageGraph from '../../components/heritage/LineageGraph.vue'
+import { onMounted, ref } from 'vue'
 import { mediaBytesUrl } from '../../services/media'
-import { HERITAGE_COLLECTION } from '../../data/heritageCollection'
+import { fetchPublicMedia } from '../../services/api'
+import { isPublished } from '../../utils/publication'
+import type { MediaAssetItem } from '../../types/media'
+import type { PublicationState } from '../../types/public'
+import {
+  HERITAGE_CATEGORY_NOTES,
+  HERITAGE_COVERS,
+  HERITAGE_ROOT,
+  heritageCategory,
+  heritageKind,
+} from '../../data/heritageCollection'
 import Timeline from '../../components/Timeline.vue'
 
 defineOptions({ name: 'HeritageView' })
 
-/** 已陈列的件数（只含已发布者）。 */
-const collectionTotal = HERITAGE_COLLECTION.reduce((n, g) => n + g.items.length, 0)
+/**
+ * 陈列件目**从公开接口现取**，不写死在前端。
+ *
+ * 理由：能公开哪些件是随发布状态变的。若把清单固化进构建产物，某件在库里被
+ * 下架后接口不再返回它，**但页面上它的名称和首页图还在** —— 那等于前端绕过了
+ * 发布闸门。宪章 §2 对资产层的要求就是"通过公开 API 读取，受 access_scope 约束"。
+ *
+ * 两道闸门都留着：接口本身只返回已发布且公开范围的资产，前端再用
+ * `isPublished()` 过一遍（`src/utils/publication.ts` 的既有助手）。前端这道
+ * 是纵深防御，不是唯一防线。
+ */
+type CollectionStatus = 'loading' | 'ready' | 'error'
+const collectionStatus = ref<CollectionStatus>('loading')
+const mediaItems = ref<MediaAssetItem[]>([])
+
+interface GalleryItem {
+  id: string
+  name: string
+  kind: ReturnType<typeof heritageKind>
+  cover: string | undefined
+}
+interface GalleryGroup {
+  category: string
+  note: string
+  items: GalleryItem[]
+}
+
+/** 只保留非遗佐证中「已发布」的件，按台账类目分组。 */
+const collectionGroups = computed<GalleryGroup[]>(() => {
+  const byCategory = new Map<string, GalleryItem[]>()
+  for (const item of mediaItems.value) {
+    if (!item.object_key.startsWith(HERITAGE_ROOT)) continue
+    if (
+      !isPublished({
+        id: item.id,
+        title: item.name,
+        publicationState: item.publication_state as PublicationState,
+      })
+    ) {
+      continue
+    }
+    const category = heritageCategory(item.object_key)
+    const list = byCategory.get(category) ?? []
+    list.push({
+      id: item.id,
+      name: item.name,
+      kind: heritageKind(item.mime_type, item.name),
+      cover: HERITAGE_COVERS[item.id],
+    })
+    byCategory.set(category, list)
+  }
+  // 台账类目名自带序号前缀，字符串序即台账序（05 < 06 < 07 < 10）。
+  return [...byCategory.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([category, items]) => ({
+      category,
+      note: HERITAGE_CATEGORY_NOTES[category] ?? '',
+      items,
+    }))
+})
+
+const collectionTotal = computed(() =>
+  collectionGroups.value.reduce((n, g) => n + g.items.length, 0),
+)
+
+onMounted(async () => {
+  try {
+    mediaItems.value = await fetchPublicMedia()
+    collectionStatus.value = 'ready'
+  } catch {
+    // 取不到就不显示 —— 这一段的内容受发布状态约束，宁可不显示，
+    // 也不拿一份可能已经下架的旧清单顶上。
+    collectionStatus.value = 'error'
+  }
+})
 
 const heritageTimeline: TimelineEvent[] = HERITAGE_TIMELINE.map((t) => ({
   id: t.id,
@@ -262,14 +346,23 @@ const recordSourceNames = computed<string[]>(() => {
     <!-- 10b 成果陈列 — 非遗佐证的实物（P-6）。
          只列已发布的 28 件：P2/P3 仍在库中保持 draft，不在此列。
          封面由 PDF 首页渲染而来；原件自始至终未经改动。 -->
-    <section id="collection" class="heritage-section" aria-labelledby="collection-heading">
+    <section
+      id="collection"
+      class="heritage-section"
+      :data-source="collectionStatus === 'ready' ? 'backend' : 'static'"
+      aria-labelledby="collection-heading"
+    >
       <h2 id="collection-heading" class="section-title">成果陈列</h2>
-      <p class="section-note">
+      <p v-if="collectionStatus === 'ready'" class="section-note">
         客户提供的非遗佐证材料中已公开发布的部分，共
         {{ collectionTotal }} 件。点开即读原件 —— 这是传承的凭据本身，不是转述。
       </p>
+      <p v-else-if="collectionStatus === 'error'" class="section-note" data-empty-state>
+        陈列内容暂时取不到（接口未响应）。此处不显示旧清单 —— 已公开的件目以接口为准。
+      </p>
+      <p v-else class="section-note">正在载入陈列内容…</p>
 
-      <div v-for="group in HERITAGE_COLLECTION" :key="group.category" class="collection-group">
+      <div v-for="group in collectionGroups" :key="group.category" class="collection-group">
         <h3 class="collection-group__title">{{ group.category }}</h3>
         <p class="collection-group__note">{{ group.note }}</p>
         <ul class="collection-grid">
@@ -282,7 +375,7 @@ const recordSourceNames = computed<string[]>(() => {
             >
               <span class="collection-card__frame">
                 <img
-                  v-if="item.kind === 'pdf'"
+                  v-if="item.kind === 'pdf' && item.cover"
                   :src="item.cover"
                   :alt="`${item.name} 首页`"
                   loading="lazy"
