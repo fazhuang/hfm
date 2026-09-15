@@ -24,7 +24,8 @@ const CTA_ARROWS = [
   '.home-person__act-arr',
   '.home-yan__act-arr',
   '.home-book__act-arr',
-  '.home-heritage__act-arr',
+  // 非遗段不再有独立 CTA：契约 v1.1 §4.2 硬约定 3 —— 三张材料卡本身就是入口，
+  // 另设按钮等于四个链接通向同一页。故该选择器已不存在，不是被跳过。
   '.home-closing__act-arr',
 ]
 

@@ -12,7 +12,7 @@
  * homepage search input.
  */
 import { computed } from 'vue'
-import { HOME_DOMAINS, HOME_HERO } from '../../data/homeProjection'
+import { HOME_HERO } from '../../data/homeProjection'
 import { CORE_PERSON_DATES, CORE_PERSON_PORTRAIT_MEDIA_ID } from '../../config/corePerson'
 import { mediaBytesUrl } from '../../services/media'
 import type { BlockData } from '../../composables/useHomeContractData'
@@ -116,19 +116,6 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
       </div>
     </div>
 
-    <!-- 四入口带落在实底上，不压在图上 —— 字压图只留给首屏那几行。 -->
-    <nav class="xl-entries hero__entries" aria-label="主要探索入口">
-      <a v-for="d in HOME_DOMAINS.domains" :key="d.no" class="xl-entry" :href="d.href">
-        <svg class="xl-entry__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-          <rect x="6" y="5" width="20" height="22" stroke="currentColor" stroke-width="1.2" />
-          <path d="M11 11h10M11 16h10M11 21h6" stroke="currentColor" stroke-width="1.2" />
-        </svg>
-        <span class="xl-entry__en">{{ d.en }}</span>
-        <p class="xl-entry__title">{{ d.title }}</p>
-        <p class="xl-entry__note">{{ d.key }}</p>
-        <span class="xl-entry__go">{{ d.cta }} →</span>
-      </a>
-    </nav>
   </section>
 </template>
 

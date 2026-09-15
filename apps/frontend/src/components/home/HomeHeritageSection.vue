@@ -89,13 +89,6 @@ const shown = computed(() => t0Projects.value.slice(0, 6))
       <p v-else class="fallback-note" data-fallback-note>
         数据库非遗档案尚未发布 · 以上为离线兜底（客户材料）
       </p>
-
-      <p class="heritage__foot">
-        <a class="home-heritage__act xl-go" href="/heritage">
-          进入传承档案
-          <span class="home-heritage__act-arr xl-go__arr" aria-hidden="true">→</span>
-        </a>
-      </p>
     </div>
   </section>
 </template>

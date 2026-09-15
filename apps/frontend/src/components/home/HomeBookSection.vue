@@ -76,15 +76,12 @@ const t0 = computed(() => {
           </figure>
 
           <!-- §4 统计带：数字是真实的，标签说清它数的是什么 -->
+          <!-- 四个数字只说这本书。平台规模（著作/人物/术语）由首屏底注承担，
+               契约 §4.2 硬约定 2：同一数字不得两处出现。 -->
           <dl class="xl-stats book__stats">
             <div class="xl-stat">
-              <dd class="xl-stat__value">{{ INVENTORY_EDITION_RECORDS }}</dd>
-              <dt class="xl-stat__label">版本记录</dt>
-              <dd class="xl-stat__note">据客户资料目录审计</dd>
-            </div>
-            <div class="xl-stat">
-              <dd class="xl-stat__value">{{ HOME_BOOK.editionsTotal }}</dd>
-              <dt class="xl-stat__label">收录版本</dt>
+              <dd class="xl-stat__value">{{ t0?.editions ?? HOME_BOOK.editionsTotal }}</dd>
+              <dt class="xl-stat__label">已发布版本</dt>
               <dd class="xl-stat__note">历代刊本与近现代整理本</dd>
             </div>
             <div class="xl-stat">
@@ -96,6 +93,11 @@ const t0 = computed(() => {
               <dd class="xl-stat__value">149</dd>
               <dt class="xl-stat__label">篇章</dt>
               <dd class="xl-stat__note">12 卷，已结构化</dd>
+            </div>
+            <div class="xl-stat">
+              <dd class="xl-stat__value">1007</dd>
+              <dt class="xl-stat__label">段落</dt>
+              <dd class="xl-stat__note">逐段编号，可引用</dd>
             </div>
           </dl>
         </div>
