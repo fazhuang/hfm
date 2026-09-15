@@ -149,7 +149,7 @@ Display, HFB UI reuse, AI, 3D, VR, XR, and virtual training
 may not add dependencies to the Phase 1 core.
 ```
 
-机器守卫另有 import 扫描（`guardrails.py:41`，覆盖 `src/hfm/phase2/`）。
+机器守卫另有 import 扫描（`guardrails.py:40` 定义正则，扫描根为 `:203` 的 `src/hfm/phase2/`）。
 
 **AB-16 禁的是「耦合」，不是「能力」。**问题不是"要不要用 AI"，而是"AI 放在哪里"。
 
@@ -348,8 +348,10 @@ assertion_type · confidence · editorial_status · revision
 | :--- | :--- | :--- |
 | 1 | GitHub 对标 | **DONE**（v0.1 §11 已并入） |
 | 2 | 高强度优化 | **DONE**（本文） |
-| 3 | **第三方审计** | **待办** |
+| 3 | **第三方审计** | **待办** — 审计包见 [`audit/`](audit/README.md) |
 | 4 | 定稿 v1 | 待办 |
+
+**审计包**：[`audit/README.md`](audit/README.md) —— 含审计任务书、事实底稿、对标来源、报告模板。
 
 ### 审计方需要检验的问题
 
