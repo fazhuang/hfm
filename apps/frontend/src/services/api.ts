@@ -70,6 +70,22 @@ function unwrap<T>(body: unknown): T {
   return body as T
 }
 
+/** Public knowledge term (c-domain entity). */
+export interface PublicCTerm {
+  entity_id: string
+  term_type: string
+  term_name: string
+  publication_status: string
+}
+
+/** Load the published knowledge terms (public projection only). */
+export async function fetchPublicCTerms(
+  signal?: AbortSignal,
+): Promise<{ terms: PublicCTerm[]; total: number }> {
+  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/c-terms`, signal)
+  return unwrap<{ terms: PublicCTerm[]; total: number }>(body)
+}
+
 /** Load the public home projection (published items only). */
 export async function fetchPublicHome(signal?: AbortSignal): Promise<HomeProjection> {
   const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/home`, signal)

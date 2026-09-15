@@ -9,16 +9,9 @@
  * 画成图只会是一片离散的点。页面上如实说明，不画一张空图充数（契约 §5.6）。
  */
 import { computed, onMounted, ref } from 'vue'
-import { publicGet } from '../../services/api'
+import { fetchPublicCTerms, type PublicCTerm } from '../../services/api'
 
 defineOptions({ name: 'KnowledgeGraphView' })
-
-interface CTerm {
-  entity_id: string
-  term_type: string
-  term_name: string
-  publication_status: string
-}
 
 const TYPE_LABELS: Record<string, { zh: string; en: string; note: string }> = {
   acupoint: { zh: '经穴', en: 'ACUPOINT', note: '《针灸甲乙经》所载穴位名。' },
@@ -27,13 +20,13 @@ const TYPE_LABELS: Record<string, { zh: string; en: string; note: string }> = {
   technique: { zh: '治法', en: 'TECHNIQUE', note: '刺法、灸法等施治技术名。' },
 }
 
-const terms = ref<CTerm[]>([])
+const terms = ref<PublicCTerm[]>([])
 const loaded = ref(false)
 const failed = ref(false)
 
 onMounted(async () => {
   try {
-    const res = await publicGet<{ terms: CTerm[]; total: number }>('/api/v1/public/c-terms')
+    const res = await fetchPublicCTerms()
     terms.value = res.terms ?? []
   } catch {
     failed.value = true

@@ -32,6 +32,18 @@ onMounted(async () => {
   }
 })
 
+/**
+ * 动作名按真实格式给：PDF 与图片浏览器内嵌打开，.doc/.docx 只会触发下载，
+ * 说「打开 PDF」是错的（此前所有非视频项都用了这个标签）。
+ */
+function openLabel(mime: string, name: string): string {
+  const lower = name.toLowerCase()
+  if (lower.endsWith('.doc') || lower.endsWith('.docx') || mime.includes('word')) return '下载'
+  if (mime === 'application/pdf') return '打开 PDF'
+  if (mime.startsWith('image/')) return '查看图片'
+  return '打开'
+}
+
 const categories: Array<MediaCategory | 'all'> = ['all', 'paper', 'classic', 'movie', 'person']
 
 const filtered = computed(() => {
@@ -117,7 +129,7 @@ function setCategory(cat: MediaCategory | 'all'): void {
             class="media-card__open"
             target="_blank"
             rel="noopener"
-            >打开 PDF</a
+            >{{ openLabel(asset.mime_type, asset.name) }}</a
           >
         </div>
       </li>

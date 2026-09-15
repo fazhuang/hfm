@@ -151,8 +151,9 @@
 }
 
 .public-shell[data-surface='exhibition'] .heritage-hero {
+  /* 实拍本身偏暗，压得比扫描件轻，否则整张图看不见。 */
   background-image:
-    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    linear-gradient(to right, var(--wl-deep) 30%, rgba(7, 9, 8, 0.78) 58%, rgba(7, 9, 8, 0.34) 100%),
     url('/assets/heritage/heritage-baishi-ceremony.jpg');
 }
 
@@ -198,4 +199,22 @@
   background-image:
     linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
     url('/assets/jiayi/edition-lineage.png');
+}
+
+/* ---- 浅底示意图在暗场里当「打光展板」处理 ----
+   版本脉络图是浅底扫描件，直接铺满整幅会在暗场里亮成一块白。
+   给它一个展板底与收边，并把图压到与暗场同一档。 */
+.public-shell[data-surface='exhibition'] .lineage {
+  padding: clamp(0.75rem, 1.6vw, 1.5rem);
+  background: var(--wl-light);
+  box-shadow: inset 0 0 0 1px var(--wl-rule);
+}
+/* 图**不压暗、不反色**：它是关系示意图，压暗就毁掉可读性（ui08-jiayi.spec
+   明确断言 dark 模式下 filter 为 none）。改为当作「暗场里的打光展板」——
+   白底面板落在深色墙上，本身就是展厅里的常见东西。 */
+.public-shell[data-surface='exhibition'] .lineage__img,
+.public-shell[data-surface='exhibition'] .lineage-dialog__img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
