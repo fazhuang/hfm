@@ -36,16 +36,27 @@ import {
 } from './jiayiView'
 
 export const HOME_HERO = {
-  title: '皇甫谧人文数字平台',
-  subtitle: '权威数字人文资料 · 古籍与研究 · 非遗活态传承',
+  /** 首屏 H1（参考图 HFM-SY-CK 的写法）。 */
+  title: '走进皇甫谧的世界',
+  subtitle: '在这里，历史、典籍与当代生活相遇。',
+  kicker: ['HFM', 'TRADITION', 'IN DATA', 'HUMANITY', 'FOR TOMORROW'],
   personName: CORE_PERSON_NAME,
   personDates: CORE_PERSON_DATES,
   definition: CORE_PERSON_DEFINITION,
   primary: [
-    { label: '探索皇甫谧', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
-    { label: '进入《针灸甲乙经》', href: '/jiayi' },
+    { label: '开启探索', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
+    { label: '阅读《针灸甲乙经》', href: '/jiayi' },
   ],
-  secondary: [{ label: '检索文献', href: '/search' }],
+  /** 首屏右侧引文卡 —— 皇甫谧本人的话，注明出处。 */
+  quote: {
+    text: '上以疗君亲之疾，下以救贫贱之厄，中以保身长全。',
+    source: '皇甫谧《针灸甲乙经·序》',
+  },
+  place: { zh: '甘肃 · 灵台', en: 'LINGTAI · GANSU' },
+  motto: ['传承一部文明', '服务一个未来'],
+  /** 分页刻度：三段展线的位置标记（本轮为静态标记，未做轮播）。 */
+  scale: ['01', '02', '03'],
+  platform: '皇甫谧人文数字平台',
 } as const
 
 export const HOME_HUANGFU_DATE = CORE_PERSON_DATES
@@ -282,45 +293,79 @@ export const HOME_HERITAGE_LIVING = {
 /** Section 07 — 研究导航。Four doors map to existing real routes. */
 export const HOME_DOMAINS = {
   headline: '四域探索',
-  lede: '人物 · 文献 · 医学 · 传承 —— 四类知识，四个入口。',
+  lede: '人物 · 典籍 · 知识 · 资源 —— 四类内容，四个入口。',
   domains: [
     {
       no: '01',
-      key: '人物档案',
-      en: 'THE PERSON',
-      title: '皇甫谧',
+      key: '生平 · 年表 · 学术 · 思想',
+      en: 'PERSONS',
+      title: '人物',
       href: '/persons/ENT-PERSON-HFM-HUANGFUMI',
-      cta: '进入人物档案',
+      cta: '走进皇甫谧',
     },
     {
       no: '02',
-      key: '文献史料',
-      en: 'TEXTS & ARCHIVE',
-      title: '文献史料',
-      href: '/archive',
-      cta: '进入文献库',
+      key: '《针灸甲乙经》与版本流传',
+      en: 'WORKS',
+      title: '典籍',
+      href: '/jiayi',
+      cta: '进入典籍库',
     },
     {
       no: '03',
-      key: '医学知识',
-      en: 'THE BOOK',
-      title: '《针灸甲乙经》',
-      href: '/jiayi',
-      cta: '进入古籍库',
+      key: '构建可探索的知识网络',
+      en: 'KNOWLEDGE',
+      title: '知识图谱',
+      href: '/knowledge',
+      cta: '查看知识实体',
     },
     {
       no: '04',
-      key: '活态传承',
-      en: 'LIVING HERITAGE',
-      title: '活态传承',
-      href: '/heritage',
-      cta: '进入传承档案',
+      key: '开放、可持续的数字资源',
+      en: 'RESOURCES',
+      title: '数字资源',
+      href: '/library',
+      cta: '进入资源库',
     },
   ],
 } as const
 
+/** 03 段 — 皇甫谧与《针灸甲乙经》（参考图 band 3）。 */
+export const HOME_CLASSICS = {
+  title: '皇甫谧与《针灸甲乙经》',
+  en: 'HUANGFU MI AND THE CLASSICS',
+  body: '皇甫谧（215—282），西晋著名学者、医学家，以《针灸甲乙经》闻名于世。他博通经史，兼通医学，注重实证与仁心，在医学、哲学、史学与文学等方面均有重要贡献，是中国医学史与思想史上不可忽视的重要人物。',
+  cta: { label: '深入了解', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
+  plateCaption: '明万历吴勉学刻本 · 原刻影印',
+  quote: {
+    text: '医之道，非独疗疾，亦所以养生、立德、安民。',
+    source: '皇甫谧《针灸甲乙经·序》',
+  },
+} as const
+
+/** 04 段 — 数字人文视角（参考图 band 4）。 */
+export const HOME_APPROACH = {
+  title: '数字人文视角下的皇甫谧',
+  en: 'A DIGITAL HUMANITIES APPROACH',
+  body: '我们通过数字化、结构化与可视化的方式，重建皇甫谧的知识世界：连接古籍、人物、概念与历史的多重关系，让传统智慧在当代研究与社会传播中焕发新的生命力。',
+  cta: { label: '探索知识图谱', href: '/knowledge' },
+} as const
+
+/** 05 段 — 活态传承（参考图 band 5）的编辑文案。 */
+export const HOME_LIVING = {
+  title: '活态传承 · 连接当下',
+  en: 'LIVING HERITAGE',
+  lede: '皇甫谧针灸是市级非物质文化遗产代表性项目。传承没有停在书上，它今天仍在医院、课堂与故里发生。',
+  quote: '让传统智慧走进当代生活',
+  cta: { label: '了解更多', href: '/heritage' },
+} as const
+
 /** Section 08 — 结语。Platform closing identity; AppFooter owns the global footer. */
 export const HOME_CLOSING = {
-  name: HOME_HERO.title,
+  name: HOME_HERO.platform,
   subtitle: HOME_HERO.subtitle,
+  quote: '传统不是过去的遗存，而是理解未来的一种方式。',
+  quoteEn: 'THE PAST IS A RESOURCE FOR THE FUTURE',
+  motto: ['连接古今', '面向未来'],
+  cta: { label: '检索全站已发布内容', href: '/search' },
 } as const

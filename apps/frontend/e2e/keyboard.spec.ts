@@ -119,15 +119,17 @@ test('CF-10 homepage touch targets at 375 (WCAG 2.5.5: ≥24×24 for visible pri
   await page.waitForTimeout(150)
   const small = await page.evaluate(() => {
     const selectors = [
-      '#home-hero .home-hero__act',
-      '#home-hero .home-search__input',
-      '#home-hero .home-search__submit',
+      '#home-hero .hero__act',
+      '.header-search input',
+      '.header-search__submit',
+      '.header-workbench',
       '.public-shell__nav .nav-link',
       '.nav-toggle',
-      '#home-book .home-book__act',
-      '#home-knowledge .home-knowledge__act',
-      '#home-domains .home-domains__go',
-      '#home-heritage .home-heritage__act',
+      '#home-entries .xl-entry',
+      '#home-classics .cls__cta',
+      '#home-approach .ap__cta',
+      '#home-heritage .liv__cta',
+      '#home-closing .close__cta',
     ]
     return selectors
       .map((s) => {

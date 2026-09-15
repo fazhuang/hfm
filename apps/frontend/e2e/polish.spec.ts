@@ -19,15 +19,8 @@ import { stubPublicPerson, stubPublicSearch } from './data-fixtures'
 
 const EVIDENCE_DIR = resolve(process.cwd(), '../../docs/audit/evidence/cf11')
 
-const CTA_ARROWS = [
-  '.home-hero__act-arr',
-  '.home-person__act-arr',
-  '.home-yan__act-arr',
-  '.home-book__act-arr',
-  // 非遗段不再有独立 CTA：契约 v1.1 §4.2 硬约定 3 —— 三张材料卡本身就是入口，
-  // 另设按钮等于四个链接通向同一页。故该选择器已不存在，不是被跳过。
-  '.home-closing__act-arr',
-]
+// 首页与栏目页的编辑型 CTA 共用 styles/home-scale.css 的 .xl-cta 与 .hero__arr。
+const CTA_ARROWS = ['.hero__arr', '.xl-cta__arr']
 
 test('CF-11 editorial CTA arrows all carry the transform transition (consistent hover affordance)', async ({
   page,
@@ -60,7 +53,7 @@ test('CF-11 link/arrow transitions respect prefers-reduced-motion', async ({ pag
   await page.goto('/')
   await page.waitForTimeout(200)
   const dur = await page
-    .locator('#home-hero .home-hero__act-arr')
+    .locator('#home-hero .hero__arr')
     .first()
     .evaluate((el) => parseFloat(getComputedStyle(el).transitionDuration))
   // The global reduced-motion rule forces transition-duration to ~0 (0.01ms).

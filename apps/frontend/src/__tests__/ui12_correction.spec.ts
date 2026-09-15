@@ -18,10 +18,11 @@ import { READER_DOCUMENTS } from '../data/readerDocuments'
 import { JIAYI_PUBLIC_SOURCES } from '../data/jiayiView'
 
 describe('UI-12 P1-01 primary person route', () => {
-  it('navigation config points 人物（皇甫谧） to the canonical route', () => {
+  // 导航标签按 HFM-UI-CONTRACT-v2 §2 会变，断言只看目标路由。
+  it('navigation config carries the canonical person route', () => {
     expect(CORE_PERSON_ROUTE).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
-    const personItem = PUBLIC_NAV_ITEMS.find((i) => i.label === '人物（皇甫谧）')
-    expect(personItem?.href).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
+    const personItem = PUBLIC_NAV_ITEMS.find((i) => i.href === CORE_PERSON_ROUTE)
+    expect(personItem).toBeDefined()
     // No stale CTA remains.
     expect(PUBLIC_NAV_ITEMS.some((i) => i.href === '/persons/huangfu-mi')).toBe(false)
   })
@@ -32,8 +33,10 @@ describe('UI-12 P1-01 primary person route', () => {
         stubs: { RouterView: { template: '<p />' }, AppFooter: { template: '<footer />' } },
       },
     })
-    const personLink = wrapper.findAll('a.nav-link').find((a) => a.text() === '人物（皇甫谧）')
-    expect(personLink?.attributes('href')).toBe('/persons/ENT-PERSON-HFM-HUANGFUMI')
+    const personLink = wrapper
+      .findAll('a.nav-link')
+      .find((a) => a.attributes('href') === CORE_PERSON_ROUTE)
+    expect(personLink).toBeDefined()
     expect(wrapper.text()).not.toContain('/persons/huangfu-mi')
   })
 

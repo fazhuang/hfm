@@ -1,33 +1,40 @@
 <script setup lang="ts">
 /**
- * HomeClosingSection — Section 08 (结语). 《刻度》 ledger voice:
- * a ruled close carrying the platform identity as a NON-heading signature.
- * Not a footer — AppFooter owns the global footer.
+ * HomeClosingSection — 首页段 06「收尾」（契约 v2 §3.1 段 06）。
+ *
+ * 参考图 `HFM-SY-CK.png` 的收尾是一整幅风景影像压暗，上面一层大字引文，
+ * 右侧 `HFM` 圆形标记与两句短语。
+ *
+ * **底图没有做**：我们没有可用的风景照片，拿一张无关的图顶上比留黑更糟
+ * （契约 §5.6）。这里用最深的暗带承担同一件事 —— 引文、标记、题词都在。
  */
-import { HOME_CLOSING, HOME_CHAPTERS } from '../../data/homeProjection'
-import XlScaleBand from './XlScaleBand.vue'
+import { HOME_CLOSING } from '../../data/homeProjection'
 
 defineOptions({ name: 'HomeClosingSection' })
 </script>
 
 <template>
-  <section
-    id="home-closing"
-    class="xl-sec xl-sec--close"
-    aria-label="平台结语"
-    data-source="static"
-  >
+  <section id="home-closing" class="xl-sec xl-sec--close close" aria-labelledby="close-quote">
     <div class="xl-inner">
-      <div class="xl-close">
-        <p class="xl-close__quote">
-          传统不是过去的遗存，<br />而是理解未来的一种方式。
-        </p>
-        <p class="xl-close__en">The Past Is A Resource For The Future</p>
-        <p class="home-closing__name closing__name">{{ HOME_CLOSING.name }}</p>
-        <p class="closing__subtitle">{{ HOME_CLOSING.subtitle }}</p>
-        <a class="home-closing__act xl-close__act" href="/search">
-          检索全站已发布内容
-          <span class="home-closing__act-arr xl-go__arr" aria-hidden="true">→</span>
+      <div class="close__grid">
+        <div class="close__quote-block">
+          <p id="close-quote" class="close__quote">{{ HOME_CLOSING.quote }}</p>
+          <p class="close__quote-en">{{ HOME_CLOSING.quoteEn }}</p>
+        </div>
+
+        <div class="close__mark-block">
+          <p class="close__mark" aria-hidden="true">HFM</p>
+          <p class="close__motto">
+            <span v-for="m in HOME_CLOSING.motto" :key="m">{{ m }}</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="close__foot">
+        <p class="close__name">{{ HOME_CLOSING.name }}</p>
+        <a class="close__cta xl-cta" :href="HOME_CLOSING.cta.href">
+          {{ HOME_CLOSING.cta.label }}
+          <span class="xl-cta__arr" aria-hidden="true">→</span>
         </a>
       </div>
     </div>
@@ -35,48 +42,105 @@ defineOptions({ name: 'HomeClosingSection' })
 </template>
 
 <style scoped>
-.closing {
-  color: var(--wl-ink);
-  padding: clamp(4rem, 10vw, 9rem) var(--hfm-space-6);
+.close {
+  background: var(--wl-deep);
 }
-.closing__inner {
-  max-width: 78rem;
-  margin: 0 auto;
+.close__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+  align-items: center;
+}
+@media (min-width: 900px) {
+  .close__grid {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+.close__quote {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--hfm-font-serif);
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  line-height: 1.85;
+  color: #f2f0ea;
+}
+.close__quote-en {
+  margin: var(--hfm-space-4) 0 0;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+  font-size: 0.625rem;
+  color: rgba(239, 237, 230, 0.5);
+}
+
+.close__mark-block {
+  display: flex;
+  align-items: center;
+  gap: var(--hfm-space-5);
+}
+.close__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.5rem;
+  height: 5.5rem;
+  margin: 0;
+  font-family: var(--wl-latin);
+  letter-spacing: 0.12em;
+  font-size: var(--hfm-text-sm);
+  color: rgba(220, 171, 116, 0.9);
+  border: 1px solid rgba(220, 171, 116, 0.45);
+  border-radius: 50%;
+  user-select: none;
+}
+.close__motto {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-.closing__bar {
-  display: flex;
-  gap: var(--hfm-space-6);
-  margin: 0 0 var(--hfm-space-8);
-  padding-top: var(--hfm-space-4);
-  border-top: 1px solid var(--wl-rule);
-  width: 100%;
-  justify-content: center;
-}
-.closing__band {
-  color: var(--wl-ink);
-  width: min(38rem, 100%);
-  margin-bottom: var(--hfm-space-8);
-}
-.closing__name {
+  gap: 0.3rem;
   margin: 0;
-  font-family: var(--hfm-font-display);
-  font-weight: 500;
-  font-size: clamp(2rem, 6vw, 4rem);
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  color: var(--wl-ink);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  letter-spacing: 0.12em;
+  color: rgba(239, 237, 230, 0.8);
 }
-.closing__search-entry {
-  margin: var(--hfm-space-6) 0 0;
+
+.close__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hfm-space-4);
+  margin-top: clamp(2.5rem, 5vw, 3.5rem);
+  padding-top: var(--hfm-space-5);
+  border-top: 1px solid rgba(239, 237, 230, 0.14);
 }
-.closing__subtitle {
-  margin: var(--hfm-space-5) 0 0;
+.close__name {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-lg);
+  letter-spacing: 0.14em;
+  color: rgba(239, 237, 230, 0.72);
+}
+.close__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  padding: 0.6rem 1.3rem;
+  font-family: var(--hfm-font-serif);
   font-size: var(--hfm-text-sm);
-  letter-spacing: 0.18em;
-  color: var(--wl-mute);
+  letter-spacing: 0.06em;
+  color: #f2f0ea;
+  text-decoration: none;
+  border: 1px solid rgba(239, 237, 230, 0.24);
+  border-radius: 2px;
+}
+.close__cta:hover {
+  border-color: var(--wl-mark);
+  color: var(--wl-mark-strong);
+}
+.close__cta:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
 }
 </style>

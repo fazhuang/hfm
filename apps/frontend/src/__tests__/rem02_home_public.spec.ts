@@ -3,8 +3,10 @@
  *
  * Proves: backend payload → projection adapter mapping; safe fallback for
  * failure and partial/missing data; HomeView performs exactly one real home
- * request on mount and exposes the source marker; the frozen 8-section
- * structure and hero search are preserved.
+ * request on mount and exposes the source marker. Section ids and headline
+ * text are NOT pinned — the homepage is rebuilt against the reference layout
+ * (HFM-UI-CONTRACT-v2 §3.1) and those move; what is pinned here is that real
+ * backend data reaches the page and that absence degrades honestly.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -15,14 +17,8 @@ import { mapPublicHomeToEnrichment } from '../data/homePublicEnrichment'
 import { useHomePublicData } from '../composables/useHomePublicData'
 
 const STUB = { template: '<div />' }
-const SECTION_IDS = [
-  'home-hero',
-  'home-person',
-  'home-yan',
-  'home-book',
-  'home-heritage',
-  'home-closing',
-]
+/** 首页此刻实际渲染的段落 id（参考图骨架，契约 v2 §3.1）。 */
+const SECTION_IDS = ['home-hero', 'home-classics', 'home-heritage', 'home-closing']
 
 function makeRouter() {
   return createRouter({
@@ -157,8 +153,9 @@ describe('HomeView integration', () => {
     const ids = wrapper.findAll('section[id^="home-"]').map((s) => s.attributes('id'))
     expect(ids).toEqual(SECTION_IDS)
     // Hero content intact on the failure path.
-    expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
-    expect(wrapper.find('#home-search-input').exists()).toBe(true)
+    expect(wrapper.find('h1').text()).toBe('走进皇甫谧的世界')
+    // 没有真实计数就不显示计数（契约 §5.6）。
+    expect(wrapper.text()).not.toContain('已发布著作')
     wrapper.unmount()
     vi.unstubAllGlobals()
   })
@@ -177,8 +174,8 @@ describe('HomeView integration', () => {
     await flushPromises()
     // Nothing from the backend participates visually -> truthful fallback marker.
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('fallback')
-    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(6)
-    expect(wrapper.text()).not.toContain('已上线公开人物')
+    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(SECTION_IDS.length)
+    expect(wrapper.text()).not.toContain('已发布著作')
     wrapper.unmount()
     vi.unstubAllGlobals()
   })
@@ -226,16 +223,12 @@ describe('HomeView integration', () => {
     const wrapper = mountHome()
     await flushPromises()
 
-    // T0 participates visibly in the 人物 block
-    expect(wrapper.find('#home-person').attributes('data-source')).toBe('backend')
-    expect(wrapper.find('#home-person').text()).toContain('针灸鼻祖')
-    // T0 participates visibly in the hero register
+    // T0 participates visibly: hero register + the 数字人文视角 band.
     expect(wrapper.find('#home-hero').text()).toContain('已发布著作')
+    expect(wrapper.find('#home-hero').text()).toContain('14')
     expect(wrapper.find('.home').attributes('data-home-source')).toBe('backend')
-    // contract structure intact alongside participation
-    expect(wrapper.findAll('section[id^="home-"]')).toHaveLength(6)
-    expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
-    expect(wrapper.find('#home-search-input').exists()).toBe(true)
+    expect(wrapper.find('#home-approach').exists()).toBe(true)
+    expect(wrapper.find('h1').text()).toBe('走进皇甫谧的世界')
     wrapper.unmount()
     vi.unstubAllGlobals()
   })

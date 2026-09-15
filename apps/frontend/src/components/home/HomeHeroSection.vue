@@ -1,34 +1,29 @@
 <script setup lang="ts">
 /**
- * HomeHeroSection — Section 01 (《刻度 / THE SCALE》).
+ * HomeHeroSection — 首页首屏（HFM-UI-CONTRACT-v2 §3.1 段 01）。
  *
- * A ruled opening: a marginal index · latin label · the person's dates on a
- * hairline; the 皇甫谧 monument in serif; the platform statement and the one
- * editorial action; the derived 刻度带 (XlScaleBand); the manuscript specimen
- * with its real provenance caption; the quiet search line.
+ * 骨架照参考图 `HFM-SY-CK.png`：整幅展厅影像铺底，左上英文小标，左下标题与
+ * 定位、两个动作，右上引文卡，右下地点与题词，底部滚动提示与 `01 02 03`
+ * 分页刻度。
  *
- * The single H1 is the platform name, rendered as a quiet register (the
- * monument is a non-heading decorative block). #home-search-input is the only
- * homepage search input.
+ * 影像是客户提供的皇甫谧画像（经公开媒体接口取原件）。参考图的首屏是一张
+ * 展厅实景照，我们没有那一张 —— 用真画像而不是找一张别的图顶上。
+ * 图为装饰（文字已表意），故 aria-hidden。
+ *
+ * 分页刻度是**静态位置标记**：本轮没做轮播，不把它做成能点的样子。
  */
 import { computed } from 'vue'
 import { HOME_HERO } from '../../data/homeProjection'
-import { CORE_PERSON_DATES, CORE_PERSON_PORTRAIT_MEDIA_ID } from '../../config/corePerson'
+import { CORE_PERSON_PORTRAIT_MEDIA_ID } from '../../config/corePerson'
 import { mediaBytesUrl } from '../../services/media'
 import type { BlockData } from '../../composables/useHomeContractData'
 import type { HomeProjection } from '../../types/public'
 
 defineOptions({ name: 'HomeHeroSection' })
 
-interface Props {
-  searchValue?: string
-  onSearch?: () => void
-  searchLabel?: string
-  block?: BlockData<HomeProjection> | null
-}
-const props = defineProps<Props>()
+const props = defineProps<{ block?: BlockData<HomeProjection> | null }>()
 
-/** T0 platform register — real published counts (contract §4 block 01). */
+/** 真实已发布计数；取不到就不渲染，不显示 0（契约 §5.6）。 */
 const counts = computed(() => {
   const c = props.block?.data?.counts
   if (!c || props.block?.source !== 'backend') return null
@@ -39,95 +34,78 @@ const counts = computed(() => {
     { label: '已发布术语', value: c.c_terms },
   ]
 })
-const emit = defineEmits<{ (e: 'update:searchValue', value: string): void }>()
-const dates = CORE_PERSON_DATES
 
-/**
- * 展柜里的主展板 —— 客户提供的皇甫谧画像，经公开媒体接口取原件。
- * 这是首页**唯一**有史实地位的人物影像；其余展板放的是真实书影与脉络图，
- * 四件都是客户材料，没有一件是生成的。
- */
 const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
 </script>
 
 <template>
-  <section
-    id="home-hero"
-    class="hero"
-    aria-labelledby="home-hero-title"
-    :data-source="counts ? 'backend' : 'fallback'"
-  >
-    <!-- 整屏氛围底：客户提供的皇甫谧画像，整幅铺满，向左压暗。
-         画像本身是工笔设色，细节足、尺幅够，撑得起整屏 —— 不需要另造一张图。
-         图为纯装饰（文字已表意），故 aria-hidden。 -->
+  <section id="home-hero" class="hero" aria-labelledby="home-hero-title">
     <div class="hero__bleed">
       <img class="hero__bleed-img" :src="portraitUrl" alt="" aria-hidden="true" />
       <div class="hero__scrim" aria-hidden="true"></div>
     </div>
 
     <div class="hero__inner">
-      <p class="hero__bar">
-        <span class="xl-index">00</span>
-        <span class="xl-label">HUANGFU MI · DIGITAL HUMANITIES</span>
-        <span class="xl-num hero__bar-date">公元 {{ dates }}</span>
-      </p>
+      <div class="hero__top">
+        <p class="hero__kicker">
+          <span v-for="(line, i) in HOME_HERO.kicker" :key="line" :class="{ 'hero__kicker--first': i === 0 }">
+            {{ line }}
+          </span>
+        </p>
+
+        <figure class="hero__quote">
+          <blockquote class="hero__quote-text">{{ HOME_HERO.quote.text }}</blockquote>
+          <figcaption class="hero__quote-src">{{ HOME_HERO.quote.source }}</figcaption>
+        </figure>
+      </div>
 
       <div class="hero__text">
-        <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
-        <p class="hero__statement">{{ HOME_HERO.subtitle }}</p>
+        <h1 id="home-hero-title" class="hero__title">{{ HOME_HERO.title }}</h1>
+        <p class="hero__lede">{{ HOME_HERO.subtitle }}</p>
 
         <div class="hero__acts">
-          <a class="hero__act" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
-            走进皇甫谧
-            <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
+          <a class="hero__act" :href="HOME_HERO.primary[0].href">
+            {{ HOME_HERO.primary[0].label }}
+            <span class="hero__arr" aria-hidden="true">→</span>
           </a>
-          <a class="hero__act hero__act--ghost" href="/jiayi">
-            阅读《针灸甲乙经》
-            <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
+          <a class="hero__act hero__act--ghost" :href="HOME_HERO.primary[1].href">
+            <span class="hero__play" aria-hidden="true">▶</span>
+            {{ HOME_HERO.primary[1].label }}
           </a>
         </div>
 
-        <form
-          v-if="searchLabel"
-          class="home-search hero__search"
-          role="search"
-          :aria-label="searchLabel"
-          @submit.prevent="props.onSearch"
-        >
-          <label class="visually-hidden" for="home-search-input">检索平台内容</label>
-          <input
-            id="home-search-input"
-            :value="props.searchValue"
-            class="home-search__input"
-            type="search"
-            placeholder="检索平台内容"
-            @input="emit('update:searchValue', ($event.target as HTMLInputElement).value)"
-          />
-          <button class="home-search__submit" type="submit">检索</button>
-        </form>
-
-        <!-- T0 平台登记（真实已发布计数），一行安静的底注 -->
-        <dl v-if="counts" class="hero__counts" data-source="backend">
+        <dl v-if="counts" class="hero__counts">
           <div v-for="c in counts" :key="c.label" class="hero__count">
             <dt class="xl-label">{{ c.label }}</dt>
             <dd class="xl-num hero__count-value">{{ c.value }}</dd>
           </div>
         </dl>
       </div>
-    </div>
 
+      <div class="hero__foot">
+        <p class="hero__place">
+          <span class="hero__place-zh">{{ HOME_HERO.place.zh }}</span>
+          <span class="hero__place-en">{{ HOME_HERO.place.en }}</span>
+        </p>
+        <p class="hero__motto">
+          <span v-for="m in HOME_HERO.motto" :key="m">{{ m }}</span>
+        </p>
+      </div>
+
+      <div class="hero__scale">
+        <p class="hero__scroll">
+          <span>SCROLL</span>
+          <span class="hero__scroll-line" aria-hidden="true"></span>
+        </p>
+        <p class="hero__pager" aria-hidden="true">
+          <span v-for="(s, i) in HOME_HERO.scale" :key="s" :class="{ 'is-on': i === 0 }">{{ s }}</span>
+        </p>
+      </div>
+    </div>
   </section>
 </template>
 
 <style scoped>
-/* ==========================================================================
-   Hero — 整屏氛围底
-   ==========================================================================
-   画像整幅铺满，向左压暗；文字压在暗部。
-   参考图的首屏是一整张场景；我们没有场景照片，但有客户提供的工笔画像 ——
-   它本身细节足够，铺满一屏成立。不另造图。
-   ========================================================================== */
-
 .hero {
   position: relative;
   background: var(--wl-paper);
@@ -135,11 +113,10 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   padding: 0 var(--hfm-space-6);
 }
 
-/* ---- 氛围底 ---- */
 .hero__bleed {
   position: absolute;
   inset: 0 0 auto;
-  height: min(88vh, 52rem);
+  height: min(92vh, 56rem);
   overflow: hidden;
   pointer-events: none;
 }
@@ -147,69 +124,103 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* 人物在右，视线向左 —— 与文字方向一致。 */
   object-position: 72% 18%;
+  /* 画像底色是浅绢，直接铺会读成一张亮底的画，而不是展厅。
+     压暗 + 略去饱和，让它落进暗场；文字对比度由下面这层 scrim 兜底。 */
+  filter: brightness(0.5) contrast(1.08) saturate(0.72);
 }
-/* 压暗：左重（压字）右轻（留人物），下重（接下一段）。
-   不用大面积发光，只把暗部推够，让暖白字在图上立住。 */
+/* 压暗：左重（压字）右轻（留人物），下重（接下一段）。 */
 .hero__scrim {
   position: absolute;
   inset: 0;
   background:
     linear-gradient(
       to right,
-      rgba(7, 9, 8, 0.96) 0%,
-      rgba(7, 9, 8, 0.88) 34%,
-      rgba(7, 9, 8, 0.45) 62%,
-      rgba(7, 9, 8, 0.35) 100%
+      rgba(7, 9, 8, 0.92) 0%,
+      rgba(7, 9, 8, 0.78) 34%,
+      rgba(7, 9, 8, 0.5) 64%,
+      rgba(7, 9, 8, 0.46) 100%
     ),
-    linear-gradient(to bottom, rgba(7, 9, 8, 0.5) 0%, transparent 26%, rgba(7, 9, 8, 0.9) 100%);
+    linear-gradient(to bottom, rgba(7, 9, 8, 0.6) 0%, rgba(7, 9, 8, 0.2) 26%, rgba(7, 9, 8, 0.95) 100%);
 }
 
 .hero__inner {
   position: relative;
   max-width: 78rem;
   margin: 0 auto;
-  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 6vw, 4.5rem);
-  min-height: min(88vh, 52rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem) 0 clamp(1.5rem, 3vw, 2rem);
+  min-height: min(92vh, 56rem);
   display: flex;
   flex-direction: column;
 }
 
-.hero__bar {
+/* ---- 顶行：英文小标 │ 引文卡 ---- */
+.hero__top {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: var(--hfm-space-2) var(--hfm-space-4);
-  margin: 0;
-  padding-top: var(--hfm-space-4);
-  border-top: 1px solid var(--wl-rule);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--hfm-space-6);
 }
-.hero__bar-date {
-  margin-left: auto;
-  color: var(--wl-ink-2);
+.hero__kicker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.625rem;
+  line-height: 1.7;
+  color: rgba(239, 237, 230, 0.62);
+}
+.hero__kicker--first {
+  margin-bottom: var(--hfm-space-2);
+  font-size: 0.8125rem;
+  letter-spacing: 0.34em;
+  color: #f2f0ea;
+}
+.hero__quote {
+  max-width: 19rem;
+  margin: 0;
+  padding: var(--hfm-space-4) var(--hfm-space-5);
+  text-align: right;
+  background: linear-gradient(to left, rgba(7, 9, 8, 0.72), rgba(7, 9, 8, 0));
+}
+.hero__quote-text {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  line-height: 2;
+  color: rgba(239, 237, 230, 0.9);
+  text-shadow: 0 1px 14px rgba(7, 9, 8, 0.8);
+}
+.hero__quote-src {
+  margin-top: var(--hfm-space-2);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.08em;
+  color: rgba(220, 171, 116, 0.92);
 }
 
-/* 文字块落在首屏下半，压在最暗的一带 */
+/* ---- 主文字块 ---- */
 .hero__text {
   margin-top: auto;
-  max-width: 38rem;
+  max-width: 40rem;
 }
-.hero__brand {
+.hero__title {
   margin: 0;
   font-family: var(--hfm-font-display);
   font-weight: 500;
-  font-size: clamp(2rem, 4.6vw, 3.5rem);
-  line-height: 1.22;
-  letter-spacing: 0.015em;
+  font-size: clamp(2.25rem, 5.4vw, 4.25rem);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
   color: #f6f4ee;
-  text-shadow: 0 2px 24px rgba(7, 9, 8, 0.7);
+  text-shadow: 0 2px 26px rgba(7, 9, 8, 0.72);
 }
-.hero__statement {
+.hero__lede {
   margin: clamp(1rem, 2.4vw, 1.5rem) 0 0;
-  max-width: 26ch;
   font-family: var(--hfm-font-serif);
-  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
   line-height: 1.9;
   color: #e8e5dc;
   text-shadow: 0 1px 16px rgba(7, 9, 8, 0.8);
@@ -218,122 +229,161 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
 .hero__acts {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--hfm-space-3);
-  margin: clamp(1.5rem, 3vw, 2rem) 0 0;
+  align-items: center;
+  gap: var(--hfm-space-5);
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
 }
 .hero__act {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--hfm-space-2);
-  padding: 0.7rem 1.4rem;
+  align-items: center;
+  gap: var(--hfm-space-3);
+  padding: 0.75rem 1.5rem;
   font-family: var(--hfm-font-serif);
   font-size: var(--hfm-text-base);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   text-decoration: none;
-  border: 1px solid var(--wl-mark);
+  color: #f6f4ee;
+  border: 1px solid rgba(239, 237, 230, 0.42);
   border-radius: 2px;
-  background: var(--wl-mark);
-  color: #14100b;
+  background: rgba(15, 18, 17, 0.55);
+}
+.hero__act:hover {
+  border-color: var(--wl-mark);
+  color: #fff;
 }
 .hero__act--ghost {
-  background: rgba(15, 18, 17, 0.6);
-  color: #f6f4ee;
-  border-color: rgba(239, 237, 230, 0.42);
+  padding-inline: 0;
+  border-color: transparent;
+  background: none;
+}
+.hero__play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.7rem;
+  color: var(--wl-mark-strong);
+  border: 1px solid rgba(220, 171, 116, 0.55);
+  border-radius: 50%;
 }
 .hero__act:focus-visible {
   outline: 2px solid var(--wl-mark-strong);
   outline-offset: 3px;
 }
-.hero__act-arr {
+.hero__arr {
   transition: transform 220ms ease;
 }
-.hero__act:hover .hero__act-arr {
+.hero__act:hover .hero__arr {
   transform: translateX(3px);
-}
-
-.hero__search {
-  display: flex;
-  align-items: center;
-  gap: var(--hfm-space-2);
-  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
-  max-width: 24rem;
-  padding: 0 var(--hfm-space-3);
-  background: rgba(11, 14, 13, 0.72);
-  border: 1px solid rgba(239, 237, 230, 0.28);
-  border-radius: 2px;
-}
-.home-search__input {
-  flex: 1;
-  min-width: 0;
-  padding: var(--hfm-space-3) 0;
-  font: inherit;
-  font-size: var(--hfm-text-sm);
-  color: #f6f4ee;
-  background: transparent;
-  border: none;
-}
-.home-search__input::placeholder {
-  color: rgba(246, 244, 238, 0.62);
-}
-.home-search__input:focus {
-  outline: none;
-}
-.hero__search:focus-within {
-  border-color: var(--wl-mark);
-}
-.home-search__submit {
-  min-height: 24px;
-  padding: var(--hfm-space-2);
-  font: inherit;
-  font-size: var(--hfm-text-sm);
-  letter-spacing: 0.14em;
-  color: var(--wl-mark-strong);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-.home-search__submit:focus-visible {
-  outline: 2px solid var(--wl-mark);
-  outline-offset: 2px;
-}
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }
 
 .hero__counts {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--hfm-space-4) var(--hfm-space-6);
+  gap: var(--hfm-space-4) var(--hfm-space-7);
   margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
 }
 .hero__count-value {
   margin: 0.15rem 0 0;
-  font-family: var(--wl-latin);
-  font-variant-numeric: tabular-nums;
   font-size: var(--hfm-text-lg);
   line-height: 1;
   color: #e8e5dc;
 }
 
-/* 入口带：落在实底上 */
-.hero__entries {
-  position: relative;
-  max-width: 78rem;
-  margin: 0 auto;
-  border-top: 1px solid var(--wl-rule);
-  border-bottom: 1px solid var(--wl-rule);
+/* ---- 右下：地点与题词 ---- */
+.hero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: var(--hfm-space-4) var(--hfm-space-8);
+  margin-top: clamp(2rem, 4vw, 3rem);
+  text-align: right;
+}
+.hero__place {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+}
+.hero__place-zh {
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  letter-spacing: 0.16em;
+  color: #f2f0ea;
+}
+.hero__place-en {
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.28em;
+  font-size: 0.625rem;
+  color: rgba(239, 237, 230, 0.55);
+}
+.hero__motto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.1em;
+  color: rgba(239, 237, 230, 0.78);
+}
+
+/* ---- 底部：滚动提示 │ 分页刻度 ---- */
+.hero__scale {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--hfm-space-6);
+  margin-top: var(--hfm-space-6);
+  padding-top: var(--hfm-space-4);
+}
+.hero__scroll {
+  display: flex;
+  align-items: center;
+  gap: var(--hfm-space-3);
+  margin: 0;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.5625rem;
+  color: rgba(239, 237, 230, 0.5);
+}
+.hero__scroll-line {
+  display: block;
+  width: 3.5rem;
+  height: 1px;
+  background: rgba(239, 237, 230, 0.28);
+}
+.hero__pager {
+  display: flex;
+  gap: var(--hfm-space-5);
+  margin: 0;
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.1em;
+  color: rgba(239, 237, 230, 0.66);
+}
+.hero__pager .is-on {
+  color: #f2f0ea;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--wl-mark);
+}
+
+@media (max-width: 900px) {
+  .hero__quote {
+    display: none;
+  }
+  .hero__foot {
+    justify-content: flex-start;
+    text-align: left;
+  }
 }
 
 @media (max-width: 700px) {
-  /* 窄屏：画像横铺会把人裁掉，改为偏上取景，压暗加重。 */
   .hero__bleed {
     height: 100%;
   }
@@ -343,21 +393,21 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   .hero__scrim {
     background: linear-gradient(
       to bottom,
-      rgba(7, 9, 8, 0.72) 0%,
-      rgba(7, 9, 8, 0.86) 42%,
+      rgba(7, 9, 8, 0.74) 0%,
+      rgba(7, 9, 8, 0.88) 42%,
       rgba(7, 9, 8, 0.97) 100%
     );
   }
   .hero__inner {
-    min-height: 82vh;
+    min-height: 84vh;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__act-arr {
+  .hero__arr {
     transition: none;
   }
-  .hero__act:hover .hero__act-arr {
+  .hero__act:hover .hero__arr {
     transform: none;
   }
 }

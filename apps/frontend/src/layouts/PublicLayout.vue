@@ -2,13 +2,13 @@
 /**
  * PublicLayout — public portal shell (UI-02 Global Shell / Navigation).
  *
- * Customer-mandated 5-link main navigation (首页 / 人物（皇甫谧）/ 其言 /
- * 《针灸甲乙经》 / 皇甫谧针灸非遗的传承). Search + login live in the
- * header utility area (not part of the main nav); about lives in the footer.
+ * TODO(UI 重构): 主导航目标见 HFM-UI-CONTRACT-v2 §2（参考图的 8 项），
+ * 取代此前的"客户强制 5 链接"。Search + login live in the header utility area
+ * (not part of the main nav); about lives in the main nav and the footer.
  * Mobile (<768px) collapses the nav into an accessible drawer: toggle with
  * aria-expanded, focus trap, Escape to close, focus restored.
  */
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { onBeforeUnmount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PUBLIC_NAV_ITEMS } from '../config/navigation'
 import { useFocusTrap } from '../composables/useFocusTrap'
@@ -27,15 +27,13 @@ const searchQuery = ref('')
 const { containerRef: trapContainer, activate, deactivate } = useFocusTrap()
 
 /**
- * 首页是**深色展厅面**，其余页面是纸面。页头是共享的，所以要按所在表面换一套
- * 反色 —— 否则黑色 logo 与墨色文字落在首页的近黑画布上会看不见。
+ * 公众门户整站是**深色展厅面**（HFM-UI-CONTRACT-v2 §1：方案六 沉浸体验·未来展厅）。
  *
- * 只影响首页：`data-surface` 唯一取值来自路由，其余页面保持原样。
+ * 页头与页脚是共享的，所以在**壳层**把语义色 token 换成展厅值 —— 页头、页脚，
+ * 以及页面内任何用 `--hfm-color-*` 的地方一次性跟着变，不必逐个元素覆盖。
+ * 研究端与后台用的是各自的 layout，不受影响。
  */
-const surface = computed<'exhibition' | 'paper'>(() =>
-  // 与 isActive 同样的防御：布局可能在无 router 上下文渲染（单测）。
-  route?.path === '/' ? 'exhibition' : 'paper',
-)
+const surface = 'exhibition' as const
 
 const isActive = (href: string): boolean => {
   // Defensive: layouts may render outside a router context (unit tests).
@@ -152,7 +150,15 @@ onBeforeUnmount(() => {
           <input id="header-search-input" v-model="searchQuery" type="search" placeholder="检索…" />
           <button type="submit" class="header-search__submit">检索</button>
         </form>
-        <a class="header-login" href="/login">登录</a>
+        <p class="header-lang" aria-label="语言">
+          <span class="header-lang__on">中</span>
+          <span class="header-lang__sep" aria-hidden="true">|</span>
+          <span class="header-lang__off" title="英文版尚未提供">EN</span>
+        </p>
+        <a class="header-workbench" href="/research">
+          进入研究工作台
+          <span aria-hidden="true">→</span>
+        </a>
       </div>
     </header>
 
@@ -181,7 +187,8 @@ onBeforeUnmount(() => {
   --hfm-color-elevated: #1e2320;
   --hfm-color-text: #efede6;
   --hfm-color-text-secondary: #c9c5ba;
-  --hfm-color-text-muted: #8a867c;
+  /* 三级文字在近黑画布上要抬到 4.5:1 以上；#8a867c 只有 4.0:1。 */
+  --hfm-color-text-muted: #9a958a;
   --hfm-color-border: rgba(239, 237, 230, 0.14);
   --hfm-color-border-strong: rgba(239, 237, 230, 0.3);
   --hfm-color-interactive: #dcab74;
@@ -190,6 +197,20 @@ onBeforeUnmount(() => {
      在近黑画布上只有 3.75:1。提亮后的朱砂在此为 7.2:1。 */
   --hfm-color-heritage: #d98a6a;
   --hfm-color-heritage-surface: rgba(217, 138, 106, 0.12);
+  /* 状态与语义色同理由：浅色模式下的深色值在近黑画布上全部不达标
+     （warning #8a5a00 只有 2.4:1），这里各给一个暗场取值。 */
+  --hfm-color-warning: #d9a441;
+  --hfm-color-success: #6cc08a;
+  --hfm-color-danger: #f0908a;
+  --hfm-color-evidence: #6fbfa4;
+  --hfm-color-citation: #9aa8d8;
+  --hfm-color-azure: #9aa8b0;
+  /* 状态胶囊用的是「亮底 + on-* 文字」。浅色模式的 on-* 是白字，
+     在暗场里这些底已经变亮，白字全部不达标，改为墨字。 */
+  --hfm-color-on-accent: #14100b;
+  --hfm-color-on-heritage: #14100b;
+  /* success 的浅底同理：浅色模式的 #e2f0e6 配暗场绿字只够 2.3:1。 */
+  --hfm-color-success-surface: rgba(108, 192, 138, 0.16);
   background: var(--wl-paper);
   color: var(--wl-ink);
 }
@@ -306,15 +327,43 @@ onBeforeUnmount(() => {
   font-size: var(--hfm-text-sm);
 }
 
-.header-login {
-  color: var(--hfm-color-interactive);
-  text-decoration: none;
-  font-size: var(--hfm-text-sm);
+/* ---- 语言标记（参考图：中 | EN）。EN 尚未提供，故不是链接。 ---- */
+.header-lang {
+  display: flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  margin: 0;
+  font-family: var(--wl-latin, ui-monospace, monospace);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.1em;
+}
+.header-lang__on {
+  color: var(--hfm-color-text);
+}
+.header-lang__sep,
+.header-lang__off {
+  color: var(--hfm-color-text-muted);
 }
 
-.header-login:hover {
-  color: var(--hfm-color-accent-hover);
-  text-decoration: underline;
+/* ---- 研究工作台入口（参考图的工具区按钮） ---- */
+.header-workbench {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  padding: 0.4rem 0.9rem;
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text);
+  text-decoration: none;
+  border: 1px solid var(--hfm-color-border-strong);
+  border-radius: 2px;
+}
+.header-workbench:hover {
+  border-color: var(--hfm-color-accent);
+  color: var(--hfm-color-accent);
+}
+.header-workbench:focus-visible {
+  outline: 2px solid var(--hfm-color-accent);
+  outline-offset: 2px;
 }
 
 .public-shell__main {

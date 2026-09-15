@@ -42,7 +42,7 @@ test('UI-12 PATH D: main nav 人物（皇甫谧） reaches the canonical person 
   await mockPersonApi(page)
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto('/')
-  const personLink = page.getByRole('link', { name: '皇甫谧人物档案' })
+  const personLink = page.locator('nav a[href="/persons/ENT-PERSON-HFM-HUANGFUMI"]').first()
   await expect(personLink).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await personLink.click()
   await expect(page).toHaveURL(/\/persons\/ENT-PERSON-HFM-HUANGFUMI$/)
@@ -56,7 +56,8 @@ test('UI-12 PATH D: mobile drawer nav reaches the canonical person page', async 
   await page.getByRole('button', { name: '打开导航菜单' }).click()
   const personLink = page
     .getByRole('navigation', { name: 'Public navigation' })
-    .getByRole('link', { name: '皇甫谧人物档案' })
+    .locator('a[href="/persons/ENT-PERSON-HFM-HUANGFUMI"]')
+    .first()
   await expect(personLink).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await personLink.click()
   await expect(page).toHaveURL(/\/persons\/ENT-PERSON-HFM-HUANGFUMI$/)

@@ -16,6 +16,8 @@ import WorksView from '../views/works/WorksView.vue'
 import ArchiveView from '../views/archive/ArchiveView.vue'
 import JiayiView from '../views/jiayi/JiayiView.vue'
 import AboutView from '../views/AboutView.vue'
+import KnowledgeGraphView from '../views/knowledge/KnowledgeGraphView.vue'
+import InteractiveView from '../views/interactive/InteractiveView.vue'
 import LoginView from '../views/LoginView.vue'
 import DeniedView from '../views/DeniedView.vue'
 import ResearchHomeView from '../views/research/ResearchHomeView.vue'
@@ -52,6 +54,8 @@ export const routes: RouteRecordRaw[] = [
       { path: 'works', name: 'works', component: WorksView },
       { path: 'archive', name: 'archive', component: ArchiveView },
       { path: 'jiayi', name: 'jiayi', component: JiayiView },
+      { path: 'knowledge', name: 'knowledge', component: KnowledgeGraphView },
+      { path: 'interactive', name: 'interactive', component: InteractiveView },
       { path: 'about', name: 'about', component: AboutView },
       { path: 'login', name: 'login', component: LoginView },
       { path: 'denied', name: 'denied', component: DeniedView },

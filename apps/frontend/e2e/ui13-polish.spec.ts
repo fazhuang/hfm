@@ -55,7 +55,8 @@ test('UI-13 shared eyebrow primitive uses heritage token styling', async ({ page
       return { color: cs.color, fontSize: cs.fontSize, letterSpacing: cs.letterSpacing }
     })
     // heritage cinnabar-ish bronze token (light mode ~ rgb(138,106,47)).
-    expect(style.color, path).toBe('rgb(138, 106, 47)')
+    // 展厅面把 heritage 提到 #d98a6a（浅色模式的深铜金在近黑画布上不达标）。
+    expect(style.color, path).toBe('rgb(217, 138, 106)')
     expect(style.fontSize, path).toBe('13px')
     expect(style.letterSpacing, path).toBe('1.56px') // 13px × 0.12em
   }
@@ -66,7 +67,8 @@ test('UI-13 shared status primitive renders token backgrounds', async ({ page })
   const available = page.locator('.hfm-status[data-status="AVAILABLE"]').first()
   await expect(available).toBeVisible()
   const bg = await available.evaluate((el) => getComputedStyle(el).backgroundColor)
-  expect(bg).toBe('rgb(226, 240, 230)') // success-surface token
+  // 展厅面把 success-surface 换成暗场透明绿（浅底的浅绿在近黑画布上不达标）。
+  expect(bg).toBe('rgba(108, 192, 138, 0.16)')
 })
 
 test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async ({ page }) => {
@@ -83,7 +85,8 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
 
   await page.goto('/')
   const heroH1 = await page
-    .getByRole('heading', { name: '皇甫谧人文数字平台' })
+    .getByRole('heading', { level: 1 })
+    .first()
     .evaluate((el) => getComputedStyle(el).fontSize)
   // The platform-name H1 is a quiet register — smaller than the default 28px
   // content H1 — while the 皇甫谧 identity is a non-heading decorative
@@ -94,7 +97,7 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
   // 大字块承担。展厅方向相反 —— 平台名就是主标题，人物画像承担视觉核心。
   // 因此这里从「小于默认」改为「明显大于默认」，与全站 h1=28px 拉开层级。
   expect(parseFloat(heroH1)).toBeGreaterThan(28)
-  expect(parseFloat(heroH1)).toBeLessThanOrEqual(60)
+  expect(parseFloat(heroH1)).toBeLessThanOrEqual(72)
 })
 
 test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ page }) => {

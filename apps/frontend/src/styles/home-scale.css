@@ -581,11 +581,191 @@
 .home__entries {
   max-width: 78rem;
   margin: 0 auto;
+  background: var(--wl-paper-2);
   border-top: 1px solid var(--wl-rule);
   border-bottom: 1px solid var(--wl-rule);
 }
 @media (max-width: 1300px) {
   .home__entries {
     margin-inline: var(--hfm-space-6);
+  }
+}
+
+/* ==========================================================================
+   栏目页首屏 — 对照参考图（HFM-LM-CK）
+   ==========================================================================
+   栏目页 = 英文小标 + 栏目大字 + 短横线 + 一句引导 + 一段说明。
+   栏目标题是页面唯一的 H1；二级导航条紧随其后。
+   ========================================================================== */
+
+.pg-hero {
+  position: relative;
+  padding: clamp(4rem, 10vw, 8rem) var(--hfm-space-6) clamp(3rem, 6vw, 5rem);
+  background: linear-gradient(180deg, var(--wl-deep) 0%, var(--wl-paper) 100%);
+}
+.pg-hero__title {
+  margin: var(--hfm-space-3) 0 0;
+  font-family: var(--hfm-font-display);
+  font-weight: 500;
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: var(--wl-ink);
+}
+.pg-hero__rule {
+  width: 3rem;
+  height: 1px;
+  margin: clamp(1.25rem, 3vw, 2rem) 0;
+  background: var(--wl-mark);
+}
+.pg-hero__lede {
+  margin: 0;
+  max-width: 42ch;
+  font-family: var(--hfm-font-serif);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.95;
+  color: var(--wl-ink-2);
+}
+
+/* ---- 二级导航条：当前项带下划线 ---- */
+.pg-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-6);
+  margin: 0;
+  padding: var(--hfm-space-3) var(--hfm-space-6);
+  list-style: none;
+  border-top: 1px solid var(--wl-rule);
+  border-bottom: 1px solid var(--wl-rule);
+  background: var(--wl-paper-2);
+}
+.pg-subnav__link {
+  display: inline-block;
+  padding: var(--hfm-space-2) 0;
+  font-size: var(--hfm-text-sm);
+  color: var(--wl-ink-2);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.pg-subnav__link:hover,
+.pg-subnav__link:focus-visible {
+  color: var(--wl-ink);
+  border-bottom-color: var(--wl-mark);
+}
+
+/* ---- 栏目页正文块的通用状态行 ---- */
+.pg-state {
+  margin: 0;
+  color: var(--wl-ink-2);
+}
+
+/* ---- 编辑型 CTA：细框按钮 + 箭头位移（全站栏目页/首页共用一套行为） ---- */
+.xl-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--hfm-space-2);
+  padding: 0.6rem 1.3rem;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.06em;
+  color: var(--wl-ink);
+  text-decoration: none;
+  border: 1px solid var(--wl-rule);
+  border-radius: 2px;
+}
+.xl-cta:hover {
+  border-color: var(--wl-mark);
+  color: var(--wl-mark-strong);
+}
+.xl-cta:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
+}
+.xl-cta__arr {
+  transition: transform 220ms ease;
+}
+.xl-cta:hover .xl-cta__arr {
+  transform: translateX(3px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .xl-cta__arr,
+  .xl-cta:hover .xl-cta__arr {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ---- 栏目首屏带主影像（参考图 HFM-LM-CK 的人物栏目） ---- */
+.pg-hero--media {
+  overflow: hidden;
+  padding-bottom: clamp(4rem, 8vw, 6.5rem);
+}
+.pg-hero__bg {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 62%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 60% 20%;
+  filter: brightness(0.42) contrast(1.06) saturate(0.7);
+}
+.pg-hero__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    var(--wl-deep) 0%,
+    rgba(7, 9, 8, 0.9) 34%,
+    rgba(7, 9, 8, 0.55) 68%,
+    rgba(7, 9, 8, 0.5) 100%
+  );
+}
+.pg-hero__inner {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--hfm-space-8);
+}
+.pg-hero__text {
+  max-width: 34rem;
+}
+.pg-hero__dates {
+  margin: var(--hfm-space-4) 0 0;
+  font-size: var(--hfm-text-base);
+  letter-spacing: 0.1em;
+  color: var(--wl-mute);
+}
+.pg-hero__quote {
+  max-width: 20rem;
+  margin: 0;
+  padding-left: var(--hfm-space-5);
+  border-left: 1px solid var(--wl-mark);
+}
+.pg-hero__quote blockquote {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  line-height: 2;
+  color: rgba(242, 240, 234, 0.9);
+}
+.pg-hero__quote figcaption {
+  margin-top: var(--hfm-space-2);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.08em;
+  color: var(--wl-mark-strong);
+}
+@media (max-width: 900px) {
+  .pg-hero__bg {
+    width: 100%;
+  }
+  .pg-hero__scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(7, 9, 8, 0.86) 0%,
+      rgba(7, 9, 8, 0.9) 45%,
+      var(--wl-deep) 100%
+    );
   }
 }

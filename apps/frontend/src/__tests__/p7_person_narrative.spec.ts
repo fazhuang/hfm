@@ -66,10 +66,11 @@ describe('P-7 其人叙事长页', () => {
   it('核心人物渲染定位段：姓名、生卒、定义、四重身份', async () => {
     const wrapper = await mountPerson(CORE_PERSON_ENTITY_ID)
     const text = wrapper.text()
-    expect(wrapper.find('.core-hero__name').text()).toBe('皇甫谧')
+    // 栏目页骨架：栏目名是小标，H1 是人名。
+    expect(wrapper.find('h1').text()).toBe('皇甫谧')
     expect(text).toContain('215—282')
     expect(text).toContain('针灸鼻祖')
-    expect(wrapper.findAll('.core-hero__identities li').map((n) => n.text())).toEqual([
+    expect(wrapper.findAll('.pv-tags li').map((n) => n.text())).toEqual([
       '医学家',
       '文学家',
       '史学家',
@@ -79,10 +80,10 @@ describe('P-7 其人叙事长页', () => {
 
   it('画像指向已发布媒体资产的字节端点', async () => {
     const wrapper = await mountPerson(CORE_PERSON_ENTITY_ID)
-    const src = wrapper.find('.core-hero__portrait img').attributes('src') ?? ''
-    expect(src).toMatch(/\/api\/v1\/public\/media\/[^/]+\/bytes$/)
+    const portrait = wrapper.find('.pv-portrait img')
+    expect(portrait.attributes('src') ?? '').toMatch(/\/api\/v1\/public\/media\/[^/]+\/bytes$/)
     // 有图必须有无障碍替代文本，且说清是画像。
-    expect(wrapper.find('.core-hero__portrait img').attributes('alt')).toContain('皇甫谧')
+    expect(portrait.attributes('alt')).toContain('皇甫谧')
   })
 
   it('年表渲染人生四阶段', async () => {
@@ -110,7 +111,7 @@ describe('P-7 其人叙事长页', () => {
 
   it('延伸段给出其言与甲乙经入口', async () => {
     const wrapper = await mountPerson(CORE_PERSON_ENTITY_ID)
-    const hrefs = wrapper.findAll('.core-more__link').map((a) => a.attributes('href'))
+    const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     expect(hrefs).toContain('/yan')
     expect(hrefs).toContain('/jiayi')
   })

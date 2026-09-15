@@ -1,5 +1,8 @@
 /**
- * useHomeContractData — HFM-FRONTEND-CONTENT-CONTRACT v1 §3/§4 data layer.
+ * useHomeContractData — homepage data layer.
+ *
+ * source: 'backend' | 'fallback' 标记保留（数字取不到时降级，不编造），
+ * 但 HFM-UI-CONTRACT-v2 §4 已废除 v1 的 T0/T1/T2 强制分级与逐段绑定要求。
  *
  * The homepage's T0 (published public projection) fetches, one per contract
  * block, each carrying an explicit `source` marker:

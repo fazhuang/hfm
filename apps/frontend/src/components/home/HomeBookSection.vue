@@ -6,7 +6,6 @@
  */
 import { computed } from 'vue'
 import { HOME_BOOK, HOME_CHAPTERS } from '../../data/homeProjection'
-import { INVENTORY_EDITION_RECORDS } from '../../data/contentInventory'
 import type { BlockData } from '../../composables/useHomeContractData'
 import type { EditionSummary, WorkDetail } from '../../types/public'
 

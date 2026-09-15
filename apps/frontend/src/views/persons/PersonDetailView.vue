@@ -50,8 +50,45 @@ import {
   CORE_PERSON_WORKS,
 } from '../../config/corePerson'
 import { HOURAN_TABLES } from '../../data/houranTables'
+import { YAN_COLLECTION } from '../../data/yanCollection'
+import { AUDITED_PAPER_TOTAL, SEARCHABLE_PAPER_TOTAL } from '../../data/searchIndex'
+import { PERSON_SECTION_NAV } from '../../config/navigation'
 
 defineOptions({ name: 'PersonDetailView' })
+
+/** 「探索更多」卡片：五张，全部通向站内已有的真实页面。 */
+const EXPLORE_CARDS = [
+  {
+    title: '生平年表',
+    note: '关键人生节点与时代背景',
+    href: '#person-timeline',
+    img: '/assets/jiayi/edition-lineage.png',
+  },
+  {
+    title: '学术成就',
+    note: '医学 · 经学 · 文学 · 史学',
+    href: '#person-works',
+    img: '/assets/jiayi/book-siku-leaf.jpg',
+  },
+  {
+    title: '思想体系',
+    note: '其言四篇与处世之道',
+    href: '#person-thought',
+    img: '/assets/jiayi/frag-band1.jpg',
+  },
+  {
+    title: '历史影响',
+    note: '后世评价 · 影视 · 机构',
+    href: '#person-influence',
+    img: '/assets/jiayi/frag-macro.jpg',
+  },
+  {
+    title: '相关人物',
+    note: '师友、后学与传承人',
+    href: '#person-related',
+    img: '/assets/heritage/heritage-baishi-ceremony.jpg',
+  },
+] as const
 
 type PageStatus = 'loading' | 'ready' | 'not-found' | 'error'
 
@@ -226,74 +263,258 @@ watch(
     </div>
 
     <template v-else>
-      <!-- 核心人物：叙事长页（宪章 §3.1 五段） -->
+      <!-- 核心人物：栏目页骨架（HFM-UI-CONTRACT-v2 §3.2，参考图 HFM-LM-CK） -->
       <template v-if="isCorePerson">
-        <header class="core-hero">
-          <div class="core-hero__text">
-            <p class="hfm-eyebrow">西晋 · 数字人文</p>
-            <h1 class="core-hero__name">{{ CORE_PERSON_NAME }}</h1>
-            <p class="core-hero__dates">{{ CORE_PERSON_DATES }}</p>
-            <p class="core-hero__definition">{{ CORE_PERSON_DEFINITION }}</p>
-            <ul class="core-hero__identities" aria-label="身份">
-              <li v-for="identity in CORE_PERSON_IDENTITIES" :key="identity">
-                {{ identity }}
-              </li>
-            </ul>
+        <!-- 01 栏目首屏 -->
+        <section id="person-top" class="pg-hero pg-hero--media">
+          <img class="pg-hero__bg" :src="portraitUrl" alt="" aria-hidden="true" />
+          <div class="pg-hero__scrim" aria-hidden="true"></div>
+          <div class="xl-inner pg-hero__inner">
+            <div class="pg-hero__text">
+              <p class="xl-label">人物 · PEOPLE</p>
+              <h1 class="pg-hero__title">{{ CORE_PERSON_NAME }}</h1>
+              <p class="pg-hero__rule" aria-hidden="true"></p>
+              <p class="pg-hero__lede">走近皇甫谧，理解一位医者的时代与精神。</p>
+              <p class="pg-hero__dates xl-num">{{ CORE_PERSON_DATES }}</p>
+            </div>
+            <figure class="pg-hero__quote">
+              <blockquote>上以疗君亲之疾，下以救贫贱之厄，中以保身长全。</blockquote>
+              <figcaption>皇甫谧《针灸甲乙经·序》</figcaption>
+            </figure>
           </div>
-          <figure class="core-hero__portrait">
-            <img :src="portraitUrl" :alt="`${CORE_PERSON_NAME}画像`" />
-            <figcaption>{{ CORE_PERSON_NAME }}画像 · 客户提供资料</figcaption>
-          </figure>
-        </header>
-
-        <section class="core-section" aria-labelledby="core-life-heading">
-          <h2 id="core-life-heading" class="core-section__title">生平</h2>
-          <Timeline :events="lifePhases" label="人生阶段" />
         </section>
 
-        <section class="core-section" aria-labelledby="core-reception-heading">
-          <h2 id="core-reception-heading" class="core-section__title">历代与当代</h2>
-          <p class="core-section__lede">
-            后世对皇甫谧的评价，以及今日以他命名的影视、著述与机构（据客户资料整理）。
-          </p>
-          <div
-            v-for="table in HOURAN_TABLES"
-            :key="table.id"
-            class="core-table-block"
+        <!-- 02 二级导航 -->
+        <nav class="pg-subnav" aria-label="人物栏目导航">
+          <a
+            v-for="item in PERSON_SECTION_NAV"
+            :key="item.href"
+            class="pg-subnav__link"
+            :href="item.href"
           >
-            <h3 class="core-table-block__title">{{ table.label }}</h3>
-            <!-- 窄屏下表格横向滚动；滚动区必须可聚焦，否则键盘用户够不到
-                 （axe: scrollable-region-focusable）。 -->
-            <div
-              class="core-table-wrap"
-              tabindex="0"
-              role="region"
-              :aria-label="`${table.label}表格，可横向滚动`"
-            >
-              <table class="core-table">
-                <thead>
-                  <tr>
-                    <th v-for="col in table.columns" :key="col" scope="col">{{ col }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(row, i) in table.rows" :key="i">
-                    <td v-for="(cell, j) in row" :key="j">{{ cell }}</td>
-                  </tr>
-                </tbody>
-              </table>
+            {{ item.label }}
+          </a>
+        </nav>
+
+        <!-- 03 概览 -->
+        <section id="person-overview" class="xl-sec" aria-labelledby="person-overview-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">01</span>
+                <span class="xl-label">Overview</span>
+              </div>
+              <div>
+                <h2 id="person-overview-title" class="xl-title">人物概览</h2>
+              </div>
+            </header>
+            <div class="pv-grid">
+              <div class="pv-text">
+                <p class="pv-body">{{ CORE_PERSON_DEFINITION }}</p>
+                <ul class="pv-tags" aria-label="身份">
+                  <li v-for="identity in CORE_PERSON_IDENTITIES" :key="identity">{{ identity }}</li>
+                </ul>
+                <a class="xl-cta pv-cta" href="#person-timeline">
+                  查看完整生平
+                  <span class="xl-cta__arr" aria-hidden="true">→</span>
+                </a>
+              </div>
+              <figure class="pv-portrait">
+                <img :src="portraitUrl" :alt="`${CORE_PERSON_NAME}画像`" />
+                <figcaption>{{ CORE_PERSON_NAME }}画像 · 客户提供资料</figcaption>
+              </figure>
+              <figure class="pv-quote">
+                <blockquote>医之道，非独疗疾，亦所以养生、立德、安民。</blockquote>
+                <figcaption>皇甫谧《针灸甲乙经·序》</figcaption>
+              </figure>
             </div>
           </div>
         </section>
 
-        <section class="core-section" aria-labelledby="core-more-heading">
-          <h2 id="core-more-heading" class="core-section__title">延伸阅读</h2>
-          <ul class="core-more">
-            <li v-for="work in CORE_PERSON_WORKS" :key="work.title">
-              <a class="core-more__link" :href="work.href">{{ work.title }}</a>
-              <span class="core-more__note">{{ work.note }}</span>
-            </li>
-          </ul>
+        <!-- 04 生平年表 -->
+        <section id="person-timeline" class="xl-sec" aria-labelledby="person-timeline-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">02</span>
+                <span class="xl-label">Timeline</span>
+              </div>
+              <div>
+                <h2 id="person-timeline-title" class="xl-title">生平年表</h2>
+                <p class="xl-lede">人生四阶段：少家贫 → 屡征不仕 → 中年风痹 → 晚年著书。</p>
+              </div>
+            </header>
+            <Timeline :events="lifePhases" label="人生阶段" />
+          </div>
+        </section>
+
+        <!-- 05 学术成就 -->
+        <section id="person-works" class="xl-sec" aria-labelledby="person-works-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">03</span>
+                <span class="xl-label">Works</span>
+              </div>
+              <div>
+                <h2 id="person-works-title" class="xl-title">学术成就</h2>
+                <p class="xl-lede">医学、经学、文学、史学 —— 四个方面都有著述传世。</p>
+              </div>
+            </header>
+            <ul class="pv-works">
+              <li v-for="work in CORE_PERSON_WORKS" :key="work.title" class="pv-work">
+                <a class="pv-work__title" :href="work.href">{{ work.title }}</a>
+                <span class="pv-work__note">{{ work.note }}</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 06 思想体系 -->
+        <section id="person-thought" class="xl-sec" aria-labelledby="person-thought-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">04</span>
+                <span class="xl-label">Thought</span>
+              </div>
+              <div>
+                <h2 id="person-thought-title" class="xl-title">思想体系</h2>
+                <p class="xl-lede">{{ YAN_COLLECTION.intro }}</p>
+              </div>
+            </header>
+            <ul class="pv-thought">
+              <li v-for="work in YAN_COLLECTION.sections" :key="work.id" class="pv-thought__item">
+                <p class="pv-thought__title">{{ work.title }}</p>
+                <p class="pv-thought__note">{{ work.records[0]?.text }}</p>
+              </li>
+            </ul>
+            <a class="xl-cta" href="/yan">
+              阅读其言四篇
+              <span class="xl-cta__arr" aria-hidden="true">→</span>
+            </a>
+          </div>
+        </section>
+
+        <!-- 07 历史影响 -->
+        <section id="person-influence" class="xl-sec" aria-labelledby="person-influence-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">05</span>
+                <span class="xl-label">Influence</span>
+              </div>
+              <div>
+                <h2 id="person-influence-title" class="xl-title">历史影响</h2>
+                <p class="xl-lede">
+                  后世对皇甫谧的评价，以及今日以他命名的影视、著述与机构（据客户资料整理）。
+                </p>
+              </div>
+            </header>
+            <div v-for="table in HOURAN_TABLES" :key="table.id" class="core-table-block">
+              <h3 class="core-table-block__title">{{ table.label }}</h3>
+              <!-- 窄屏下表格横向滚动；滚动区必须可聚焦，否则键盘用户够不到
+                   （axe: scrollable-region-focusable）。 -->
+              <div
+                class="core-table-wrap"
+                tabindex="0"
+                role="region"
+                :aria-label="`${table.label}表格，可横向滚动`"
+              >
+                <table class="core-table">
+                  <thead>
+                    <tr>
+                      <th v-for="col in table.columns" :key="col" scope="col">{{ col }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(row, i) in table.rows" :key="i">
+                      <td v-for="(cell, j) in row" :key="j">{{ cell }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 08 相关人物 -->
+        <section id="person-related" class="xl-sec xl-sec--tight" aria-labelledby="person-related-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">06</span>
+                <span class="xl-label">Related</span>
+              </div>
+              <div>
+                <h2 id="person-related-title" class="xl-title">相关人物</h2>
+                <p class="xl-lede">
+                  师友、同时代人与后学 —— 传承一线上的是皇甫谧针灸的非遗代表性传承人。
+                </p>
+              </div>
+            </header>
+            <p class="pv-line">
+              <a class="pv-line__link" href="/heritage">皇甫谧针灸非遗传承人档案</a>
+              <span class="pv-line__note">第六代名医 · 客户提供申报材料</span>
+            </p>
+          </div>
+        </section>
+
+        <!-- 09 研究论文 -->
+        <section id="person-papers" class="xl-sec xl-sec--tight" aria-labelledby="person-papers-title">
+          <div class="xl-inner">
+            <header class="xl-head">
+              <div class="xl-head__aside">
+                <span class="xl-index">07</span>
+                <span class="xl-label">Papers</span>
+              </div>
+              <div>
+                <h2 id="person-papers-title" class="xl-title">研究论文</h2>
+                <p class="xl-lede">
+                  已登记论文题录 <b class="xl-num">{{ AUDITED_PAPER_TOTAL }}</b> 篇，
+                  其中 <b class="xl-num">{{ SEARCHABLE_PAPER_TOTAL }}</b> 篇已进入在线检索。
+                </p>
+                <a class="xl-cta pv-cta" href="/search?q=%E7%94%B2%E4%B9%99%E7%BB%8F">
+                  检索论文题录
+                  <span class="xl-cta__arr" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </header>
+          </div>
+        </section>
+
+        <!-- 10 探索更多 -->
+        <section class="xl-sec" aria-labelledby="person-explore-title">
+          <div class="xl-inner">
+            <h2 id="person-explore-title" class="xl-title">探索更多</h2>
+            <p class="xl-label pv-explore__en">Explore</p>
+            <ul class="pv-explore">
+              <li v-for="card in EXPLORE_CARDS" :key="card.href">
+                <a class="pv-card" :href="card.href">
+                  <img class="pv-card__img" :src="card.img" alt="" aria-hidden="true" />
+                  <span class="pv-card__title">{{ card.title }}</span>
+                  <span class="pv-card__note">{{ card.note }}</span>
+                  <span class="pv-card__go" aria-hidden="true">→</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 11 收尾 -->
+        <section class="xl-sec xl-sec--close pv-close" aria-labelledby="person-close-quote">
+          <div class="xl-inner pv-close__inner">
+            <div>
+              <p id="person-close-quote" class="pv-close__quote">
+                传统不是过去的遗存，而是理解未来的一种方式。
+              </p>
+              <p class="pv-close__en">THE PAST IS A RESOURCE FOR THE FUTURE</p>
+            </div>
+            <a class="xl-cta pv-close__cta" href="/jiayi">
+              继续探索典籍
+              <span class="xl-cta__arr" aria-hidden="true">→</span>
+            </a>
+          </div>
         </section>
       </template>
 
@@ -356,6 +577,306 @@ watch(
 </template>
 
 <style scoped>
+/* ==========================================================================
+   人物栏目页 — 版式在 styles/home-scale.css 的 .pg-* / .xl-* 段，这里只补本页件
+   ========================================================================== */
+
+.pv-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+@media (min-width: 1000px) {
+  .pv-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+}
+.pv-body {
+  margin: 0;
+  max-width: 40ch;
+  font-size: var(--hfm-text-base);
+  line-height: 2;
+  color: var(--wl-ink-2);
+}
+.pv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2);
+  margin: var(--hfm-space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pv-tags li {
+  padding: 0.3rem 0.8rem;
+  font-size: var(--hfm-text-xs);
+  color: var(--wl-ink-2);
+  border: 1px solid var(--wl-rule);
+  border-radius: 2px;
+}
+.pv-cta {
+  margin-top: clamp(1.5rem, 3vw, 2rem);
+}
+.pv-portrait {
+  position: relative;
+  margin: 0;
+  background: var(--wl-light);
+  box-shadow: inset 0 0 0 1px var(--wl-rule);
+}
+.pv-portrait img {
+  display: block;
+  width: 100%;
+  max-height: 30rem;
+  object-fit: cover;
+  object-position: top center;
+}
+.pv-portrait figcaption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: var(--hfm-space-3) var(--hfm-space-4);
+  font-size: var(--hfm-text-xs);
+  color: rgba(244, 242, 236, 0.72);
+  background: linear-gradient(to top, rgba(7, 9, 8, 0.82), transparent);
+}
+.pv-quote {
+  margin: 0;
+  padding-left: var(--hfm-space-5);
+  border-left: 1px solid var(--wl-mark);
+}
+.pv-quote blockquote {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  line-height: 2;
+  color: var(--wl-ink);
+}
+.pv-quote figcaption {
+  margin-top: var(--hfm-space-3);
+  font-size: var(--hfm-text-xs);
+  color: var(--wl-mark);
+}
+@media (max-width: 999px) {
+  .pv-quote {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--wl-rule);
+    padding-top: var(--hfm-space-5);
+  }
+}
+
+/* ---- 学术成就 ---- */
+.pv-works {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--wl-rule);
+}
+.pv-work {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--hfm-space-3) var(--hfm-space-6);
+  padding: var(--hfm-space-5) 0;
+  border-bottom: 1px solid var(--wl-rule);
+}
+.pv-work__title {
+  min-width: 12rem;
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-lg);
+  color: var(--wl-ink);
+  text-decoration: none;
+}
+.pv-work__title:hover {
+  color: var(--wl-mark-strong);
+}
+.pv-work__note {
+  font-size: var(--hfm-text-sm);
+  color: var(--wl-mute);
+}
+
+/* ---- 思想体系 ---- */
+.pv-thought {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  margin: 0 0 var(--hfm-space-8);
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--wl-rule);
+}
+@media (min-width: 800px) {
+  .pv-thought {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.pv-thought__item {
+  padding: var(--hfm-space-5) var(--hfm-space-5) var(--hfm-space-5) 0;
+  border-bottom: 1px solid var(--wl-rule);
+}
+@media (min-width: 800px) {
+  .pv-thought__item {
+    border-bottom: none;
+    border-right: 1px solid var(--wl-rule);
+    padding-inline: var(--hfm-space-5);
+  }
+  .pv-thought__item:first-child {
+    padding-left: 0;
+  }
+  .pv-thought__item:last-child {
+    border-right: none;
+  }
+}
+.pv-thought__title {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-lg);
+  color: var(--wl-ink);
+}
+.pv-thought__note {
+  margin: var(--hfm-space-3) 0 0;
+  font-size: var(--hfm-text-sm);
+  line-height: 1.85;
+  color: var(--wl-ink-2);
+}
+
+/* ---- 相关人物 / 单行条目 ---- */
+.pv-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--hfm-space-3) var(--hfm-space-6);
+  margin: 0;
+  padding: var(--hfm-space-5) 0;
+  border-top: 1px solid var(--wl-rule);
+  border-bottom: 1px solid var(--wl-rule);
+}
+.pv-line__link {
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-lg);
+  color: var(--wl-ink);
+  text-decoration: none;
+}
+.pv-line__link:hover {
+  color: var(--wl-mark-strong);
+}
+.pv-line__note {
+  font-size: var(--hfm-text-sm);
+  color: var(--wl-mute);
+}
+
+/* ---- 探索更多 ---- */
+.pv-explore__en {
+  display: block;
+  margin: var(--hfm-space-2) 0 clamp(1.5rem, 3vw, 2.5rem);
+}
+.pv-explore {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--hfm-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 900px) {
+  .pv-explore {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+.pv-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--wl-paper-2);
+}
+.pv-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.62) saturate(0.8);
+  transition: transform 420ms ease;
+}
+.pv-card:hover .pv-card__img {
+  transform: scale(1.03);
+}
+.pv-card__title {
+  position: absolute;
+  inset: auto 0 3.4rem;
+  padding: 0 var(--hfm-space-4);
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-lg);
+  color: #f4f2ec;
+}
+.pv-card__note {
+  position: absolute;
+  inset: auto 0 2.2rem;
+  padding: 0 var(--hfm-space-4);
+  font-size: var(--hfm-text-xs);
+  line-height: 1.6;
+  color: rgba(244, 242, 236, 0.76);
+}
+.pv-card__go {
+  position: absolute;
+  inset: auto auto var(--hfm-space-4) var(--hfm-space-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-size: 0.75rem;
+  color: #f4f2ec;
+  border: 1px solid rgba(244, 242, 236, 0.5);
+  border-radius: 50%;
+  transition: transform 220ms ease;
+}
+.pv-card:hover .pv-card__go {
+  transform: translateX(3px);
+}
+.pv-card:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .pv-card__img,
+  .pv-card__go,
+  .pv-card:hover .pv-card__img,
+  .pv-card:hover .pv-card__go {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ---- 收尾 ---- */
+.pv-close__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--hfm-space-6);
+}
+.pv-close__quote {
+  margin: 0;
+  max-width: 30ch;
+  font-family: var(--hfm-font-serif);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  line-height: 1.9;
+  color: #f2f0ea;
+}
+.pv-close__en {
+  margin: var(--hfm-space-3) 0 0;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.625rem;
+  color: rgba(239, 237, 230, 0.5);
+}
+.pv-close__cta {
+  color: #f2f0ea;
+  border-color: rgba(239, 237, 230, 0.24);
+}
+
 .person-page {
   max-width: var(--hfm-content-max);
   margin: 0 auto;

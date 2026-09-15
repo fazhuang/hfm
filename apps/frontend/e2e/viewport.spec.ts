@@ -41,7 +41,7 @@ for (const vp of VIEWPORTS) {
     // Layout renders: brand, main content.
     await expect(page.getByRole('banner')).toBeVisible()
     await expect(page.getByRole('main')).toBeVisible()
-    await expect(page.getByRole('heading', { name: '皇甫谧人文数字平台' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 
     // No critical horizontal overflow.
     const overflow = await page.evaluate(
@@ -65,6 +65,6 @@ for (const vp of VIEWPORTS) {
       await expect(nav.getByRole('link').first()).toBeVisible()
       await nav.getByRole('link').first().click()
     }
-    await expect(page.getByRole('heading', { name: /皇甫谧人文数字平台/ })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   })
 }
