@@ -80,3 +80,7 @@ content-production/batches/*/routeA-stats.json
 
 # Generated public derivatives (redacted P2 material, policy §4.1)
 public-derivatives/
+
+# Claude Code project config (local only, not shared)
+.claude/settings.json
+.claude/settings.local.json
