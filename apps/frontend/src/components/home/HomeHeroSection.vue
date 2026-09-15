@@ -57,134 +57,136 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
     aria-labelledby="home-hero-title"
     :data-source="counts ? 'backend' : 'fallback'"
   >
+    <!-- 整屏氛围底：客户提供的皇甫谧画像，整幅铺满，向左压暗。
+         画像本身是工笔设色，细节足、尺幅够，撑得起整屏 —— 不需要另造一张图。
+         图为纯装饰（文字已表意），故 aria-hidden。 -->
+    <div class="hero__bleed">
+      <img class="hero__bleed-img" :src="portraitUrl" alt="" aria-hidden="true" />
+      <div class="hero__scrim" aria-hidden="true"></div>
+    </div>
+
     <div class="hero__inner">
-      <!-- 刻度带：边栏序号 · 拉丁标签 · 生卒 -->
       <p class="hero__bar">
         <span class="xl-index">00</span>
         <span class="xl-label">HUANGFU MI · DIGITAL HUMANITIES</span>
         <span class="xl-num hero__bar-date">公元 {{ dates }}</span>
       </p>
 
-      <div class="hero__stage">
-        <!-- 左：叙述与入口 -->
-        <div class="hero__text">
-          <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
-          <!-- 这里只说「这是什么地方」。皇甫谧是谁是下一段的职责 ——
-               此前两段都在定义他，是首页重复感的主要来源。 -->
-          <p class="hero__statement">{{ HOME_HERO.subtitle }}</p>
+      <div class="hero__text">
+        <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
+        <p class="hero__statement">{{ HOME_HERO.subtitle }}</p>
 
-          <div class="hero__acts">
-            <a class="hero__act" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
-              走进皇甫谧
-              <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
-            </a>
-            <a class="hero__act hero__act--ghost" href="/jiayi">
-              阅读《针灸甲乙经》
-              <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
-            </a>
-          </div>
-
-          <form
-            v-if="searchLabel"
-            class="home-search hero__search"
-            role="search"
-            :aria-label="searchLabel"
-            @submit.prevent="props.onSearch"
-          >
-            <label class="visually-hidden" for="home-search-input">检索平台内容</label>
-            <input
-              id="home-search-input"
-              :value="props.searchValue"
-              class="home-search__input"
-              type="search"
-              placeholder="检索平台内容"
-              @input="emit('update:searchValue', ($event.target as HTMLInputElement).value)"
-            />
-            <button class="home-search__submit" type="submit">检索</button>
-          </form>
-
-          <!-- T0 平台登记（真实已发布计数） -->
-          <dl v-if="counts" class="hero__counts" data-source="backend">
-            <div v-for="c in counts" :key="c.label" class="hero__count">
-              <dt class="xl-label">{{ c.label }}</dt>
-              <dd class="xl-num hero__count-value">{{ c.value }}</dd>
-            </div>
-          </dl>
+        <div class="hero__acts">
+          <a class="hero__act" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
+            走进皇甫谧
+            <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
+          </a>
+          <a class="hero__act hero__act--ghost" href="/jiayi">
+            阅读《针灸甲乙经》
+            <span class="home-hero__act-arr hero__act-arr" aria-hidden="true">→</span>
+          </a>
         </div>
 
-        <!-- 右：展柜。四件真实材料，一件一件立着，光从上方来。 -->
-        <div class="hero__vitrine">
-          <figure class="hero__plate hero__plate--primary">
-            <img :src="portraitUrl" alt="皇甫谧画像（客户提供资料）" />
-            <figcaption>
-              <span class="hero__plate-title">皇甫谧</span>
-              <span class="hero__plate-note">画像 · 客户提供资料</span>
-            </figcaption>
-          </figure>
-
-        </div>
-      </div>
-
-      <!-- 四入口带（参考图 §2）：四个真实目的地，等分，细线分格。
-           契约要求首页是「五个真实目的地的预览墙」，这一带就是那句话的形状。 -->
-      <nav class="xl-entries hero__entries" aria-label="主要探索入口">
-        <a
-          v-for="d in HOME_DOMAINS.domains"
-          :key="d.no"
-          class="xl-entry"
-          :href="d.href"
+        <form
+          v-if="searchLabel"
+          class="home-search hero__search"
+          role="search"
+          :aria-label="searchLabel"
+          @submit.prevent="props.onSearch"
         >
-          <svg class="xl-entry__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <rect x="6" y="5" width="20" height="22" stroke="currentColor" stroke-width="1.2" />
-            <path d="M11 11h10M11 16h10M11 21h6" stroke="currentColor" stroke-width="1.2" />
-          </svg>
-          <span class="xl-entry__en">{{ d.en }}</span>
-          <p class="xl-entry__title">{{ d.title }}</p>
-          <p class="xl-entry__note">{{ d.key }}</p>
-          <span class="xl-entry__go">{{ d.cta }} →</span>
-        </a>
-      </nav>
+          <label class="visually-hidden" for="home-search-input">检索平台内容</label>
+          <input
+            id="home-search-input"
+            :value="props.searchValue"
+            class="home-search__input"
+            type="search"
+            placeholder="检索平台内容"
+            @input="emit('update:searchValue', ($event.target as HTMLInputElement).value)"
+          />
+          <button class="home-search__submit" type="submit">检索</button>
+        </form>
+
+        <!-- T0 平台登记（真实已发布计数），一行安静的底注 -->
+        <dl v-if="counts" class="hero__counts" data-source="backend">
+          <div v-for="c in counts" :key="c.label" class="hero__count">
+            <dt class="xl-label">{{ c.label }}</dt>
+            <dd class="xl-num hero__count-value">{{ c.value }}</dd>
+          </div>
+        </dl>
+      </div>
     </div>
+
+    <!-- 四入口带落在实底上，不压在图上 —— 字压图只留给首屏那几行。 -->
+    <nav class="xl-entries hero__entries" aria-label="主要探索入口">
+      <a v-for="d in HOME_DOMAINS.domains" :key="d.no" class="xl-entry" :href="d.href">
+        <svg class="xl-entry__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <rect x="6" y="5" width="20" height="22" stroke="currentColor" stroke-width="1.2" />
+          <path d="M11 11h10M11 16h10M11 21h6" stroke="currentColor" stroke-width="1.2" />
+        </svg>
+        <span class="xl-entry__en">{{ d.en }}</span>
+        <p class="xl-entry__title">{{ d.title }}</p>
+        <p class="xl-entry__note">{{ d.key }}</p>
+        <span class="xl-entry__go">{{ d.cta }} →</span>
+      </a>
+    </nav>
   </section>
 </template>
 
 <style scoped>
 /* ==========================================================================
-   Hero — 数字展厅入口
+   Hero — 整屏氛围底
    ==========================================================================
-   构图：左侧叙述与入口，右侧展柜。
-   光从上方来（一道极弱的顶光，只给方向感），展板立在这个光里。
-   圆角压到 0——展板是展板，不是卡片。
+   画像整幅铺满，向左压暗；文字压在暗部。
+   参考图的首屏是一整张场景；我们没有场景照片，但有客户提供的工笔画像 ——
+   它本身细节足够，铺满一屏成立。不另造图。
    ========================================================================== */
 
 .hero {
   position: relative;
   background: var(--wl-paper);
   color: var(--wl-ink);
-  padding: clamp(1.5rem, 4vw, 3rem) var(--hfm-space-6) clamp(3rem, 7vw, 6rem);
-  overflow: hidden;
+  padding: 0 var(--hfm-space-6);
 }
-/* 顶光：不用大面积发光，只在画布上缘压一道极弱的暖光。 */
-.hero::before {
-  content: '';
+
+/* ---- 氛围底 ---- */
+.hero__bleed {
   position: absolute;
   inset: 0 0 auto;
-  height: 60%;
-  background: radial-gradient(
-    120% 100% at 50% 0%,
-    var(--wl-glow) 0%,
-    transparent 62%
-  );
+  height: min(88vh, 52rem);
+  overflow: hidden;
   pointer-events: none;
 }
+.hero__bleed-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* 人物在右，视线向左 —— 与文字方向一致。 */
+  object-position: 72% 18%;
+}
+/* 压暗：左重（压字）右轻（留人物），下重（接下一段）。
+   不用大面积发光，只把暗部推够，让暖白字在图上立住。 */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to right,
+      rgba(7, 9, 8, 0.96) 0%,
+      rgba(7, 9, 8, 0.88) 34%,
+      rgba(7, 9, 8, 0.45) 62%,
+      rgba(7, 9, 8, 0.35) 100%
+    ),
+    linear-gradient(to bottom, rgba(7, 9, 8, 0.5) 0%, transparent 26%, rgba(7, 9, 8, 0.9) 100%);
+}
+
 .hero__inner {
   position: relative;
   max-width: 78rem;
   margin: 0 auto;
-}
-/* 入口带压在 Hero 下缘，与首屏连成一体（参考图里它属于展厅入口，不是独立一段）。 */
-.hero__entries {
-  margin-top: clamp(3rem, 6vw, 5rem);
+  padding: clamp(2rem, 5vw, 3.5rem) 0 clamp(3rem, 6vw, 4.5rem);
+  min-height: min(88vh, 52rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .hero__bar {
@@ -192,58 +194,45 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   flex-wrap: wrap;
   align-items: baseline;
   gap: var(--hfm-space-2) var(--hfm-space-4);
-  margin: 0 0 clamp(2rem, 5vw, 3.5rem);
+  margin: 0;
   padding-top: var(--hfm-space-4);
   border-top: 1px solid var(--wl-rule);
 }
 .hero__bar-date {
   margin-left: auto;
-  color: var(--wl-mute);
+  color: var(--wl-ink-2);
 }
 
-.hero__stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: clamp(2.5rem, 5vw, 4rem);
-  align-items: start;
+/* 文字块落在首屏下半，压在最暗的一带 */
+.hero__text {
+  margin-top: auto;
+  max-width: 38rem;
 }
-@media (min-width: 900px) {
-  .hero__stage {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-    gap: clamp(2.5rem, 4vw, 4.5rem);
-  }
-}
-
-/* ---- 左：叙述 ---- */
 .hero__brand {
   margin: 0;
   font-family: var(--hfm-font-display);
   font-weight: 500;
-  font-size: clamp(2rem, 4.4vw, 3.4rem);
-  line-height: 1.24;
+  font-size: clamp(2rem, 4.6vw, 3.5rem);
+  line-height: 1.22;
   letter-spacing: 0.015em;
-  color: var(--wl-ink);
+  color: #f6f4ee;
+  text-shadow: 0 2px 24px rgba(7, 9, 8, 0.7);
 }
 .hero__statement {
-  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
-  max-width: 30ch;
+  margin: clamp(1rem, 2.4vw, 1.5rem) 0 0;
+  max-width: 26ch;
   font-family: var(--hfm-font-serif);
-  font-size: clamp(1rem, 1.4vw, 1.25rem);
-  line-height: 1.95;
-  color: var(--wl-ink-2);
-}
-.hero__roles {
-  margin: var(--hfm-space-4) 0 0;
-  font-size: var(--hfm-text-sm);
-  letter-spacing: 0.14em;
-  color: var(--wl-mute);
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  line-height: 1.9;
+  color: #e8e5dc;
+  text-shadow: 0 1px 16px rgba(7, 9, 8, 0.8);
 }
 
 .hero__acts {
   display: flex;
   flex-wrap: wrap;
   gap: var(--hfm-space-3);
-  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
+  margin: clamp(1.5rem, 3vw, 2rem) 0 0;
 }
 .hero__act {
   display: inline-flex;
@@ -256,14 +245,13 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   text-decoration: none;
   border: 1px solid var(--wl-mark);
   border-radius: 2px;
-  /* 主行动：展厅里的唯一实心件。青铜是这套配色里唯一的强调色。 */
   background: var(--wl-mark);
   color: #14100b;
 }
 .hero__act--ghost {
-  background: transparent;
-  color: var(--wl-ink);
-  border-color: var(--wl-rule);
+  background: rgba(15, 18, 17, 0.6);
+  color: #f6f4ee;
+  border-color: rgba(239, 237, 230, 0.42);
 }
 .hero__act:focus-visible {
   outline: 2px solid var(--wl-mark-strong);
@@ -280,25 +268,31 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   display: flex;
   align-items: center;
   gap: var(--hfm-space-2);
-  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
   max-width: 24rem;
-  border-bottom: 1px solid var(--wl-rule);
+  padding: 0 var(--hfm-space-3);
+  background: rgba(11, 14, 13, 0.72);
+  border: 1px solid rgba(239, 237, 230, 0.28);
+  border-radius: 2px;
 }
 .home-search__input {
   flex: 1;
   min-width: 0;
-  padding: var(--hfm-space-2) 0;
+  padding: var(--hfm-space-3) 0;
   font: inherit;
   font-size: var(--hfm-text-sm);
-  color: var(--wl-ink);
+  color: #f6f4ee;
   background: transparent;
   border: none;
 }
 .home-search__input::placeholder {
-  color: var(--wl-mute);
+  color: rgba(246, 244, 238, 0.62);
 }
 .home-search__input:focus {
   outline: none;
+}
+.hero__search:focus-within {
+  border-color: var(--wl-mark);
 }
 .home-search__submit {
   min-height: 24px;
@@ -306,12 +300,15 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   font: inherit;
   font-size: var(--hfm-text-sm);
   letter-spacing: 0.14em;
-  color: var(--wl-mark);
+  color: var(--wl-mark-strong);
   background: none;
   border: none;
   cursor: pointer;
 }
-/* 仅对读屏可见。此前定义在本组件的样式块里，被整块替换时误删。 */
+.home-search__submit:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 2px;
+}
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -327,10 +324,8 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
 .hero__counts {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--hfm-space-5) var(--hfm-space-8);
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
-  padding-top: var(--hfm-space-5);
-  border-top: 1px solid var(--wl-rule);
+  gap: var(--hfm-space-4) var(--hfm-space-6);
+  margin: clamp(1.75rem, 3.5vw, 2.5rem) 0 0;
 }
 .hero__count-value {
   margin: 0.15rem 0 0;
@@ -338,60 +333,37 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   font-variant-numeric: tabular-nums;
   font-size: var(--hfm-text-lg);
   line-height: 1;
-  color: var(--wl-ink-2);
+  color: #e8e5dc;
 }
 
-/* ---- 右：展柜 ----
-   主展板立在前，两件副展板退后半步，刻度带压在底下。
-   纵深靠**位移 + 明度差 + 阴影**，不靠发光。 */
-/* 展柜：宽屏三件并排（画像立左，两件书影叠右），窄屏改为画像通栏 + 书影并排。
-   宽屏不竖向堆叠是因为竖排会把首屏撑到 1400px 以上，读者第一屏看不到 CTA。
-   移动端不沿用"缩小版桌面"：两窄列的标题会全部断行，等于没有可读性。 */
-.hero__vitrine {
+/* 入口带：落在实底上 */
+.hero__entries {
   position: relative;
-  display: block;
-}
-.hero__plate {
-  margin: 0;
-  background: var(--wl-light);
-  border: 1px solid var(--wl-rule);
-  border-radius: 1px;
-  overflow: hidden;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.4),
-    0 18px 40px -24px rgba(0, 0, 0, 0.9);
-}
-.hero__plate img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-.hero__plate figcaption {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--hfm-space-3);
-  padding: var(--hfm-space-3) var(--hfm-space-4);
+  max-width: 78rem;
+  margin: 0 auto;
   border-top: 1px solid var(--wl-rule);
+  border-bottom: 1px solid var(--wl-rule);
 }
-.hero__plate-title {
-  font-family: var(--hfm-font-serif);
-  font-size: var(--hfm-text-base);
-  color: var(--wl-ink);
-}
-.hero__plate-note {
-  font-size: var(--hfm-text-xs);
-  letter-spacing: 0.06em;
-  color: var(--wl-mute);
-}
-/* 主展板：画像。它是整页唯一有史实地位的人物影像。 */
-.hero__plate--primary {
-  background: var(--wl-paper-2);
-}
-.hero__plate--primary img {
-  aspect-ratio: 1 / 1;
-  object-fit: cover;
-  object-position: top center;
+
+@media (max-width: 700px) {
+  /* 窄屏：画像横铺会把人裁掉，改为偏上取景，压暗加重。 */
+  .hero__bleed {
+    height: 100%;
+  }
+  .hero__bleed-img {
+    object-position: 62% 12%;
+  }
+  .hero__scrim {
+    background: linear-gradient(
+      to bottom,
+      rgba(7, 9, 8, 0.72) 0%,
+      rgba(7, 9, 8, 0.86) 42%,
+      rgba(7, 9, 8, 0.97) 100%
+    );
+  }
+  .hero__inner {
+    min-height: 82vh;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
