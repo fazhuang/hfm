@@ -55,6 +55,27 @@ class PrivacyClass(str):
 GATED_PRIVACY_CLASSES: frozenset[str] = frozenset({PrivacyClass.P2, PrivacyClass.P3})
 
 
+class AccessScope(str):
+    """Which section of the platform an asset belongs to.
+
+    Orthogonal to :class:`MediaAssetState`: scope says *who the audience is*,
+    state says *whether the asset is ready for that audience*. A 非遗
+    certificate is ``PUBLIC`` scope while still ``draft`` — it is portal
+    material that has not been redacted yet.
+
+    The default is :attr:`RESEARCH`, not :attr:`PUBLIC`, so the boundary
+    fails closed: a new asset is invisible to the public portal until someone
+    deliberately promotes it.
+    """
+
+    PUBLIC = "public"
+    RESEARCH = "research"
+
+
+#: Default scope for a newly registered asset (fail-closed).
+DEFAULT_ACCESS_SCOPE = AccessScope.RESEARCH
+
+
 class MediaAsset(BaseModel):
     """One media object (original or public derivative)."""
 
@@ -87,6 +108,10 @@ class MediaAsset(BaseModel):
             "NOT derivative_publication_permission OR original_object_key IS NOT NULL",
             name="ck_media_assets_derivative_grant",
         ),
+        CheckConstraint(
+            "access_scope IN ('public', 'research')",
+            name="ck_media_assets_access_scope",
+        ),
     )
 
     object_key: Mapped[str] = mapped_column(String(500), unique=True, nullable=False)
@@ -114,6 +139,19 @@ class MediaAsset(BaseModel):
 
     #: Privacy class governing publication eligibility (policy §4).
     privacy_class: Mapped[str] = mapped_column(String(2), nullable=False, default=PrivacyClass.P0)
+
+    #: Which section of the platform this asset belongs to (portal vs
+    #: research). Independent of ``publication_state``; defaults to the
+    #: fail-closed value so nothing reaches the portal unasked.
+    access_scope: Mapped[str] = mapped_column(
+        String(8), nullable=False, default=DEFAULT_ACCESS_SCOPE, server_default="research"
+    )
+
+    #: Customer asset-register identifier (``HFM-A000013``). Joins this row to
+    #: ``documents.source_asset_id``, which speaks the register's language
+    #: while ``id`` is a UUID. Nullable: not every future asset comes from the
+    #: register.
+    ledger_id: Mapped[str | None] = mapped_column(String(16), nullable=True, unique=True)
 
     publication_state: Mapped[str] = mapped_column(
         String(20), nullable=False, default=MediaAssetState.DRAFT

@@ -1,4 +1,4 @@
-"""C-domain relation import tests (isolated PostgreSQL@0017).
+"""C-domain relation import tests (isolated PostgreSQL@0018).
 
 Runs scripts/import-cdomain-relations.py against a disposable PostgreSQL
 database seeded with the five source acupoint terms, and proves: --dry-run

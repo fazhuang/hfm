@@ -526,11 +526,11 @@ def main(argv: list[str] | None = None) -> int:
 
     db_url = env.get("HFM_DATABASE_URL", "")
     if not args.allow_sqlite:
-        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
+        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0018")
         if migration_errors:
             for reason in migration_errors:
                 print(f"MIGRATION_VERIFY=FAIL ({reason})")
-            print("PUBLISH_CONTENT=FAIL (database must be migrated at 0017)")
+            print("PUBLISH_CONTENT=FAIL (database must be migrated at 0018)")
             return 1
 
     rights_status = RightsStatus(args.rights_status)

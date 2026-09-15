@@ -2,7 +2,7 @@
 """HFM ND-1 B03 — operator-only production initialization.
 
 Establishes the EXISTING product's minimal production state on an already
-migrated database (Alembic at 0017, verified read-only):
+migrated database (Alembic at 0018, verified read-only):
 
   - PROD_REQUIRED: the frozen five-role matrix (ADR-07) seeded via the
     existing `ensure_roles_seeded` (schema-level, idempotent) plus ONE first
@@ -96,7 +96,7 @@ async def _initialize(
 
     ND-1 RV-P1-03: this function NEVER emits DDL and never repairs schema
     drift. It operates only on the qualified migrated schema (the preflight
-    verified current == 0017); every query below targets tables created by the
+    verified current == 0018); every query below targets tables created by the
     migrations. A structurally invalid target (e.g. a dropped table) raises
     and rolls back instead of being silently mutated.
     """
@@ -240,11 +240,11 @@ def main(argv: list[str] | None = None) -> int:
 
     db_url = env.get("HFM_DATABASE_URL", "")
     if not args.allow_sqlite:
-        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
+        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0018")
         if migration_errors:
             for reason in migration_errors:
                 print(f"MIGRATION_VERIFY=FAIL ({reason})")
-            print("INITIALIZE_PRODUCTION=FAIL (database must be migrated at 0017)")
+            print("INITIALIZE_PRODUCTION=FAIL (database must be migrated at 0018)")
             return 1
 
     admin_username = env.get("HFM_ADMIN_USERNAME", "")

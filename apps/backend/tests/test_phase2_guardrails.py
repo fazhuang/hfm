@@ -60,11 +60,11 @@ def test_adr_gates_satisfied(guardrails: GuardrailReport) -> None:
 
 
 def test_migration_invariant(guardrails: GuardrailReport) -> None:
-    # Single head 0017; exactly 17 revisions; 0017 is the authorized head
-    # (P2 redaction-pipeline evolution over 0016).
+    # Single head 0018; exactly 18 revisions; 0018 is the authorized head
+    # (access-boundary + ledger-link evolution over 0017).
     assert guardrails.migration_ok
-    assert "0017" in guardrails.migration_heads
-    assert "0017" in guardrails.migration_revisions
+    assert "0018" in guardrails.migration_heads
+    assert "0018" in guardrails.migration_revisions
     assert len(guardrails.migration_heads) == 1
 
 

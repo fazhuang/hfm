@@ -1,7 +1,7 @@
-"""Media publication pipeline tests (isolated PostgreSQL@0017).
+"""Media publication pipeline tests (isolated PostgreSQL@0018).
 
 Runs scripts/publish-media.py against a real, disposable PostgreSQL database
-migrated to 0017 and proves: only manifest-cleared P0/P1 assets are published,
+migrated to 0018 and proves: only manifest-cleared P0/P1 assets are published,
 P2 assets stay draft, re-run is an idempotent no-op, the default dry-run rolls
 back without committing, an expected_count mismatch fails closed, a P2
 declaration is rejected at the manifest boundary, and an already-published

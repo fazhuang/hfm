@@ -300,7 +300,7 @@ def test_full_golden_gate_owned_frontend_contract() -> None:
     """ND1-H01 acceptance A + E: a foreign process on :5199 never interferes,
     the gate uses its own free target, Playwright owns the Vite, the owned
     listener (PID/CWD/:port/SHA) is verified while running, and the full
-    runtime chain (fresh PG→0017→bootstrap→backend→Chromium) passes with zero
+    runtime chain (fresh PG→0018→bootstrap→backend→Chromium) passes with zero
     fatal/network failures."""
     user = os.environ.get("USER", "likeming")
     # The recovery Vite proxies /api to 127.0.0.1:8000 (vite.config.ts), so the

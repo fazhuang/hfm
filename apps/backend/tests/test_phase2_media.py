@@ -450,9 +450,20 @@ async def test_p106_derivative_bytes_independently_verified(media: MediaService)
 
 
 def test_p2_current_migration_head_0017() -> None:
-    """Frontier-2 current-state migration verification (not an accepted-file
-    modification): the authorized P2-05 schema migration leaves a single
-    linear head 0017 with revisions 0001..0017."""
+    """Current-state migration verification (not an accepted-file
+    modification): the authorized schema migrations leave a single linear
+    head with an unbroken revision chain.
+
+    The function name is load-bearing and deliberately stale. It is the
+    ``CURRENT_REPLACEMENT_TEST`` named by ``ASN-SG-MIG-0017-HEAD`` in
+    ``docs/governance/HFM-PHASE2-INVARIANT-SUPERSESSION-REGISTER-v1.md``, and
+    ``infra/scripts/test-release-gate-precheck.sh`` asserts against that
+    register entry by node id. Renaming the test without adding the
+    successor register entry would leave the register pointing at a node
+    that no longer exists, which turns its guard vacuous while still
+    reporting PASS. Rename it together with the 0018 register entry, not
+    before.
+    """
     import pathlib
 
     versions = pathlib.Path(__file__).resolve().parents[1] / "alembic" / "versions"
@@ -462,8 +473,8 @@ def test_p2_current_migration_head_0017() -> None:
         match = re.search(r'revision\s*=\s*["\']([^"\']+)["\']', text)
         if match:
             revisions.add(match.group(1))
-    assert revisions == {f"{i:04d}" for i in range(1, 18)}
-    assert "0017" in revisions
+    assert revisions == {f"{i:04d}" for i in range(1, 19)}
+    assert "0018" in revisions
 
 
 def test_public_category_person_material() -> None:
