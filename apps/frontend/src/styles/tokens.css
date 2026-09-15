@@ -168,34 +168,27 @@
   --hfm-shadow-focus: 0 0 0 3px rgba(207, 106, 74, 0.35);
 }
 
-/* ===== HOME LEDGER LAYER — 《刻度 / THE SCALE》 =====
-   Derived from a random inspiration string (240 chars): a 20-step tonal ladder
-   read from its digit-pairs (22,65,15,03,49,32,90,65,63,73,85,42,84,54,76,01,
-   47,79,18,42), a hairline sampled from its only hex-like run (B4b7aA), and a
-   cinnabar ink for the numerals that punctuate it (17% of the source). */
+/* ===== HOME SURFACE LAYER — 展厅深色（方案六：沉浸体验 · 未来展厅）=====
+   首页此前是《刻度》的浅色纸面。方案六把首页定为**固定的深色展厅**：
+   近黑但仍偏墨绿的画布、暖白文字、青铜作唯一强调、光从上方来。
+
+   **这一层只被首页用**（`components/home/*` 与 `home-scale.css`）；其余页面走
+   `--hfm-*`，不受影响。站点其余部分仍跟随系统主题。
+
+   命名说明：`--wl-paper` / `--wl-light` 等是**角色名**（画布 / 抬起面 / 展板面），
+   沿用旧名以免动六个组件；它们描述层级位置，不再描述"纸"。 */
 :root {
-  --wl-deep: #14161a;     /* t0 — the source's densest ink (dark band bg) */
-  --wl-ink: #14161a;
-  --wl-ink-2: #3f4348;    /* t1 — 22 */
-  --wl-mute: #63676a;     /* t2 — 49 (darkened for AA on paper) */
-  --wl-rule: #b4b7aa;     /* hairline — B4b7aA */
-  --wl-paper-2: #e7e3d8;  /* t4 — 90 */
-  --wl-paper: #f4f1ea;
-  --wl-light: #fbfaf6;
-  --wl-mark: #a03e29;     /* numerals / marginalia (朱砂刻度) */
-  --wl-mark-strong: #8a3522;
+  --wl-deep: #070908;     /* t0 — 页面最深处（收尾暗带） */
+  --wl-paper: #0f1211;    /* 画布：近黑，偏墨绿，非纯黑 */
+  --wl-paper-2: #161a18;  /* 抬起面：卡片 / 行 */
+  --wl-light: #1e2320;    /* 展板面：玻璃展板、资料面板 */
+  --wl-ink: #efede6;      /* 主文字：暖白（非纯白） */
+  --wl-ink-2: #c9c5ba;    /* 次要文字 */
+  --wl-mute: #8a867c;     /* 三级：元数据、出处（在画布上 ≈5.4:1） */
+  --wl-rule: rgba(239, 237, 230, 0.14);  /* 发丝线 */
+  --wl-mark: #c08a4e;     /* 唯一强调：青铜（刻度、序号、当前导航） */
+  --wl-mark-strong: #dcab74;
+  --wl-glow: rgba(220, 171, 116, 0.08);  /* 顶光：极弱，只作方向感 */
   --wl-latin:
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-}
-.dark {
-  --wl-deep: #0e1013;
-  --wl-ink: #ecebe4;
-  --wl-ink-2: #c2c1b8;
-  --wl-mute: #8d8d86;
-  --wl-rule: #3a3c38;
-  --wl-paper-2: #22242a;
-  --wl-paper: #16181c;
-  --wl-light: #1c1e22;
-  --wl-mark: #cf6a4a;
-  --wl-mark-strong: #e07f5e;
 }

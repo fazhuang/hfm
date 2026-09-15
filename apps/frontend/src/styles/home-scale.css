@@ -160,3 +160,149 @@
   letter-spacing: 0.06em;
   color: var(--wl-mark);
 }
+
+/* ==========================================================================
+   模块页共用件 — 其人 / 其言 / 甲乙经 / 非遗 四页
+   ==========================================================================
+   首页的《刻度》语言（细线页眉 + 边栏序号 + 宽字距标签）此前只用在首页，
+   四个模块页各写各的临时类名，于是首页像设计过、模块页像文档堆。
+   以下三件补上模块页缺的部分，**沿用同一套 --wl-* 与 .xl-* 词汇**，不另立体系。
+   ========================================================================== */
+
+/* ---- 事实行：替代 label:value 的 dl 堆 ----
+   值在前、标签在后且明显次要。格式或上下文已表明的标签直接不写 ——
+   「项目：皇甫谧针灸」里的「项目」是废话。 */
+.xl-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-3) var(--hfm-space-8);
+  margin: 0;
+  padding: 0;
+}
+.xl-fact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.xl-fact__label {
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.625rem;
+  color: var(--wl-mute);
+}
+.xl-fact__value {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  line-height: 1.5;
+  color: var(--wl-ink);
+}
+.xl-fact--wide {
+  flex-basis: 100%;
+}
+.xl-fact--wide .xl-fact__value {
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-base);
+  line-height: 1.9;
+  max-width: 46ch;
+  color: var(--wl-ink-2);
+}
+
+/* ---- 组内子标题：比页眉低一级，是标签不是大标题 ---- */
+.xl-sub {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--hfm-space-6);
+  align-items: baseline;
+  margin: clamp(2.5rem, 5vw, 3.5rem) 0 var(--hfm-space-5);
+}
+.xl-sub__index {
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  color: var(--wl-mark);
+}
+.xl-sub__title {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: var(--hfm-text-xl);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: var(--wl-ink);
+}
+/* 组与组之间靠大留白分隔；组内子块之间靠上方的 margin。
+   规则：**围绕一组的空间，永远大于组内的空间**。 */
+.xl-sub + .xl-sub {
+  padding-top: var(--hfm-space-6);
+  border-top: 1px solid var(--wl-rule);
+}
+
+/* ---- 陈列卡：说明牌式，不用边框盒子 ---- */
+.xl-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--hfm-space-6) var(--hfm-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.xl-plate {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+/* 固定画框 + 背景差，代替给每张图镶边 —— 边框多了整页会像表格。 */
+.xl-plate__frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--wl-paper-2);
+  box-shadow: inset 0 0 0 1px var(--wl-rule);
+}
+.xl-plate__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 240ms ease;
+}
+.xl-plate:hover .xl-plate__frame img {
+  transform: scale(1.02);
+}
+.xl-plate__kind {
+  font-family: var(--wl-latin);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: var(--wl-mute);
+}
+.xl-plate__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: var(--hfm-space-3);
+  font-size: var(--hfm-text-sm);
+  line-height: 1.6;
+  color: var(--wl-ink-2);
+}
+.xl-plate:hover .xl-plate__name {
+  color: var(--wl-ink);
+}
+.xl-plate:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .xl-plate__frame img {
+    transition: none;
+  }
+  .xl-plate:hover .xl-plate__frame img {
+    transform: none;
+  }
+}

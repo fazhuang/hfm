@@ -8,7 +8,7 @@
  * Mobile (<768px) collapses the nav into an accessible drawer: toggle with
  * aria-expanded, focus trap, Escape to close, focus restored.
  */
-import { onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { PUBLIC_NAV_ITEMS } from '../config/navigation'
 import { useFocusTrap } from '../composables/useFocusTrap'
@@ -25,6 +25,17 @@ const toggleRef = ref<{ focus(): void } | null>(null)
 const searchQuery = ref('')
 
 const { containerRef: trapContainer, activate, deactivate } = useFocusTrap()
+
+/**
+ * 首页是**深色展厅面**，其余页面是纸面。页头是共享的，所以要按所在表面换一套
+ * 反色 —— 否则黑色 logo 与墨色文字落在首页的近黑画布上会看不见。
+ *
+ * 只影响首页：`data-surface` 唯一取值来自路由，其余页面保持原样。
+ */
+const surface = computed<'exhibition' | 'paper'>(() =>
+  // 与 isActive 同样的防御：布局可能在无 router 上下文渲染（单测）。
+  route?.path === '/' ? 'exhibition' : 'paper',
+)
 
 const isActive = (href: string): boolean => {
   // Defensive: layouts may render outside a router context (unit tests).
@@ -77,7 +88,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="public-shell">
+  <div class="public-shell" :data-surface="surface">
     <AppSkipLink />
 
     <header class="public-shell__header">
@@ -158,6 +169,38 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/* ---- 展厅面（首页）：整壳换深色 ----
+   不在每个页头元素上逐个覆盖，而是**在这里把语义色 token 换成展厅值** ——
+   页头、页脚、以及首页内任何用 --hfm-color-* 的地方一次性跟着变。
+   作用域是 .public-shell[data-surface='exhibition']，只在 `/` 生效。 */
+.public-shell[data-surface='exhibition'] {
+  --hfm-color-canvas: #0f1211;
+  --hfm-color-surface: #0f1211;
+  --hfm-color-elevated: #1e2320;
+  --hfm-color-text: #efede6;
+  --hfm-color-text-secondary: #c9c5ba;
+  --hfm-color-text-muted: #8a867c;
+  --hfm-color-border: rgba(239, 237, 230, 0.14);
+  --hfm-color-border-strong: rgba(239, 237, 230, 0.3);
+  --hfm-color-interactive: #dcab74;
+  --hfm-color-accent: #c08a4e;
+  /* 品牌字用的是 heritage，不是 accent —— 漏了这条它会落回浅色主题的值，
+     在近黑画布上只有 3.75:1。提亮后的朱砂在此为 7.2:1。 */
+  --hfm-color-heritage: #d98a6a;
+  --hfm-color-heritage-surface: rgba(217, 138, 106, 0.12);
+  background: var(--wl-paper);
+  color: var(--wl-ink);
+}
+/* 页头并入画布，不留一条亮边把首屏切断。 */
+.public-shell[data-surface='exhibition'] .public-shell__header {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+/* 单色 mark 反白。图形本身只有 fill="#000" 一种填充，反色是干净的。 */
+.public-shell[data-surface='exhibition'] .public-shell__brand-symbol {
+  filter: invert(1);
 }
 
 .public-shell__header {

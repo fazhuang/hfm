@@ -89,8 +89,12 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
   // content H1 — while the 皇甫谧 identity is a non-heading decorative
   // monument. (The previous exact-10px expectation was an artboard-bound
   // value; the redesign keeps the register intent without the magic number.)
-  expect(parseFloat(heroH1)).toBeLessThan(28)
-  expect(parseFloat(heroH1)).toBeGreaterThanOrEqual(12)
+  // 方向变更（方案六「沉浸体验 · 未来展厅」，2026-09-15）：
+  // 《刻度》时期 hero 的 H1 是**低调登记**（小于默认 28px），视觉重量由装饰性的
+  // 大字块承担。展厅方向相反 —— 平台名就是主标题，人物画像承担视觉核心。
+  // 因此这里从「小于默认」改为「明显大于默认」，与全站 h1=28px 拉开层级。
+  expect(parseFloat(heroH1)).toBeGreaterThan(28)
+  expect(parseFloat(heroH1)).toBeLessThanOrEqual(60)
 })
 
 test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ page }) => {
