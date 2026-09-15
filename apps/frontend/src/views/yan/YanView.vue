@@ -4,12 +4,17 @@
  *
  * 皇甫谧言论与文本选编（据客户正式材料其言.docx）。内容忠实取自客户文稿：
  * 集引言 + 四篇说明（《三都赋》序 / 玄守论 / 释劝论 / 笃终论）+ 辑佚补充。
- * 四篇全文未见于客户文稿 → 明确 DATA_GAP，页面不虚构全文、不润色成"名言"。
+ * 四篇全文未见于客户文稿；P-8a（2026-09-15）依公版文献录入，见 data/yanTexts.ts。
+ * 页面呈现正文 + 底本/参校出处 + 校勘记；校记中的异文一律照录，不擅自择善。
  * 主题标签为展示分类（PRESENTATION_CLASSIFICATION），非史料原始分类。
  */
 import { YAN_COLLECTION } from '../../data/yanCollection'
+import { YAN_FULL_TEXTS } from '../../data/yanTexts'
 
 defineOptions({ name: 'YanView' })
+
+/** 该节的全文（若有）。 */
+const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
 </script>
 
 <template>
@@ -28,7 +33,8 @@ defineOptions({ name: 'YanView' })
       <p class="yan-source-note">
         来源：{{
           YAN_COLLECTION.source
-        }}。本文为整理说明文本；四篇古典全文整理中（未见于客户文稿，不虚构）。
+        }}。上列为客户文稿的整理说明；四篇全文另依公版文献录入（见各篇"底本"
+        与"校勘记"），与整理说明分列，不混为一谈。
       </p>
     </section>
 
@@ -42,9 +48,48 @@ defineOptions({ name: 'YanView' })
     >
       <h2 :id="`${section.id}-heading`" class="section-title">{{ section.title }}</h2>
 
-      <p v-if="section.fullTextStatus === 'DATA_GAP'" class="yan-fulltext-status">
-        全文整理中（客户文稿为整理说明，未含全文）
-      </p>
+      <!-- 全文：底本正文 + 出处 + 校勘记 -->
+      <div v-if="fullTextOf(section.id)" class="yan-fulltext">
+        <div class="yan-fulltext__body hfm-reading">
+          <p v-for="(para, i) in fullTextOf(section.id).paragraphs" :key="i">
+            {{ para }}
+          </p>
+        </div>
+
+        <p class="yan-fulltext__provenance">
+          <span class="yan-fulltext__label">底本</span>
+          {{ fullTextOf(section.id).base.edition }}
+          <template v-if="fullTextOf(section.id).collated.length">
+            ｜<span class="yan-fulltext__label">参校</span>
+            {{ fullTextOf(section.id).collated.map((c) => c.edition).join('、') }}
+          </template>
+        </p>
+
+        <aside
+          v-if="fullTextOf(section.id).variants.length"
+          class="yan-apparatus"
+          :aria-labelledby="`${section.id}-apparatus`"
+        >
+          <h3 :id="`${section.id}-apparatus`" class="yan-apparatus__title">
+            校勘记 · {{ section.title }}
+          </h3>
+          <ol class="yan-apparatus__list">
+            <li v-for="(v, i) in fullTextOf(section.id).variants" :key="i">
+              <span class="yan-apparatus__base">{{ v.base }}</span>
+              <span v-if="v.baseSuspect" class="yan-apparatus__flag">底本疑误</span>
+              ——
+              <span v-for="(r, j) in v.readings" :key="j">
+                <template v-if="j > 0">；</template>{{ r.source }}作「{{ r.text }}」
+              </span>
+              。{{ v.note }}
+            </li>
+          </ol>
+        </aside>
+
+        <p v-if="fullTextOf(section.id).caveat" class="yan-fulltext__caveat">
+          {{ fullTextOf(section.id).caveat }}
+        </p>
+      </div>
 
       <article v-for="record in section.records" :key="record.id" class="quotation">
         <p class="quotation__text hfm-reading">{{ record.text }}</p>
@@ -158,6 +203,66 @@ defineOptions({ name: 'YanView' })
   color: var(--hfm-color-text-muted);
 }
 
+.yan-fulltext {
+  margin: var(--hfm-space-6) 0 var(--hfm-space-8);
+  max-width: var(--hfm-reader-max);
+}
+.yan-fulltext__body {
+  font-family: var(--hfm-font-ancient);
+  font-size: var(--hfm-text-lg);
+  line-height: var(--hfm-leading-reading);
+  letter-spacing: var(--hfm-tracking-ancient);
+  color: var(--hfm-color-text);
+}
+.yan-fulltext__body p {
+  margin: 0 0 var(--hfm-space-5);
+  text-indent: 2em;
+}
+.yan-fulltext__provenance,
+.yan-fulltext__caveat {
+  margin-top: var(--hfm-space-5);
+  padding-top: var(--hfm-space-3);
+  border-top: 1px solid var(--hfm-color-border);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+.yan-fulltext__label {
+  color: var(--hfm-color-text-secondary);
+  letter-spacing: 0.08em;
+}
+.yan-apparatus {
+  margin-top: var(--hfm-space-5);
+  padding: var(--hfm-space-4);
+  background: var(--hfm-color-surface);
+  border-left: 2px solid var(--hfm-color-border-strong);
+}
+.yan-apparatus__title {
+  margin: 0 0 var(--hfm-space-3);
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-sm);
+  letter-spacing: var(--hfm-tracking-display);
+}
+.yan-apparatus__list {
+  margin: 0;
+  padding-left: 1.2em;
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-secondary);
+}
+.yan-apparatus__list li {
+  margin-bottom: var(--hfm-space-2);
+}
+.yan-apparatus__base {
+  color: var(--hfm-color-text);
+  font-family: var(--hfm-font-ancient);
+}
+.yan-apparatus__flag {
+  margin-left: var(--hfm-space-2);
+  padding: 0 var(--hfm-space-1);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-warning);
+  border: 1px solid currentColor;
+}
 .yan-fulltext-status {
   margin: 0 0 var(--hfm-space-3);
   font-size: var(--hfm-text-sm);

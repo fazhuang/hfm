@@ -1,13 +1,19 @@
 /**
- * 其言 — faithful content from the customer 其言.docx (UI-06).
+ * 其言 — customer 其言.docx content, plus the four full texts (UI-06, P-8a).
  *
- * Extracted verbatim from hfmzl/皇甫谧/其言/其言.docx (docx text extraction,
- * no OCR, no rewriting). The docx is a collation/introduction document: it
- * carries the collection intro, four section introductions (《三都赋》序 /
- * 《玄守论》 / 《释劝论》 / 《笃终论》) with content points, and a supplement
- * on 辑佚 (《帝王世纪》《高士传》《逸士传》《列女传》 fragments). The full
- * classical texts of the four works are NOT in the docx — fullTextStatus is
- * DATA_GAP and the page never fabricates them.
+ * The introduction material below is extracted verbatim from
+ * hfmzl/皇甫谧/其言/其言.docx (docx text extraction, no OCR, no rewriting).
+ * The docx is a collation/introduction document: it carries the collection
+ * intro, four section introductions (《三都赋》序 / 《玄守论》 / 《释劝论》 /
+ * 《笃终论》) with content points, and a supplement on 辑佚 (《帝王世纪》
+ * 《高士传》《逸士传》《列女传》 fragments).
+ *
+ * The docx does NOT contain the classical texts of the four works, so
+ * fullTextStatus was DATA_GAP for as long as the docx was the only source.
+ * P-8a (2026-09-15) supplies them from public-domain editions — see
+ * data/yanTexts.ts, keyed by the same section ids. Each entry carries its
+ * base edition, its collated editions and a full 校勘记; variants are
+ * recorded rather than silently resolved.
  */
 import type { YanCollection } from '../types/yan'
 
@@ -22,7 +28,7 @@ export const YAN_COLLECTION: YanCollection = {
     {
       id: 'sandu-fu',
       title: '《三都赋》序',
-      fullTextStatus: 'DATA_GAP',
+      fullTextStatus: 'AVAILABLE',
       records: [
         {
           id: 'sandu-fu-desc',
@@ -42,7 +48,7 @@ export const YAN_COLLECTION: YanCollection = {
     {
       id: 'xuanshou-lun',
       title: '《玄守论》',
-      fullTextStatus: 'DATA_GAP',
+      fullTextStatus: 'AVAILABLE',
       records: [
         {
           id: 'xuanshou-lun-desc',
@@ -60,7 +66,7 @@ export const YAN_COLLECTION: YanCollection = {
     {
       id: 'shiquan-lun',
       title: '《释劝论》',
-      fullTextStatus: 'DATA_GAP',
+      fullTextStatus: 'AVAILABLE',
       records: [
         {
           id: 'shiquan-lun-desc',
@@ -78,7 +84,7 @@ export const YAN_COLLECTION: YanCollection = {
     {
       id: 'duzhong-lun',
       title: '《笃终论》',
-      fullTextStatus: 'DATA_GAP',
+      fullTextStatus: 'AVAILABLE',
       records: [
         {
           id: 'duzhong-lun-desc',

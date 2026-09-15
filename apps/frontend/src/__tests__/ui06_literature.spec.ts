@@ -17,6 +17,7 @@ import YanView from '../views/yan/YanView.vue'
 import WorksView from '../views/works/WorksView.vue'
 import ArchiveView from '../views/archive/ArchiveView.vue'
 import { YAN_COLLECTION } from '../data/yanCollection'
+import { YAN_FULL_TEXTS } from '../data/yanTexts'
 import { WORK_COLLECTION } from '../data/workCollection'
 import { ARCHIVE_RECORDS, ARCHIVE_GROUPS } from '../data/archiveInventory'
 import { JIAYI_ANCIENT_EDITIONS, JIAYI_MODERN_EDITIONS } from '../data/jiayiView'
@@ -45,10 +46,22 @@ describe('UI-06 其言 (Yan)', () => {
   })
 
   it('does not fabricate full classical texts or invented quotes', () => {
-    // Collection model: four sections, fullTextStatus DATA_GAP (no invented 全文).
+    // Collection model: four sections.
     expect(YAN_COLLECTION.sections).toHaveLength(4)
     for (const section of YAN_COLLECTION.sections) {
-      expect(section.fullTextStatus).toBe('DATA_GAP')
+      // This guard used to read "fullTextStatus is DATA_GAP", which was true
+      // only while the customer docx was the sole source. P-8a supplies the
+      // four texts from public-domain editions, so the guard now reads
+      // "any full text must be attributable". A text with no base edition,
+      // no collated witness or no citation is exactly what it exists to stop
+      // — the assertion got stronger, not weaker.
+      if (section.fullTextStatus !== 'DATA_GAP') {
+        const full = YAN_FULL_TEXTS[section.id]
+        expect(full, `${section.id} 声明有全文却查无正文`).toBeDefined()
+        expect(full.base.edition.length).toBeGreaterThan(0)
+        expect(full.base.citation.length).toBeGreaterThan(0)
+        expect(full.collated.length).toBeGreaterThan(0)
+      }
       for (const record of section.records) {
         // Every record text is the customer's own description, not a made-up aphorism.
         expect(record.text.length).toBeGreaterThan(10)

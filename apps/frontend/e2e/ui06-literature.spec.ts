@@ -31,10 +31,15 @@ test('UI-06 其言: customer docx content is visible (real material, not placeho
 }) => {
   await page.goto('/yan')
   await expect(page.getByText('皇甫谧本人存世文章、序跋、著作序言')).toBeVisible()
-  await expect(page.getByRole('heading', { name: '《三都赋》序' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: '《笃终论》' })).toBeVisible()
-  // No invented full text: DATA_GAP status shown honestly.
-  await expect(page.getByText('全文整理中（客户文稿为整理说明，未含全文）').first()).toBeVisible()
+  await expect(page.getByRole('heading', { name: '《三都赋》序', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '《笃终论》', exact: true })).toBeVisible()
+  // P-8a supplies the four texts from public-domain editions. The page must
+  // show the text AND name its base edition — an unattributed full text is
+  // the thing the old DATA_GAP placeholder existed to prevent.
+  await expect(page.getByText('玄晏先生曰：古人稱不歌而頌謂之賦').first()).toBeVisible()
+  await expect(page.getByText('維基文庫單篇本（繁体）').first()).toBeVisible()
+  await expect(page.getByRole('heading', { name: '校勘记' }).first()).toBeVisible()
+  await expect(page.getByText('全文整理中').first()).toBeHidden()
 })
 
 test('UI-06 archive: no internal file-system paths are exposed publicly', async ({ page }) => {
