@@ -84,3 +84,6 @@ public-derivatives/
 # Claude Code project config (local only, not shared)
 .claude/settings.json
 .claude/settings.local.json
+
+# 非遗脱敏审阅用的页面渲染图（可由 --render-pages 重新生成）
+content-production/07-review/redaction-review/pages/
