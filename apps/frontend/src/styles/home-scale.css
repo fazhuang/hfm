@@ -306,3 +306,272 @@
     transform: none;
   }
 }
+
+/* ==========================================================================
+   展厅版式 — 对照参考图（HFM-SY-CK）
+   ==========================================================================
+   首页由「浅色纸面编目」改为「深色展厅」。以下六件是参考图的六段节奏，
+   全部沿用 --wl-* 与 .xl-*，不另立体系。
+   ========================================================================== */
+
+/* ---- 区块：展厅的六段之间靠大留白与细线分隔，不靠卡片分隔 ---- */
+.xl-sec {
+  position: relative;
+  padding: clamp(3.5rem, 8vw, 7rem) var(--hfm-space-6);
+}
+.xl-sec--tight {
+  padding-block: clamp(2.5rem, 5vw, 4rem);
+}
+/* 收尾段：整幅压暗，安静收束。 */
+.xl-sec--close {
+  background: var(--wl-deep);
+}
+
+/* ---- §2 入口带：四格，等分，格间靠细线，不靠卡片 ---- */
+.xl-entries {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--wl-rule);
+  border-bottom: 1px solid var(--wl-rule);
+}
+@media (min-width: 900px) {
+  .xl-entries {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.xl-entry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hfm-space-3);
+  padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.25rem, 2.5vw, 2rem);
+  text-decoration: none;
+  color: inherit;
+  border-right: 1px solid var(--wl-rule);
+  transition: background-color 280ms ease;
+}
+.xl-entry:hover {
+  background: var(--wl-paper-2);
+}
+.xl-entry:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: -3px;
+}
+.xl-entry__mark {
+  width: 2rem;
+  height: 2rem;
+  color: var(--wl-mark);
+}
+.xl-entry__title {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: var(--hfm-text-xl);
+  color: var(--wl-ink);
+}
+.xl-entry__en {
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.625rem;
+  color: var(--wl-mute);
+}
+.xl-entry__note {
+  margin: 0;
+  font-size: var(--hfm-text-sm);
+  line-height: 1.8;
+  color: var(--wl-ink-2);
+}
+.xl-entry__go {
+  margin-top: auto;
+  font-family: var(--wl-latin);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  color: var(--wl-mark);
+}
+
+/* ---- §3 图文对置：文字与实物并置，中间一道细线 ---- */
+.xl-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3.5rem);
+  align-items: start;
+}
+@media (min-width: 900px) {
+  .xl-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  }
+}
+.xl-split--reverse > :first-child {
+  order: 2;
+}
+.xl-split__quote {
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding-left: var(--hfm-space-5);
+  border-left: 1px solid var(--wl-mark);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  line-height: 1.9;
+  color: var(--wl-ink-2);
+}
+.xl-split__quote cite {
+  display: block;
+  margin-top: var(--hfm-space-2);
+  font-style: normal;
+  font-size: var(--hfm-text-xs);
+  letter-spacing: 0.1em;
+  color: var(--wl-mute);
+}
+
+/* ---- §4 统计带：数字大、标签小，靠列而不是卡片 ---- */
+.xl-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--hfm-space-6) var(--hfm-space-5);
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 900px) {
+  .xl-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.xl-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-top: var(--hfm-space-4);
+  border-top: 1px solid var(--wl-rule);
+}
+.xl-stat__value {
+  margin: 0;
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(1.75rem, 3.2vw, 2.5rem);
+  line-height: 1;
+  color: var(--wl-ink);
+}
+.xl-stat__label {
+  margin: 0;
+  font-size: var(--hfm-text-base);
+  color: var(--wl-ink);
+}
+.xl-stat__note {
+  margin: 0;
+  font-size: var(--hfm-text-xs);
+  line-height: 1.7;
+  color: var(--wl-mute);
+}
+
+/* ---- §5 图卡带：三张真实材料，说明压在图上 ---- */
+.xl-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--hfm-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+@media (min-width: 700px) {
+  .xl-cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.xl-card {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--wl-paper-2);
+}
+.xl-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 520ms ease;
+}
+.xl-card:hover img {
+  transform: scale(1.03);
+}
+.xl-card:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
+}
+/* 说明压在图上：从下缘往上压一层暗，文字才立得住。 */
+.xl-card__caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: var(--hfm-space-8) var(--hfm-space-5) var(--hfm-space-5);
+  background: linear-gradient(to top, rgba(7, 9, 8, 0.92), transparent);
+}
+.xl-card__title {
+  margin: 0;
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: var(--hfm-text-xl);
+  color: #f4f2ec;
+}
+.xl-card__note {
+  margin: var(--hfm-space-1) 0 0;
+  font-size: var(--hfm-text-sm);
+  line-height: 1.7;
+  color: rgba(244, 242, 236, 0.78);
+}
+.xl-card__en {
+  display: block;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.625rem;
+  color: rgba(220, 171, 116, 0.9);
+}
+@media (prefers-reduced-motion: reduce) {
+  .xl-card img {
+    transition: none;
+  }
+  .xl-card:hover img {
+    transform: none;
+  }
+}
+
+/* ---- §6 收尾：一句 + 标记，极简 ---- */
+.xl-close {
+  max-width: 46rem;
+  margin: 0 auto;
+  text-align: center;
+}
+.xl-close__quote {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: clamp(1.25rem, 2.4vw, 1.75rem);
+  line-height: 1.9;
+  color: var(--wl-ink);
+}
+.xl-close__en {
+  margin: var(--hfm-space-3) 0 0;
+  font-family: var(--wl-latin);
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  font-size: 0.625rem;
+  color: var(--wl-mute);
+}
+.xl-close__act {
+  display: inline-block;
+  margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+  padding: 0.7rem 1.6rem;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  letter-spacing: 0.05em;
+  color: var(--wl-ink);
+  text-decoration: none;
+  border: 1px solid var(--wl-rule);
+  border-radius: 2px;
+}
+.xl-close__act:hover {
+  border-color: var(--wl-mark);
+}
+.xl-close__act:focus-visible {
+  outline: 2px solid var(--wl-mark);
+  outline-offset: 3px;
+}

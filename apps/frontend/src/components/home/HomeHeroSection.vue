@@ -12,7 +12,7 @@
  * homepage search input.
  */
 import { computed } from 'vue'
-import { HOME_HERO } from '../../data/homeProjection'
+import { HOME_DOMAINS, HOME_HERO } from '../../data/homeProjection'
 import { CORE_PERSON_DATES, CORE_PERSON_PORTRAIT_MEDIA_ID } from '../../config/corePerson'
 import { mediaBytesUrl } from '../../services/media'
 import type { BlockData } from '../../composables/useHomeContractData'
@@ -139,6 +139,26 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
           </div>
         </div>
       </div>
+
+      <!-- 四入口带（参考图 §2）：四个真实目的地，等分，细线分格。
+           契约要求首页是「五个真实目的地的预览墙」，这一带就是那句话的形状。 -->
+      <nav class="xl-entries hero__entries" aria-label="主要探索入口">
+        <a
+          v-for="d in HOME_DOMAINS.domains"
+          :key="d.no"
+          class="xl-entry"
+          :href="d.href"
+        >
+          <svg class="xl-entry__mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <rect x="6" y="5" width="20" height="22" stroke="currentColor" stroke-width="1.2" />
+            <path d="M11 11h10M11 16h10M11 21h6" stroke="currentColor" stroke-width="1.2" />
+          </svg>
+          <span class="xl-entry__en">{{ d.en }}</span>
+          <p class="xl-entry__title">{{ d.title }}</p>
+          <p class="xl-entry__note">{{ d.key }}</p>
+          <span class="xl-entry__go">{{ d.cta }} →</span>
+        </a>
+      </nav>
     </div>
   </section>
 </template>
@@ -176,6 +196,10 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   position: relative;
   max-width: 78rem;
   margin: 0 auto;
+}
+/* 入口带压在 Hero 下缘，与首屏连成一体（参考图里它属于展厅入口，不是独立一段）。 */
+.hero__entries {
+  margin-top: clamp(3rem, 6vw, 5rem);
 }
 
 .hero__bar {

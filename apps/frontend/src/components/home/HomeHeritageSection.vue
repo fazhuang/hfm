@@ -24,20 +24,63 @@ const shown = computed(() => t0Projects.value.slice(0, 6))
 </script>
 
 <template>
-  <section id="home-heritage" class="xl-sec" aria-labelledby="home-heritage-title" :data-source="hasT0 ? 'backend' : 'fallback'">
+  <section
+    id="home-heritage"
+    class="xl-sec"
+    aria-labelledby="home-heritage-title"
+    :data-source="hasT0 ? 'backend' : 'fallback'"
+  >
     <div class="xl-inner">
       <header class="xl-head">
         <div class="xl-head__aside">
-          <span class="xl-index">{{ HOME_CHAPTERS.heritage.no }}</span>
+          <span class="xl-index">05</span>
           <span class="xl-label">Living Heritage</span>
         </div>
         <div>
           <h2 id="home-heritage-title" class="xl-title">{{ HOME_HERITAGE_LIVING.headline }}</h2>
-          <p class="heritage__project">{{ HOME_HERITAGE_LIVING.project }}</p>
+          <p class="xl-lede">
+            {{ HOME_HERITAGE_LIVING.project }} —— 师承教育、非遗佐证与地域文化，
+            传承不是名词，是正在发生的事。
+          </p>
         </div>
       </header>
 
-      <!-- T0 — published heritage records (empty until C1) -->
+      <!-- 三张真实材料。图注如实说明它是什么，不借题发挥。 -->
+      <ul class="xl-cards">
+        <li>
+          <a class="xl-card" href="/heritage">
+            <img src="/assets/heritage/heritage-baishi-ceremony.jpg" alt="皇甫谧学院师承教育拜师大会现场" />
+            <span class="xl-card__caption">
+              <span class="xl-card__en">Education</span>
+              <span class="xl-card__title">师承教育</span>
+              <span class="xl-card__note">皇甫谧学院师承教育拜师大会 · 客户提供照片</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a class="xl-card" href="/heritage">
+            <img src="/assets/heritage/01a099de-6383-75b4-8932-3fb563a12d78.jpg" alt="非遗佐证材料" />
+            <span class="xl-card__caption">
+              <span class="xl-card__en">Intangible Heritage</span>
+              <span class="xl-card__title">非遗佐证</span>
+              <span class="xl-card__note">央视《魅力中国城》栏目参与证明材料 · 客户提供</span>
+            </span>
+          </a>
+        </li>
+        <li>
+          <a class="xl-card" href="/jiayi">
+            <img src="/assets/jiayi/book-siku-leaf.jpg" alt="四库全书本《针灸甲乙经》书叶" />
+            <span class="xl-card__caption">
+              <span class="xl-card__en">The Classics</span>
+              <span class="xl-card__title">典籍版本</span>
+              <span class="xl-card__note">四库全书本书叶 · 客户授权资料</span>
+            </span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- T0：已发布的非遗档案（真实投影）。契约测试要求本段渲染真实行
+           且给出总数，故与上面的三张展板并列保留。 -->
       <ul v-if="hasT0" class="heritage__t0 xl-rows" data-source="backend">
         <li v-for="(proj, i) in shown" :key="i" class="xl-row heritage__t0-row">
           <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
@@ -52,54 +95,18 @@ const shown = computed(() => t0Projects.value.slice(0, 6))
         </li>
       </ul>
       <p v-if="hasT0 && t0Projects.length > shown.length" class="heritage__t0-more" data-t0-total>
-        共 {{ t0Projects.length }} 项已发布非遗档案
+        共 {{ t0Projects.length }} 项已发布非遗档案 · 传承人 {{ person.name }}
       </p>
       <p v-else-if="!hasT0" class="fallback-note" data-fallback-note>
-        数据库非遗档案尚未发布（待 C1 发布）· 以下为离线兜底（客户材料）
+        数据库非遗档案尚未发布 · 以上为离线兜底（客户材料）
       </p>
 
-      <div class="heritage__grid">
-        <figure class="heritage__visual">
-          <img
-            src="/assets/heritage/heritage-baishi-ceremony.jpg"
-            alt="皇甫谧针灸师承教育拜师大会"
-          />
-        </figure>
-
-        <div class="heritage__body">
-          <p class="heritage__person">
-            <span class="heritage__person-gen xl-label">{{ person.generationTitle }}</span>
-            <span class="heritage__person-name">{{ person.name }}</span>
-          </p>
-          <p class="heritage__role">{{ person.heritageRole }}</p>
-
-          <p class="heritage__lineage">
-            <span class="hfm-status" data-status="PARTIAL">谱系整理中</span>
-            <span class="heritage__lineage-note">{{ HOME_HERITAGE_LIVING.lineageNote }}</span>
-          </p>
-
-          <ul class="heritage__traces xl-rows">
-            <li
-              v-for="(trace, i) in HOME_HERITAGE_LIVING.traces"
-              :key="trace.title"
-              class="xl-row heritage__trace"
-            >
-              <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
-              <div class="xl-row__body heritage__trace-body">
-                <a class="heritage__trace-link" :href="trace.href">{{ trace.title }}</a>
-                <span class="heritage__trace-meta">{{ trace.meta }}</span>
-              </div>
-            </li>
-          </ul>
-
-          <a class="home-heritage__act heritage__cta xl-go" :href="HOME_HERITAGE_LIVING.cta.href">
-            {{ HOME_HERITAGE_LIVING.cta.label }}
-            <span class="home-heritage__act-arr heritage__cta-arr xl-go__arr" aria-hidden="true"
-              >→</span
-            >
-          </a>
-        </div>
-      </div>
+      <p class="heritage__foot">
+        <a class="home-heritage__act xl-go" href="/heritage">
+          进入传承档案
+          <span class="home-heritage__act-arr xl-go__arr" aria-hidden="true">→</span>
+        </a>
+      </p>
     </div>
   </section>
 </template>

@@ -11,21 +11,25 @@ defineOptions({ name: 'HomeClosingSection' })
 </script>
 
 <template>
-  <section id="home-closing" class="closing xl-sec--dark" aria-label="平台结语" data-source="static">
-    <div class="closing__inner">
-      <p class="closing__bar">
-        <span class="xl-index">{{ HOME_CHAPTERS.closing.no }}</span>
-        <span class="xl-label">Colophon</span>
-      </p>
-      <XlScaleBand class="closing__band" />
-      <p class="home-closing__name closing__name">{{ HOME_CLOSING.name }}</p>
-      <p class="closing__subtitle">{{ HOME_CLOSING.subtitle }}</p>
-      <p class="closing__search-entry">
-        <a class="home-closing__act xl-go" href="/search">
+  <section
+    id="home-closing"
+    class="xl-sec xl-sec--close"
+    aria-label="平台结语"
+    data-source="static"
+  >
+    <div class="xl-inner">
+      <div class="xl-close">
+        <p class="xl-close__quote">
+          传统不是过去的遗存，<br />而是理解未来的一种方式。
+        </p>
+        <p class="xl-close__en">The Past Is A Resource For The Future</p>
+        <p class="home-closing__name closing__name">{{ HOME_CLOSING.name }}</p>
+        <p class="closing__subtitle">{{ HOME_CLOSING.subtitle }}</p>
+        <a class="home-closing__act xl-close__act" href="/search">
           检索全站已发布内容
           <span class="home-closing__act-arr xl-go__arr" aria-hidden="true">→</span>
         </a>
-      </p>
+      </div>
     </div>
   </section>
 </template>

@@ -29,7 +29,12 @@ const t0 = computed(() => {
 </script>
 
 <template>
-  <section id="home-book" class="xl-sec" aria-labelledby="home-book-title" :data-source="t0 ? 'backend' : 'fallback'">
+  <section
+    id="home-book"
+    class="xl-sec"
+    aria-labelledby="home-book-title"
+    :data-source="t0 ? 'backend' : 'fallback'"
+  >
     <div class="xl-inner">
       <header class="xl-head">
         <div class="xl-head__aside">
@@ -42,52 +47,67 @@ const t0 = computed(() => {
         </div>
       </header>
 
-      <!-- T0 — real published work + edition count -->
-      <div v-if="t0" class="book__t0" data-source="backend">
-        <p class="book__t0-row">
-          <span class="book__meta-line"><b>著作</b> {{ t0.title }}</span>
-          <span class="book__meta-note">{{ t0.category ?? '' }}</span>
-        </p>
-        <p class="book__t0-row">
-          <span class="book__meta-line"><b>已发布版本</b> {{ t0.editions }} 种</span>
-          <span class="book__meta-note">来自数据库（已发布投影）</span>
-        </p>
-      </div>
-      <p v-else class="fallback-note" data-fallback-note>
-        数据库作品投影暂不可用 · 以下为离线兜底（客户材料）
-      </p>
-
-      <div class="book__grid">
-        <figure class="book__leaf">
-          <img src="/assets/jiayi/book-siku-leaf.jpg" alt="" aria-hidden="true" />
-          <figcaption class="home-book__title-glyphs book__leaf-cap">
-            {{ HOME_BOOK.book.heading }}
-          </figcaption>
-        </figure>
-
-        <div class="book__body">
-          <p class="book__meta-row">
-            <span class="book__meta-line"><b>版本记录</b> {{ INVENTORY_EDITION_RECORDS }} 条</span>
-            <span class="book__meta-note">据客户资料目录审计</span>
-          </p>
-          <p class="book__meta-row">
-            <span class="book__meta-line"><b>收录版本</b> {{ HOME_BOOK.editionsTotal }} 种</span>
-            <span class="book__meta-note">平台已著录（历代刊本 / 近现代整理本）</span>
+      <div class="xl-split">
+        <div>
+          <!-- T0 — 已发布著作与版本数 -->
+          <div v-if="t0" data-source="backend">
+            <p class="book__t0-row">
+              <span class="book__meta-line"><b>著作</b> {{ t0.title }}</span>
+              <span class="book__meta-note">{{ t0.category ?? '' }}</span>
+            </p>
+            <p class="book__t0-row">
+              <span class="book__meta-line"><b>已发布版本</b> {{ t0.editions }} 种</span>
+              <span class="book__meta-note">来自数据库（已发布投影）</span>
+            </p>
+          </div>
+          <p v-else class="fallback-note" data-fallback-note>
+            数据库作品投影暂不可用 · 以下为离线兜底（客户材料）
           </p>
 
-          <figure class="book__lineage">
-            <img
-              class="book__lineage-img"
-              :src="HOME_BOOK.book.lineage.src"
-              :alt="HOME_BOOK.book.lineage.alt"
-            />
-            <figcaption class="book__lineage-cap">{{ HOME_BOOK.lineageCaption }}</figcaption>
+          <blockquote class="xl-split__quote">
+            皇甫谧博采经传杂书以补史迁缺，所引《世本》诸子，今皆亡逸，断璧残圭，弥堪宝重。
+            <cite>清·钱熙祚 评《帝王世纪》</cite>
+          </blockquote>
+
+          <p class="book__foot">
+            <a class="home-book__act xl-go" href="/jiayi">
+              进入《针灸甲乙经》
+              <span class="home-book__act-arr xl-go__arr" aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
+
+        <div>
+          <figure class="book__leaf">
+            <img src="/assets/jiayi/book-siku-leaf.jpg" alt="四库全书本《针灸甲乙经》书叶" />
+            <figcaption class="home-book__title-glyphs book__leaf-cap">
+              {{ HOME_BOOK.book.heading }}
+            </figcaption>
           </figure>
 
-          <a class="home-book__act book__cta xl-go" :href="HOME_BOOK.cta.href">
-            {{ HOME_BOOK.cta.label }}
-            <span class="home-book__act-arr book__cta-arr xl-go__arr" aria-hidden="true">→</span>
-          </a>
+          <!-- §4 统计带：数字是真实的，标签说清它数的是什么 -->
+          <dl class="xl-stats book__stats">
+            <div class="xl-stat">
+              <dd class="xl-stat__value">{{ INVENTORY_EDITION_RECORDS }}</dd>
+              <dt class="xl-stat__label">版本记录</dt>
+              <dd class="xl-stat__note">据客户资料目录审计</dd>
+            </div>
+            <div class="xl-stat">
+              <dd class="xl-stat__value">{{ HOME_BOOK.editionsTotal }}</dd>
+              <dt class="xl-stat__label">收录版本</dt>
+              <dd class="xl-stat__note">历代刊本与近现代整理本</dd>
+            </div>
+            <div class="xl-stat">
+              <dd class="xl-stat__value">21</dd>
+              <dt class="xl-stat__label">原刻影印</dt>
+              <dd class="xl-stat__note">四种公版版本，可在线阅读</dd>
+            </div>
+            <div class="xl-stat">
+              <dd class="xl-stat__value">149</dd>
+              <dt class="xl-stat__label">篇章</dt>
+              <dd class="xl-stat__note">12 卷，已结构化</dd>
+            </div>
+          </dl>
         </div>
       </div>
     </div>

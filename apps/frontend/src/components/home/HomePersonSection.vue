@@ -25,10 +25,26 @@ const assertions = computed(() =>
   (props.block.data?.assertions ?? []).filter((a) => (a.value ?? '').trim().length > 0),
 )
 const isBackend = computed(() => props.block.source === 'backend' && assertions.value.length > 0)
+
+/**
+ * 首页只取前若干条，其余交给人物档案页 —— 契约 §4 说首页是"五个真实目的地的
+ * 预览墙"，预览不该把 23 条家底一次倒完。
+ *
+ * 下界由契约测试钉住：`#home-person .person__fact` 不得少于 10 条
+ * （e2e/ui03-home.spec.ts）。所以取 10，不是 4。
+ */
+const PREVIEW_COUNT = 10
+const preview = computed(() => assertions.value.slice(0, PREVIEW_COUNT))
+const restCount = computed(() => Math.max(0, assertions.value.length - PREVIEW_COUNT))
 </script>
 
 <template>
-  <section id="home-person" class="xl-sec" aria-labelledby="home-person-title" :data-source="isBackend ? 'backend' : 'fallback'">
+  <section
+    id="home-person"
+    class="xl-sec"
+    aria-labelledby="home-person-title"
+    :data-source="isBackend ? 'backend' : 'fallback'"
+  >
     <div class="xl-inner">
       <header class="xl-head">
         <div class="xl-head__aside">
@@ -41,31 +57,51 @@ const isBackend = computed(() => props.block.source === 'backend' && assertions.
         </div>
       </header>
 
-      <!-- T0 — admitted assertions from the database -->
-      <ol v-if="isBackend" class="person__facts xl-rows">
-        <li v-for="(a, i) in assertions" :key="a.id" class="xl-row person__fact">
-          <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
-          <div class="xl-row__body person__fact-body">
-            <span class="person__fact-predicate">{{ a.predicate }}</span>
-            <span class="person__fact-value">{{ a.value }}</span>
+      <div class="xl-split">
+        <div>
+          <p class="person__identities">{{ CORE_PERSON_IDENTITIES.join(' · ') }}</p>
+          <blockquote class="xl-split__quote">
+            皇甫谧（215—282），西晋著名学者、医学家，以《针灸甲乙经》闻名于世。
+            <cite>生平与著述，见本平台人物档案</cite>
+          </blockquote>
+          <p class="person__foot">
+            <a class="home-person__act xl-go" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
+              进入人物档案
+              <span class="home-person__act-arr xl-go__arr" aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
+
+        <div>
+          <!-- T0 — 已准入的生平断言，逐条为一条记录。
+               整块包在 template 里：否则下面 v-if 的「其余 N 条」会截断
+               v-if/v-else 的配对，兜底提示会在有后端数据时错误出现。 -->
+          <template v-if="isBackend">
+          <ol class="person__facts xl-rows">
+            <li v-for="(a, i) in preview" :key="a.id" class="xl-row person__fact">
+              <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
+              <div class="xl-row__body person__fact-body">
+                <span class="person__fact-predicate">{{ a.predicate }}</span>
+                <span class="person__fact-value">{{ a.value }}</span>
+              </div>
+            </li>
+          </ol>
+          <p v-if="restCount > 0" class="person__rest">
+            另有 <b class="xl-num">{{ restCount }}</b> 条人物记录，见
+            <a href="/persons/ENT-PERSON-HFM-HUANGFUMI">人物档案</a>。
+          </p>
+          </template>
+
+          <!-- T1 — 可见的离线兜底（客户材料投影），不作静默替代 -->
+          <div v-else class="person__fallback">
+            <p class="fallback-note" data-fallback-note>
+              数据库人物档案暂不可用 · 以下为离线兜底（客户材料）
+            </p>
+            <p class="person__identities">{{ CORE_PERSON_IDENTITIES.join(' · ') }}</p>
+            <p class="person__name-static">{{ CORE_PERSON_NAME }}</p>
           </div>
-        </li>
-      </ol>
-
-      <!-- T1 — visible fallback (customer-material projection) -->
-      <div v-else class="person__fallback">
-        <p class="fallback-note" data-fallback-note>
-          数据库人物档案暂不可用 · 以下为离线兜底（客户材料）
-        </p>
-        <p class="person__identities">{{ CORE_PERSON_IDENTITIES.join(' · ') }}</p>
-        <p class="person__name-static">{{ CORE_PERSON_NAME }}</p>
+        </div>
       </div>
-
-      <p class="person__foot">
-        <a class="home-person__act xl-go" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
-          进入人物档案 <span class="home-person__act-arr xl-go__arr" aria-hidden="true">→</span>
-        </a>
-      </p>
     </div>
   </section>
 </template>

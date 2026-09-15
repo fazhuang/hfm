@@ -25,27 +25,33 @@ defineOptions({ name: 'HomeYanSection' })
         </div>
         <div>
           <h2 id="home-yan-title" class="xl-title">其言</h2>
-          <p class="xl-lede">三都赋序 · 玄守论 · 释劝论 · 笃终论</p>
+          <p class="xl-lede">皇甫谧本人存世文章、序跋、著作序言 —— 研究其思想的一手文本。</p>
         </div>
       </header>
 
-      <p class="yan__state" data-empty-state>四篇全文已依公版文献录入（见其言页）· 以下为题录信息</p>
+      <div class="xl-split">
+        <div>
+          <p class="yan__state" data-empty-state>
+            四篇全文已依公版文献录入，可在其言页阅读；本处为题录。
+          </p>
+          <p class="yan__foot">
+            <a class="home-yan__act xl-go" href="/yan">
+              进入其言区
+              <span class="home-yan__act-arr xl-go__arr" aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
 
-      <ul class="yan__items xl-rows">
-        <li v-for="(item, i) in YAN_COLLECTION.sections" :key="item.id" class="xl-row yan__item">
-          <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
-          <div class="xl-row__body yan__item-body">
-            <span class="yan__item-title">{{ item.title }}</span>
-            <span class="yan__item-meta">{{ YAN_COLLECTION.subtitle }}</span>
-          </div>
-        </li>
-      </ul>
-
-      <p class="yan__foot">
-        <a class="home-yan__act xl-go" href="/yan">
-          进入其言区 <span class="home-yan__act-arr xl-go__arr" aria-hidden="true">→</span>
-        </a>
-      </p>
+        <ul class="yan__items xl-rows">
+          <li v-for="(item, i) in YAN_COLLECTION.sections" :key="item.id" class="xl-row yan__item">
+            <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
+            <div class="xl-row__body yan__item-body">
+              <span class="yan__item-title">{{ item.title }}</span>
+              <span class="yan__item-meta">{{ YAN_COLLECTION.subtitle }}</span>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
   </section>
 </template>
