@@ -12,9 +12,12 @@
 | 文件 | 范围 | 状态 | 下一步 |
 | :--- | :--- | :--- | :--- |
 | [`HFM-PUBLIC-PORTAL-CHARTER-v1.md`](HFM-PUBLIC-PORTAL-CHARTER-v1.md) | 公众门户 | **ACCEPTED** — 已认可 | 可进入执行规划 |
-| [`HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md`](HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md) | 研究平台 | **DRAFT** — 未定稿 | 对标优化 → 第三方审计 → 定稿 |
+| [`HFM-RESEARCH-PLATFORM-CHARTER-v0.2.md`](HFM-RESEARCH-PLATFORM-CHARTER-v0.2.md) | 研究平台 | **OPTIMIZED** — 待第三方审计 | 审计 → 定稿 v1 |
+| [`HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md`](HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md) | 研究平台 | **SUPERSEDED BY v0.2** | 留档，不再更新 |
 
-研究平台是项目核心，因此不定稿即不动工。定稿流程见该文件第 10 节。
+研究平台是项目核心，因此不定稿即不动工。定稿流程见 v0.2 第 13 节。
+
+v0.1 的对标结果（第 11 节）与优化提案（第 12 节）已并入 v0.2，v0.1 仅作变更留档。
 
 ## 共同前提
 
