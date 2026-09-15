@@ -48,8 +48,30 @@ import EditionLineageImage from '../../components/jiayi/EditionLineageImage.vue'
 import Timeline from '../../components/Timeline.vue'
 import BibliographicRecord from '../../components/primitives/BibliographicRecord.vue'
 import type { TimelineEvent } from '../../types/timeline'
+import { ref } from 'vue'
+import { mediaBytesUrl } from '../../services/media'
+import { JIAYI_IMPRINTS, type JiayiImprint, type JiayiImprintEdition } from '../../data/jiayiImprints'
 
 defineOptions({ name: 'JiayiView' })
+
+/**
+ * 影印阅读状态（P-5）。
+ *
+ * 就地展开而非弹窗：弹窗要配焦点陷阱、Esc、滚动锁，而这张页面上同时只有
+ * 一卷被打开，就地展开少一半代码、也少一半出错的地方。
+ */
+const activeImprint = ref<{ imprint: JiayiImprint; edition: JiayiImprintEdition } | null>(null)
+
+function openImprint(imprint: JiayiImprint, edition: JiayiImprintEdition): void {
+  activeImprint.value = { imprint, edition }
+}
+
+function closeImprint(): void {
+  activeImprint.value = null
+}
+
+/** 影印总数（去重后）。 */
+const imprintTotal = JIAYI_IMPRINTS.reduce((n, e) => n + e.imprints.length, 0)
 
 /* Shared WORK-level record (作品本体 — distinct from edition records). */
 const JIAYI_WORK = WORK_COLLECTION.find((work) => work.id === 'w-jiayi')
@@ -205,6 +227,51 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
         客户提供的版本脉络图为展示资料；图中关系为资料示意，页面不对各版本作传承谱系推断。
       </p>
       <EditionLineageImage />
+    </section>
+
+    <!-- 03b 原刻影印 — 四种公版版本，浏览器原生 PDF 查看器（P-5） -->
+    <section id="imprints" class="jiayi-section" aria-labelledby="imprints-heading">
+      <h2 id="imprints-heading" class="section-title">原刻影印</h2>
+      <p class="section-note">
+        四种公版版本的原刻影印，共 {{ imprintTotal }} 件 —— 明万历吴勉学的刻本、清乾隆的四库全书本、
+        清光绪的行素草堂藏板。这是今天能看到的最接近原书的样子。点即翻阅，无需下载。
+      </p>
+
+      <div v-for="edition in JIAYI_IMPRINTS" :key="edition.edition" class="imprint-edition">
+        <h3 class="imprint-edition__title">
+          {{ edition.edition }}
+          <span class="imprint-edition__era">{{ edition.era }}</span>
+        </h3>
+        <p class="imprint-edition__note">{{ edition.note }}</p>
+        <ul class="imprint-grid">
+          <li v-for="imprint in edition.imprints" :key="imprint.id">
+            <button
+              type="button"
+              class="imprint"
+              :class="{ 'imprint--active': activeImprint?.imprint.id === imprint.id }"
+              :aria-pressed="activeImprint?.imprint.id === imprint.id"
+              @click="openImprint(imprint, edition)"
+            >
+              <span class="imprint__label">{{ imprint.label }}</span>
+              <span class="imprint__hint">翻阅</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div v-if="activeImprint" class="imprint-viewer" data-source="backend">
+        <div class="imprint-viewer__bar">
+          <p class="imprint-viewer__title">
+            {{ activeImprint.edition.edition }} · {{ activeImprint.imprint.label }}
+          </p>
+          <button type="button" class="imprint-viewer__close" @click="closeImprint">收起</button>
+        </div>
+        <iframe
+          class="imprint-viewer__frame"
+          :src="mediaBytesUrl(activeImprint.imprint.id)"
+          :title="`${activeImprint.edition.edition} ${activeImprint.imprint.label} 影印`"
+        ></iframe>
+      </div>
     </section>
 
     <!-- 04 EDITION COLLECTION — 版本记录（EDITION），逐条为书目记录。 -->
@@ -374,6 +441,109 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
 
 .jiayi-hero__jump a:hover {
   text-decoration: underline;
+}
+
+.imprint-edition {
+  margin-bottom: var(--hfm-space-8);
+}
+.imprint-edition__title {
+  margin: 0 0 var(--hfm-space-2);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text);
+}
+.imprint-edition__era {
+  margin-left: var(--hfm-space-3);
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text-muted);
+}
+.imprint-edition__note {
+  margin: 0 0 var(--hfm-space-4);
+  max-width: var(--hfm-reader-max);
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-muted);
+}
+.imprint-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.imprint {
+  display: flex;
+  align-items: baseline;
+  gap: var(--hfm-space-2);
+  padding: var(--hfm-space-2) var(--hfm-space-4);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text);
+  background: var(--hfm-color-surface);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
+  cursor: pointer;
+}
+.imprint:hover {
+  border-color: var(--hfm-color-border-strong);
+}
+.imprint:focus-visible {
+  outline: 2px solid var(--hfm-color-interactive);
+  outline-offset: 2px;
+}
+.imprint--active {
+  border-color: var(--hfm-color-interactive);
+}
+.imprint__hint {
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+
+.imprint-viewer {
+  margin-top: var(--hfm-space-6);
+  border: 1px solid var(--hfm-color-border);
+  background: var(--hfm-color-surface);
+}
+.imprint-viewer__bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--hfm-space-4);
+  padding: var(--hfm-space-3) var(--hfm-space-4);
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+.imprint-viewer__title {
+  margin: 0;
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  color: var(--hfm-color-text);
+}
+.imprint-viewer__close {
+  padding: var(--hfm-space-1) var(--hfm-space-3);
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-secondary);
+  background: none;
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
+  cursor: pointer;
+}
+.imprint-viewer__close:focus-visible {
+  outline: 2px solid var(--hfm-color-interactive);
+  outline-offset: 2px;
+}
+/* 浏览器原生 PDF 查看器：翻页、缩放、下载都由它自带，零依赖。
+   高度给足，横屏古籍影印看起来才像话。 */
+.imprint-viewer__frame {
+  display: block;
+  width: 100%;
+  height: 80vh;
+  border: 0;
 }
 
 .jiayi-section {

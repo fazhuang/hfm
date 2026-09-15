@@ -35,9 +35,14 @@ import {
 import { presentationStatusLabel } from '../../presentation/stateMapping'
 import type { TimelineEvent } from '../../types/timeline'
 import LineageGraph from '../../components/heritage/LineageGraph.vue'
+import { mediaBytesUrl } from '../../services/media'
+import { HERITAGE_COLLECTION } from '../../data/heritageCollection'
 import Timeline from '../../components/Timeline.vue'
 
 defineOptions({ name: 'HeritageView' })
+
+/** 已陈列的件数（只含已发布者）。 */
+const collectionTotal = HERITAGE_COLLECTION.reduce((n, g) => n + g.items.length, 0)
 
 const heritageTimeline: TimelineEvent[] = HERITAGE_TIMELINE.map((t) => ({
   id: t.id,
@@ -254,6 +259,43 @@ const recordSourceNames = computed<string[]>(() => {
       <Timeline :events="heritageTimeline" label="非遗传承重要时间节点" />
     </section>
 
+    <!-- 10b 成果陈列 — 非遗佐证的实物（P-6）。
+         只列已发布的 28 件：P2/P3 仍在库中保持 draft，不在此列。
+         封面由 PDF 首页渲染而来；原件自始至终未经改动。 -->
+    <section id="collection" class="heritage-section" aria-labelledby="collection-heading">
+      <h2 id="collection-heading" class="section-title">成果陈列</h2>
+      <p class="section-note">
+        客户提供的非遗佐证材料中已公开发布的部分，共
+        {{ collectionTotal }} 件。点开即读原件 —— 这是传承的凭据本身，不是转述。
+      </p>
+
+      <div v-for="group in HERITAGE_COLLECTION" :key="group.category" class="collection-group">
+        <h3 class="collection-group__title">{{ group.category }}</h3>
+        <p class="collection-group__note">{{ group.note }}</p>
+        <ul class="collection-grid">
+          <li v-for="item in group.items" :key="item.id" class="collection-card">
+            <a
+              class="collection-card__link"
+              :href="mediaBytesUrl(item.id)"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="collection-card__frame">
+                <img
+                  v-if="item.kind === 'pdf'"
+                  :src="item.cover"
+                  :alt="`${item.name} 首页`"
+                  loading="lazy"
+                />
+                <span v-else class="collection-card__noimg">{{ item.kind.toUpperCase() }}</span>
+              </span>
+              <span class="collection-card__name">{{ item.name }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
     <!-- 11 来源与证据 — public provenance labels only. -->
     <section class="heritage-section" aria-labelledby="evidence-heading">
       <h2 id="evidence-heading" class="section-title">来源与证据</h2>
@@ -327,6 +369,77 @@ const recordSourceNames = computed<string[]>(() => {
   max-width: 68ch;
   line-height: var(--hfm-leading-reading);
   margin: 0;
+}
+
+.collection-group {
+  margin-bottom: var(--hfm-space-8);
+}
+.collection-group__title {
+  margin: 0 0 var(--hfm-space-2);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text);
+}
+.collection-group__note {
+  margin: 0 0 var(--hfm-space-4);
+  max-width: var(--hfm-reader-max);
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-muted);
+}
+/* 陈列：统一画框、统一比例、统一留白 —— 这一段的成败在整齐，不在花哨。 */
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--hfm-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.collection-card__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+.collection-card__frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: var(--hfm-color-surface);
+  border: 1px solid var(--hfm-color-border);
+}
+.collection-card__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.collection-card__noimg {
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text-muted);
+}
+.collection-card__name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: var(--hfm-space-2);
+  font-size: var(--hfm-text-xs);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-secondary);
+}
+.collection-card__link:hover .collection-card__frame {
+  border-color: var(--hfm-color-border-strong);
+}
+.collection-card__link:focus-visible {
+  outline: 2px solid var(--hfm-color-interactive);
+  outline-offset: 2px;
 }
 
 .heritage-section {
