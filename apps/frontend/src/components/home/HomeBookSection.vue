@@ -49,21 +49,11 @@ const t0 = computed(() => {
 
       <div class="xl-split">
         <div>
-          <!-- T0 — 已发布著作与版本数 -->
-          <div v-if="t0" data-source="backend">
-            <p class="book__t0-row">
-              <span class="book__meta-line"><b>著作</b> {{ t0.title }}</span>
-              <span class="book__meta-note">{{ t0.category ?? '' }}</span>
-            </p>
-            <p class="book__t0-row">
-              <span class="book__meta-line"><b>已发布版本</b> {{ t0.editions }} 种</span>
-              <span class="book__meta-note">来自数据库（已发布投影）</span>
-            </p>
-          </div>
-          <p v-else class="fallback-note" data-fallback-note>
+          <!-- T0 数据由右列的统计带承载（版本记录 / 收录版本 / 影印 / 篇章），
+               此处不再重复登记一遍。t0 仍用于决定本段的来源标记。 -->
+          <p v-if="!t0" class="fallback-note" data-fallback-note>
             数据库作品投影暂不可用 · 以下为离线兜底（客户材料）
           </p>
-
           <blockquote class="xl-split__quote">
             皇甫谧博采经传杂书以补史迁缺，所引《世本》诸子，今皆亡逸，断璧残圭，弥堪宝重。
             <cite>清·钱熙祚 评《帝王世纪》</cite>

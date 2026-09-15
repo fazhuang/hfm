@@ -79,25 +79,14 @@ const shown = computed(() => t0Projects.value.slice(0, 6))
         </li>
       </ul>
 
-      <!-- T0：已发布的非遗档案（真实投影）。契约测试要求本段渲染真实行
-           且给出总数，故与上面的三张展板并列保留。 -->
-      <ul v-if="hasT0" class="heritage__t0 xl-rows" data-source="backend">
-        <li v-for="(proj, i) in shown" :key="i" class="xl-row heritage__t0-row">
-          <span class="xl-row__index">{{ String(i + 1).padStart(2, '0') }}</span>
-          <div class="xl-row__body heritage__t0-body">
-            <span class="heritage__t0-name">
-              {{ (proj as Record<string, unknown>).project_name ?? '' }}
-            </span>
-            <span class="heritage__t0-cat">
-              {{ (proj as Record<string, unknown>).category ?? '' }}
-            </span>
-          </div>
-        </li>
-      </ul>
-      <p v-if="hasT0 && t0Projects.length > shown.length" class="heritage__t0-more" data-t0-total>
-        共 {{ t0Projects.length }} 项已发布非遗档案 · 传承人 {{ person.name }}
+      <!-- 本段只讲「今天还在发生什么」：三张真实材料就是内容本身。
+           此前还并列六行台账登记，等于把传承档案页搬了过来。
+           T0 数据由这一行总数承载（契约 §4 要求每段至少一条真实投影）。 -->
+      <p v-if="hasT0" class="heritage__t0-total" data-t0-total data-source="backend">
+        平台已发布非遗档案 <b class="xl-num">{{ t0Projects.length }}</b> 项 ·
+        代表性传承人 {{ person.name }}
       </p>
-      <p v-else-if="!hasT0" class="fallback-note" data-fallback-note>
+      <p v-else class="fallback-note" data-fallback-note>
         数据库非遗档案尚未发布 · 以上为离线兜底（客户材料）
       </p>
 

@@ -69,8 +69,9 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
         <!-- 左：叙述与入口 -->
         <div class="hero__text">
           <h1 id="home-hero-title" class="hero__brand">{{ HOME_HERO.title }}</h1>
-          <p class="hero__statement">{{ HOME_HERO.definition }}</p>
-          <p class="hero__roles">西晋 · 医学家 · 文学家 · 史学家</p>
+          <!-- 这里只说「这是什么地方」。皇甫谧是谁是下一段的职责 ——
+               此前两段都在定义他，是首页重复感的主要来源。 -->
+          <p class="hero__statement">{{ HOME_HERO.subtitle }}</p>
 
           <div class="hero__acts">
             <a class="hero__act" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
@@ -121,22 +122,6 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
             </figcaption>
           </figure>
 
-          <div class="hero__plates">
-            <figure class="hero__plate">
-              <img src="/assets/jiayi/frag-macro.jpg" alt="《针灸甲乙经》书影局部" />
-              <figcaption>
-                <span class="hero__plate-title">《针灸甲乙经》</span>
-                <span class="hero__plate-note">书影 · 客户授权资料</span>
-              </figcaption>
-            </figure>
-            <figure class="hero__plate">
-              <img src="/assets/jiayi/book-siku-leaf.jpg" alt="四库全书本书叶" />
-              <figcaption>
-                <span class="hero__plate-title">四库全书本</span>
-                <span class="hero__plate-note">书叶 · 客户授权资料</span>
-              </figcaption>
-            </figure>
-          </div>
         </div>
       </div>
 
@@ -348,10 +333,12 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   border-top: 1px solid var(--wl-rule);
 }
 .hero__count-value {
-  margin: 0.2rem 0 0;
-  font-size: clamp(1.5rem, 2.6vw, 2rem);
+  margin: 0.15rem 0 0;
+  font-family: var(--wl-latin);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--hfm-text-lg);
   line-height: 1;
-  color: var(--wl-ink);
+  color: var(--wl-ink-2);
 }
 
 /* ---- 右：展柜 ----
@@ -362,25 +349,7 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
    移动端不沿用"缩小版桌面"：两窄列的标题会全部断行，等于没有可读性。 */
 .hero__vitrine {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--hfm-space-4);
-  align-items: start;
-}
-.hero__plates {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--hfm-space-4);
-}
-@media (min-width: 700px) {
-  .hero__vitrine {
-    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
-  }
-  .hero__plates {
-    grid-column: 2;
-    grid-row: 1;
-    grid-template-columns: minmax(0, 1fr);
-  }
+  display: block;
 }
 .hero__plate {
   margin: 0;
@@ -405,12 +374,6 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   padding: var(--hfm-space-3) var(--hfm-space-4);
   border-top: 1px solid var(--wl-rule);
 }
-/* 窄栏里侧排会断行；副展板的说明改为竖排。 */
-.hero__plates .hero__plate figcaption {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.2rem;
-}
 .hero__plate-title {
   font-family: var(--hfm-font-serif);
   font-size: var(--hfm-text-base);
@@ -430,29 +393,12 @@ const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
   object-fit: cover;
   object-position: top center;
 }
-.hero__plates img {
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
-}
-/* 副展板退后半步：略降明度、略缩，形成前后关系。 */
-.hero__plates .hero__plate {
-  opacity: 0.88;
-  transition:
-    opacity 320ms ease,
-    transform 320ms ease;
-}
-.hero__plates .hero__plate:hover {
-  opacity: 1;
-  transform: translateY(-3px);
-}
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__act-arr,
-  .hero__plates .hero__plate {
+  .hero__act-arr {
     transition: none;
   }
-  .hero__act:hover .hero__act-arr,
-  .hero__plates .hero__plate:hover {
+  .hero__act:hover .hero__act-arr {
     transform: none;
   }
 }

@@ -60,10 +60,7 @@ const restCount = computed(() => Math.max(0, assertions.value.length - PREVIEW_C
       <div class="xl-split">
         <div>
           <p class="person__identities">{{ CORE_PERSON_IDENTITIES.join(' · ') }}</p>
-          <blockquote class="xl-split__quote">
-            皇甫谧（215—282），西晋著名学者、医学家，以《针灸甲乙经》闻名于世。
-            <cite>生平与著述，见本平台人物档案</cite>
-          </blockquote>
+          <p class="person__dates">215—282 · 西晋</p>
           <p class="person__foot">
             <a class="home-person__act xl-go" href="/persons/ENT-PERSON-HFM-HUANGFUMI">
               进入人物档案

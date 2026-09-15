@@ -59,10 +59,17 @@ test('every block carries a data-source marker; T1 fallbacks are visible', async
   }
   // 其言 is un-admitted → honest state, never fabricated full text.
   await expect(page.locator('#home-yan [data-empty-state]')).toBeVisible()
-  // 非遗 T0 is published (C1) → real rows + a stated total, no fallback note.
+  // 非遗 T0 is published (C1) → real T0 data renders, no fallback note.
+  //
+  // 2026-09-16 版式重构：本段此前并列六行台账登记，与三张材料卡重复，已压成
+  // 一行总数。断言对象随之改变，**强度不变** —— 仍要求本段渲染真实 T0 数据
+  // （契约 §4 规则 2：每个区块至少一条），且用真实数字而非占位。
   await expect(page.locator('#home-heritage')).toHaveAttribute('data-source', 'backend')
-  expect(await page.locator('#home-heritage .heritage__t0-row').count()).toBeGreaterThanOrEqual(1)
-  await expect(page.locator('#home-heritage [data-t0-total]')).toBeVisible()
+  const total = page.locator('#home-heritage [data-t0-total]')
+  await expect(total).toBeVisible()
+  await expect(total).toHaveAttribute('data-source', 'backend')
+  expect(await page.locator('#home-heritage .xl-card').count()).toBeGreaterThanOrEqual(1)
+  await expect(total).toContainText(/\d+/)
 })
 
 test('exactly one global footer; the close is a section', async ({ page }) => {
