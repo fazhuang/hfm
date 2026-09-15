@@ -14,7 +14,9 @@ material reaches the public projection only as a redacted derivative.
 from __future__ import annotations
 
 from hfm.phase2.media.models import (
+    DEFAULT_ACCESS_SCOPE,
     GATED_PRIVACY_CLASSES,
+    AccessScope,
     MediaAsset,
     MediaAssetState,
     PrivacyClass,
@@ -22,7 +24,9 @@ from hfm.phase2.media.models import (
 from hfm.phase2.media.service import MediaRights, MediaService
 
 __all__ = [
+    "DEFAULT_ACCESS_SCOPE",
     "GATED_PRIVACY_CLASSES",
+    "AccessScope",
     "MediaAsset",
     "MediaAssetState",
     "MediaRights",

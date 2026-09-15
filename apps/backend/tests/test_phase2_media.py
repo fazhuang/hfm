@@ -23,6 +23,8 @@ import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from hfm.phase2.media import (
+    DEFAULT_ACCESS_SCOPE,
+    AccessScope,
     MediaAsset,
     MediaAssetState,
     MediaRights,
@@ -144,6 +146,7 @@ async def test_ac02_derivative_requires_existing_original(media: MediaService) -
 
 async def test_ac03_withdrawal_removes_from_public_projection(media: MediaService) -> None:
     asset = await media.ingest(
+        access_scope=AccessScope.PUBLIC,
         object_key="orig-5",
         mime_type="image/jpeg",
         byte_size=1024,
@@ -170,6 +173,7 @@ async def test_ac03_withdrawal_removes_from_public_projection(media: MediaServic
 
 async def test_ac03_withdrawn_derivative_excluded_from_projection(media: MediaService) -> None:
     original = await media.ingest(
+        access_scope=AccessScope.PUBLIC,
         object_key="orig-6",
         mime_type="image/jpeg",
         byte_size=1024,
@@ -509,8 +513,15 @@ P2_DERIV = "非遗佐证-脱敏/09职业技能等级认定资质/2、职业技�
 
 
 async def _ingest_p2(media: MediaService, object_key: str = P2_CERT) -> MediaAsset:
-    """Ingest a P2 asset the way ``import-media-assets.py`` does: fail-closed."""
+    """Ingest a P2 asset the way ``import-media-assets.py`` does: fail-closed.
+
+    Public scope: 非遗佐证 is portal material, not research material. Its P2
+    subset is held back on publication_state (needs a redacted derivative),
+    not on audience — which is why the derivative, inheriting the scope,
+    reaches the public projection once granted and published.
+    """
     return await media.ingest(
+        access_scope=AccessScope.PUBLIC,
         object_key=object_key,
         mime_type="application/pdf",
         byte_size=4096,
@@ -721,3 +732,47 @@ async def test_db_check_derivative_grant_requires_an_original(
         raise AssertionError("the DB must reject a grant on an original")
     except IntegrityError:
         pass
+
+
+async def test_research_scoped_published_asset_is_not_in_public_projection(
+    media: MediaService,
+) -> None:
+    """Access scope gates the portal independently of publication state.
+
+    A research-scoped asset is *ready* — published, rights sufficient — and
+    still must not reach the public portal, because the portal is not its
+    audience. This is the P-4 invariant: the 585 papers and modern
+    publications that P-1 moved to the research side stay out of
+    /api/v1/public/media even though their publication_state is PUBLISHED.
+    """
+    research_asset = await media.ingest(
+        object_key="research-1",
+        mime_type="application/pdf",
+        byte_size=2048,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="皇甫谧文化（客户提供）",
+            license_basis="customer_owned",
+            publication_permission=True,
+        ),
+        access_scope=AccessScope.RESEARCH,
+    )
+    await media.publish(research_asset.object_key)
+    assert research_asset.publication_state == MediaAssetState.PUBLISHED
+
+    projection = await media.public_projection()
+    assert not any(a.object_key == research_asset.object_key for a in projection)
+
+
+async def test_ingest_defaults_to_research_scope(media: MediaService) -> None:
+    """The boundary fails closed: a caller that says nothing gets no portal."""
+    asset = await media.ingest(
+        object_key="default-scope-1",
+        mime_type="application/pdf",
+        byte_size=512,
+        sha256=SHA_A,
+        rights=MediaRights(
+            holder="示范中心", license_basis="公开展示授权", publication_permission=True
+        ),
+    )
+    assert asset.access_scope == DEFAULT_ACCESS_SCOPE == AccessScope.RESEARCH

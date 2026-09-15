@@ -38,7 +38,7 @@ from hfm.phase1.reader import ReaderService
 from hfm.phase1.research_workspace import ResearchWorkspaceService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
-from hfm.phase2.media.models import MediaAsset, MediaAssetState
+from hfm.phase2.media.models import AccessScope, MediaAsset, MediaAssetState
 from hfm.phase2.media.service import MediaService, public_category
 from hfm.utils.response import api_response
 
@@ -391,13 +391,22 @@ def _resolve_media_file(object_key: str) -> str:
 
 @public_router.get("/media/{asset_id}/bytes")
 async def public_media_bytes(session: SessionDep, asset_id: str) -> FileResponse:
-    """Pre-acceptance demo: stream bytes of a PUBLISHED media asset.
+    """Stream the bytes of a published PUBLIC-SCOPE media asset.
 
-    Local-dev serving only (HFM_MEDIA_ROOT); path traversal is blocked;
-    unpublished assets 404. Production would serve from S3 (ADR-P2-01).
+    Two gates, both required, same as the list endpoint: published, and
+    scoped to the public portal. A research-scoped asset 404s here even
+    though it is published — the portal is not its audience. Both failures
+    return the same 404 so the response does not reveal which gate it hit.
+
+    Local-dev serving only (HFM_MEDIA_ROOT); path traversal is blocked.
+    Production would serve from S3 (ADR-P2-01).
     """
     asset = await session.get(MediaAsset, asset_id)
-    if asset is None or asset.publication_state != MediaAssetState.PUBLISHED:
+    if (
+        asset is None
+        or asset.publication_state != MediaAssetState.PUBLISHED
+        or asset.access_scope != AccessScope.PUBLIC
+    ):
         raise HTTPException(status_code=404, detail="media not found or not published")
     target = _resolve_media_file(str(asset.object_key))
     return FileResponse(

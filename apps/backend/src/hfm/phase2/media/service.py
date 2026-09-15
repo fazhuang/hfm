@@ -32,7 +32,14 @@ from typing import Protocol
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from hfm.phase2.media.models import GATED_PRIVACY_CLASSES, MediaAsset, MediaAssetState, PrivacyClass
+from hfm.phase2.media.models import (
+    DEFAULT_ACCESS_SCOPE,
+    GATED_PRIVACY_CLASSES,
+    AccessScope,
+    MediaAsset,
+    MediaAssetState,
+    PrivacyClass,
+)
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
@@ -78,12 +85,19 @@ class MediaService:
         sha256: str,
         rights: MediaRights,
         provenance: str | None = None,
+        access_scope: str = DEFAULT_ACCESS_SCOPE,
     ) -> MediaAsset:
         """Register an original media object with byte-hash binding.
 
         Rights metadata is mandatory at ingestion (fail-closed): an asset
         without a rights holder and license basis can never become eligible
         for publication.
+
+        ``access_scope`` names the audience and defaults to the fail-closed
+        value, so a caller that says nothing gets a research asset — invisible
+        to the public portal until it is deliberately promoted. The caller
+        declares it here because the audience is a property of the material,
+        known at ingestion, not something to be inferred later from a path.
         """
         if not rights.holder.strip() or not rights.license_basis.strip():
             raise MediaRightsError("media ingestion requires a rights holder and license basis")
@@ -106,6 +120,7 @@ class MediaService:
             publication_permission=rights.publication_permission,
             privacy_class=rights.privacy_class,
             publication_state=MediaAssetState.DRAFT,
+            access_scope=access_scope,
             provenance=provenance,
         )
         self.session.add(asset)
@@ -150,6 +165,11 @@ class MediaService:
             publication_permission=original.publication_permission,
             privacy_class=original.privacy_class,
             publication_state=MediaAssetState.DRAFT,
+            # A derivative is the same material in a publishable form, so it
+            # serves the same audience as its original: a redacted public
+            # certificate stays portal material. Inherited like the rights
+            # fields above, not re-declared.
+            access_scope=original.access_scope,
             redaction_token=redaction_token(original.object_key, original.sha256, redaction_rule),
         )
         self.session.add(derivative)
@@ -216,10 +236,25 @@ class MediaService:
         return asset
 
     async def public_projection(self) -> list[MediaAsset]:
-        """Published derivatives visible to the public projection (AC-03)."""
+        """Assets the public portal may serve.
+
+        Two independent gates, both required:
+
+        ``publication_state == PUBLISHED`` — the asset is ready to be seen at
+        all (AC-03).
+
+        ``access_scope == PUBLIC`` — it belongs to the **public portal** rather
+        than the research platform. The two are orthogonal: a research asset is
+        published and ready, it is simply not the portal's material. Without
+        this second gate the portal would serve the 585 research-scoped papers
+        and modern publications that P-1 moved off it.
+        """
         stmt = (
             select(MediaAsset)
-            .where(MediaAsset.publication_state == MediaAssetState.PUBLISHED)
+            .where(
+                MediaAsset.publication_state == MediaAssetState.PUBLISHED,
+                MediaAsset.access_scope == AccessScope.PUBLIC,
+            )
             .order_by(MediaAsset.created_at)
         )
         return list((await self.session.execute(stmt)).scalars().all())
