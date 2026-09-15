@@ -214,6 +214,20 @@ onBeforeUnmount(() => {
   background: var(--wl-paper);
   color: var(--wl-ink);
 }
+/* 表单控件：UA 默认是白底输入框（foundations.css 把 color-scheme 定在 light），
+   在近黑画布上会亮成一块。用原生 color-scheme 让 UA 自己换暗，再显式给底与字色
+   —— 滚动条、下拉、日期选择器一并跟着换。 */
+.public-shell[data-surface='exhibition'] {
+  color-scheme: dark;
+}
+.public-shell[data-surface='exhibition'] :is(input, select, textarea) {
+  background: var(--hfm-color-elevated);
+  color: var(--hfm-color-text);
+}
+.public-shell[data-surface='exhibition'] :is(input, textarea)::placeholder {
+  color: var(--hfm-color-text-muted);
+}
+
 /* 页头并入画布，不留一条亮边把首屏切断。 */
 .public-shell[data-surface='exhibition'] .public-shell__header {
   background: transparent;

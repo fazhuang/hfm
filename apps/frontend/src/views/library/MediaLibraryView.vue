@@ -61,11 +61,14 @@ function setCategory(cat: MediaCategory | 'all'): void {
 
 <template>
   <section aria-labelledby="library-heading">
-    <h1 id="library-heading">资料库</h1>
-    <p class="library-intro">
-      已发布资料共 {{ all.length }} 项。现代出版物与论文为第三方版权，平台以非商业非盈利方式
-      仅供皇甫谧学术爱好者学习与宣传，请勿用于商业用途。
-    </p>
+    <header class="library-hero">
+      <p class="hfm-eyebrow">数字人文 · 开放资源</p>
+      <h1 id="library-heading" class="library-hero__title">数字资源</h1>
+      <p class="library-intro">
+        已发布资料共 {{ all.length }} 项。现代出版物与论文为第三方版权，平台以非商业非盈利方式
+        仅供皇甫谧学术爱好者学习与宣传，请勿用于商业用途。
+      </p>
+    </header>
 
     <div class="toolbar">
       <div class="tabs" role="tablist" aria-label="资料分类">

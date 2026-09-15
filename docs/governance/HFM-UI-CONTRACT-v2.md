@@ -52,7 +52,13 @@
 
 **现行落点**：公众门户**整站**是深色展厅面 —— 由 `apps/frontend/src/layouts/PublicLayout.vue` 在壳层换掉语义色 token（`data-surface="exhibition"`），页头、页脚与所有页面一次性跟着变。研究端与后台用各自的 layout，不受影响。
 
-**待办**：仍有页面保留了旧版式的内部结构（`/jiayi`、`/heritage`、`/yan`、`/search`、`/library`、`/archive`、阅读器）—— 它们已在深色画布上可读、可访问（axe 矩阵通过），但尚未按参考图重排版式。
+**栏目页**：各页自有的首屏与段落结构（`.jiayi-hero` / `.heritage-section` / …）由
+`apps/frontend/src/styles/portal-column.css` 统一套上参考图的栏目页节奏 —— 整幅首屏、
+栏目大字、短横线、二级导航条、发丝线分隔的段落、统一内容宽度，每页右侧一张栏目主影像。
+该文件不改模板：选择器带 `[data-surface='exhibition']`，压过各页的 scoped 规则。
+
+**不是栏目页、按各自性质保留的**：阅读器（`/reader`、`/reader/:id`、`/jiayi/reader`，是阅读面不是栏目面）、
+`/about`（信息页，保留默认字阶）、登录/无权限页、研究端与后台（各自的 layout 与配色）。
 
 ---
 
@@ -184,3 +190,11 @@
 - 依赖测试中所有"旧版式"断言已解除：区块 id 与顺序、H2 字面量、H1 文案、主导航长度与标签、逐段 `data-source`、人物段条数下限。保留的是 §5 的不变量。
 
 **验收**：`vue-tsc` 干净 · `eslint` 0 error · `vitest` 276/276 · `playwright` 89/89。
+
+### 同日 — 其余栏目页
+
+`/jiayi`、`/heritage`、`/yan`、`/library`、`/archive`、`/works`、`/search` 套上同一套栏目页节奏
+（新文件 `styles/portal-column.css`，不改模板）。`/library` 补了栏目首屏结构。
+
+顺带修掉一处全站遗留：`foundations.css` 把 `color-scheme` 定在 light，深色画布上的输入框
+仍是白的。展厅面现在声明 `color-scheme: dark` 并显式给出控件底与字色。

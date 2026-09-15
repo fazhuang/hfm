@@ -1,0 +1,201 @@
+/* ==========================================================================
+   栏目页版式 — 把各页自有的 hero / section 结构统一到参考图的栏目页骨架
+   ==========================================================================
+   背景（HFM-UI-CONTRACT-v2 §3.2）：九页各有各的临时类名（jiayi-hero /
+   heritage-section / …），版式各写各的，于是首页像设计过、其余页像文档堆。
+
+   本文件不改模板，只把**已经存在的结构**（页首 + 若干 h2 段）套上参考图的
+   栏目页节奏：整幅首屏、大标题、短横线、发丝线分隔的段落、统一的内容宽度。
+   选择器带上 .public-shell[data-surface='exhibition'] 以压过各页的 scoped 规则
+   （0,3,0 > 0,2,0），所以这些页不需要逐个改模板。
+   ========================================================================== */
+
+/* ---- 栏目首屏 ---- */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero) {
+  padding: clamp(3.5rem, 9vw, 7rem) var(--hfm-space-6) clamp(2.5rem, 5vw, 4rem);
+  background: linear-gradient(180deg, var(--wl-deep) 0%, var(--wl-paper) 100%);
+}
+
+/* 首屏里的英文小标：参考图的展签式开头 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  .hfm-eyebrow {
+  /* 字号 / 字距 / 颜色沿用 .hfm-eyebrow 原语，这里只调整栏首页里的位置。 */
+  margin: 0 0 var(--hfm-space-4);
+}
+
+/* 栏目大字标题 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  > h1 {
+  margin: 0;
+  font-family: var(--hfm-font-display);
+  font-weight: 500;
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  line-height: 1.15;
+  letter-spacing: 0.02em;
+  color: var(--wl-ink);
+}
+
+/* 题下短横线：标题与引导之间的呼吸 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  > h1::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 1px;
+  margin: clamp(1.25rem, 3vw, 2rem) 0;
+  background: var(--wl-mark);
+}
+
+/* 首屏引导文字 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  > p:not(.hfm-eyebrow) {
+  max-width: 46ch;
+  font-family: var(--hfm-font-serif);
+  font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+  line-height: 1.95;
+  color: var(--wl-ink-2);
+}
+
+/* 首屏里的快速跳转：变成参考图的二级导航条 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-6);
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding: var(--hfm-space-3) 0 0;
+  border-top: 1px solid var(--wl-rule);
+}
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  nav
+  a {
+  padding: var(--hfm-space-2) 0;
+  font-size: var(--hfm-text-sm);
+  color: var(--wl-ink-2);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+}
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .search-hero, .works-hero,
+    .library-hero)
+  nav
+  a:hover {
+  color: var(--wl-ink);
+  border-bottom-color: var(--wl-mark);
+}
+
+/* ---- 段落：统一宽度、大留白、发丝线分隔 ---- */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-section, .heritage-section, .yan-section, .search-section, .works-section) {
+  max-width: 78rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 5vw, 4rem) var(--hfm-space-6);
+}
+
+/* 段标题：与首页同级 */
+.public-shell[data-surface='exhibition'] .section-title {
+  margin: 0;
+  padding-top: var(--hfm-space-5);
+  border-top: 1px solid var(--wl-rule);
+  font-family: var(--hfm-font-heading);
+  font-weight: 500;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  color: var(--wl-ink);
+}
+
+
+/* ---- 栏目首屏的主影像（参考图每页右侧一张栏目主图） ----
+   用背景层实现，不改模板：暗场渐变压住左侧文字，右侧露出实物影像。
+   影像都是客户材料里已有的真实文件。 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .works-hero, .library-hero) {
+  min-height: clamp(20rem, 32vw, 28rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-size: min(42%, 30rem) auto;
+  background-color: var(--wl-deep);
+  /* 影像是扫描件，纸底很亮。压到与暗场同一档，只留可辨认的轮廓。 */
+  background-blend-mode: normal;
+}
+
+.public-shell[data-surface='exhibition'] .jiayi-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/jiayi/book-siku-leaf.jpg');
+}
+
+.public-shell[data-surface='exhibition'] .yan-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/jiayi/frag-band1.jpg');
+  background-size: min(40%, 26rem) auto;
+}
+
+.public-shell[data-surface='exhibition'] .heritage-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/heritage/heritage-baishi-ceremony.jpg');
+}
+
+.public-shell[data-surface='exhibition'] .archive-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/jiayi/frag-macro.jpg');
+}
+
+.public-shell[data-surface='exhibition'] .works-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/jiayi/edition-lineage.png');
+}
+
+/* 扫描件与实拍在最右缘仍偏亮，补一层竖向压暗把整条首屏收住。 */
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .works-hero, .library-hero)::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 9, 8, 0.5) 0%, rgba(7, 9, 8, 0.14) 40%, rgba(7, 9, 8, 0.62) 100%);
+}
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .works-hero, .library-hero) {
+  position: relative;
+}
+.public-shell[data-surface='exhibition']
+  :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .works-hero, .library-hero) > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 800px) {
+  .public-shell[data-surface='exhibition']
+    :is(.jiayi-hero, .heritage-hero, .yan-hero, .archive-hero, .works-hero, .library-hero) {
+    background-image: none;
+  }
+}
+
+.public-shell[data-surface='exhibition'] .library-hero {
+  background-image:
+    linear-gradient(to right, var(--wl-deep) 32%, rgba(7, 9, 8, 0.9) 60%, rgba(7, 9, 8, 0.74) 100%),
+    url('/assets/jiayi/edition-lineage.png');
+}
