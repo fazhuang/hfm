@@ -5,8 +5,12 @@
 #   1. real HFM_* runtime inputs are validated (redacted) by
 #      scripts/validate-production-env.py — missing/template/known-dev DB and
 #      token-secret values are rejected without printing their values;
-#   2. the exact Alembic current revision must equal the head (0017) with a
-#      single head — verified read-only against the target database;
+#   2. the exact Alembic current revision must equal the head this repository
+#      declares, with a single head — verified read-only against the target
+#      database. The head is read from alembic/versions, so advancing the
+#      schema never requires editing this gate; the revision the preflight
+#      actually proved is printed by validate-production-env.py as
+#      MIGRATION_VERIFY=PASS (…) immediately above each MIGRATION_GATE line;
 #   3. a database/command failure is a non-zero gate failure;
 #   4. --apply-migrations can NEVER bypass verification: the preflight does
 #      not apply a live migration (operators apply separately, then re-run the
@@ -68,11 +72,11 @@ fi
 
 if [[ "$ENV_NAME" == "prod" ]]; then
   if [[ "$APPLY" -eq 0 ]]; then
-    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0017; apply is a separate authorized step)"
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head; apply is a separate authorized step)"
   else
-    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head == 0017)"
+    echo "MIGRATION_GATE=PASS (prod: preflight verified current == head)"
   fi
 else
-  echo "MIGRATION_GATE=PASS (head=0017 current=0017 verified for $ENV_NAME)"
+  echo "MIGRATION_GATE=PASS (single head == current verified for $ENV_NAME)"
 fi
 exit 0

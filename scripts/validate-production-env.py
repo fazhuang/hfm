@@ -13,8 +13,8 @@ DATABASE_URL-only template shape):
   - HFM_TOKEN_SECRET must be present, non-template and different from the
     known development default;
   - optional --verify-migration connects (read-only) and proves the exact
-    Alembic current revision equals the expected head (0017) with exactly one
-    head; an unreachable or failing database is a hard failure and an
+    Alembic current revision equals the head the repository declares, with
+    exactly one head; an unreachable or failing database is a hard failure and an
     "apply" flag can never bypass this verification (this preflight never
     applies a migration).
 
@@ -23,7 +23,7 @@ the variable name and the rule that failed.
 
 Usage:
     python validate-production-env.py [--env-file PATH] [--env dev|test|prod]
-        [--verify-migration] [--expected-head 0017]
+        [--verify-migration] [--expected-head REV]
         [--backend-dir PATH]
 
 Exit codes: 0 = PASS, 1 = FAIL, 2 = usage error.
@@ -220,8 +220,40 @@ def validate_env(
     return errors
 
 
-def verify_migration(backend_dir: Path, db_url: str, expected_head: str) -> list[str]:
-    """Read-only Alembic verification: current == expected head, one head."""
+def repository_head(backend_dir: Path) -> str | None:
+    """The single Alembic head this repository declares, or None if unclear.
+
+    The head is a property of alembic/versions, not of any database, so gate
+    scripts can read it instead of carrying a revision number that every new
+    migration would invalidate by hand.
+    """
+    run = subprocess.run(
+        [sys.executable, "-m", "alembic", "-c", "alembic.ini", "heads"],
+        cwd=str(backend_dir),
+        env={**os.environ, "PYTHONPATH": str(backend_dir / "src")},
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    if run.returncode != 0:
+        return None
+    heads = [line for line in run.stdout.splitlines() if line.strip()]
+    if len(heads) != 1:
+        return None
+    return heads[0].split(" ")[0].strip()
+
+
+def verify_migration(
+    backend_dir: Path, db_url: str, expected_head: str | None = None
+) -> list[str]:
+    """Read-only Alembic verification: current == head, exactly one head.
+
+    ``expected_head`` pins the expectation when a caller must refuse anything
+    but one specific revision — the governed data pipelines pass their own,
+    because they track the schema they write into and record it in their
+    audit output. Left unset, the repository's own head is the expectation.
+    """
     env = {
         **os.environ,
         "HFM_DATABASE_URL": db_url,
@@ -246,7 +278,7 @@ def verify_migration(backend_dir: Path, db_url: str, expected_head: str) -> list
     if len(heads) != 1:
         return [_redact(f"expected exactly one Alembic head, found {len(heads)}")]
     head_rev = heads[0].split(" ")[0].strip()
-    if head_rev != expected_head:
+    if expected_head is not None and head_rev != expected_head:
         return [_redact(f"Alembic head is {head_rev}, expected {expected_head}")]
 
     current_run = subprocess.run(
@@ -266,10 +298,10 @@ def verify_migration(backend_dir: Path, db_url: str, expected_head: str) -> list
         ]
     current_line = current_run.stdout.strip().splitlines()
     current_rev = current_line[-1].split(" ")[0].strip() if current_line else ""
-    if current_rev != expected_head:
+    if current_rev != head_rev:
         return [
             _redact(
-                f"Alembic current revision is '{current_rev}', expected '{expected_head}' "
+                f"Alembic current revision is '{current_rev}', expected '{head_rev}' "
                 "(pending/partial migration — apply separately, then re-run this preflight)"
             )
         ]
@@ -283,7 +315,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--env", choices=("dev", "test", "prod"), default="prod")
     parser.add_argument("--verify-migration", action="store_true")
-    parser.add_argument("--expected-head", default="0017")
+    parser.add_argument(
+        "--expected-head",
+        default=None,
+        help="pin the exact head (default: the head this repository declares)",
+    )
     parser.add_argument(
         "--backend-dir",
         type=Path,
@@ -323,7 +359,10 @@ def main(argv: list[str] | None = None) -> int:
         if migration_errors:
             print("PRODUCTION_ENV_VALIDATION=FAIL")
             return 1
-        print(f"MIGRATION_VERIFY=PASS (single head == current == {args.expected_head})")
+        verified_head = (
+            args.expected_head or repository_head(args.backend_dir) or "the repository head"
+        )
+        print(f"MIGRATION_VERIFY=PASS (single head == current == {verified_head})")
 
     print("PRODUCTION_ENV_VALIDATION=PASS")
     return 0

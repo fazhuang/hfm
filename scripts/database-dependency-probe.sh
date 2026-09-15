@@ -8,7 +8,7 @@
 # is unreachable (or not at the expected revision) is detected as FAIL.
 #
 #   database-dependency-probe.sh --api-base URL --db-url DSN
-#       [--backend-dir DIR] [--expected-head 0017]
+#       [--backend-dir DIR] [--expected-head REV]
 #
 # Output lines: PROBE_PROCESS=UP|DOWN, PROBE_DATABASE=OK|FAIL, PROBE_RESULT=PASS|FAIL.
 set -euo pipefail
@@ -17,7 +17,10 @@ PYTHON="$REPO_ROOT/apps/backend/.venv/bin/python"
 API_BASE=""
 DB_URL=""
 BACKEND_DIR="$REPO_ROOT/apps/backend"
-EXPECTED_HEAD="0017"
+# Empty means "resolve the head this repository declares", so advancing the
+# schema never requires editing this probe. Set --expected-head only when the
+# probe must prove one exact revision rather than the declared head.
+EXPECTED_HEAD=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -30,6 +33,20 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 [[ -n "$API_BASE" && -n "$DB_URL" ]] || { echo "usage: database-dependency-probe.sh --api-base URL --db-url DSN"; exit 2; }
+
+# The head lives in alembic/versions, so it resolves without touching the
+# target database. An unresolvable head is a hard failure: never fall through
+# to comparing against "anything".
+if [[ -z "$EXPECTED_HEAD" ]]; then
+  EXPECTED_HEAD="$(cd "$BACKEND_DIR" && PYTHONPATH="$BACKEND_DIR/src" \
+    "$PYTHON" -m alembic -c alembic.ini heads 2>/dev/null | head -1 | cut -d' ' -f1 || true)"
+fi
+if [[ -z "$EXPECTED_HEAD" ]]; then
+  echo "PROBE_PROCESS=UNKNOWN"
+  echo "PROBE_DATABASE=UNKNOWN"
+  echo "PROBE_RESULT=FAIL (cannot resolve a single migration head under $BACKEND_DIR)"
+  exit 1
+fi
 
 # 1. Process dependency: the API base must answer (process is up).
 if curl -sf --max-time 5 "$API_BASE/health" >/dev/null 2>&1; then
