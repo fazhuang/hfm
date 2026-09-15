@@ -6,15 +6,41 @@
  * 集引言 + 四篇说明（《三都赋》序 / 玄守论 / 释劝论 / 笃终论）+ 辑佚补充。
  * 四篇全文未见于客户文稿；P-8a（2026-09-15）依公版文献录入，见 data/yanTexts.ts。
  * 页面呈现正文 + 底本/参校出处 + 校勘记；校记中的异文一律照录，不擅自择善。
+ * 正文以 data-source="static" 标明为编辑录入的静态内容，非后台准入投影 ——
+ * 即：它已可读，但尚未经内容准入管线。这两件事必须分开说，不得含糊。
  * 主题标签为展示分类（PRESENTATION_CLASSIFICATION），非史料原始分类。
  */
 import { YAN_COLLECTION } from '../../data/yanCollection'
 import { YAN_FULL_TEXTS } from '../../data/yanTexts'
+import { segmentForGlosses, type YanRun } from '../../data/yanGlosses'
+import { useTextDirection } from '../../composables/useTextDirection'
 
 defineOptions({ name: 'YanView' })
 
 /** 该节的全文（若有）。 */
 const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
+
+const { direction, toggleDirection } = useTextDirection()
+
+/**
+ * 注音分段结果按篇缓存。正文是静态数据，不会变，所以只需算一次；
+ * 4149 字若每次重渲染都重新切分，翻页会有可感的迟滞。
+ */
+const runCache = new Map<string, YanRun[][]>()
+function runsFor(id: string): YanRun[][] {
+  let cached = runCache.get(id)
+  if (!cached) {
+    const text = YAN_FULL_TEXTS[id]
+    cached = text ? text.paragraphs.map(segmentForGlosses) : []
+    runCache.set(id, cached)
+  }
+  return cached
+}
+
+/** 可跳转的篇目（有全文者）。 */
+const navigable = YAN_COLLECTION.sections.filter(
+  (s) => s.fullTextStatus !== 'DATA_GAP' && YAN_FULL_TEXTS[s.id] !== undefined,
+)
 </script>
 
 <template>
@@ -38,6 +64,26 @@ const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
       </p>
     </section>
 
+    <!-- 篇目导航：四篇互跳 -->
+    <nav v-if="navigable.length" class="yan-nav" aria-label="篇目与阅读版式">
+      <h2 class="visually-hidden">篇目与阅读版式</h2>
+      <ol class="yan-nav__list">
+        <li v-for="s in navigable" :key="s.id">
+          <a class="yan-nav__link" :href="`#${s.id}-section`">{{ s.title }}</a>
+        </li>
+      </ol>
+      <!-- 版式是全局偏好，四篇同时切换，所以只放一个开关：
+           每篇放一个会让人以为是逐篇设置。 -->
+      <button
+        type="button"
+        class="yan-direction"
+        :aria-pressed="direction === 'vertical'"
+        @click="toggleDirection"
+      >
+        {{ direction === 'vertical' ? '切为横排' : '切为竖排' }}
+      </button>
+    </nav>
+
     <!-- Text / Quotation Collection (material structure: four sections) -->
     <section
       v-for="section in YAN_COLLECTION.sections"
@@ -48,11 +94,25 @@ const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
     >
       <h2 :id="`${section.id}-heading`" class="section-title">{{ section.title }}</h2>
 
-      <!-- 全文：底本正文 + 出处 + 校勘记 -->
-      <div v-if="fullTextOf(section.id)" class="yan-fulltext">
-        <div class="yan-fulltext__body hfm-reading">
-          <p v-for="(para, i) in fullTextOf(section.id).paragraphs" :key="i">
-            {{ para }}
+      <!-- 全文：底本正文 + 出处 + 校勘记。
+           data-source="static"：本块为编辑录入的静态内容，不经后台投影，
+           与其言题录信息的来源性质一致（对照首页各块的 backend / fallback 标记）。 -->
+      <div
+        v-if="section.fullTextStatus !== 'DATA_GAP' && fullTextOf(section.id)"
+        class="yan-fulltext"
+        data-source="static"
+      >
+        <div
+          class="yan-fulltext__body hfm-reading"
+          :class="`yan-fulltext__body--${direction}`"
+        >
+          <p v-for="(para, i) in runsFor(section.id)" :key="i">
+            <template v-for="(run, j) in para" :key="j">
+              <ruby v-if="run.gloss" :title="run.gloss.gloss">
+                {{ run.text }}<rt>{{ run.gloss.pinyin }}</rt>
+              </ruby>
+              <template v-else>{{ run.text }}</template>
+            </template>
           </p>
         </div>
 
@@ -90,6 +150,10 @@ const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
           {{ fullTextOf(section.id).caveat }}
         </p>
       </div>
+
+      <p v-else class="yan-fulltext-status" data-empty-state>
+        本篇全文未录入 · 以下为题录与整理说明
+      </p>
 
       <article v-for="record in section.records" :key="record.id" class="quotation">
         <p class="quotation__text hfm-reading">{{ record.text }}</p>
@@ -217,6 +281,87 @@ const fullTextOf = (id: string) => YAN_FULL_TEXTS[id]
 .yan-fulltext__body p {
   margin: 0 0 var(--hfm-space-5);
   text-indent: 2em;
+}
+
+/* 竖排：古籍本来的形态。容器给固定高度并横向滚动，避免撑破页面。 */
+.yan-fulltext__body--vertical {
+  writing-mode: vertical-rl;
+  max-height: min(70vh, 42rem);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-left: var(--hfm-space-3);
+}
+.yan-fulltext__body--vertical p {
+  margin: 0 0 0 var(--hfm-space-5);
+  text-indent: 2em;
+}
+
+/* 注音：只对生僻字出现，字号缩小、颜色减淡，不打断正文。 */
+.yan-fulltext__body ruby {
+  ruby-align: center;
+}
+.yan-fulltext__body rt {
+  font-family: var(--hfm-font-sans);
+  font-size: 0.5em;
+  letter-spacing: 0;
+  color: var(--hfm-color-text-muted);
+}
+
+/* 阅读工具条 */
+.yan-fulltext__bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--hfm-space-3);
+}
+.yan-direction {
+  padding: var(--hfm-space-1) var(--hfm-space-3);
+  font-family: var(--hfm-font-sans);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text-secondary);
+  background: none;
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
+  cursor: pointer;
+}
+.yan-direction:hover {
+  color: var(--hfm-color-text);
+  border-color: var(--hfm-color-border-strong);
+}
+.yan-direction:focus-visible {
+  outline: 2px solid var(--hfm-color-interactive);
+  outline-offset: 2px;
+}
+
+/* 篇目导航 */
+.yan-nav {
+  margin: 0 0 var(--hfm-space-8);
+}
+.yan-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--hfm-space-3);
+}
+.yan-nav__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.yan-nav__link {
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-sm);
+  color: var(--hfm-color-text-secondary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+.yan-nav__link:hover {
+  color: var(--hfm-color-text);
+  border-bottom-color: var(--hfm-color-text);
 }
 .yan-fulltext__provenance,
 .yan-fulltext__caveat {

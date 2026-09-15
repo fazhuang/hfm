@@ -116,7 +116,7 @@ describe('homepage contract — T0/T1 source discipline (§2 R3, §3)', () => {
     expect(notes.length).toBeGreaterThanOrEqual(3)
     expect(wrapper.find('#home-person').text()).toContain('离线兜底')
     expect(wrapper.find('#home-heritage').text()).toContain('离线兜底')
-    expect(wrapper.find('#home-yan').text()).toContain('尚未内容准入')
+    expect(wrapper.find('#home-yan').text()).toContain('已依公版文献录入')
   })
 
   it('renders T0 person assertions when the published projection arrives', async () => {

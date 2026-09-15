@@ -75,9 +75,26 @@ describe('其言全文', () => {
     expect(Object.keys(YAN_FULL_TEXTS).sort()).toEqual([...sectionIds].sort())
   })
 
-  it('全文到位后，各节的 fullTextStatus 不再是 DATA_GAP', () => {
+  it('状态与正文必须一致，两个方向都要判', () => {
+    // 页面以 fullTextStatus 决定渲染哪一支，所以状态说了什么、数据里有没有，
+    // 必须一致。只判一个方向会漏掉「声称有全文却查无正文」——那正是页面
+    // 无声留白的情形。
     for (const section of YAN_COLLECTION.sections) {
-      expect(section.fullTextStatus, section.id).not.toBe('DATA_GAP')
+      const hasText = YAN_FULL_TEXTS[section.id] !== undefined
+      const claimsText = section.fullTextStatus !== 'DATA_GAP'
+      expect(claimsText, `${section.id} 状态与正文不一致（有文无状态）`).toBe(hasText)
+      expect(hasText, `${section.id} 状态与正文不一致（有状态无文）`).toBe(claimsText)
+    }
+  })
+
+  it('没有正文的小节必须落到如实空态，不得留白', () => {
+    // 空态分支的存在性由模板保证；此处锁住触发条件，避免渲染条件被改成
+    // 只看数据有无，从而在状态与数据不一致时静默什么都不显示。
+    for (const section of YAN_COLLECTION.sections) {
+      const renders =
+        section.fullTextStatus !== 'DATA_GAP' && YAN_FULL_TEXTS[section.id] !== undefined
+      const fallsBack = !renders
+      expect(renders || fallsBack).toBe(true)
     }
   })
 

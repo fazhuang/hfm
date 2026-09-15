@@ -2,9 +2,13 @@
 /**
  * HomeYanSection — contract §4 block 03 (其言).
  *
- * T0: NONE — the four texts are not content-admitted yet (§5 C4). The block
- * therefore renders an HONEST un-admitted state (contract §2 R3) over the
- * customer-material metadata projection; it never fabricates full text.
+ * T0: NONE — the four texts are not content-admitted. P-8a (2026-09-15)
+ * entered them from public-domain editions, so full text now exists on /yan
+ * as STATIC editorial content (data-source="static" there), which is a
+ * different thing from an admitted backend projection. This block keeps
+ * saying the honest thing (contract §2 R3): the texts are readable, and they
+ * are not admitted. It previously read「尚未内容准入」while no text existed
+ * anywhere, which made it true then and false after P-8a.
  */
 import { YAN_COLLECTION } from '../../data/yanCollection'
 
@@ -25,7 +29,7 @@ defineOptions({ name: 'HomeYanSection' })
         </div>
       </header>
 
-      <p class="yan__state" data-empty-state>四篇全文尚未内容准入 · 以下为题录信息</p>
+      <p class="yan__state" data-empty-state>四篇全文已依公版文献录入（见其言页）· 以下为题录信息</p>
 
       <ul class="yan__items xl-rows">
         <li v-for="(item, i) in YAN_COLLECTION.sections" :key="item.id" class="xl-row yan__item">

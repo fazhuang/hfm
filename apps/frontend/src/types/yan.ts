@@ -97,3 +97,11 @@ export interface YanFullText {
   /** 本篇录入的局限说明。 */
   caveat?: string
 }
+
+/** 一个生僻字的注音与释义（P-8，见 data/yanGlosses.ts）。 */
+export interface YanGloss {
+  /** 汉语拼音，取其在所属篇目语境中的读音。 */
+  pinyin: string
+  /** 一句话释义。 */
+  gloss: string
+}

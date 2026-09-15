@@ -21,10 +21,10 @@ import type { YanFullText } from '../types/yan'
  * 维基文库《晋书》卷五十一页**不载**三篇正文 —— 该页只到「作《玄守論》以答之，
  * 曰：」便接下一句，正文另立单篇。故三篇以单篇为底本，参校国学网《晋书》全文。
  */
-const WIKISOURCE_STANDALONE: string = '維基文庫單篇本（繁体）'
-const GUOXUE: string = '國學網《晉書》卷五十一（简体）'
-const SHIDIAN: string = '識典古籍《晉書》（简体）'
-const WENXUAN: string = '維基文庫《昭明文選》卷四十五（繁体）'
+const WIKISOURCE_STANDALONE: string = '維基文庫單篇本（繁體）'
+const GUOXUE: string = '國學網《晉書》卷五十一（簡體）'
+const SHIDIAN: string = '識典古籍《晉書》（簡體）'
+const WENXUAN: string = '維基文庫《昭明文選》卷四十五（繁體）'
 
 export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
   'sandu-fu': {
@@ -39,7 +39,7 @@ export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
     ],
     variants: [
     ],
-    caveat: '两处转录同源 ——《文選》卷四十五页与单篇页共用同一转录，逐字一致（776 字对 776 字，零差异），故本篇实为单源，尚待另本校勘。',
+    caveat: '兩處轉錄同源 ——《文選》卷四十五頁與單篇頁共用同一轉錄，逐字一致（776 字對 776 字，零差異），故本篇實為單源，尚待另本校勘。',
   },
   'xuanshou-lun': {
     paragraphs: [
@@ -52,7 +52,7 @@ export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
     ],
     variants: [
     ],
-    caveat: '两本长度完全一致（379 字对 379 字），逐位比对差异全部为繁简与引号形态，无实质异文。',
+    caveat: '兩本長度完全一致（379 字對 379 字），逐位比對差異全部為繁簡與引號形態，無實質異文。',
   },
   'shiquan-lun': {
     paragraphs: [
@@ -77,7 +77,7 @@ export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
           { text: '堅焉執高', source: GUOXUE },
           { text: '鏗焉執高', source: SHIDIAN },
         ],
-        note: '底本此处作空格，显系脱一字。两参校本各持一字，未详孰是 —— 不改底本，存疑待考。',
+        note: '底本此處作空格，顯系脫一字。兩參校本各持一字，未詳孰是 —— 不改底本，存疑待考。',
       },
       {
         base: '參德乎二皇，風乎虞夏',
@@ -85,7 +85,7 @@ export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
           { text: '參德乎三皇，齊風乎虞、夏', source: GUOXUE },
           { text: '參德乎二皇，齊風乎虞夏', source: SHIDIAN },
         ],
-        note: '「二皇」底本与识典合，国学作「三皇」；「齊風」两参校本一致作「齊風」，底本疑脱「齊」字。',
+        note: '「二皇」底本與識典合，國學作「三皇」；「齊風」兩參校本一致作「齊風」，底本疑脫「齊」字。',
       },
     ],
   },
@@ -107,28 +107,28 @@ export const YAN_FULL_TEXTS: Readonly<Record<string, YanFullText>> = {
         readings: [
           { text: '焚如之形，不痛于是？', source: GUOXUE },
         ],
-        note: '底本无「不」字，句意反窒；国学到作「不痛于是」，于文义为长。存疑待考。',
+        note: '底本無「不」字，句意反窒；國學到作「不痛于是」，於文義為長。存疑待考。',
       },
       {
         base: '以籧篨裹尸',
         readings: [
           { text: '以遽除裹尸', source: GUOXUE },
         ],
-        note: '「籧篨」为竹席，於裹尸之义为合；「遽除」疑形近之讹，不改底本。',
+        note: '「籧篨」為竹席，於裹尸之義為合；「遽除」疑形近之訛，不改底本。',
       },
       {
         base: '穿阬深十尺……阬訖',
         readings: [
           { text: '穿坑深十尺……坑讫', source: GUOXUE },
         ],
-        note: '「阬」「坑」为异体字，非异文。',
+        note: '「阬」「坑」為異體字，非異文。',
       },
       {
         base: '殯唅之物',
         readings: [
           { text: '殡含之物', source: GUOXUE },
         ],
-        note: '「唅」为含玉於死者口中之专字，「含」为通假，非异文。',
+        note: '「唅」為含玉於死者口中之專字，「含」為通假，非異文。',
       },
     ],
   },
