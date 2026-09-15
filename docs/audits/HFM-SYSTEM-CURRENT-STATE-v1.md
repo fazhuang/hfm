@@ -15,7 +15,7 @@ AUDIT_DATE    : 2026-09-14
 BRANCH        : hfm-canonical  (审计时所在分支;2026-09-15 收口后已不存在)
 HEAD          : df6ed1b        (审计时 HEAD)
 WORKTREE      : CLEAN (0 改动)
-PRODUCTION_DB : hfm_prod @ alembic 0017
+PRODUCTION_DB : hfm_prod @ alembic 0018（2026-09-15 由 0017 推进）
 
 TRUNK_NOW     : main           (2026-09-15 起仓库单一主干;hfm-canonical 已并入并删除)
 ```
@@ -52,7 +52,7 @@ TRUNK_NOW     : main           (2026-09-15 起仓库单一主干;hfm-canonical �
 ```text
 :8000  uvicorn hfm.main:app   启动于 2026-09-14 02:36 —— 早于本轮全部改动
 :5173  vite dev server
-hfm_prod  PostgreSQL @ alembic 0017
+hfm_prod  PostgreSQL @ alembic 0018
 ```
 
 **公开接口实测**(经 `:5173` 代理与直连 `:8000` 双向确认):
@@ -76,7 +76,7 @@ hfm_prod  PostgreSQL @ alembic 0017
 | 后端 | 101 个 `.py`,12,535 行 |
 | 前端 | 52 个 `.vue`,87 个 `.ts` |
 | 运维脚本 | `scripts/` 30+ 个 operator 脚本 |
-| 迁移 | 17 个 revision,`0001`–`0017`,**严格线性单头,每个 `downgrade()` 均有实体** `[复核]` |
+| 迁移 | 18 个 revision,`0001`–`0018`,**严格线性单头,每个 `downgrade()` 均有实体** `[实测 2026-09-15：deploy-gate prod MIGRATION_VERIFY=PASS]` |
 
 **工具链实为绿色**(非抑制): `ruff check` / `ruff format --check` / `mypy` 全部通过。`[实测]`
 前端 `lint` / `typecheck` / `build` 全部通过;`lint` 有 **1073 条 warning、0 error**。 `[实测]`
@@ -210,7 +210,7 @@ frontend: lint · typecheck · build
 | **R-11** | MEDIUM | **公开 API 零 HTTP 级测试。** 32 条端点路径中 28 条无端到端测试,**包括全部 `/api/v1/public/*`**。公开 API 就是交付物本身,却无任何东西能抓住「新处理器漏了发布状态过滤」。 | `apps/backend/tests/` | OPEN |
 | **R-12** | MEDIUM | **密钥扫描器失效。** `scripts/check-secrets.py` 实测 `SECRET_BOUNDARY=FAIL (27 findings)`,且**不在任何 CI 中**。(经逐条核实**无真实凭据入库**,22+ 为测试夹具,其余为本地一次性 Postgres 口令与占位 DSN。)控制项失效,非凭据泄漏。 | `scripts/check-secrets.py` | OPEN |
 | **R-13** | MEDIUM | **导数 object_key 保留原文件名。** `DERIVATIVE_PREFIX + 原名`;`/public/media` 返回 `object_key` 与 basename。文档图像脱敏了,**文件名没脱敏**。 | `redact-media-derivative.py:685`;`api/v1/phase1.py:357-369` | OPEN |
-| **R-14** | LOW | **生产库领先 main 两个迁移。** `hfm_prod` @0017,`main` 声明 head=0015。从 main 拉分支的人跑 operator 脚本会对生产库报 `database must be migrated at 0015` 而失败。 | `git ls-tree origin/main …versions/` | OPEN |
+| **R-14** | LOW | ~~生产库领先 main 两个迁移。~~ | **CLOSED (8750d48 起闸门脚本改为从仓库推导 head；2026-09-15 `hfm_prod` 与 `main` 同步推进至 0018，`deploy-gate prod` 实测 PASS)。** 原记载称 `main` 声明 head=0015，与当时的实际 head 0017 亦不符。 | **CLOSED** |
 | **R-15** | LOW | **本机环境混乱。** 11 个 `hfm` 库,其中 10 个停在 alembic **0014**(缺 `documents` 等表);1 个 git worktree 已 prunable;`:8000` 跑着早于本轮全部改动的旧后端。 | `psql -lqt`;`git worktree list` | OPEN |
 
 ---
@@ -287,3 +287,28 @@ frontend: lint · typecheck · build
 ---
 
 *本文件是描述,不是裁决。风险与缺口的处置需要授权方决定。*
+
+---
+
+## 13. 2026-09-15 状态变更：公开 / 研究分界写入数据库
+
+本节依维护规则 1 记入。改动由 P-1 授权执行，**未发布任何内容**。
+
+```text
+hfm_prod @ alembic 0017 → 0018
+```
+
+| 变更 | 内容 |
+| :--- | :--- |
+| `media_assets.access_scope` | 新增，`public` / `research`，默认 `research`（失败即关闭） |
+| 回填结果 | `public` **96** · `research` **585**（合计 681） |
+| `media_assets.ledger_id` | 新增，客户台账编号；由 `scripts/backfill-ledger-ids.py` 从台账回填 |
+| 回填结果 | 681 条全部有值、互异；与台账逐条交叉核对 **0 处不一致** |
+
+`access_scope` 与 `publication_state` 正交：分界说的是受众是谁，状态说的是对该受众准备好了没。**因此 96 件并未因此变成已发布**——其中 67 件非遗佐证仍是 `draft`。
+
+**未发生的事**：没有任何资产被发布或下架；公开 API 的可见集合一字未动（P-4 才做收口）。运行中的后端进程早于本次改动启动，其模型不含新列；新列不参与任何现有查询，故无需重启即可正确运行。
+
+**证据**：`scripts/deploy-gate.sh prod` 迁移后 `MIGRATION_VERIFY=PASS (single head == current == 0018)`；`/api/v1/public/{works,persons,media,heritage,c-terms}` 全部 200。
+
+**留给授权方**：本节只更动作废的事实与一处已核实关闭的风险。登记册其余条目（A-1 / A-2 / A-5 等）的状态推进需起草方或授权方确认，本人未改。
