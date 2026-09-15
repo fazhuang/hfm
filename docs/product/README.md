@@ -11,7 +11,8 @@
 
 | 文件 | 范围 | 状态 | 下一步 |
 | :--- | :--- | :--- | :--- |
-| [`HFM-PUBLIC-PORTAL-CHARTER-v1.md`](HFM-PUBLIC-PORTAL-CHARTER-v1.md) | 公众门户 | **ACCEPTED** — 已认可 | 可进入执行规划 |
+| [`HFM-PUBLIC-PORTAL-CHARTER-v1.md`](HFM-PUBLIC-PORTAL-CHARTER-v1.md) | 公众门户 | **ACCEPTED** — 已认可 | — |
+| [`HFM-PUBLIC-PORTAL-EXECUTION-PLAN-v1.md`](HFM-PUBLIC-PORTAL-EXECUTION-PLAN-v1.md) | 公众门户 | 执行规划 | 待授权开工 |
 | [`HFM-RESEARCH-PLATFORM-CHARTER-v0.2.md`](HFM-RESEARCH-PLATFORM-CHARTER-v0.2.md) | 研究平台 | **OPTIMIZED** — 待第三方审计 | 审计 → 定稿 v1 |
 | [`HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md`](HFM-RESEARCH-PLATFORM-CHARTER-v0.1-DRAFT.md) | 研究平台 | **SUPERSEDED BY v0.2** | 留档，不再更新 |
 
