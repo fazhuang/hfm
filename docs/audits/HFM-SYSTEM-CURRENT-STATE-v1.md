@@ -12,10 +12,12 @@
 
 ```text
 AUDIT_DATE    : 2026-09-14
-BRANCH        : hfm-canonical
-HEAD          : df6ed1b
+BRANCH        : hfm-canonical  (审计时所在分支;2026-09-15 收口后已不存在)
+HEAD          : df6ed1b        (审计时 HEAD)
 WORKTREE      : CLEAN (0 改动)
 PRODUCTION_DB : hfm_prod @ alembic 0017
+
+TRUNK_NOW     : main           (2026-09-15 起仓库单一主干;hfm-canonical 已并入并删除)
 ```
 
 **方法**:以**实际运行的系统、生产数据库、git 历史**为准。不采信文档自述。
@@ -250,7 +252,7 @@ frontend: lint · typecheck · build
 | **C-07** | `GAP-MAP.md` / `IMPLEMENTATION-TRUTH-GAPS.csv` | `GAP-01` 研究工作台无写表单 | **已交付**(交付清单 B3–B6) | **已失效但仍在册** |
 | **C-08** | 同上 | `GAP-02` 首页未接后端 | **已接**(`useHomeContractData`);但 G-10 的 4 个视图确有同类问题 | **部分失效** |
 | **C-09** | `HFM-TEST-COVERAGE-REALITY.md` | 682 pytest + 235 vitest + 51 ops = 968 全绿 | 实测 578 / 248 / 103;**且 457 项从不执行**。该表把「本地跑过」表述为「已通过」而不区分 CI | OPEN |
-| **C-10** | `REALITY-DASHBOARD.md` | `HEAD 1e9336e`、`BRANCH recovery/hfm-foundation`、`P0_GAPS = 0` | 非交付分支;本轮审计发现 2 项 CRITICAL | OPEN |
+| **C-10** | `REALITY-DASHBOARD.md` | `HEAD 1e9336e`、`BRANCH recovery/hfm-foundation`、`P0_GAPS = 0` | 非交付分支;本轮审计发现 2 项 CRITICAL。该**分支名**自 2026-09-15 起已不存在(远端仓库 `fazhuang/hfm-foundation` 已删除),`1e9336e` 本身仍可经 `main` 到达 | OPEN |
 | **C-11** | `HFM-SYSTEM-REALITY.md:51,53` | `/library` 与 `/admin/audit` 均「**完全正常**」 | `/library` 无入口(G-01);`/admin/audit` 因前端 GET 撞后端 POST-only 而**无条件显示错误态** | OPEN |
 | **C-12** | `media/__init__.py:10`(本轮引入) | 「P2 material reaches the public projection only as a redacted derivative」归为**数据库**保证 | 数据库只强制「已发布的 P2 行必须是导数」,**不强制授权位** | OPEN |
 
@@ -267,7 +269,7 @@ frontend: lint · typecheck · build
 | A-3 | roadmap 「金丝雀已验证」不可复现(= C-01) | 本轮写入,待改为可复现措辞或补证据 |
 | A-4 | `publish-media-derivatives.py` docstring 指向不存在的清单(= G-05) | 本轮引入,待显式标为阻塞项 |
 | A-5 | 迁移头推进触及约 60 文件,我把版本号硬编码从 5 处扩到 6 处 | 本轮加深了一个既有设计缺陷 |
-| A-6 | PR #7(`hfm-canonical` → `main`)处于 **OPEN / CLEAN / CI 绿**,**未合并** | 待决 |
+| A-6 | PR #7(`hfm-canonical` → `main`)曾处于 OPEN / CLEAN / CI 绿、未合并 | **CLOSED (f61aacd, 2026-09-15)** —— 已合并入 `main`;`hfm-canonical` 随后删除,仓库收口为单一主干 `main` |
 | A-7 | 本说明书未裁决 §6.3 的治理冲突 | **超出我的职权** |
 
 ---
