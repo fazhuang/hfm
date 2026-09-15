@@ -8,8 +8,14 @@
  * → JSON → visible 皇甫谧 content) is proven by the CF-01 golden spec that
  * runs inside FAST_RUNTIME_GATE.
  *
+ * P-7 note: the CORE person (ENT-PERSON-HFM-HUANGFUMI) now renders the
+ * portal's narrative page instead of the archive layout, so these archive
+ * tests drive a NON-core id. The narrative path has its own spec
+ * (p7_person_narrative.spec.ts). Nothing was dropped: the archive layout is
+ * still what every one of the other 16 admitted persons renders.
+ *
  * Coverage (CF-03 §12):
- *   - successful API load / ENT-PERSON-HFM-HUANGFUMI render;
+ *   - successful API load / non-core person render;
  *   - partial & missing optional fields are never a page failure;
  *   - 404 is discriminated from a generic server/network error;
  *   - loading state is programmatically exposed;
@@ -59,9 +65,12 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+/** 非核心人物：走通用档案版式。 */
+const ARCHIVE_PERSON_ID = 'ENT-PERSON-WU-MIANXUE'
+
 async function mountPerson(
   handler: FetchHandler,
-  routeId = 'ENT-PERSON-HFM-HUANGFUMI',
+  routeId = ARCHIVE_PERSON_ID,
 ): Promise<ReturnType<typeof mount>> {
   stubFetch(handler)
   const router = createRouter({
@@ -96,7 +105,7 @@ function findAll(page: ReturnType<typeof mount>, selector: string): string[] {
 }
 
 describe('CF-03 person archive — real-API identity & metadata', () => {
-  it('renders identity + metadata from the person API for ENT-PERSON-HFM-HUANGFUMI', async () => {
+  it('renders identity + metadata from the person API', async () => {
     const wrapper = await mountPersonOk()
     expect(wrapper.find('h1.dh-object__title').text()).toBe('皇甫谧')
     const meta = findAll(wrapper, '.dh-object__meta')
@@ -236,14 +245,14 @@ describe('CF-03 person archive — CF-02 primitive integration & accessibility',
     const handler: FetchHandler = (url) => {
       ids.push(url)
       const id = url.split('/').pop()
-      return envelope(id === 'ENT-PERSON-HFM-HUANGFUMI' ? PERSON : { ...PERSON, name_zh: '某人物' })
+      return envelope(id === ARCHIVE_PERSON_ID ? PERSON : { ...PERSON, name_zh: '某人物' })
     }
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/persons/:id', component: PersonDetailView }],
     })
     stubFetch(handler)
-    router.push('/persons/ENT-PERSON-HFM-HUANGFUMI')
+    router.push(`/persons/${ARCHIVE_PERSON_ID}`)
     await router.isReady()
     const wrapper = mount(PersonDetailView, {
       attachTo: document.body,

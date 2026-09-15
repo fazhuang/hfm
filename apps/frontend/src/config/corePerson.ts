@@ -40,3 +40,11 @@ export const CORE_PERSON_WORKS: ReadonlyArray<{ title: string; href: string; not
   { title: '笃终论', href: '/yan', note: '论' },
   { title: '《针灸甲乙经》', href: '/jiayi', note: '针灸学专著' },
 ]
+
+/**
+ * 画像媒体资产 id（hfm_prod `media_assets`，已发布，P1）。
+ *
+ * 仅存 id，不存 URL —— 地址由 `services/media.ts` 的 `mediaBytesUrl()` 构造，
+ * 免得把公开端点路径写死在内容常量里。
+ */
+export const CORE_PERSON_PORTRAIT_MEDIA_ID = '01a099de-1306-7309-8e7d-3bf0edd5cf4a'

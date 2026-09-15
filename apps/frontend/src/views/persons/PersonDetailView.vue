@@ -36,6 +36,20 @@ import type { PersonAssertion, PersonEvent, PublicPerson } from '../../types/pub
 import DHObjectLayout from '../../components/primitives/DHObjectLayout.vue'
 import ErrorState from '../../components/states/ErrorState.vue'
 import LoadingState from '../../components/states/LoadingState.vue'
+import Timeline from '../../components/Timeline.vue'
+import { mediaBytesUrl } from '../../services/media'
+import type { TimelineEvent } from '../../types/timeline'
+import {
+  CORE_PERSON_DATES,
+  CORE_PERSON_DEFINITION,
+  CORE_PERSON_ENTITY_ID,
+  CORE_PERSON_IDENTITIES,
+  CORE_PERSON_LIFE_PHASES,
+  CORE_PERSON_NAME,
+  CORE_PERSON_PORTRAIT_MEDIA_ID,
+  CORE_PERSON_WORKS,
+} from '../../config/corePerson'
+import { HOURAN_TABLES } from '../../data/houranTables'
 
 defineOptions({ name: 'PersonDetailView' })
 
@@ -57,6 +71,27 @@ interface MetaItem {
 
 const route = useRoute()
 const status = ref<PageStatus>('loading')
+
+/**
+ * 核心人物（皇甫谧）走叙事长页；其余人物沿用通用档案版式。
+ *
+ * 门户的定位是信息展示，其人模块的判据是「外行看得懂」。因此核心人物页由
+ * 定位 / 画像 / 年表 / 传略 / 延伸 五段构成，按宪章 §3.1。通用版式保留给
+ * 其余 16 位人物——他们只有档案数据，没有叙事可讲。
+ */
+const isCorePerson = computed<boolean>(() => route.params.id === CORE_PERSON_ENTITY_ID)
+
+/** 画像：只存资产 id，地址由 services/media.ts 构造。 */
+const portraitUrl = mediaBytesUrl(CORE_PERSON_PORTRAIT_MEDIA_ID)
+
+/** 人生四阶段 → 年表节点。阶段说明放进 description。 */
+const lifePhases = computed<TimelineEvent[]>(() =>
+  CORE_PERSON_LIFE_PHASES.map((phase, index) => ({
+    id: `phase-${index + 1}`,
+    title: phase.title,
+    description: phase.note,
+  })),
+)
 const person = ref<PublicPerson | null>(null)
 const errorMessage = ref<string | null>(null)
 
@@ -191,7 +226,80 @@ watch(
     </div>
 
     <template v-else>
+      <!-- 核心人物：叙事长页（宪章 §3.1 五段） -->
+      <template v-if="isCorePerson">
+        <header class="core-hero">
+          <div class="core-hero__text">
+            <p class="hfm-eyebrow">西晋 · 数字人文</p>
+            <h1 class="core-hero__name">{{ CORE_PERSON_NAME }}</h1>
+            <p class="core-hero__dates">{{ CORE_PERSON_DATES }}</p>
+            <p class="core-hero__definition">{{ CORE_PERSON_DEFINITION }}</p>
+            <ul class="core-hero__identities" aria-label="身份">
+              <li v-for="identity in CORE_PERSON_IDENTITIES" :key="identity">
+                {{ identity }}
+              </li>
+            </ul>
+          </div>
+          <figure class="core-hero__portrait">
+            <img :src="portraitUrl" :alt="`${CORE_PERSON_NAME}画像`" />
+            <figcaption>{{ CORE_PERSON_NAME }}画像 · 客户提供资料</figcaption>
+          </figure>
+        </header>
+
+        <section class="core-section" aria-labelledby="core-life-heading">
+          <h2 id="core-life-heading" class="core-section__title">生平</h2>
+          <Timeline :events="lifePhases" label="人生阶段" />
+        </section>
+
+        <section class="core-section" aria-labelledby="core-reception-heading">
+          <h2 id="core-reception-heading" class="core-section__title">历代与当代</h2>
+          <p class="core-section__lede">
+            后世对皇甫谧的评价，以及今日以他命名的影视、著述与机构（据客户资料整理）。
+          </p>
+          <div
+            v-for="table in HOURAN_TABLES"
+            :key="table.id"
+            class="core-table-block"
+          >
+            <h3 class="core-table-block__title">{{ table.label }}</h3>
+            <!-- 窄屏下表格横向滚动；滚动区必须可聚焦，否则键盘用户够不到
+                 （axe: scrollable-region-focusable）。 -->
+            <div
+              class="core-table-wrap"
+              tabindex="0"
+              role="region"
+              :aria-label="`${table.label}表格，可横向滚动`"
+            >
+              <table class="core-table">
+                <thead>
+                  <tr>
+                    <th v-for="col in table.columns" :key="col" scope="col">{{ col }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(row, i) in table.rows" :key="i">
+                    <td v-for="(cell, j) in row" :key="j">{{ cell }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="core-section" aria-labelledby="core-more-heading">
+          <h2 id="core-more-heading" class="core-section__title">延伸阅读</h2>
+          <ul class="core-more">
+            <li v-for="work in CORE_PERSON_WORKS" :key="work.title">
+              <a class="core-more__link" :href="work.href">{{ work.title }}</a>
+              <span class="core-more__note">{{ work.note }}</span>
+            </li>
+          </ul>
+        </section>
+      </template>
+
+      <!-- 其余人物：通用档案版式 -->
       <DHObjectLayout
+        v-else
         class="person-archive"
         :title="identityName !== '' ? identityName : '未命名人物'"
         :title-tag="1"
@@ -349,5 +457,171 @@ watch(
 .person-assertions__evidence {
   font-weight: 600;
   color: var(--hfm-color-text-secondary);
+}
+
+/* ---------- 核心人物叙事长页（P-7） ----------
+   判据是「外行看得懂」：字号、行距、留白优先于信息密度。
+   画像与定位文并排，窄屏堆叠。 */
+
+.core-hero {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--hfm-space-6);
+  margin-bottom: var(--hfm-space-12);
+}
+@media (min-width: 768px) {
+  .core-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 20rem);
+    align-items: start;
+    gap: var(--hfm-space-8);
+  }
+}
+.core-hero__name {
+  margin: var(--hfm-space-2) 0 0;
+  font-family: var(--hfm-font-display);
+  font-size: var(--hfm-text-4xl);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text);
+}
+.core-hero__dates {
+  margin: var(--hfm-space-2) 0 0;
+  font-family: var(--hfm-font-numeric);
+  font-size: var(--hfm-text-lg);
+  color: var(--hfm-color-text-muted);
+  letter-spacing: 0.08em;
+}
+.core-hero__definition {
+  margin: var(--hfm-space-5) 0 0;
+  max-width: var(--hfm-reader-max);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  line-height: var(--hfm-leading-reading);
+  color: var(--hfm-color-text-secondary);
+}
+.core-hero__identities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--hfm-space-2) var(--hfm-space-3);
+  margin: var(--hfm-space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+.core-hero__identities li {
+  padding: var(--hfm-space-1) var(--hfm-space-3);
+  font-size: var(--hfm-text-xs);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text-secondary);
+  border: 1px solid var(--hfm-color-border);
+  border-radius: var(--hfm-radius-sm);
+}
+.core-hero__portrait {
+  margin: 0;
+}
+.core-hero__portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--hfm-color-border);
+}
+.core-hero__portrait figcaption {
+  margin-top: var(--hfm-space-2);
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
+}
+
+.core-section {
+  margin-bottom: var(--hfm-space-16);
+}
+.core-section__title {
+  margin: 0 0 var(--hfm-space-5);
+  padding-bottom: var(--hfm-space-3);
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-2xl);
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text);
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+.core-section__lede {
+  margin: 0 0 var(--hfm-space-6);
+  max-width: var(--hfm-reader-max);
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
+  color: var(--hfm-color-text-muted);
+}
+
+.core-table-block {
+  margin-bottom: var(--hfm-space-8);
+}
+.core-table-block__title {
+  margin: 0 0 var(--hfm-space-3);
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-lg);
+  letter-spacing: 0.06em;
+  color: var(--hfm-color-text);
+}
+/* 表格允许横滚，页面本身不横滚。 */
+.core-table-wrap {
+  overflow-x: auto;
+}
+.core-table-wrap:focus-visible {
+  outline: 2px solid var(--hfm-color-interactive);
+  outline-offset: 2px;
+}
+.core-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--hfm-text-sm);
+  line-height: var(--hfm-leading-normal);
+}
+.core-table th,
+.core-table td {
+  padding: var(--hfm-space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+.core-table th {
+  font-family: var(--hfm-font-heading);
+  font-size: var(--hfm-text-xs);
+  font-weight: normal;
+  letter-spacing: var(--hfm-tracking-display);
+  color: var(--hfm-color-text-muted);
+  white-space: nowrap;
+}
+.core-table td {
+  color: var(--hfm-color-text-secondary);
+}
+/* 首列序号与次列主体不换行挤压，末列说明给足宽度。 */
+.core-table td:first-child {
+  color: var(--hfm-color-text-muted);
+  white-space: nowrap;
+}
+
+.core-more {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.core-more li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--hfm-space-3);
+  padding: var(--hfm-space-3) 0;
+  border-bottom: 1px solid var(--hfm-color-border);
+}
+.core-more__link {
+  font-family: var(--hfm-font-serif);
+  font-size: var(--hfm-text-base);
+  color: var(--hfm-color-text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hfm-color-border-strong);
+}
+.core-more__link:hover {
+  color: var(--hfm-color-interactive);
+}
+.core-more__note {
+  font-size: var(--hfm-text-xs);
+  color: var(--hfm-color-text-muted);
 }
 </style>
