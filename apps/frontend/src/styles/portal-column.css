@@ -218,3 +218,13 @@
   width: 100%;
   height: auto;
 }
+
+/* ---- 窄屏：成果陈列改两列 ----
+   卡片最小宽 10rem 时，390px 上只排得下一列，28 件铺成 28 行 —— 单这一节
+   12890px，占整页 58%。窄屏降到 7.5rem 即可两列，画框比例不变。 */
+@media (max-width: 767px) {
+  .public-shell[data-surface='exhibition'] .collection-grid {
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: var(--hfm-space-3);
+  }
+}
