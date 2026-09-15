@@ -40,7 +40,7 @@ function evidenceFrom(
 
 export function researchEntity(type: string, id: string): ResearchEntityViewModel | undefined {
   if (type === 'person') {
-    if (id === 'person-huangfu-mi') {
+    if (id === 'ENT-PERSON-HFM-HUANGFUMI') {
       return {
         type: 'person',
         id,
@@ -59,7 +59,7 @@ export function researchEntity(type: string, id: string): ResearchEntityViewMode
           { label: '后论·历史评价', href: '/research/entity/reader/houlun' },
           { label: '非遗传承（刘君奇）', href: '/research/entity/heritage/liujunqi' },
         ],
-        publicLink: { label: '查看公众人物页', href: '/persons/person-huangfu-mi' },
+        publicLink: { label: '查看公众人物页', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
       }
     }
     if (id === 'person-liujunqi') {
@@ -77,7 +77,7 @@ export function researchEntity(type: string, id: string): ResearchEntityViewMode
         evidence: [evidenceFrom('AVAILABLE', '客户提供：非遗传承申报资料')],
         related: [
           { label: '非遗研究视图', href: '/research/entity/heritage/liujunqi' },
-          { label: '皇甫谧', href: '/research/entity/person/person-huangfu-mi' },
+          { label: '皇甫谧', href: '/research/entity/person/ENT-PERSON-HFM-HUANGFUMI' },
         ],
         publicLink: { label: '查看公众非遗页', href: '/heritage' },
       }
@@ -254,7 +254,7 @@ export function researchScopeSummary(): Array<{ label: string; value: string; hr
     {
       label: '人物档案',
       value: '2（皇甫谧 · 刘君奇）',
-      href: '/research/entity/person/person-huangfu-mi',
+      href: '/research/entity/person/ENT-PERSON-HFM-HUANGFUMI',
     },
     { label: '作品', value: `${WORK_COLLECTION.length}`, href: '/research/entity/work/w-jiayi' },
     {

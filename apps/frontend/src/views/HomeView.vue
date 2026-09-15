@@ -1,44 +1,39 @@
 <script setup lang="ts">
 /**
- * HomeView — homepage 8-section orchestrator (CF-07).
+ * HomeView — homepage orchestrator under HFM-FRONTEND-CONTENT-CONTRACT v1 §4.
  *
- * Thin orchestration layer ONLY. The accepted homepage macro sequence is
- * composed from eight presentation sections, each of which owns exactly one
- * stable section identity:
- *
- *   01 Hero → 02 一生 → 03 一部书 → 04 知识对象 → 05 史料证据
- *   → 06 活态传承 → 07 研究导航 → 08 Institutional Close
+ * The homepage is the customer 5-link navigation's entry surface: five content
+ * blocks (人物 / 其言 / 《针灸甲乙经》 / 非遗传承) plus a hero and an
+ * institutional close. Every block binds to a T0 published projection and
+ * degrades to a labelled T1 customer-material fallback when T0 is unavailable
+ * (contract §2 R1–R3, §3).
  *
  * SEARCH OWNERSHIP: HomeView owns the page-level search state + submit
- * (pushing to the real /search route). HomeHeroSection receives the state
- * and the handler as props (presentation component). No duplicate search
- * state and no second search implementation.
- *
- * FOOTER: the global semantic <footer> (AppFooter) belongs to PublicLayout.
- * HomeClosingSection is the homepage narrative close — it is not a second
- * footer and duplicates no footer responsibilities.
- *
- * DATA: every section reads the existing verified projection/data path
- * (homeProjection + config + inventory/search/heritage modules); CF-07 adds
- * only deterministic presentation projections. No new domain facts.
+ * (→ the real /search route). The hero receives state + handler as props; the
+ * single #home-search-input contract is preserved.
  */
-import { ref } from 'vue'
-import { useHomePublicData } from '../composables/useHomePublicData'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useHomeContractData } from '../composables/useHomeContractData'
 import HomeHeroSection from '../components/home/HomeHeroSection.vue'
-import HomeLifeSection from '../components/home/HomeLifeSection.vue'
+import HomePersonSection from '../components/home/HomePersonSection.vue'
+import HomeYanSection from '../components/home/HomeYanSection.vue'
 import HomeBookSection from '../components/home/HomeBookSection.vue'
-import HomeKnowledgeSection from '../components/home/HomeKnowledgeSection.vue'
-import HomeEvidenceSection from '../components/home/HomeEvidenceSection.vue'
 import HomeHeritageSection from '../components/home/HomeHeritageSection.vue'
-import HomeDomainsSection from '../components/home/HomeDomainsSection.vue'
 import HomeClosingSection from '../components/home/HomeClosingSection.vue'
 
 defineOptions({ name: 'HomeView' })
 
 const router = useRouter()
 const searchInput = ref('')
-const { source: homeSource, enrichment: homeEnrichment } = useHomePublicData()
+const { home, person, work, editions, heritage } = useHomeContractData()
+
+/** Page-level source marker: 'backend' iff the hero renders real T0 counts. */
+const homeSource = computed(() => {
+  const c = home.value.data?.counts
+  const hasData = !!c && c.works + c.persons + c.c_terms + c.heritage_projects > 0
+  return home.value.source === 'backend' && hasData ? 'backend' : 'fallback'
+})
 
 function onSearch(): void {
   const q = searchInput.value.trim()
@@ -52,23 +47,17 @@ function onSearch(): void {
       v-model:search-value="searchInput"
       :on-search="onSearch"
       search-label="平台内容检索"
+      :block="home"
     />
-    <HomeLifeSection />
-    <HomeBookSection />
-    <HomeKnowledgeSection />
-    <HomeEvidenceSection />
-    <HomeHeritageSection />
-    <HomeDomainsSection :published="homeEnrichment" />
+    <HomePersonSection :block="person" />
+    <HomeYanSection />
+    <HomeBookSection :work="work" :editions="editions" />
+    <HomeHeritageSection :block="heritage" />
     <HomeClosingSection />
   </div>
 </template>
 
 <style scoped>
-/* CF-08/09 geometry: the homepage is full-bleed (not clamped to
- * --hfm-content-max) so every section renders at the accepted 1272px artboard
- * geometry (inner column → 84px gutters; hero absolute coordinates land at the
- * frozen positions). Sections 01–04 (CF-08) and 05–08 (CF-09) each own their
- * content column; no global constraint is applied here. */
 .home {
   display: block;
 }

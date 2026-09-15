@@ -72,6 +72,8 @@ validator = _load_module(
 # checks stay clean.
 sys.path.insert(0, str(BACKEND_DIR / "src"))
 
+from hfm.models.c_domain import CDomainTerm
+from hfm.models.heritage import HeritageProject
 from hfm.models.content_artifact import (
     ContentAdmissionState,
     ProvenanceStatus,
@@ -362,6 +364,67 @@ async def _run(
                             )
                         )
 
+                if scope in ("c-terms", "all"):
+                    for term in (
+                        (await session.execute(select(CDomainTerm).order_by(CDomainTerm.term_name)))
+                        .scalars()
+                        .all()
+                    ):
+                        tasks.append(
+                            (
+                                "c_term",
+                                term.entity_id,
+                                None,
+                                term.term_name,
+                                canonical_content(
+                                    "c_term",
+                                    entity_id=term.entity_id,
+                                    term_name=term.term_name,
+                                    term_type=term.term_type,
+                                ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "c_term",
+                                    None,
+                                    rights_status,
+                                ),
+                            )
+                        )
+
+                if scope in ("heritage", "all"):
+                    for proj in (
+                        (
+                            await session.execute(
+                                select(HeritageProject).order_by(HeritageProject.project_name)
+                            )
+                        )
+                        .scalars()
+                        .all()
+                    ):
+                        if proj.entity_id is None:
+                            lines.append(f"SKIP heritage {proj.project_name}: no entity_id")
+                            continue
+                        tasks.append(
+                            (
+                                "heritage",
+                                proj.entity_id,
+                                None,
+                                proj.official_name or proj.project_name,
+                                canonical_content(
+                                    "heritage",
+                                    entity_id=proj.entity_id,
+                                    project_name=proj.project_name,
+                                    official_name=proj.official_name,
+                                ),
+                                _resolve_rights(
+                                    rights_manifest,
+                                    "heritage",
+                                    None,
+                                    rights_status,
+                                ),
+                            )
+                        )
+
                 for kind, entity_id, stable_id, title, content, rights in tasks:
                     state, detail = await _publish_one(
                         session,
@@ -412,7 +475,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--scope",
         default="works",
-        choices=("works", "persons", "all"),
+        choices=("works", "persons", "c-terms", "heritage", "all"),
         help="which canonical entities to publish (default: works)",
     )
     parser.add_argument("--rights-basis", default=None)
@@ -442,7 +505,12 @@ def main(argv: list[str] | None = None) -> int:
         if not args.env_file.is_file():
             print(f"ENV_FILE=FAIL (not found: {args.env_file.name})")
             return 1
-        env.update(validator.parse_env_file(args.env_file))
+        try:
+            env = validator.merge_env(env, args.env_file)
+        except validator.EnvConflictError as exc:
+            print(f"ENV_FILE=FAIL ({exc})")
+            return 1
+    print(f"DB_TARGET={validator.describe_db_target(env)}")
 
     environment = "prod" if not args.test_mode else env.get("HFM_ENV", "test")
     errors = validator.validate_env(
@@ -458,11 +526,11 @@ def main(argv: list[str] | None = None) -> int:
 
     db_url = env.get("HFM_DATABASE_URL", "")
     if not args.allow_sqlite:
-        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0015")
+        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
         if migration_errors:
             for reason in migration_errors:
                 print(f"MIGRATION_VERIFY=FAIL ({reason})")
-            print("PUBLISH_CONTENT=FAIL (database must be migrated at 0015)")
+            print("PUBLISH_CONTENT=FAIL (database must be migrated at 0017)")
             return 1
 
     rights_status = RightsStatus(args.rights_status)

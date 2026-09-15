@@ -120,10 +120,10 @@ watch(
 
 /** Static content entry points (non-result presentation data). */
 const SUGGESTIONS = [
-  { label: '皇甫谧', href: '/persons/person-huangfu-mi' },
+  { label: '皇甫谧', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
   { label: '《针灸甲乙经》', href: '/jiayi' },
   { label: '非遗传承', href: '/heritage' },
-  { label: '人物档案', href: '/persons/person-huangfu-mi' },
+  { label: '人物档案', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
 ] as const
 
 const SCOPE_KINDS = ['人物', '作品', '版本', '非遗档案', '术语', '文本片段'] as const

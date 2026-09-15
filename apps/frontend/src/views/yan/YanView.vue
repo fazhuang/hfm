@@ -98,7 +98,7 @@ defineOptions({ name: 'YanView' })
       <h2 id="related-heading" class="section-title">相关</h2>
       <ul class="related-list">
         <li class="related-item">
-          <a class="related-item__link" href="/persons/person-huangfu-mi">皇甫谧人物档案</a>
+          <a class="related-item__link" href="/persons/ENT-PERSON-HFM-HUANGFUMI">皇甫谧人物档案</a>
         </li>
         <li class="related-item">
           <a class="related-item__link" href="/works">论著与研究</a>

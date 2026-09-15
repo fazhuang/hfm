@@ -5,15 +5,25 @@
  * 语义分层：WORK（作品）≠ EDITION（版本，见 UI-08）≠ ARCHIVE RECORD（档案）。
  * 作品信息来自客户材料审计（论著目录 + 其言 docx）；字段缺失不显示，不以
  * "未知/N/A"堆积公共页面。
+ *
+ * GAP-02：发布后「作品目录」接入真实 /api/v1/public/works 分页流。页面始终
+ * 先渲染静态 WORK_COLLECTION 作为兜底；后端返回非空已发布作品时切换为真实
+ * 生产数据（worksSource === 'backend'），失败/超时/空则回退静态列表。
  */
+import { computed } from 'vue'
 import { WORK_COLLECTION } from '../../data/workCollection'
 import { INVENTORY_LUNWEN_FILES, INVENTORY_LUNZHU_FILES } from '../../data/contentInventory'
+import { usePublicWorks } from '../../composables/usePublicWorks'
+import { toPublicWorkRows } from '../../presentation/publicWorks'
 
 defineOptions({ name: 'WorksView' })
+
+const { source: worksSource, works: publishedWorks, total: publishedTotal } = usePublicWorks()
+const publicRows = computed(() => toPublicWorkRows(publishedWorks.value))
 </script>
 
 <template>
-  <section class="works" aria-labelledby="works-heading">
+  <section class="works" aria-labelledby="works-heading" :data-works-source="worksSource">
     <header class="works-hero">
       <p class="hfm-eyebrow">数字人文 · 论著与研究</p>
       <h1 id="works-heading" class="works-hero__title">论著 / 研究</h1>
@@ -25,7 +35,25 @@ defineOptions({ name: 'WorksView' })
 
     <section class="works-section" aria-labelledby="collection-heading">
       <h2 id="collection-heading" class="section-title">作品目录</h2>
-      <ul class="work-collection">
+
+      <!-- GAP-02: real published works (production data) once the backend answers. -->
+      <template v-if="worksSource === 'backend'">
+        <p class="works-register" role="status">已发布作品 {{ publishedTotal }} 部。</p>
+        <ul class="work-collection">
+          <li v-for="work in publicRows" :key="work.workId" class="work-entry">
+            <a :href="work.href" class="work-entry__link">
+              <span class="work-entry__title">{{ work.title }}</span>
+              <span v-if="work.meta !== ''" class="work-entry__meta">{{ work.meta }}</span>
+            </a>
+            <p v-if="work.editionCount > 0" class="work-entry__attr">
+              <span>版本：{{ work.editionCount }} 种</span>
+            </p>
+          </li>
+        </ul>
+      </template>
+
+      <!-- Static fallback (editorial WORK layer) until the backend participates. -->
+      <ul v-else class="work-collection">
         <li v-for="work in WORK_COLLECTION" :key="work.id" class="work-entry">
           <a v-if="work.href" :href="work.href" class="work-entry__link">
             <span class="work-entry__title">{{ work.title }}</span>

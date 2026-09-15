@@ -1,145 +1,78 @@
 <script setup lang="ts">
 /**
- * HomeClosingSection — homepage Section 08 (Quiet Institutional Close, S8-A).
- *
- * CF-09: production visual fidelity for the accepted
- * HFM_HOMEPAGE_SECTION08_VISUAL_BASELINE_S8A composition — the quiet
- * institutional close. 叙事至此，归于平台. Reduced density: a single thin
- * rule announces the end of the long-form narrative; then the large platform
- * identity + the approved subtitle, with strong negative space.
- *
- * OWNERSHIP (CF-07/CF-08): this section owns ONLY the accepted closing
- * composition (platform identity + subtitle). It does NOT duplicate
- * AppFooter's global responsibilities — co-construction signature, positioning
- * statement, legal navigation, copyright. Those remain the single semantic
- * <footer> (AppFooter), which renders immediately after this section.
- *
- * The platform identity is a NON-heading <p>: the single H1 (hero) is the only
- * heading carrying 皇甫谧人文数字平台; the closing register is a signature,
- * not a heading. The section is landmarked via aria-label="平台结语".
+ * HomeClosingSection — Section 08 (结语). 《刻度》 ledger voice:
+ * a ruled close carrying the platform identity as a NON-heading signature.
+ * Not a footer — AppFooter owns the global footer.
  */
 import { HOME_CLOSING, HOME_CHAPTERS } from '../../data/homeProjection'
+import XlScaleBand from './XlScaleBand.vue'
 
 defineOptions({ name: 'HomeClosingSection' })
 </script>
 
 <template>
-  <section id="home-closing" class="home-section home-section--closing" aria-label="平台结语">
-    <div class="home-closing__grain" aria-hidden="true"></div>
-    <div class="home-closing__inner">
-      <p class="home-closing__eyebrow">
-        <span class="home-closing__no">{{ HOME_CHAPTERS.closing.no }}</span
-        >{{ HOME_CHAPTERS.closing.label }}
+  <section id="home-closing" class="closing xl-sec--dark" aria-label="平台结语" data-source="static">
+    <div class="closing__inner">
+      <p class="closing__bar">
+        <span class="xl-index">{{ HOME_CHAPTERS.closing.no }}</span>
+        <span class="xl-label">Colophon</span>
       </p>
-
-      <!-- a single thin rule announces the end of the narrative -->
-      <div class="home-closing__rule" aria-hidden="true"></div>
-
-      <!-- platform identity — quiet signature (non-heading, P1-01) -->
-      <p class="home-closing__name">{{ HOME_CLOSING.name }}</p>
-      <p class="home-closing__subtitle">{{ HOME_CLOSING.subtitle }}</p>
+      <XlScaleBand class="closing__band" />
+      <p class="home-closing__name closing__name">{{ HOME_CLOSING.name }}</p>
+      <p class="closing__subtitle">{{ HOME_CLOSING.subtitle }}</p>
+      <p class="closing__search-entry">
+        <a class="home-closing__act xl-go" href="/search">
+          检索全站已发布内容
+          <span class="home-closing__act-arr xl-go__arr" aria-hidden="true">→</span>
+        </a>
+      </p>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* ===== Section 08 Closing (S8-A) — production fidelity, 1440×900 ===== */
-.home-section--closing {
-  position: relative;
-  overflow: hidden;
-  min-height: 900px;
-  margin-inline: calc(-1 * var(--hfm-space-6));
-  background:
-    radial-gradient(
-      1000px 640px at 86% -10%,
-      color-mix(in srgb, var(--hfm-color-heritage) 5%, transparent) 0%,
-      transparent 62%
-    ),
-    radial-gradient(
-      720px 520px at -4% 116%,
-      color-mix(in srgb, var(--hfm-color-accent) 4%, transparent) 0%,
-      transparent 60%
-    ),
-    var(--hfm-color-canvas);
+.closing {
+  color: var(--wl-ink);
+  padding: clamp(4rem, 10vw, 9rem) var(--hfm-space-6);
 }
-.home-closing__grain {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.home-closing__inner {
-  position: relative;
-  max-width: 1272px;
+.closing__inner {
+  max-width: 78rem;
   margin: 0 auto;
-  width: 100%;
-  height: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
 }
-.home-closing__eyebrow {
-  position: absolute;
-  left: 50%;
-  top: 120px;
-  transform: translateX(-50%);
-  font-size: 11px;
-  letter-spacing: 0.42em;
-  color: var(--hfm-color-heritage);
+.closing__bar {
+  display: flex;
+  gap: var(--hfm-space-6);
+  margin: 0 0 var(--hfm-space-8);
+  padding-top: var(--hfm-space-4);
+  border-top: 1px solid var(--wl-rule);
+  width: 100%;
+  justify-content: center;
+}
+.closing__band {
+  color: var(--wl-ink);
+  width: min(38rem, 100%);
+  margin-bottom: var(--hfm-space-8);
+}
+.closing__name {
   margin: 0;
-}
-.home-closing__no {
-  color: var(--hfm-color-text-muted);
-  margin-right: 0.5em;
-}
-.home-closing__rule {
-  width: 640px;
-  max-width: 80%;
-  height: 1px;
-  background: var(--hfm-color-border);
-}
-.home-closing__name {
-  margin: 42px 0 0;
-  font-family: var(--hfm-font-heading);
+  font-family: var(--hfm-font-display);
   font-weight: 500;
-  font-size: 68px;
-  line-height: 1.16;
+  font-size: clamp(2rem, 6vw, 4rem);
+  line-height: 1.2;
   letter-spacing: 0.02em;
-  color: var(--hfm-color-text);
+  color: var(--wl-ink);
 }
-.home-closing__subtitle {
-  margin: 26px 0 0;
-  font-size: 14px;
-  letter-spacing: 0.22em;
-  color: var(--hfm-color-text-muted);
+.closing__search-entry {
+  margin: var(--hfm-space-6) 0 0;
 }
-
-/* ===== Responsive (CF-09): quiet close stays centered and readable. ===== */
-@media (max-width: 1199px) {
-  .home-section--closing {
-    min-height: 0;
-    margin-inline: 0;
-  }
-  .home-closing__inner {
-    height: auto;
-    min-height: 640px;
-    padding: 120px 24px 96px;
-  }
-  .home-closing__eyebrow {
-    position: static;
-    transform: none;
-    align-self: center;
-  }
-  .home-closing__name {
-    font-size: clamp(34px, 9.5vw, 64px);
-  }
-  .home-closing__subtitle {
-    font-size: 12.5px;
-    letter-spacing: 0.18em;
-    max-width: 90%;
-  }
+.closing__subtitle {
+  margin: var(--hfm-space-5) 0 0;
+  font-size: var(--hfm-text-sm);
+  letter-spacing: 0.18em;
+  color: var(--wl-mute);
 }
 </style>

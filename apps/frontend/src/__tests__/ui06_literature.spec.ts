@@ -119,7 +119,7 @@ describe('UI-06 navigation & search boundary', () => {
   it('related and search CTA links target real routes', () => {
     const yan = mountRoute('/yan', YanView)
     const hrefs = yan.findAll('a').map((a) => a.attributes('href'))
-    expect(hrefs).toContain('/persons/person-huangfu-mi')
+    expect(hrefs).toContain('/persons/ENT-PERSON-HFM-HUANGFUMI')
     expect(hrefs).toContain('/works')
     expect(hrefs).toContain('/archive')
     expect(hrefs).toContain('/jiayi')

@@ -139,7 +139,7 @@ def test_bootstrap_accepts_canonical_database_then_fails_on_connectivity() -> No
     assert run.returncode == 1
     assert "ENV_VALIDATION=FAIL" not in run.stdout
     assert "MIGRATION_VERIFY=FAIL" in run.stdout
-    assert "database must be migrated at 0015" in run.stdout
+    assert "database must be migrated at 0017" in run.stdout
 
 
 def test_bootstrap_test_mode_still_accepts_scratch_databases() -> None:

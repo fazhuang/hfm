@@ -35,13 +35,27 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from hfm.models.research_workspace import ResearchNote, ResearchProject
+from hfm.models.research_workspace import (
+    ResearchAnnotation,
+    ResearchNote,
+    ResearchProject,
+)
 from hfm.phase1.auth import Principal
 
 _PAGE_SIZE_MAX = 100
 
 _PROJECT_FIELDS = ("project_id", "title", "description", "created_at")
 _NOTE_FIELDS = ("note_id", "project_id", "title", "content", "created_at")
+_ANNOTATION_FIELDS = (
+    "annotation_id",
+    "passage_id",
+    "project_id",
+    "quote_text",
+    "start_offset",
+    "end_offset",
+    "note",
+    "created_at",
+)
 
 
 def _validate_paging(page: int, page_size: int) -> None:
@@ -245,6 +259,96 @@ class ResearchWorkspaceService:
         await self.session.delete(note)
         await self.session.flush()
 
+    # ---------------------------------------------------------- annotations
+    async def list_annotations(
+        self,
+        *,
+        principal: Principal,
+        passage_id: str | None = None,
+        project_id: str | None = None,
+        page: int = 1,
+        page_size: int = 20,
+    ) -> dict[str, Any]:
+        """Owner-scoped annotations; optional passage / project filter."""
+        _require_permission(principal, "research:note:read")
+        _validate_paging(page, page_size)
+        base = select(ResearchAnnotation).where(ResearchAnnotation.owner_id == principal.user_id)
+        if passage_id is not None:
+            base = base.where(ResearchAnnotation.passage_id == passage_id)
+        if project_id is not None:
+            project = await self.session.get(ResearchProject, project_id)
+            if project is None or project.owner_id != principal.user_id:
+                raise KeyError("project not found")
+            base = base.where(ResearchAnnotation.project_id == project_id)
+        total = _count_result(
+            await self.session.execute(select(func.count()).select_from(base.subquery()))
+        )
+        rows = (
+            (
+                await self.session.execute(
+                    base.order_by(ResearchAnnotation.created_at.desc(), ResearchAnnotation.id)
+                    .limit(page_size)
+                    .offset((page - 1) * page_size)
+                )
+            )
+            .scalars()
+            .all()
+        )
+        return {
+            "annotations": [self._serialize_annotation(a) for a in rows],
+            "total": total,
+            "page": page,
+        }
+
+    async def create_annotation(
+        self,
+        *,
+        principal: Principal,
+        passage_id: str,
+        note: str | None = None,
+        project_id: str | None = None,
+        quote_text: str | None = None,
+        start_offset: int | None = None,
+        end_offset: int | None = None,
+    ) -> dict[str, Any]:
+        """Create an owner-scoped highlight annotation on a passage."""
+        _require_permission(principal, "research:note:create")
+        clean_passage = (passage_id or "").strip()
+        if not clean_passage:
+            raise ValueError("passage_id is required")
+        from hfm.models.passage import Passage
+
+        passage = await self.session.get(Passage, clean_passage)
+        if passage is None:
+            raise ValueError("passage does not exist")
+        if project_id is not None:
+            project = await self.session.get(ResearchProject, project_id)
+            if project is None or project.owner_id != principal.user_id:
+                raise KeyError("project not found")
+        if start_offset is not None and end_offset is not None and start_offset > end_offset:
+            raise ValueError("start_offset must be <= end_offset")
+        annotation = ResearchAnnotation(
+            owner_id=principal.user_id,
+            passage_id=clean_passage,
+            project_id=project_id,
+            quote_text=quote_text,
+            start_offset=start_offset,
+            end_offset=end_offset,
+            note=note,
+        )
+        self.session.add(annotation)
+        await self.session.flush()
+        return self._serialize_annotation(annotation)
+
+    async def delete_annotation(self, *, principal: Principal, annotation_id: str) -> None:
+        """Owner-scoped delete."""
+        _require_permission(principal, "research:note:delete")
+        annotation = await self.session.get(ResearchAnnotation, annotation_id)
+        if annotation is None or annotation.owner_id != principal.user_id:
+            raise KeyError("annotation not found")
+        await self.session.delete(annotation)
+        await self.session.flush()
+
     # -------------------------------------------------------- serialization
     @staticmethod
     def _serialize_project(project: ResearchProject) -> dict[str, Any]:
@@ -263,6 +367,19 @@ class ResearchWorkspaceService:
             "title": note.title,
             "content": note.content,
             "created_at": note.created_at.isoformat(),
+        }
+
+    @staticmethod
+    def _serialize_annotation(annotation: ResearchAnnotation) -> dict[str, Any]:
+        return {
+            "annotation_id": annotation.id,
+            "passage_id": annotation.passage_id,
+            "project_id": annotation.project_id,
+            "quote_text": annotation.quote_text,
+            "start_offset": annotation.start_offset,
+            "end_offset": annotation.end_offset,
+            "note": annotation.note,
+            "created_at": annotation.created_at.isoformat(),
         }
 
 

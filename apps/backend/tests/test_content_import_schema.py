@@ -66,7 +66,7 @@ def test_migration_0015_single_head_and_fresh_replay(tmp_path: Path) -> None:
     heads = _alembic(tmp_path / "h.db", "heads")
     assert heads.returncode == 0, heads.stderr
     lines = [ln for ln in heads.stdout.splitlines() if ln.strip()]
-    assert len(lines) == 1 and lines[0].startswith("0015"), lines
+    assert len(lines) == 1 and lines[0].startswith("0017"), lines
 
     db_file = tmp_path / "fresh-0015.db"
     up = _alembic(db_file, "upgrade", "head")

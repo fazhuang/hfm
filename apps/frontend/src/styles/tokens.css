@@ -167,3 +167,35 @@
   --hfm-color-on-heritage: #16130f;
   --hfm-shadow-focus: 0 0 0 3px rgba(207, 106, 74, 0.35);
 }
+
+/* ===== HOME LEDGER LAYER — 《刻度 / THE SCALE》 =====
+   Derived from a random inspiration string (240 chars): a 20-step tonal ladder
+   read from its digit-pairs (22,65,15,03,49,32,90,65,63,73,85,42,84,54,76,01,
+   47,79,18,42), a hairline sampled from its only hex-like run (B4b7aA), and a
+   cinnabar ink for the numerals that punctuate it (17% of the source). */
+:root {
+  --wl-deep: #14161a;     /* t0 — the source's densest ink (dark band bg) */
+  --wl-ink: #14161a;
+  --wl-ink-2: #3f4348;    /* t1 — 22 */
+  --wl-mute: #63676a;     /* t2 — 49 (darkened for AA on paper) */
+  --wl-rule: #b4b7aa;     /* hairline — B4b7aA */
+  --wl-paper-2: #e7e3d8;  /* t4 — 90 */
+  --wl-paper: #f4f1ea;
+  --wl-light: #fbfaf6;
+  --wl-mark: #a03e29;     /* numerals / marginalia (朱砂刻度) */
+  --wl-mark-strong: #8a3522;
+  --wl-latin:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+.dark {
+  --wl-deep: #0e1013;
+  --wl-ink: #ecebe4;
+  --wl-ink-2: #c2c1b8;
+  --wl-mute: #8d8d86;
+  --wl-rule: #3a3c38;
+  --wl-paper-2: #22242a;
+  --wl-paper: #16181c;
+  --wl-light: #1c1e22;
+  --wl-mark: #cf6a4a;
+  --wl-mark-strong: #e07f5e;
+}

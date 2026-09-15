@@ -28,9 +28,29 @@ P1 内容发布执行 ──────► 公众门户显示真实生产数据
 P6 收尾：5 条 DEFERRED 版本补录 + 合订本分类规则（R3，不阻塞）
 ```
 
-**当前已完成（本次会话新增）**：P1 的工具链已就绪 —— `scripts/publish-content.py`
-（受控幂等发布脚本）与 `scripts/tests/test_publish_content.py`（3 用例，隔离
-Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_prod` 执行发布。**
+**P1 状态（已收尾）**：P1「内容发布执行」完整闭环并经端到端验证 —— `hfm_prod`
+上 `sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+PUBLISHED（14 works + 17 persons；权利拆分 18 public_domain / 13
+customer_owned）；前端首页 / SearchView / WorksView 均已接入真实
+`/api/v1/public/*` 分页流并带静态兜底。详见 §2。
+
+**P2/P3 进度（2026-09-13 本次会话）**：数据导入缺口已基本修复 ——
+C-domain 术语 30 / 关系 5、证据链 23（evidences+assertions）、非遗项目
+56 / 传承关系 2、媒体资产 681、文档级 source 注册 3；全文抽取已基本落地
+（667 篇中 593 篇 Route A 数字文本层直提 + 66 篇 Route B 影像型 OCR 完成；
+余 8 篇为非遗佐证照片/证书类、无文字层，不影响 P2 全文目标）；《针灸甲乙经》
+篇章段落已入库（维基文库宋校本·公有领域：`chapters` 149 = 12 卷 + 137 篇、
+`passages` 1007 段；卷03/卷02 缺口均用四库全书本补齐，无剩余缺口）；30 条
+C-domain 术语已发布（`public_domain`）并打通 `/public/c-terms` 列表/单条端点。
+**P2 EXIT 已达成**；`citations` 23 条已挂接（断言↔证据 + 原文引用，passage_id
+空 — 传记性断言源自晋书/论文，非甲乙经正文）。剩余未完成：`versions`
+（具体文本版本层，待 OCR 证据）。详见 §3/§4。
+
+**P3 媒体发布（2026-09-14）**：`media_assets` 681 条中 **614 条已发布**
+（针灸甲乙经 608 + 皇甫谧 6），`/public/media` 实测返回 614，P3 EXIT 达成；
+剩余 **67 条非遗佐证**按隐私政策 §4 逐件分级为 **P1 28 / P2 35 / P3 4**（原记
+「67 条全为 P2」有误 —— P3 按政策不进入公共投影）。P2 脱敏管线已立项并打通
+金丝雀，`hfm_prod` 已在迁移 `0017`。详见 §4 执行记录。
 
 ---
 
@@ -38,26 +58,27 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 
 | 表 | 现状 | 阶段目标 |
 | :--- | :--- | :--- |
-| `sources` | 0 | P1 建立源注册表 |
-| `content_artifacts` | 0 | P1 为 14 著作 + 17 人物生成工件 |
-| `publication_records` | 0 | P1 生成 PUBLISHED 记录 |
-| `documents` | 675（全文未抽取，磁盘 `extracted-text/` 空） | P2 全文落地 |
-| `chapters` / `passages` | 0 / 0 | P2 《针灸甲乙经》篇章段落 |
-| `c_domain_terms` / `c_domain_relations` | 0 / 0 | P2 经穴/词条 + 关系图谱 |
-| `assertions` / `evidences` / `citations` | 0 / 0 / 0 | P2/P4 证据链 |
-| `heritage_projects` / `heritage_relations` | 0 / 0 | P3 非遗项目 |
-| `media_assets` | 0 | P3 媒体资产 |
-| `versions` | 0（87 是 editions） | P6 具体文本版本层 |
+| `sources` | 34 | P1 建立源注册表 ✅ |
+| `content_artifacts` | 31（全 PUBLISHED） | P1 为 14 著作 + 17 人物生成工件 ✅ |
+| `publication_records` | 31（全 PUBLISHED） | P1 生成 PUBLISHED 记录 ✅ |
+| `documents` | 667（593 Route A + 66 Route B OCR；8 非遗佐证照片/证书无文字层） | P2 全文落地 ✅ 基本完成 |
+| `chapters` / `passages` | 149 / 1007（137 篇，12 卷完整） | P2 《针灸甲乙经》篇章段落 ✅ 完整 |
+| `c_domain_terms` / `c_domain_relations` | 30 / 5 | P2 经穴/词条 + 关系图谱 ✅ |
+| `assertions` / `evidences` / `citations` | 23 / 23 / 23 | P2/P4 证据链 ✅（citations 挂接；passage_id 空 — 传记性断言源自晋书/论文，非甲乙经正文） |
+| `heritage_projects` / `heritage_relations` | 56 / 2 | P3 非遗项目 ✅（`/public/heritage` total 56） |
+| `media_assets` | 681（published **614** / draft 67） | P3 媒体资产 ✅ 已发布；67 条非遗佐证分级 P1 28 / P2 35 / P3 4，P2 脱敏管线已建 |
+| `versions` | 0（87 是 editions） | P6 具体文本版本层 ⚠️ 待 OCR 证据 |
 
 ---
 
-## 2. P1 — 内容发布执行（关键路径，立即）
+## 2. P1 — 内容发布执行（关键路径）✅ 已完成
 
 **目标**：使 `/api/v1/public/home`、`/works`、`/persons` 返回真实生产数据，
 公众门户从静态 fallback 切换为真实数据。
 
-**当前状态**：发布脚本已建并测试通过，但 `hfm_prod` 上 `sources` /
-`content_artifacts` / `publication_records` 仍为 0。
+**当前状态（已收尾）**：4 项工作项全部完成并经端到端验证 —— `hfm_prod` 上
+`sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+PUBLISHED；`/public/home` `/works` `/persons` `/search` 稳定返回生产数据。
 
 ### 2.1 工作项
 
@@ -73,6 +94,21 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
    `WORK_COLLECTION` / `searchIndex`，需接入真实 `/api/v1/public/*` 分页流。
    - 首页已具备 `useHomePublicData` 优雅降级，发布后自动生效；其余页面需 UI 内容传播改造。
 
+#### 完成记录（2026-09-13）
+
+1. **权利复核 ✅**：`content-production/07-review/publication-rights-manifest.json`
+   判定 13 现代著作/学者 = `customer_owned`，其余 11 古籍 + 7 历史人物 =
+   `public_domain` 兜底。
+2. **执行发布 ✅**：先 `--dry-run` 预演，后正式 `--scope all`（commit `7fefb37`）；
+   `sources` / `content_artifacts` / `publication_records` 各 31 条、全部
+   `PUBLISHED`。文档级 `sources` 注册仍为独立补强项（发布实体已用「每实体一个
+   canonical source」方案闭合 FK）。
+3. **前端连通 ✅**：`WorksView` 接入真实 `/public/works`（commit `0f8c50d`，静态
+   `WORK_COLLECTION` 兜底）；首页 / `SearchView` 此前已接入。
+4. **端到端验证 ✅**：起 HFM 后端于 `:8001`（`~/.hfm/secrets/prod.env`）实测
+   `/public/home`、`/works`（total 14）、`/persons`（total 17）、`/works/{id}`、
+   `/search?q=皇甫谧`（total 4）均返回真实生产数据。
+
 ### 2.2 门禁
 
 | | |
@@ -80,7 +116,7 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 | **ENTRY** | 权利复核完成；`PWE_IMPORT_PHASE=CLOSED` 保持不变；发布脚本就绪（已满足） |
 | **AUTHORIZED_SCOPE** | 权利判定表、发布脚本执行、前端 public API 接入、对应测试 |
 | **FORBIDDEN_SCOPE** | 不改冻结的 PWE 映射基线/导入逻辑；不开放外网；不发布未经复核的内容 |
-| **EXIT** | `/public/home` `/works` `/persons` 稳定返回生产数据；零草稿/私有数据泄露 |
+| **EXIT** | ✅ 已验证：`/public/home` `/works` `/persons` 稳定返回生产数据；零草稿/私有数据泄露 |
 | **AUTHORIZATION** | 需显式授权（权利复核结论 + 发布范围由授权方确认） |
 
 ---
@@ -100,12 +136,28 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 4. **证据链**：`normalized/evidence.csv`（已有 24 条候选）→ `assertions` /
    `evidences` / `citations`。
 
+#### 完成记录（2026-09-13）
+
+- **全文抽取（工作项 1）✅ 基本完成**：667 篇中 593 篇 Route A（数字文本层
+  直提，`corpus/extracted-text/`）+ 66 篇 Route B（影像型 tesseract OCR，
+  `corpus/raw-ocr/`）。余 8 篇为非遗佐证照片/证书（TV 报道截图、奖证、不动产
+  证明），tesseract 无文字层输出，属影像证据、已入 `media_assets`，不阻塞全文目标。
+- **经穴/词条（工作项 3）✅**、**证据链 assertions/evidences（工作项 4）✅**：
+  见 §0 计数（`citations` 仍待 `passages`）。
+- **篇章段落（工作项 2）✅ 已入库**：改走「权威数字文本」路径 —— 维基文库
+  《针灸甲乙经·宋校本》（公有领域）12 卷抓取，`scripts/parse-jiayi-wikisource.py`
+  解析产出 `jiayi-chapters.csv`（卷 12 + 篇 137）与 `jiayi-passages.csv`（段 1007），
+  `scripts/import-jiayi-structure.py` 已入库（`chapters` 149 / `passages` 1007）。
+  卷03 篇八/九/十、卷02 篇五标题均用四库全书本补齐（12 卷 137 篇完整）。
+  来源+权利+完整性复核见
+  `content-production/reports/HFM-CONTENT-P2-JIAYI-STRUCTURE-SOURCE.md`。
+
 ### 3.2 门禁
 
 | | |
 | :--- | :--- |
 | **ENTRY** | P1 完成（内容已发布，公众可感知增量）；全文抽取管道就绪 |
-| **EXIT** | 《针灸甲乙经》篇章段落 + 经穴词条 + 关系图谱有真实数据，`/public/c-terms` 可查 |
+| **EXIT** | 《针灸甲乙经》篇章段落 + 经穴词条 + 关系图谱有真实数据，`/public/c-terms` 可查 ✅ **已达成**（2026-09-13） |
 | **AUTHORIZATION** | 需显式授权（中医结构化提取的范围与质量标准） |
 
 ---
@@ -115,9 +167,152 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 **目标**：`heritage_projects` / `heritage_relations` / `media_assets` 从 0 → 有数据，
 非遗专栏从静态映射层转为受控入库。
 
-- 非遗佐证材料已就绪（`hfmzl/非遗佐证/` 68 文件）；媒体版权模型（P2-05）已完整。
+- 非遗佐证材料已就绪（`hfmzl/非遗佐证/` 68 文件，其中 67 个为媒体文件 +
+  1 个 `.lnk` 快捷方式被导入器跳过）；媒体版权模型（P2-05）已完整。
 - 工作项：非遗项目 + 传承谱系入库；媒体资产（图片/视频/PDF）带 rights 元数据入库。
-- **ENTRY**：P1 完成；**EXIT**：`/public/heritage` `/public/media` 返回生产数据。
+- **ENTRY**：P1 完成；**EXIT**：`/public/heritage` `/public/media` 返回生产数据
+  ✅ **已达成**（2026-09-14：`/public/heritage` total 56；`/public/media` total 614）。
+
+#### 核实记录（2026-09-14）— 更正「媒体资产已发布」的错误记录
+
+针对「已发布 614 条 P0/P1 媒体资产、`/public/media` 返回 614」的记录逐项核实，
+**结论：该发布未发生**。分类口径本身成立，但发布状态为 0。
+
+**分类拆分（与记录一致，已核实）**——`hfm_prod.media_assets` 共 681：
+
+| 分组 | 条数 | 隐私分级（按 `HFM-ASSET-PRESENTATION-POLICY.md §4`） |
+| :--- | ---: | :--- |
+| `针灸甲乙经/` | 608 | P0 普通公开内容 |
+| `皇甫谧/` 5 + `皇甫谧画像.jpeg` 1 | 6 | P0/P1 |
+| **小计（拟发布）** | **614** | — |
+| `非遗佐证/` | 67 | P2 需脱敏（证书编号/签字/联系方式） |
+
+**发布状态（与记录不符）**：
+
+- 681 条全部 `publication_state='draft'`、`publication_permission=false`、
+  `redaction_token` 全为 NULL；
+- 遍历本机 11 个 `hfm_*` 库，**无任何一条已发布媒体资产**；
+- 实测运行中后端（`:8000`，vite 代理目标）`GET /api/v1/public/media` → `total: 0`。
+
+**根因：发布通路在代码中不存在，而非执行遗漏。** 三项缺口：
+
+1. **权限位未开**：`MediaService.publish()` 要求 `rights_sufficient()`
+   （`apps/backend/src/hfm/phase2/media/service.py:157`），后者硬性要求
+   `publication_permission=True`（同文件 `:180`）。`scripts/import-media-assets.py:126`
+   是**故意 fail-closed** 写为 `False` 的，故当前无一可发布。
+2. **无发布脚本 / 无管理端点**：`scripts/publish-content.py:479` 的 `--scope` 仅
+   `works / persons / c-terms / heritage`，不含 media；后端亦无 admin 媒体发布接口，
+   仅 `phase1.py:343` `/public/media` 与 `:390` `/public/media/{id}/bytes` 两个公开只读端点。
+3. **P2 脱敏管线未立项**：`HFM-ASSET-PRESENTATION-POLICY.md:92` 明载脱敏执行
+   「属内容准入实施 WP，**不在本轮**」。67 份非遗佐证证书所需 public derivative
+   （`MediaService.create_derivative`，`service.py:102`，含 `redaction_token` 绑定）
+   尚无调用方。
+
+**614 条发布的剩余动作（待授权，未执行）**：① 分级筛选并置
+`publication_permission=True`（P0/P1 共 614 条，排除 67 份 P2 证书）；
+② 新增媒体发布脚本（dry-run → commit），复用 P1 的 operator-only 受控模式；
+③ 发布后核对 `/public/media` = 614、`/public/media/{id}/bytes` 可流式返回。
+
+**另更正一处过期数**：§1 原记 `heritage_projects = 69`，实测为 **56**
+（`/public/heritage` 亦返回 56；`content-production/normalized/heritage-objects.csv`
+55 行数据）。差异原因未追查，此处按实测值订正。
+
+#### 执行记录（2026-09-14）— 614 条已发布
+
+经授权方批准后执行（分两步：金丝雀 6 条 → 全量 614 条）。发布通路为新增的
+`scripts/publish-media.py`，授权依据
+`content-production/07-review/media-publication-clearance.json`（客户声明授权，
+`HFM-ASSET-PRESENTATION-POLICY.md` §0）。
+
+| 阶段 | 内容 | 结果 |
+| :--- | :--- | :--- |
+| 金丝雀 | `皇甫谧/` 5 + `皇甫谧画像.jpeg` 1 | 6 条 published；字节接口逐条核验通过（含 1GB 影片，sha256/content-type 全吻合） |
+| 全量 | 补发 `针灸甲乙经/` 608 条 | 608 条 published（6 条 already_published），合计 **614** |
+
+**发布后实测**：`/public/media` → `total: 614`
+（`paper 515 / classic 93 / movie 2 / other 4`）；随机抽检 6 条新发布资产，
+`/public/media/{id}/bytes` 字节 sha256 与 MIME 全部吻合；全库
+`published 614 / draft 67`。
+
+**仍未发布**：`非遗佐证/` **67 条**（`draft`，`publication_permission` 全 false）
+—— 属 P2，须先按 §4.1 生成脱敏 public derivative，管线尚未立项（见下）。
+
+**分类分支（2026-09-14 已补）**：原 4 条资产在 `/public/media` 落入 `other` 桶
+（`皇甫谧画像.jpeg`、`皇甫谧/{其传,其言,后论}/*.docx`）。分类逻辑已从端点内联
+抽为媒体域纯函数 `public_category`（`phase2/media/service.py`），新增 `person`
+桶（前端标签「人物材料」），并按「先匹配先赢」保证 `皇甫谧电影/` 仍归 `movie`。
+差分核验：681 个 key 中**仅这 4 条**由 `other → person`，其余 677 条不变；
+已发布子集现为 `paper 515 / classic 93 / person 4 / movie 2`，`other` 归零。
+
+#### 执行记录（2026-09-14）— P2 脱敏管线立项并打通金丝雀
+
+授权：分级按政策 §4 逐件判定（P3 归档不公开）；脱敏件采用 **derivative 专用
+授权位**；起步节奏为金丝雀 1 份端到端先通。
+
+**订正三处此前记录未载的事实**（均经实测）：
+
+1. **67 条不是同一个隐私级。** roadmap 原记「67 条非遗佐证属 P2」，按政策 §4 逐件
+   判定实为 **P1 28 / P2 35 / P3 4**。那 4 条 P3 正是政策 §4 点名的
+   「不进入公共投影」材料：`08申报单位资质/1、甘肃医学院事业单位法人证书复印件.pdf`、
+   `08…/2、不动产证明.pdf`、`09…/1、…备案信息采集表、认定函、承诺书.pdf`、
+   `09…/2、职业技能等级认定考评员名单.pdf`。原「67 条全走脱敏」的口径按客户自己的
+   政策是错的 —— 那会把 P3 材料推进公众投影。
+2. **脱敏件即使写出来也发布不了（代码级闸门，非「缺调用方」）。**
+   `MediaService.create_derivative`（`service.py`）把 `publication_permission`
+   从原件继承，而 67 条原件全是 `False`；`publish()` 经 `rights_sufficient()`
+   要求该位为 `True`。原件又必须保持 `False`。故 derivative 被永久锁死 ——
+   这不是「无调用方」，是**闸门在调用方之上就关着**。
+3. **扫描件比例远高于记录。** pymupdf 权威复核：60 个 PDF 中**仅 2 个**有真实
+   文字层（`07…/3、传承工作室及国医馆名单及基本情况.pdf` 482 字、
+   `07…/4、带教师承学生名单带教基医生名单.pdf` 2650 字），其余 58 个为纯图像
+   扫描件（文字层仅有 8 字节「扫描全能王 创建」水印）。
+
+**已建成的管线**（迁移 `0017`，已应用到 `hfm_prod`，头部已推进 0016→0017）：
+
+| 件 | 作用 |
+| :--- | :--- |
+| `alembic/versions/0017_p2_redaction_derivatives.py` | `privacy_class` + `derivative_publication_permission` + 5 条 CHECK |
+| `scripts/classify-heritage-evidence.py` | Stage 0 逐件分级；未匹配规则 fail-closed 归 P3 |
+| `scripts/redact-media-derivative.py` | `--detect` 提议区域 → 人工签署 → `--apply` 真脱敏 + 强制校验 |
+| `scripts/publish-media-derivatives.py` | Stage 3 发布脱敏件；字节绑定 + 原件封存复核 |
+
+**隐私模型现在是数据库不变量，不再是文档约定。** 5 条 CHECK 中三条是承重的：
+
+- `ck_media_assets_p3_never_published` —— P3 永不可发布，derivative 也不例外；
+- `ck_media_assets_p2_original_never_published` —— P2 **原件**永不可发布；
+- `ck_media_assets_derivative_grant` —— 授权位只能落在有原件的行上。
+
+已在生产 schema 上反证：`UPDATE … SET publication_state='published' WHERE
+privacy_class='P3'` → `ERROR: violates check constraint
+"ck_media_assets_p3_never_published"`。
+
+**金丝雀已验证**（`07…/4、带教师承学生名单带教基医生名单.pdf`，含 20+ 名第三方
+学生的姓名/单位/手机号）：脱敏后原件文字层可还原的 **70 处** 11 位号码降为 **0 处**
+（字符数 2654→1744），而姓名/职称/单位保留 —— 即政策要求的字段级脱敏，未因一个
+敏感字段废弃整份材料。发布后 derivative `published`（grant=t），**原件
+`draft` + `permission=false` + 无授权位**，非脱敏字节经任何公开端点不可达。
+
+**已知限制（须在推进全量前解决）**：
+
+- **扫描件无法自动定位敏感区。** tesseract `chi_sim` 在本批证书上基本只输出乱码
+  （如 `TOP0EN8008`），既定位不到证书编号/签字，也不能当校验探针。58 份扫描件的
+  区域必须由**人工看图圈定**；`--apply` 已支持任意区域，缺的是标注工作流。
+  同理，扫描区域的校验只能到「渲染像素填充校验」，弱于矢量区域的文本层精确校验，
+  脚本会打印 NOTE 明确标注这一证据等级差异。
+- **非 PDF 资产尚无通路**：5 个 docx + 1 个 doc + 1 个 jpg。这 7 件须单独处理，
+  `--detect` 目前直接跳过。
+- **一处已更正的错误依据**：本次会话曾报「`师承教育拜师大会新闻稿.docx` 正文内嵌
+  3 个手机号」。**该结论错误。** 那三个数字是 `<wp:posOffset>` 图像定位值
+  （`158750`/`47625`/`34925`），由**我自己**用「`re.sub(r"<[^>]+>","",xml)` 去标签
+  再拼接」的粗提取造成的跨元素假阳性，原文中并不存在这三个号码（`w:t` 节点内
+  无任何 11 位号码）。该文件现仍保持 P2，但依据改为「内嵌 3 张未复核图片」，
+  不再是手机号。金丝雀 `带教师承学生名单.pdf` 的号码发现不受影响 —— 它是用
+  PyMuPDF 真实文字层提取的，复核为 **70 个真实 10 位号码片段**（末位折行）
+  加「姓名/电话」表头。
+- **全量 spec 尚未签署**：金丝雀用的是测试标记，正式 `reviewed_by` 需具名。
+
+**`hfm_prod` 当前状态**：`privacy_class` — P0 608 published / P1 6 published +
+28 draft / P2 35 draft / P3 4 draft；已发布总数仍为 **614**，与迁移前一致。
 
 ---
 
@@ -146,12 +341,29 @@ Postgres@0015 真实测试）已合并 `main`，CI 全绿。**尚未对 `hfm_pro
 - 5 条 `DEFERRED` 版本补录（缺失版权页 OCR 证据）。
 - 合订本（如《针灸甲乙经、伤寒论…》四书合刊）多对多 Work 关联规则扩展。
 
+### 7.1 进度（2026-09-13 本次会话）
+
+- **证据已备齐**：4 条数字文件名版本（A000529–532）经 PaddleOCR 卷端/序页/正文
+  独立证实均为《针灸甲乙经》（→ `WORK-JIAYI`），不再依赖文件名猜测。证据、
+  补录方案、合订本设计三件落盘于 `content-production/import/pwe-mapping/review/`：
+  - `P6-DEFERRED-EDITION-EVIDENCE.md`（证据卷）
+  - `P6-BACKFILL-PLAN.md`（4 条补录方案 + 签批单）
+  - `P6-COMPOUND-WORK-DESIGN.md`（合订本 N:N schema 草案 + 决策选项）
+- **A000529–532 补录 ✅ 已签批并执行**：mapping/review CSV 已改、manifest 已重签
+  （`bb2524…3ff6`）、importer 常量 87→91 / 5→1；`hfm_prod` 正式 apply 通过
+  （`editions` 87→91，DOCUMENT 基线 675 不变）。4 条现挂 `WORK-JIAYI`。
+- **A000541 合刊四书 ⏸ 已裁决：继续延后**（维持 `DEFERRED`，不启动 N:N 扩展与
+  新增 3 著作）。合订本多对多建模方向已留档于 `P6-COMPOUND-WORK-DESIGN.md`，作为
+  未来可选工作项，不在本阶段推进。
+- **P6 状态**：本阶段可执行项已收尾（4/5 补录完成；合订本依裁决延后）。
+
 ---
 
-## 8. 立即行动（本周）
+## 8. 立即行动（本周）✅ 全部完成
 
-1. **权利复核**：产出 14 著作 / 17 人物的权利判定表（P1 前置）。
-2. **对 `hfm_prod` 跑 `--dry-run`**：验证发布脚本在真实 675/14/87 数据上的行为（只读、回滚、不落库）。
-3. **P1 前端接入设计**：`WorksView`/`SearchView` 从静态数据切换到真实分页流的最小改造方案。
+1. **权利复核 ✅**：产出 `content-production/07-review/publication-rights-manifest.json`
+   （13 现代著作/学者 = `customer_owned`，其余 11 古籍 + 7 历史人物 = `public_domain` 兜底）。
+2. **对 `hfm_prod` 执行发布 ✅**：`--dry-run` 预演后正式 `--scope all`，31 条全部 `PUBLISHED`。
+3. **P1 前端接入 ✅**：首页（`useHomePublicData`）/ SearchView / WorksView 均接入真实分页流并带静态兜底。
 
 > 本计划随每阶段授权与完成情况更新；阶段间不自动启动，须逐段显式授权。

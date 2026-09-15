@@ -72,7 +72,7 @@ def _rows(n: int = 3) -> list[dict[str, str]]:
     ]
 
 
-async def _migrated_sqlite_url(tmp_path: Path, head: str = "0015") -> str:
+async def _migrated_sqlite_url(tmp_path: Path, head: str = "0017") -> str:
     """Create a SQLite file with the documents table + alembic_version at ``head``."""
     db = tmp_path / "imp.db"
     url = f"sqlite+aiosqlite:///{db}"

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "status": "SIGNED — 授权方 2026-09-14 批准（分两步执行：金丝雀 6 条 → 全量 614 条）",
+  "basis": "客户声明授权公开发布（docs/design/HFM-ASSET-PRESENTATION-POLICY.md §0：CUSTOMER_PROVIDED = TRUE → PUBLICATION_AUTHORIZATION = GRANTED）；按 §4 隐私模型，仅 P0（普通公开内容）与 P1（职业·学术·公共身份信息）直接公开。P2（非遗佐证证书，需脱敏 derivative，§4.1）与 P3 不在本清单内，保持 draft。",
+  "rules": [
+    {
+      "privacy_class": "P0",
+      "prefix": "针灸甲乙经/",
+      "expected_count": 608,
+      "note": "古籍文本影印件，普通公开内容"
+    },
+    {
+      "privacy_class": "P1",
+      "prefix": "皇甫谧/",
+      "expected_count": 5,
+      "note": "历史人物公共身份相关材料"
+    },
+    {
+      "privacy_class": "P1",
+      "object_key": "皇甫谧画像.jpeg",
+      "expected_count": 1,
+      "note": "历史人物画像，公共身份材料"
+    }
+  ]
+}

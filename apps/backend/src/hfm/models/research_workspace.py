@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from sqlalchemy import CheckConstraint, ForeignKey, String, Text
+from sqlalchemy import CheckConstraint, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, validates
 
 from hfm.db.base import BaseModel
@@ -80,3 +80,60 @@ class ResearchNote(BaseModel):
     )
     title: Mapped[str | None] = mapped_column(String(300), nullable=True, comment="笔记标题")
     content: Mapped[str] = mapped_column(Text, nullable=False, comment="笔记内容")
+
+
+class ResearchAnnotation(BaseModel):
+    """A researcher's highlight annotation on a passage (P4 — research reader).
+
+    Owner-scoped personal research state bound to a canonical ``passage``
+    (the annotatable atomic unit). ``quote_text``/``start_offset``/
+    ``end_offset`` locate a sub-span of the passage; when all three are
+    absent the annotation applies to the whole passage. ``note`` carries the
+    researcher's own annotation (plain research metadata — no clinical
+    semantics, AB-14).
+    """
+
+    __tablename__ = "research_annotations"
+    __table_args__ = (
+        CheckConstraint(
+            "start_offset IS NULL OR end_offset IS NULL OR start_offset <= end_offset",
+            name="ck_research_annotations_offsets",
+        ),
+    )
+
+    #: owner + passage binding are immutable (I4/I5 stable identity).
+    immutable_fields: ClassVar[frozenset[str]] = frozenset({"id", "owner_id", "passage_id"})
+
+    @validates("owner_id", "passage_id")
+    def _validate_immutable_binding(self, key: str, value: object) -> object:
+        current = getattr(self, key, None)
+        if self.id is not None and value != current:
+            raise ValueError(f"{key} is immutable (I4): create a new annotation")
+        return value
+
+    owner_id: Mapped[str] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=False,
+        index=True,
+        comment="所有者（authenticated Principal；客户端不可指定）",
+    )
+    passage_id: Mapped[str] = mapped_column(
+        ForeignKey("passages.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        comment="被标注的版本化原文段落（P1-07 reader 锚点）",
+    )
+    project_id: Mapped[str | None] = mapped_column(
+        ForeignKey("research_projects.id", ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        comment="可选所属研究项目",
+    )
+    quote_text: Mapped[str | None] = mapped_column(Text, nullable=True, comment="高亮摘录原文")
+    start_offset: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, comment="摘录在 passage.content_text 中的起始字符偏移（含）"
+    )
+    end_offset: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, comment="摘录在 passage.content_text 中的结束字符偏移（不含）"
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True, comment="研究者批注")

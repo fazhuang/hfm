@@ -98,10 +98,10 @@ else
 fi
 if "$PYTHON" "$REPO_ROOT/scripts/validate-production-env.py" "${BASE_VALIDATOR[@]}" --verify-migration >/tmp/hfm-pre-mig.log 2>&1; then
   record "POSTGRES_CONNECTIVITY" PASS "reachable"
-  record "MIGRATION_REVISION" PASS "current == head == 0015"
+  record "MIGRATION_REVISION" PASS "current == head == 0017"
 else
   record "POSTGRES_CONNECTIVITY" FAIL "database unreachable or verification failed"
-  record "MIGRATION_REVISION" FAIL "current/head not verified as 0015"
+  record "MIGRATION_REVISION" FAIL "current/head not verified as 0017"
 fi
 
 # 06 backup/restore point ----------------------------------------------

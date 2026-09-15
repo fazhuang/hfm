@@ -44,6 +44,15 @@ TOKEN_SECRET = os.environ.get("HFM_TOKEN_SECRET", DEV_TOKEN_SECRET)
 #: bytes are never stored in the relational DB.
 MEDIA_ROOT = os.environ.get("HFM_MEDIA_ROOT", str(Path(__file__).resolve().parents[5] / "hfmzl"))
 
+#: Root for generated public derivatives (redacted P2 material, policy §4.1).
+#: Kept separate from MEDIA_ROOT so the client's delivered originals stay
+#: byte-for-byte untouched, as the policy requires. The bytes endpoint resolves
+#: MEDIA_ROOT first and falls back here; object keys never collide because
+#: derivatives are written only under this root.
+DERIVATIVE_ROOT = os.environ.get(
+    "HFM_DERIVATIVE_ROOT", str(Path(__file__).resolve().parents[5] / "public-derivatives")
+)
+
 
 def _production_fail_closed() -> None:
     """Raise at import when HFM_ENV=prod without real required configuration."""

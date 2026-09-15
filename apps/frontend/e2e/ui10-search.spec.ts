@@ -12,7 +12,7 @@ import { expect, test } from '@playwright/test'
 
 const PERSON_HIT = {
   kind: 'person',
-  id: 'person-huangfu-mi',
+  id: 'ENT-PERSON-HFM-HUANGFUMI',
   title: '皇甫谧',
   snippet: '',
   version_id: null,
@@ -44,7 +44,7 @@ test('UI-10 query renders real-projection rows; person result navigates canonica
   await expect(page.getByText('找到 1 条结果')).toBeVisible()
   await expect(page.locator('.result-row__type').first()).toHaveText('人物')
   const link = page.locator('.result-row__link').first()
-  await expect(link).toHaveAttribute('href', '/persons/person-huangfu-mi')
+  await expect(link).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
 })
 
 test('UI-10 empty (0 total) is distinct from error', async ({ page }) => {

@@ -21,11 +21,11 @@ const EVIDENCE_DIR = resolve(process.cwd(), '../../docs/audit/evidence/cf11')
 
 const CTA_ARROWS = [
   '.home-hero__act-arr',
+  '.home-person__act-arr',
+  '.home-yan__act-arr',
   '.home-book__act-arr',
-  '.home-knowledge__act-arr',
-  '.home-evidence__act-arr',
   '.home-heritage__act-arr',
-  '.home-domains__go-arr',
+  '.home-closing__act-arr',
 ]
 
 test('CF-11 editorial CTA arrows all carry the transform transition (consistent hover affordance)', async ({
@@ -98,7 +98,7 @@ test('CF-11 evidence screenshots (375 / 768 / 1440 + public surfaces)', async ({
       name === 'home'
         ? '/'
         : name === 'person'
-          ? '/persons/person-huangfu-mi'
+          ? '/persons/ENT-PERSON-HFM-HUANGFUMI'
           : name === 'jiayi'
             ? '/jiayi'
             : name === 'heritage'

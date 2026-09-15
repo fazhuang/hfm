@@ -268,7 +268,7 @@ const recordSourceNames = computed<string[]>(() => {
 
     <!-- 12 Related -->
     <nav class="heritage-related" aria-label="相关导航">
-      <a href="/persons/person-huangfu-mi">皇甫谧人物档案</a>
+      <a href="/persons/ENT-PERSON-HFM-HUANGFUMI">皇甫谧人物档案</a>
       <a href="/jiayi">《针灸甲乙经》</a>
       <a href="/yan">其言</a>
       <a href="/archive">数字档案</a>

@@ -3,7 +3,7 @@
 #
 # Operator-run smoke against a LIVE release before/after deploy:
 #   1. environment preflight (scripts/validate-production-env.py, redacted);
-#   2. exact migration state (current == head == 0015, read-only);
+#   2. exact migration state (current == head == 0017, read-only);
 #   3. backend health/live endpoints through the same-origin /api;
 #   4. persistent media volume exists and is writable by the service user;
 #   5. media boundary contract (RV-P0-01): the serving Nginx configuration

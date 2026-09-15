@@ -19,6 +19,7 @@ import type {
   WorkSummary,
 } from '../types/public'
 import type { MediaAssetItem, MediaCategory } from '../types/media'
+import type { WorkStructure } from '../types/reader'
 
 /** Accepted public namespace prefix. */
 export const PUBLIC_NAMESPACE = '/api/v1/public'
@@ -75,9 +76,15 @@ export async function fetchPublicHome(signal?: AbortSignal): Promise<HomeProject
   return unwrap<HomeProjection>(body)
 }
 
-/** Published works list. */
-export async function fetchPublicWorks(page = 1): Promise<{ works: WorkSummary[]; total: number }> {
-  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works?page=${page}&page_size=20`)
+/** Published works list (page ≥ 1; optional abort signal for graceful-degradation timeouts). */
+export async function fetchPublicWorks(
+  page = 1,
+  signal?: AbortSignal,
+): Promise<{ works: WorkSummary[]; total: number }> {
+  const body = await publicGet<unknown>(
+    `${PUBLIC_NAMESPACE}/works?page=${page}&page_size=20`,
+    signal,
+  )
   return unwrap<{ works: WorkSummary[]; total: number }>(body)
 }
 
@@ -99,6 +106,18 @@ export async function fetchPublicWorkEditions(
 ): Promise<{ work_id: string; editions: EditionSummary[] }> {
   const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works/${workId}/editions`)
   return unwrap<{ work_id: string; editions: EditionSummary[] }>(body)
+}
+
+/** Published heritage projects (T0 for the homepage 非遗 block). */
+export async function fetchPublicHeritage(): Promise<{ projects: unknown[]; total: number }> {
+  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/heritage`)
+  return unwrap<{ projects: unknown[]; total: number }>(body)
+}
+
+/** Nested structure (卷 → 篇 → 段) of a published work (P4 reader). */
+export async function fetchPublicWorkStructure(workId: string): Promise<WorkStructure> {
+  const body = await publicGet<unknown>(`${PUBLIC_NAMESPACE}/works/${workId}/structure`)
+  return unwrap<WorkStructure>(body)
 }
 
 /** Published person detail. */

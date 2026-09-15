@@ -140,6 +140,7 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
         本平台为学术资料展示，不提供临床诊疗建议。
       </p>
       <nav class="jiayi-hero__jump" aria-label="本页快速跳转">
+        <RouterLink to="/jiayi/reader">篇章阅读（卷·篇·段）</RouterLink>
         <a href="#overview">作品档案</a>
         <a href="#lineage">版本脉络</a>
         <a href="#editions">历代版本</a>
@@ -321,7 +322,7 @@ const editionTimeline = computed<TimelineEvent[]>(() =>
 
     <!-- 10 RELATED NAVIGATION -->
     <nav class="jiayi-related-nav" aria-label="相关导航">
-      <a href="/persons/person-huangfu-mi">皇甫谧人物档案</a>
+      <a href="/persons/ENT-PERSON-HFM-HUANGFUMI">皇甫谧人物档案</a>
       <a href="/yan">其言</a>
       <a href="/reader">阅读</a>
       <a href="/heritage">非遗传承</a>

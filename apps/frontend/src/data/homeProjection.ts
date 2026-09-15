@@ -42,7 +42,7 @@ export const HOME_HERO = {
   personDates: CORE_PERSON_DATES,
   definition: CORE_PERSON_DEFINITION,
   primary: [
-    { label: '探索皇甫谧', href: '/persons/person-huangfu-mi' },
+    { label: '探索皇甫谧', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
     { label: '进入《针灸甲乙经》', href: '/jiayi' },
   ],
   secondary: [{ label: '检索文献', href: '/search' }],
@@ -180,7 +180,7 @@ export const HOME_LIFE = {
   stages: CORE_PERSON_LIFE_PHASES,
   /** 人物档案入口（其传 / 其言 / 后论 — 与 HOME_HUANGFU 同源）。 */
   items: HOME_HUANGFU.items,
-  cta: { label: '进入人物档案', href: '/persons/person-huangfu-mi' },
+  cta: { label: '进入人物档案', href: '/persons/ENT-PERSON-HFM-HUANGFUMI' },
 } as const
 
 /** Section 03 — 一部书。Book object + edition preview (existing HOME_JIAYI data). */
@@ -188,7 +188,7 @@ export const HOME_BOOK = {
   headline: '一部书，成为历史中的物。',
   book: HOME_JIAYI,
   editionsTotal: HOME_EDITIONS_TOTAL,
-  lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中（DATA-GAP）',
+  lineageCaption: '版本脉络（客户资料）· 结构化版本关系整理中',
   cta: { label: '进入古籍库', href: '/jiayi' },
 } as const
 
@@ -289,7 +289,7 @@ export const HOME_DOMAINS = {
       key: '人物档案',
       en: 'THE PERSON',
       title: '皇甫谧',
-      href: '/persons/person-huangfu-mi',
+      href: '/persons/ENT-PERSON-HFM-HUANGFUMI',
       cta: '进入人物档案',
     },
     {

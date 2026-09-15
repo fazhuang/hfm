@@ -23,7 +23,7 @@ async function gotoSurface(page: Page, surface: string): Promise<void> {
       await page.goto('/')
       break
     case 'PERSON':
-      await page.goto('/persons/person-huangfu-mi')
+      await page.goto('/persons/ENT-PERSON-HFM-HUANGFUMI')
       break
     case 'JIAYI':
       await page.goto('/jiayi')

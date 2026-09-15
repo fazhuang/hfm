@@ -13,7 +13,7 @@ import { expect, test } from '@playwright/test'
 
 const SURFACES = [
   '/',
-  '/persons/person-huangfu-mi',
+  '/persons/ENT-PERSON-HFM-HUANGFUMI',
   '/yan',
   '/jiayi',
   '/heritage',
@@ -85,11 +85,12 @@ test('UI-13 unified heading scale: default h1 serif 28px, hero h1 larger', async
   const heroH1 = await page
     .getByRole('heading', { name: '皇甫谧人文数字平台' })
     .evaluate((el) => getComputedStyle(el).fontSize)
-  // CF-11: accepted H3 baseline renders the platform-name H1 as a quiet 10px
-  // register (it is the single accessible page H1; the 皇甫谧 identity is a
-  // non-heading decorative monument). The previous 56px expectation was a stale
-  // assertion from a pre-refined hero (text-4xl) — corrected to accepted truth.
-  expect(heroH1).toBe('10px')
+  // The platform-name H1 is a quiet register — smaller than the default 28px
+  // content H1 — while the 皇甫谧 identity is a non-heading decorative
+  // monument. (The previous exact-10px expectation was an artboard-bound
+  // value; the redesign keeps the register intent without the magic number.)
+  expect(parseFloat(heroH1)).toBeLessThan(28)
+  expect(parseFloat(heroH1)).toBeGreaterThanOrEqual(12)
 })
 
 test('UI-13 dark mode quality: body + text contrast on key surfaces', async ({ page }) => {

@@ -18,9 +18,9 @@ export interface NavItem {
 }
 
 /** 皇甫谧 core person canonical route (UI-12 correction: aligned with the
- * canonical entity route /persons/person-huangfu-mi used across PersonDetail
+ * canonical entity route /persons/ENT-PERSON-HFM-HUANGFUMI used across PersonDetail
  * and all public CTAs). */
-export const CORE_PERSON_ROUTE = '/persons/person-huangfu-mi'
+export const CORE_PERSON_ROUTE = '/persons/ENT-PERSON-HFM-HUANGFUMI'
 
 export const PUBLIC_NAV_ITEMS: readonly NavItem[] = [
   { label: '首页', href: '/', description: '平台首页' },

@@ -45,25 +45,27 @@ from sqlalchemy import select, text
 from sqlalchemy.engine import make_url
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker, create_async_engine
 
-EXPECTED_MIGRATION_HEAD = "0015"
+#: The database migration head this tool refuses to run below. It tracks the
+#: SCHEMA the import writes into, not the frozen mapping/import logic: when
+#: 0017 (P2 redaction pipeline) advanced the head, leaving this at the previous
+#: revision would make the tool refuse to run against the migrated database at
+#: all. The frozen counts below are unchanged.
+EXPECTED_MIGRATION_HEAD = "0017"
 PRODUCTION_DB = "hfm_prod"
 FROZEN_DOCUMENT_COUNT = 675
 
 EXPECTED_ENTITY_ROWS = 31
 EXPECTED_PERSON_ROWS = 17
 EXPECTED_WORK_ROWS = 14
-EXPECTED_EDITION_CONFIRMED = 87
-EXPECTED_EDITION_DEFERRED = 5
+EXPECTED_EDITION_CONFIRMED = 91
+EXPECTED_EDITION_DEFERRED = 1
 
 CONFIRMED_MAPPING_CONFIDENCE = "HIGH"
-#: DMIT-03 frozen deferred edition set (exact).
+#: P6 sign-off: A000529-532 backfilled (OCR-confirmed 针灸甲乙经); A000541
+#: (compound four-work 合订本) remains deferred pending modeling decision.
 DEFERRED_EDITION_SET = frozenset(
     {
         "EDITION-HFM-A000541",
-        "EDITION-HFM-A000529",
-        "EDITION-HFM-A000530",
-        "EDITION-HFM-A000531",
-        "EDITION-HFM-A000532",
     }
 )
 
@@ -102,7 +104,7 @@ MANIFEST_FILENAME = "MAPPING-BASELINE-MANIFEST.json"
 #: Pinned baseline identity (see MAPPING-BASELINE-MANIFEST.json); the importer
 #: never auto-recomputes and accepts a new hash.
 EXPECTED_MAPPING_BASELINE_ID = (
-    "077fd6222eff612978b0aeec93810691f6554f8dbbfe0affa6c4d751ed75594b"
+    "bb252408b84ed0369912ba7f310329e459811dbabcea0ce4f929ea201afa3ff6"
 )
 
 

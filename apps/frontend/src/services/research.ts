@@ -8,6 +8,8 @@
  * (research:project:* = scholar; research:note:* = scholar + student).
  */
 import type {
+  ResearchAnnotation,
+  ResearchAnnotationList,
   ResearchNote,
   ResearchNoteList,
   ResearchProject,
@@ -109,4 +111,53 @@ export function createResearchNote(
     token,
     body: { content: body.content, project_id: body.project_id ?? null, title: body.title ?? null },
   })
+}
+
+/** Annotations owned by the researcher, optionally filtered by passage (P4). */
+export function fetchResearchAnnotations(
+  token: string | null,
+  passageId?: string | null,
+): Promise<ResearchAnnotationList> {
+  const suffix = passageId ? `?passage_id=${encodeURIComponent(passageId)}` : ''
+  return researchRequest<ResearchAnnotationList>(`/api/v1/research/annotations${suffix}`, {
+    method: 'GET',
+    token,
+  })
+}
+
+/** Create an owner-scoped highlight annotation on a passage (P4). */
+export function createResearchAnnotation(
+  token: string | null,
+  body: {
+    passage_id: string
+    note?: string | null
+    project_id?: string | null
+    quote_text?: string | null
+    start_offset?: number | null
+    end_offset?: number | null
+  },
+): Promise<ResearchAnnotation> {
+  return researchRequest<ResearchAnnotation>('/api/v1/research/annotations', {
+    method: 'POST',
+    token,
+    body: {
+      passage_id: body.passage_id,
+      note: body.note ?? null,
+      project_id: body.project_id ?? null,
+      quote_text: body.quote_text ?? null,
+      start_offset: body.start_offset ?? null,
+      end_offset: body.end_offset ?? null,
+    },
+  })
+}
+
+/** Delete an owner-scoped highlight annotation (P4). */
+export function deleteResearchAnnotation(
+  token: string | null,
+  annotationId: string,
+): Promise<{ ok: boolean }> {
+  return researchRequest<{ ok: boolean }>(
+    `/api/v1/research/annotations/${encodeURIComponent(annotationId)}`,
+    { method: 'DELETE', token },
+  )
 }

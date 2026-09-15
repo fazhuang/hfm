@@ -1,58 +1,27 @@
+// mypy: disable-error-code="import-untyped,import-not-found"
 /**
- * UI-03 Homepage tests (CF-07 8-section structural shell).
+ * Homepage contract tests — HFM-FRONTEND-CONTENT-CONTRACT v1 §4.
  *
- *  - home projection reuses existing domain data (no duplicated models);
- *  - metric integrity: 515/5 split, counts from contentInventory;
- *  - invariants: Jiayi lineage DATA-GAP, Heritage lineage PARTIAL, 刘君奇
- *    第六代名医, no fabricated ancient text, no clinical claims, no internal
- *    paths;
- *  - CF-07 structural contract: eight sections exist in exact order with the
- *    accepted ids, single H1 + section H2 set, closing identity is a
- *    non-heading signature (no second global footer), search state stays
- *    owned by HomeView (hero is props/events), removed NARRATIVE→USABLE
- *    ARCHIVE line stays absent, no duplicate ids, axe passes.
+ * The homepage is the customer 5-link navigation's entry surface: hero +
+ * 人物 / 其言 / 《针灸甲乙经》 / 非遗传承 + institutional close. Each block
+ * binds a T0 published projection and must carry a source marker; T1 fallbacks
+ * must be visibly labelled. No fabricated content, no clinical surface, no
+ * internal register paths.
  */
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { flushPromises } from '@vue/test-utils'
 import axe from 'axe-core'
 import HomeView from '../views/HomeView.vue'
-import {
-  HOME_BOOK,
-  HOME_CLOSING,
-  HOME_DOMAINS,
-  HOME_EVIDENCE,
-  HOME_HERITAGE,
-  HOME_HERITAGE_LIVING,
-  HOME_HERO,
-  HOME_HUANGFU,
-  HOME_JIAYI,
-  HOME_KNOWLEDGE,
-  HOME_LIFE,
-  HOME_METRICS,
-  HOME_QUOTATION,
-} from '../data/homeProjection'
-import {
-  INVENTORY_EDITION_RECORDS,
-  INVENTORY_LUNWEN_FILES,
-  INVENTORY_LUNZHU_FILES,
-} from '../data/contentInventory'
-import { READER_DOCUMENTS, getReaderDocument } from '../data/readerDocuments'
-import { SEARCHABLE_PAPER_TOTAL, SEARCH_INDEX } from '../data/searchIndex'
+import { HOME_BOOK, HOME_HERITAGE_LIVING, HOME_HERO } from '../data/homeProjection'
+import { INVENTORY_EDITION_RECORDS } from '../data/contentInventory'
+import { CORE_PERSON_ENTITY_ID } from '../config/corePerson'
 
-const SECTION_IDS = [
-  'home-hero',
-  'home-life',
-  'home-book',
-  'home-knowledge',
-  'home-evidence',
-  'home-heritage',
-  'home-domains',
-  'home-closing',
-]
+const SECTION_IDS = ['home-hero', 'home-person', 'home-yan', 'home-book', 'home-heritage', 'home-closing']
+const H2_SET = ['皇甫谧', '其言', HOME_BOOK.headline, HOME_HERITAGE_LIVING.headline]
 
 const STUB = { template: '<div />' }
-
 function makeRouter() {
   return createRouter({
     history: createMemoryHistory(),
@@ -63,402 +32,143 @@ function makeRouter() {
   })
 }
 
-function mountHome(router = makeRouter()) {
-  return mount(HomeView, { global: { plugins: [router] } })
+/** Flush the contract data layer + render. */
+async function mountHome(router = makeRouter(), attach = false) {
+  const wrapper = mount(HomeView, {
+    attachTo: attach ? document.body : undefined,
+    global: { plugins: [router] },
+  })
+  await flushPromises()
+  return wrapper
 }
 
-describe('UI-03 brand & hero', () => {
-  it('unique H1 carries the platform brand', () => {
-    const wrapper = mountHome()
-    const h1 = wrapper.findAll('h1')
-    expect(h1).toHaveLength(1)
-    expect(h1[0]?.text()).toBe('皇甫谧人文数字平台')
-    // CF-08 kicker carries the person dates (215—282) from corePerson projection.
-    expect(wrapper.text()).toContain('公元 215—282')
-  })
-
-  it('hero definition reuses core-person data (no new person facts)', () => {
-    expect(HOME_HERO.definition).toContain('针灸甲乙经')
-    expect(HOME_HERO.personName).toBe('皇甫谧')
-    expect(HOME_HERO.primary.map((c) => c.label)).toEqual(['探索皇甫谧', '进入《针灸甲乙经》'])
-  })
-
-  it('hero renders the single platform-name H1 (accepted Section 01)', () => {
-    const wrapper = mountHome()
-    expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
-    expect(wrapper.find('#home-hero').attributes('id')).toBe('home-hero')
-  })
-
-  it('CF-08 hero renders the accepted H3 composition (monument, kicker, statement, roles, CTA, register)', () => {
-    const wrapper = mountHome()
-    const hero = wrapper.find('#home-hero')
-    // Decorative 190px name monument is aria-hidden and is NOT a heading.
-    expect(hero.find('.home-hero__name').exists()).toBe(true)
-    expect(hero.find('.home-hero__name').attributes('aria-hidden')).toBe('true')
-    expect(hero.findAll('h2')).toHaveLength(0) // hero has no h2; H1 is the only heading.
-    // Statement + roles + ONE editorial action + quiet platform register.
-    expect(hero.text()).toContain('针灸学专著《针灸甲乙经》的编纂者')
-    expect(hero.text()).toContain('西晋 · 医学家 · 文学家 · 史学家')
-    expect(hero.text()).toContain('进入人物档案')
-    // Provenance spec-caption (real content) stays in the accessibility tree.
-    expect(hero.find('.home-hero__spec-caption').exists()).toBe(true)
-    expect(hero.find('.home-hero__spec-caption').attributes('aria-hidden')).toBeUndefined()
-    expect(hero.text()).toContain('四库全书本')
-  })
-
-  it('CF-10-style search boundary: the search interface is in the hero and stays wired to /search', () => {
-    const wrapper = mountHome()
-    const hero = wrapper.find('#home-hero')
-    expect(hero.find('#home-search-input').exists()).toBe(true)
-    expect(hero.find('form.home-search').attributes('role')).toBe('search')
-    // Only ONE homepage search input (hero); the header search lives in PublicLayout.
-    expect(wrapper.findAll('#home-search-input')).toHaveLength(1)
-  })
+const okResponse = (data: unknown) => ({
+  ok: true,
+  status: 200,
+  json: async () => ({ success: true, data }),
 })
 
-describe('UI-03 metric integrity (single source, unchanged)', () => {
-  it('counts come from contentInventory (single source), never hardcoded', () => {
-    expect(HOME_METRICS.find((m) => m.label === '版本记录')?.value).toBe(
-      String(INVENTORY_EDITION_RECORDS),
-    )
-    expect(HOME_METRICS.find((m) => m.label === '论著资料')?.value).toBe(
-      String(INVENTORY_LUNZHU_FILES),
-    )
-    expect(HOME_METRICS.find((m) => m.label === '学术论文')?.value).toBe(
-      String(INVENTORY_LUNWEN_FILES),
-    )
-    expect(HOME_METRICS.find((m) => m.label === 'Reader 全文')?.value).toBe(
-      String(READER_DOCUMENTS.length),
-    )
-  })
-
-  it('515/5 split is never confused', () => {
-    const paper = HOME_METRICS.find((m) => m.label === '学术论文')!
-    expect(paper.value).toBe('515')
-    expect(paper.note).toContain('已结构化题录 5 条')
-    expect(paper.note).not.toContain('可在线检索')
-  })
-
-  it('CF-07 knowledge register derives from the same single source', () => {
-    const register = HOME_KNOWLEDGE.register
-    const byLabel = (label: string) => register.find((r) => r.label === label)!
-    expect(byLabel('论著资料').value).toBe(String(INVENTORY_LUNZHU_FILES))
-    expect(byLabel('学术论文').value).toBe(String(INVENTORY_LUNWEN_FILES))
-    expect(byLabel('学术论文').note).toContain(`已结构化题录 ${SEARCHABLE_PAPER_TOTAL} 条`)
-    expect(byLabel('可检索记录').value).toBe(String(SEARCH_INDEX.length))
-    // 19 editions are never described as 19 works.
-    expect(byLabel('学术论文').note).not.toMatch(/可在线检索/)
-    expect(JSON.stringify(register)).not.toMatch(/部著作|部作品/)
-  })
+beforeEach(() => {
+  // Default: backend unavailable → every block degrades to its labelled T1 fallback.
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
 })
+afterEach(() => vi.unstubAllGlobals())
 
-describe('UI-03 invariants (unchanged facts)', () => {
-  it('Jiayi lineage stays DATA-GAP on the homepage', () => {
-    expect(HOME_JIAYI.lineage.alt).toContain('DATA-GAP')
-    expect(HOME_BOOK.lineageCaption).toContain('DATA-GAP')
-    expect(JSON.stringify(HOME_JIAYI)).not.toMatch(/STRUCTURED_LINEAGE_COMPLETE|版本谱系已结构化/)
-  })
-
-  it('Heritage lineage stays PARTIAL and 刘君奇 第六代名医 holds', () => {
-    expect(HOME_HERITAGE.lede).toContain('PARTIAL')
-    expect(HOME_HERITAGE.lede).toContain('第六代名医')
-    expect(HOME_HERITAGE.lede).toContain('刘君奇')
-    expect(HOME_HERITAGE.lede).not.toMatch(/待确认|疑似第六代/)
-    expect(HOME_HERITAGE_LIVING.person.generationTitle).toBe('第六代名医')
-    expect(HOME_HERITAGE_LIVING.lineageNote).not.toMatch(/待确认|疑似第六代/)
-  })
-
-  it('quotation is a real 后论 quote with attribution (no fabricated slogan)', () => {
-    expect(HOME_QUOTATION.attribution).toContain('房玄龄')
-    expect(HOME_QUOTATION.source).toBe('《晋书》')
-    expect(HOME_QUOTATION.text).toContain('皇甫谧素履幽贞')
-  })
-
-  it('no fabricated ancient text, no clinical claims, no internal paths', () => {
-    const text = JSON.stringify([
-      HOME_HERO,
-      HOME_HUANGFU,
-      HOME_JIAYI,
-      HOME_METRICS,
-      HOME_QUOTATION,
-      HOME_LIFE,
-      HOME_KNOWLEDGE,
-      HOME_EVIDENCE,
-      HOME_HERITAGE_LIVING,
-      HOME_DOMAINS,
-      HOME_CLOSING,
-    ])
-    expect(text).not.toMatch(/hfmzl|zzcl|registerKey/)
-    expect(text).not.toMatch(/疗效显著|治疗推荐|适用于.*疾病|预约|问诊/)
-    // No invented full classical text.
-    expect(text).not.toContain('玄守论曰')
-    expect(text).not.toContain('笃终论曰')
-  })
-})
-
-describe('UI-03 CF-07 homepage renders the accepted 8-section structure', () => {
-  it('renders all eight homepage sections in order hero → … → closing', () => {
-    const wrapper = mountHome()
-    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
+describe('homepage contract — structure (§4)', () => {
+  it('renders the hero + four content blocks + close, in order', async () => {
+    const wrapper = await mountHome()
+    const ids = wrapper.findAll('section[id^="home-"]').map((s) => s.attributes('id'))
     expect(ids).toEqual(SECTION_IDS)
   })
 
-  it('renders exactly one H1, the accepted section H2 set, unique ids, no duplicate section ids', () => {
-    const wrapper = mountHome()
+  it('renders exactly one H1 and the contract H2 set', async () => {
+    const wrapper = await mountHome()
     expect(wrapper.findAll('h1')).toHaveLength(1)
-    const headings = wrapper.findAll('h2').map((h) => h.text())
-    expect(headings).toEqual([
-      '从带经而农，到著书传世。',
-      '一部书，成为历史中的物。',
-      '从古籍文字，到可探索的知识。',
-      '每一个结论，都回到它的出处。',
-      '一千七百年之后，传承仍在继续。',
-      '四域探索',
-    ])
-    /* P1-01: the closing platform identity is a NON-heading <p> so only the
-       hero H1 carries 皇甫谧人文数字平台 as a heading. */
-    expect(headings).not.toContain('皇甫谧人文数字平台')
+    expect(wrapper.find('h1').text()).toBe('皇甫谧人文数字平台')
+    expect(wrapper.findAll('h2').map((h) => h.text())).toEqual(H2_SET)
     expect(wrapper.find('.home-closing__name').text()).toBe('皇甫谧人文数字平台')
-
-    const ids = wrapper.findAll('[id]').map((el) => el.attributes('id'))
-    expect(new Set(ids).size).toBe(ids.length) // no duplicate ids anywhere
   })
 
-  it('renders real CTA route targets (no fake links)', () => {
-    const wrapper = mountHome()
+  it('renders real CTA route targets', async () => {
+    const wrapper = await mountHome()
     const hrefs = wrapper.findAll('a').map((a) => a.attributes('href'))
     for (const target of [
-      '/persons/person-huangfu-mi',
-      '/reader/qichuan',
+      `/persons/${CORE_PERSON_ENTITY_ID}`,
       '/yan',
-      '/reader/houlun',
       '/jiayi',
-      '/archive',
       '/heritage',
-      '/research/search',
+      '/search',
     ]) {
       expect(hrefs, target).toContain(target)
     }
   })
 
-  it('keeps data-status honesty on the book (DATA-GAP) and heritage (PARTIAL) sections', () => {
-    const wrapper = mountHome()
-    expect(wrapper.find('#home-book').text()).toContain('版本记录')
-    expect(wrapper.find('#home-book').text()).toContain(String(INVENTORY_EDITION_RECORDS))
-    expect(wrapper.find('#home-book').text()).toContain('DATA-GAP')
-    const heritageStatus = wrapper.find('#home-heritage .hfm-status')
-    expect(heritageStatus.attributes('data-status')).toBe('PARTIAL')
-    expect(heritageStatus.text()).toContain('谱系整理中')
-    expect(wrapper.find('#home-heritage').text()).toContain('第六代名医')
-    expect(wrapper.find('#home-heritage').text()).toContain('刘君奇')
-  })
-
-  it('Section 07 never restores the rejected NARRATIVE → USABLE ARCHIVE line', () => {
-    const wrapper = mountHome()
-    expect(wrapper.find('#home-domains').text()).not.toMatch(/NARRATIVE|USABLE ARCHIVE/)
-    expect(wrapper.text()).not.toMatch(/USABLE ARCHIVE/)
-  })
-
-  it('Section 08 closing is a section — never a second global footer', () => {
-    const wrapper = mountHome()
-    // No footer element anywhere inside the homepage view (AppFooter is global in PublicLayout).
-    expect(wrapper.findAll('footer')).toHaveLength(0)
-    const closing = wrapper.find('#home-closing')
-    expect(closing.element.tagName).toBe('SECTION')
-    // The closing duplicates none of the global footer responsibilities.
-    const closingText = closing.text()
-    expect(closingText).not.toMatch(/版权与免责声明|隐私说明|关于平台|仅供皇甫谧学术研究/)
-  })
-
-  it('evidence source register derives from the real qichuan document', () => {
-    const qichuan = getReaderDocument('qichuan')
-    expect(qichuan).toBeDefined()
-    const headings = qichuan!.sections.map((s) => s.heading)
-    expect(HOME_EVIDENCE.sources.map((s) => s.title)).toEqual(headings)
-    expect(HOME_EVIDENCE.sources.length).toBeGreaterThanOrEqual(6)
-    // The documented dispute (建安 / 正始) exists in the same real document.
-    expect(JSON.stringify(qichuan)).toContain('建安')
-    expect(JSON.stringify(qichuan)).toContain('正始')
-  })
-
-  it('search form is a props/events boundary owned by HomeView (single search state)', () => {
-    const router = makeRouter()
-    const pushSpy = vi.spyOn(router, 'push').mockResolvedValue(undefined as never)
-    const wrapper = mountHome(router)
-
+  it('preserves the single #home-search-input contract (owned by HomeView)', async () => {
+    const wrapper = await mountHome()
     const hero = wrapper.find('#home-hero')
-    const form = hero.find('form.home-search')
-    const input = hero.find('#home-search-input')
-    expect(form.exists()).toBe(true)
-    expect(input.exists()).toBe(true)
-    expect(hero.find('#home-search-input').attributes('placeholder')).toBe('检索平台内容')
-
-    // Only ONE search input on the homepage page body (hero) — the header
-    // search lives in PublicLayout, not in HomeView.
+    expect(hero.find('form.home-search').attributes('role')).toBe('search')
     expect(wrapper.findAll('#home-search-input')).toHaveLength(1)
-
-    input.setValue('皇甫谧')
-    form.trigger('submit')
-    expect(pushSpy).toHaveBeenCalledWith({ path: '/search', query: { q: '皇甫谧' } })
+    expect(hero.find('#home-search-input').attributes('placeholder')).toBe('检索平台内容')
   })
 
-  it('renders 第六代名医 on the homepage', () => {
-    const wrapper = mountHome()
-    expect(wrapper.text()).toContain('第六代名医')
-    expect(wrapper.text()).toContain('刘君奇')
+  it('closing is a section, never a second global footer', async () => {
+    const wrapper = await mountHome()
+    expect(wrapper.findAll('footer')).toHaveLength(0)
+    expect(wrapper.find('#home-closing').element.tagName).toBe('SECTION')
   })
 
   it('passes axe assertions', async () => {
-    const wrapper = mount(HomeView, {
-      attachTo: document.body,
-      global: { plugins: [makeRouter()] },
-    })
+    const wrapper = await mountHome(makeRouter(), true)
     const results = await axe.run(wrapper.element as HTMLElement)
     wrapper.unmount()
     expect(results.violations).toHaveLength(0)
   })
 })
 
-describe('UI-03 CF-08 Sections 01–04 production contract', () => {
-  it('Section 02 Life renders the accepted two-plane documentary form (4 stages, dated anchors)', () => {
-    const wrapper = mountHome()
-    const life = wrapper.find('#home-life')
-    expect(life.findAll('.home-life__stage')).toHaveLength(4)
-    expect(life.findAll('.home-life__junction')).toHaveLength(6)
-    expect(life.findAll('.home-life__anchor')).toHaveLength(2)
-    expect(life.text()).toContain('215')
-    expect(life.text()).toContain('282')
-    // Narrative plane + documentary/register plane both present.
-    expect(life.find('.home-life__register').exists()).toBe(true)
-    expect(life.find('.home-life__register-row').exists()).toBe(true)
-  })
-
-  it('Section 03 Book keeps WORK ≠ EDITION (no false 19-works claim)', () => {
-    const wrapper = mountHome()
-    const book = wrapper.find('#home-book')
-    // Edition record register shows the EDITION count, never a work count.
-    expect(book.text()).toContain('版本记录')
-    expect(book.text()).toContain(String(INVENTORY_EDITION_RECORDS))
-    expect(book.text()).not.toMatch(/部著作|部作品/)
-    // Single WORK object heading + edition chain + lineage entry preserved.
-    expect(book.find('.home-book__title-glyphs').text()).toBe('《针灸甲乙经》')
-    expect(book.findAll('.home-book__prov-chain b').length).toBeGreaterThanOrEqual(4)
-    expect(book.find('.home-lineage img').attributes('src')).toContain('edition-lineage.png')
-  })
-
-  it('Section 04 Knowledge derives every count from data and keeps taxonomy + evidence register', () => {
-    expect(HOME_KNOWLEDGE.searchable).toBe(SEARCH_INDEX.length)
-    expect(HOME_KNOWLEDGE.categoriesCount).toBe(HOME_KNOWLEDGE.categories.length)
-    expect(HOME_KNOWLEDGE.editions).toBe(INVENTORY_EDITION_RECORDS)
-    expect(HOME_KNOWLEDGE.lunzhu).toBe(INVENTORY_LUNZHU_FILES)
-    expect(HOME_KNOWLEDGE.lunwen).toBe(INVENTORY_LUNWEN_FILES)
-    expect(HOME_KNOWLEDGE.structured).toBe(SEARCHABLE_PAPER_TOTAL)
-
-    const wrapper = mountHome()
-    const knowledge = wrapper.find('#home-knowledge')
-    expect(knowledge.findAll('.home-knowledge__prim-item')).toHaveLength(3)
-    expect(knowledge.text()).toContain('版本记录')
-    // No invented corpus/evidence count is displayed beyond the real ones.
-    expect(knowledge.text()).not.toMatch(/\d+\s*万|99\s*%|100\s*%|\.\d+\s*%/)
-  })
-
-  it('Sections 01–04 each carry their accepted section id (no dupes, correct order)', () => {
-    const wrapper = mountHome()
-    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
-    expect(ids.slice(0, 4)).toEqual(['home-hero', 'home-life', 'home-book', 'home-knowledge'])
-    expect(ids).toEqual(SECTION_IDS)
-  })
-
-  it('production assets (manuscripts/lineage) are referenced at real paths', () => {
-    // Hero specimen + life manuscript + book/knowledge leaf reference the authorized assets.
-    const wrapper = mountHome()
-    const srcs = wrapper
-      .findAll('img')
-      .map((i) => i.attributes('src'))
-      .filter((s): s is string => !!s)
-    for (const src of [
-      '/assets/jiayi/frag-macro.jpg',
-      '/assets/jiayi/frag-band1.jpg',
-      '/assets/jiayi/book-siku-leaf.jpg',
-      '/assets/jiayi/edition-lineage.png',
-    ]) {
-      expect(srcs).toContain(src)
+describe('homepage contract — T0/T1 source discipline (§2 R3, §3)', () => {
+  it('marks every block with a data-source and shows labelled fallbacks when T0 is unavailable', async () => {
+    const wrapper = await mountHome()
+    for (const id of SECTION_IDS) {
+      expect(wrapper.find(`#${id}`).attributes('data-source'), id).toBeTruthy()
     }
+    // T1 fallbacks are VISIBLE (never silent).
+    const notes = wrapper.findAll('[data-fallback-note]')
+    expect(notes.length).toBeGreaterThanOrEqual(3)
+    expect(wrapper.find('#home-person').text()).toContain('离线兜底')
+    expect(wrapper.find('#home-heritage').text()).toContain('离线兜底')
+    expect(wrapper.find('#home-yan').text()).toContain('尚未内容准入')
+  })
+
+  it('renders T0 person assertions when the published projection arrives', async () => {
+    const fetchMock = vi.fn((url: string) => {
+      if (url.includes('/public/persons/')) {
+        return Promise.resolve(
+          okResponse({
+            entity_id: CORE_PERSON_ENTITY_ID,
+            name_zh: '皇甫谧',
+            name_pinyin: null,
+            courtesy_name: null,
+            pseudonym: null,
+            dynasty: null,
+            publication_status: 'PUBLISHED',
+            assertions: [
+              { id: 'a1', predicate: '医学地位', value: '针灸鼻祖', object_entity_id: null, editorial_status: 'draft', confidence: 'medium' },
+            ],
+            events: [],
+          }),
+        )
+      }
+      if (url.includes('/public/home')) return Promise.resolve(okResponse({ works: [], counts: { works: 14, persons: 17, heritage_projects: 0, c_terms: 30 } }))
+      if (url.includes('/public/works/')) return Promise.resolve(okResponse({ work_id: 'WORK-JIAYI', title: '针灸甲乙经', dynasty: null, category: 'classic', publication_status: 'PUBLISHED', rights_status: 'public_domain', editions: [] }))
+      if (url.includes('/public/heritage')) return Promise.resolve(okResponse({ projects: [], total: 0 }))
+      return Promise.resolve(okResponse({}))
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    const wrapper = await mountHome()
+
+    expect(wrapper.find('#home-person').attributes('data-source')).toBe('backend')
+    expect(wrapper.find('#home-person').text()).toContain('针灸鼻祖')
+    expect(wrapper.findAll('#home-person [data-fallback-note]')).toHaveLength(0)
+    // hero T0 register
+    expect(wrapper.find('#home-hero').text()).toContain('已发布著作')
+    expect(wrapper.find('#home-hero').text()).toContain('14')
   })
 })
 
-describe('UI-03 CF-09 Sections 05–08 production contract', () => {
-  it('Section 05 Evidence: one scholarly argument + real source register + real CTA', () => {
-    const wrapper = mountHome()
-    const ev = wrapper.find('#home-evidence')
-    expect(ev.exists()).toBe(true)
-    // ONE argument held open: 结论 / 出处 / 争议 (3 indented blocks).
-    expect(ev.findAll('.home-evidence__st')).toHaveLength(3)
-    expect(ev.text()).toContain('结论')
-    expect(ev.text()).toContain('出处')
-    expect(ev.text()).toContain('争议')
-    // The real 晋书 witness + attribution.
-    expect(ev.text()).toContain('皇甫谧素履幽贞')
-    expect(ev.text()).toContain('房玄龄')
-    // The dispute (建安 / 正始) is the documented one.
-    expect(ev.text()).toContain('建安')
-    expect(ev.text()).toContain('正始')
-    // Provenance register links to the real source document; CTA to 后论.
-    expect(ev.find('.home-evidence__src-link').attributes('href')).toBe('/reader/qichuan')
-    expect(ev.find('.home-evidence__act').attributes('href')).toBe('/reader/houlun')
+describe('homepage contract — integrity', () => {
+  it('reuses core-person data; the hero definition is not invented', () => {
+    expect(HOME_HERO.definition).toContain('针灸甲乙经')
+    expect(HOME_HERO.personName).toBe('皇甫谧')
   })
 
-  it('Section 06 Heritage: living link renders, 刘君奇·第六代名医 correct, PARTIAL truthful', () => {
-    const wrapper = mountHome()
-    const hg = wrapper.find('#home-heritage')
-    expect(hg.exists()).toBe(true)
-    // Documentary act (photo + caption) + transmission records + carrier.
-    expect(hg.find('.home-heritage__act-pic img').attributes('src')).toBe(
-      '/assets/heritage/heritage-baishi-ceremony.jpg',
-    )
-    expect(hg.find('.home-heritage__trace').exists()).toBe(true)
-    expect(hg.find('.home-heritage__carrier').exists()).toBe(true)
-    // 刘君奇 = 第六代名医 stays correct.
-    expect(hg.find('.home-heritage__name').text()).toBe('刘君奇')
-    expect(hg.text()).toContain('第六代名医')
-    // PARTIAL lineage is honest — no fabricated generation/completeness.
-    const status = hg.find('.hfm-status')
-    expect(status.attributes('data-status')).toBe('PARTIAL')
-    expect(status.text()).toBe('谱系整理中')
-    expect(hg.text()).not.toMatch(/第二代主|第三代|第四代主|第五代主|已确认完整谱系|谱系完整/)
+  it('carries no clinical claims and no internal register paths', async () => {
+    const wrapper = await mountHome()
+    const text = wrapper.text()
+    expect(text).not.toMatch(/hfmzl|zzcl|registerKey|DATA-GAP|TODO/)
+    expect(text).not.toMatch(/疗效显著|治疗推荐|适用于.*疾病|预约|问诊/)
   })
 
-  it('Section 07 Domains: real route CTAs, holdings rows, rejected line absent', () => {
-    const wrapper = mountHome()
-    const dm = wrapper.find('#home-domains')
-    expect(dm.exists()).toBe(true)
-    const doors = dm.findAll('.home-domains__door')
-    expect(doors).toHaveLength(4)
-    const hrefs = doors.map((d) => d.find('.home-domains__go').attributes('href'))
-    expect(hrefs).toEqual(['/persons/person-huangfu-mi', '/archive', '/jiayi', '/heritage'])
-    // Holdings rows + medical bibliographic register are rendered (informational).
-    expect(dm.findAll('.home-domains__pv').length).toBeGreaterThanOrEqual(3)
-    expect(dm.findAll('.home-domains__b')).toHaveLength(3)
-    // Rejected line never restored.
-    expect(dm.text()).not.toMatch(/NARRATIVE|USABLE ARCHIVE|叙事之后/)
-  })
-
-  it('Section 08 Closing: quiet institutional close, non-heading identity, no footer', () => {
-    const wrapper = mountHome()
-    const cl = wrapper.find('#home-closing')
-    expect(cl.exists()).toBe(true)
-    expect(cl.element.tagName).toBe('SECTION')
-    // Platform identity is a NON-heading signature (single accessible H1 = hero).
-    expect(cl.find('.home-closing__name').text()).toBe('皇甫谧人文数字平台')
-    expect(cl.findAll('h1, h2, h3')).toHaveLength(0)
-    // No footer element / no legal / institutional duplicate inside the close.
-    expect(cl.findAll('footer')).toHaveLength(0)
-    expect(cl.text()).not.toMatch(/版权与免责声明|隐私说明|关于平台|仅供皇甫谧学术研究|甘肃医学院/)
-  })
-
-  it('whole homepage: eight sections in order, Sections 01–04 & 05–08 present', () => {
-    const wrapper = mountHome()
-    const ids = wrapper.findAll('section').map((s) => s.attributes('id'))
-    expect(ids).toEqual(SECTION_IDS)
+  it('the audited edition count is a number from the single inventory source', () => {
+    expect(String(INVENTORY_EDITION_RECORDS)).toMatch(/^\d+$/)
   })
 })

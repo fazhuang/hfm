@@ -1,8 +1,8 @@
 edition_stable_id,edition_title,source_file,candidate_work_stable_id,candidate_work_title,mapping_basis,mapping_confidence,human_review_required,human_decision,review_status,evidence
-EDITION-HFM-A000529,10023266.pdf,content-production/normalized/jiayi-editions.csv,UNRESOLVED,UNRESOLVED,NUMERIC_FILENAME_NO_TEXTUAL_WORK_EVIDENCE,UNRESOLVED,YES,RECOMMEND_DEFER,DEFERRED,数字文件名 10023266.pdf，无任何著作文本线索，建议延后
-EDITION-HFM-A000530,10023267.pdf,content-production/normalized/jiayi-editions.csv,UNRESOLVED,UNRESOLVED,NUMERIC_FILENAME_NO_TEXTUAL_WORK_EVIDENCE,UNRESOLVED,YES,RECOMMEND_DEFER,DEFERRED,数字文件名 10023267.pdf，无任何著作文本线索，建议延后
-EDITION-HFM-A000531,10023268.pdf,content-production/normalized/jiayi-editions.csv,UNRESOLVED,UNRESOLVED,NUMERIC_FILENAME_NO_TEXTUAL_WORK_EVIDENCE,UNRESOLVED,YES,RECOMMEND_DEFER,DEFERRED,数字文件名 10023268.pdf，无任何著作文本线索，建议延后
-EDITION-HFM-A000532,10023609.pdf,content-production/normalized/jiayi-editions.csv,UNRESOLVED,UNRESOLVED,NUMERIC_FILENAME_NO_TEXTUAL_WORK_EVIDENCE,UNRESOLVED,YES,RECOMMEND_DEFER,DEFERRED,数字文件名 10023609.pdf，无任何著作文本线索，建议延后
+EDITION-HFM-A000529,10023266.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,COPYRIGHT_PAGE_OCR_TITLE,HIGH,YES,CONFIRMED,CONFIRMED,OCR 卷端题名「鐵灸甲乙經卷之一」「精帅五藏第一」（PaddleOCR，见 P6 证据卷）
+EDITION-HFM-A000530,10023267.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,COPYRIGHT_PAGE_OCR_TITLE,HIGH,YES,CONFIRMED,CONFIRMED,OCR 序页「新校正黄帝鐵灸甲乙經序」+ 宋臣高保衡/孙奇署名 +「皇甫士」（见 P6 证据卷）
+EDITION-HFM-A000531,10023268.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,COPYRIGHT_PAGE_OCR_TITLE,HIGH,YES,CONFIRMED,CONFIRMED,OCR 序页「新校正黄帝鐵灸甲乙經序」+「鐵灸甲乙經目錄卷之一」（见 P6 证据卷）
+EDITION-HFM-A000532,10023609.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,COPYRIGHT_PAGE_OCR_TITLE,HIGH,YES,CONFIRMED,CONFIRMED,OCR 正文「经穴总述」「【原文】…（卷二，第一上）（出《灵枢》第十）」（见 P6 证据卷）
 EDITION-HFM-A000533,《甲乙经》五车楼藏板 2.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,TITLE_CONTAINS_JIAYI,HIGH,YES,PENDING_CONFIRMATION,REVIEW_REQUIRED,文件名/标题明确指向针灸甲乙经: 《甲乙经》五车楼藏板 2.pdf
 EDITION-HFM-A000534,《甲乙经》五车楼藏板 3.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,TITLE_CONTAINS_JIAYI,HIGH,YES,PENDING_CONFIRMATION,REVIEW_REQUIRED,文件名/标题明确指向针灸甲乙经: 《甲乙经》五车楼藏板 3.pdf
 EDITION-HFM-A000535,《甲乙经》五车楼藏板 4.pdf,content-production/normalized/jiayi-editions.csv,WORK-JIAYI,针灸甲乙经,TITLE_CONTAINS_JIAYI,HIGH,YES,PENDING_CONFIRMATION,REVIEW_REQUIRED,文件名/标题明确指向针灸甲乙经: 《甲乙经》五车楼藏板 4.pdf

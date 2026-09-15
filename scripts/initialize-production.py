@@ -2,7 +2,7 @@
 """HFM ND-1 B03 — operator-only production initialization.
 
 Establishes the EXISTING product's minimal production state on an already
-migrated database (Alembic at 0015, verified read-only):
+migrated database (Alembic at 0017, verified read-only):
 
   - PROD_REQUIRED: the frozen five-role matrix (ADR-07) seeded via the
     existing `ensure_roles_seeded` (schema-level, idempotent) plus ONE first
@@ -96,7 +96,7 @@ async def _initialize(
 
     ND-1 RV-P1-03: this function NEVER emits DDL and never repairs schema
     drift. It operates only on the qualified migrated schema (the preflight
-    verified current == 0015); every query below targets tables created by the
+    verified current == 0017); every query below targets tables created by the
     migrations. A structurally invalid target (e.g. a dropped table) raises
     and rolls back instead of being silently mutated.
     """
@@ -219,7 +219,12 @@ def main(argv: list[str] | None = None) -> int:
         if not args.env_file.is_file():
             print(f"ENV_FILE=FAIL (not found: {args.env_file.name})")
             return 1
-        env.update(validator.parse_env_file(args.env_file))
+        try:
+            env = validator.merge_env(env, args.env_file)
+        except validator.EnvConflictError as exc:
+            print(f"ENV_FILE=FAIL ({exc})")
+            return 1
+    print(f"DB_TARGET={validator.describe_db_target(env)}")
 
     environment = "prod" if not args.test_mode else env.get("HFM_ENV", "test")
     errors = validator.validate_env(
@@ -235,11 +240,11 @@ def main(argv: list[str] | None = None) -> int:
 
     db_url = env.get("HFM_DATABASE_URL", "")
     if not args.allow_sqlite:
-        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0015")
+        migration_errors = validator.verify_migration(BACKEND_DIR, db_url, "0017")
         if migration_errors:
             for reason in migration_errors:
                 print(f"MIGRATION_VERIFY=FAIL ({reason})")
-            print("INITIALIZE_PRODUCTION=FAIL (database must be migrated at 0015)")
+            print("INITIALIZE_PRODUCTION=FAIL (database must be migrated at 0017)")
             return 1
 
     admin_username = env.get("HFM_ADMIN_USERNAME", "")

@@ -139,7 +139,7 @@ Backup/restore (PostgreSQL + media) and rollback decisions:
 | Term | Meaning | Procedure |
 | --- | --- | --- |
 | APPLICATION_ROLLBACK | Revert the release artifacts/config only | Re-point the release root / systemd unit to the previous release bundle; state untouched |
-| DATABASE_ROLLBACK | Move the database to an earlier revision | NOT a normal rollback: 0015 → 0014 downgrade is not supported as a release path (migration content is additive and not safely reversible). Do not attempt migration downgrade for rollback |
+| DATABASE_ROLLBACK | Move the database to an earlier revision | NOT a normal rollback: 0017 → 0016 downgrade is not supported as a release path (migration content is additive and not safely reversible). Do not attempt migration downgrade for rollback |
 | DATABASE_RESTORE | Recover the database from a backup | Restore the pre-release `pg_dump`/`pg_basebackup` snapshot into the database, then run the post-restore verification (schema version == 0014, data smoke) |
 
 Media restore mirrors the database snapshot (consistent point-in-time pair).

@@ -19,7 +19,7 @@ const NAV = [
   { label: '检索', href: '/research/search', match: '/research/search' },
   {
     label: '人物',
-    href: '/research/entity/person/person-huangfu-mi',
+    href: '/research/entity/person/ENT-PERSON-HFM-HUANGFUMI',
     match: '/research/entity/person',
   },
   { label: '作品', href: '/research/entity/work/w-jiayi', match: '/research/entity/work' },

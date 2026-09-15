@@ -19,7 +19,7 @@ from hfm.api.v1.deps import (
     require_authenticated,
     require_permission,
 )
-from hfm.core.config import MEDIA_ROOT
+from hfm.core.config import DERIVATIVE_ROOT, MEDIA_ROOT
 from hfm.models.identity import Role, User, UserRoleCode, user_roles
 from hfm.phase1.auth import (
     hash_password,
@@ -39,7 +39,7 @@ from hfm.phase1.research_workspace import ResearchWorkspaceService
 from hfm.phase1.search import SearchService
 from hfm.phase1.version_audit import AuditService, ReconciliationService, VersionLineageService
 from hfm.phase2.media.models import MediaAsset, MediaAssetState
-from hfm.phase2.media.service import MediaService
+from hfm.phase2.media.service import MediaService, public_category
 from hfm.utils.response import api_response
 
 PrincipalDep = Annotated[Any, Depends(current_principal)]
@@ -241,6 +241,18 @@ async def public_work(session: SessionDep, work_id: str) -> dict[str, Any]:
     return api_response(data=record)
 
 
+@public_router.get("/c-terms")
+async def public_c_terms(session: SessionDep, q: str = "") -> dict[str, Any]:
+    """P1-05: public C-domain terms list — PUBLISHED terms only (E-05).
+
+    Optional ``q`` filters by term name (case-insensitive substring). This is
+    the browse entry for the C-domain (acupoints/meridians/diseases/techniques);
+    the single-term projection stays at ``/c-terms/{entity_id}``.
+    """
+    terms = await CDomainService(session).list_public_terms(query=q or None)
+    return api_response(data={"terms": terms, "total": len(terms)})
+
+
 @public_router.get("/c-terms/{entity_id}")
 async def public_c_term(session: SessionDep, entity_id: str) -> dict[str, Any]:
     """P1-05: public C-domain term — PUBLISHED, evidenced relations only.
@@ -330,23 +342,16 @@ async def public_persons(session: SessionDep, page: int = 1, page_size: int = 20
 
 @public_router.get("/media")
 async def public_media(session: SessionDep, kind: str = "") -> dict[str, Any]:
-    """Pre-acceptance demo: published media assets (papers/classics/movies).
+    """Pre-acceptance demo: published media assets (papers/classics/movies/person).
 
-    Optional ``kind`` filter: paper | classic | movie (derived from the
-    object key path); fail-closed: published assets only.
+    Optional ``kind`` filter: paper | classic | movie | person | other (derived
+    from the object key path); fail-closed: published assets only.
     """
     assets = await MediaService(session).public_projection()
     items = []
     for a in assets:
         key = str(a.object_key)
-        if "论文" in key:
-            cat = "paper"
-        elif "电影" in key:
-            cat = "movie"
-        elif "论著" in key or "版本" in key:
-            cat = "classic"
-        else:
-            cat = "other"
+        cat = public_category(key)
         if kind and cat != kind:
             continue
         items.append(
@@ -367,12 +372,21 @@ async def public_media(session: SessionDep, kind: str = "") -> dict[str, Any]:
 
 
 def _resolve_media_file(object_key: str) -> str:
-    """Resolve an object key under MEDIA_ROOT with traversal protection (sync)."""
-    root = os.path.realpath(MEDIA_ROOT)
-    target = os.path.realpath(os.path.join(root, object_key))
-    if os.path.commonpath([root, target]) != root or not os.path.isfile(target):
-        raise HTTPException(status_code=403, detail="media path outside media root")
-    return target
+    """Resolve an object key under the media roots with traversal protection (sync).
+
+    Originals live under ``MEDIA_ROOT``; generated public derivatives (redacted
+    P2 material, policy §4.1) live under ``DERIVATIVE_ROOT``. Keys never collide
+    because derivatives are written only under the derivative root, so the
+    first root that both contains the key and stays inside itself wins.
+    """
+    for root in (MEDIA_ROOT, DERIVATIVE_ROOT):
+        real_root = os.path.realpath(root)
+        target = os.path.realpath(os.path.join(real_root, object_key))
+        if os.path.commonpath([real_root, target]) != real_root:
+            raise HTTPException(status_code=403, detail="media path outside media root")
+        if os.path.isfile(target):
+            return target
+    raise HTTPException(status_code=404, detail="media bytes not found")
 
 
 @public_router.get("/media/{asset_id}/bytes")
@@ -958,6 +972,70 @@ async def research_delete_note(
     """P1-12: owner-scoped note delete."""
     try:
         await ResearchWorkspaceService(session).delete_note(principal=principal, note_id=note_id)
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data={"ok": True})
+
+
+@research_router.get(
+    "/annotations", dependencies=[Depends(require_permission("research:note:read"))]
+)
+async def research_list_annotations(
+    session: SessionDep,
+    principal: PrincipalDep,
+    passage_id: str = "",
+    project_id: str = "",
+    page: int = 1,
+    page_size: int = 20,
+) -> dict[str, Any]:
+    """P4: owner-scoped highlight annotations (optional passage/project filter)."""
+    try:
+        data = await ResearchWorkspaceService(session).list_annotations(
+            principal=principal,
+            passage_id=passage_id or None,
+            project_id=project_id or None,
+            page=page,
+            page_size=page_size,
+        )
+    except KeyError as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.post(
+    "/annotations", dependencies=[Depends(require_permission("research:note:create"))]
+)
+async def research_create_annotation(
+    session: SessionDep, principal: PrincipalDep, body: dict[str, Any]
+) -> dict[str, Any]:
+    """P4: create an owner-scoped highlight annotation on a passage."""
+    try:
+        data = await ResearchWorkspaceService(session).create_annotation(
+            principal=principal,
+            passage_id=str(body.get("passage_id", "")),
+            note=body.get("note"),
+            project_id=body.get("project_id"),
+            quote_text=body.get("quote_text"),
+            start_offset=body.get("start_offset"),
+            end_offset=body.get("end_offset"),
+        )
+    except (ValueError, KeyError) as exc:
+        _raise_workspace_error(exc)
+    return api_response(data=data)
+
+
+@research_router.delete(
+    "/annotations/{annotation_id}",
+    dependencies=[Depends(require_permission("research:note:delete"))],
+)
+async def research_delete_annotation(
+    session: SessionDep, principal: PrincipalDep, annotation_id: str
+) -> dict[str, Any]:
+    """P4: owner-scoped highlight annotation delete."""
+    try:
+        await ResearchWorkspaceService(session).delete_annotation(
+            principal=principal, annotation_id=annotation_id
+        )
     except KeyError as exc:
         _raise_workspace_error(exc)
     return api_response(data={"ok": True})

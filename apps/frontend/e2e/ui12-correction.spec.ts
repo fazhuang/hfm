@@ -14,7 +14,7 @@ async function mockPersonApi(page: import('@playwright/test').Page): Promise<voi
       body: JSON.stringify({
         success: true,
         data: {
-          entity_id: 'person-huangfu-mi',
+          entity_id: 'ENT-PERSON-HFM-HUANGFUMI',
           name_zh: '皇甫谧',
           name_pinyin: null,
           courtesy_name: null,
@@ -43,9 +43,9 @@ test('UI-12 PATH D: main nav 人物（皇甫谧） reaches the canonical person 
   await page.setViewportSize({ width: 1280, height: 800 })
   await page.goto('/')
   const personLink = page.getByRole('link', { name: '皇甫谧人物档案' })
-  await expect(personLink).toHaveAttribute('href', '/persons/person-huangfu-mi')
+  await expect(personLink).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await personLink.click()
-  await expect(page).toHaveURL(/\/persons\/person-huangfu-mi$/)
+  await expect(page).toHaveURL(/\/persons\/ENT-PERSON-HFM-HUANGFUMI$/)
   await expect(page.getByRole('heading', { name: '皇甫谧' })).toBeVisible()
 })
 
@@ -57,15 +57,15 @@ test('UI-12 PATH D: mobile drawer nav reaches the canonical person page', async 
   const personLink = page
     .getByRole('navigation', { name: 'Public navigation' })
     .getByRole('link', { name: '皇甫谧人物档案' })
-  await expect(personLink).toHaveAttribute('href', '/persons/person-huangfu-mi')
+  await expect(personLink).toHaveAttribute('href', '/persons/ENT-PERSON-HFM-HUANGFUMI')
   await personLink.click()
-  await expect(page).toHaveURL(/\/persons\/person-huangfu-mi$/)
+  await expect(page).toHaveURL(/\/persons\/ENT-PERSON-HFM-HUANGFUMI$/)
   await expect(page.getByRole('heading', { name: '皇甫谧' })).toBeVisible()
 })
 
 test('UI-12 direct canonical person URL works (no not-found)', async ({ page }) => {
   await mockPersonApi(page)
-  await page.goto('/persons/person-huangfu-mi')
+  await page.goto('/persons/ENT-PERSON-HFM-HUANGFUMI')
   await expect(page.getByRole('heading', { name: '皇甫谧' })).toBeVisible()
   await expect(page.getByText('人物不存在或未发布')).not.toBeVisible()
 })

@@ -5,7 +5,7 @@ Validates scripts/validate-production-env.py and scripts/deploy-gate.sh:
   - missing / template / known-dev / dev-dbname / sqlite-in-prod / weak
     token-secret configurations are rejected with REDACTED diagnostics;
   - a valid synthetic production configuration passes;
-  - the read-only migration verification accepts an isolated database at 0015
+  - the read-only migration verification accepts an isolated database at 0017
     and blocks one at 0013; an unreachable database is a hard failure;
   - the deploy-gate launcher exits non-zero on invalid configs and cannot have
     verification bypassed by --apply-migrations.
@@ -146,7 +146,7 @@ def test_diagnostics_are_redacted(tmp_path: Path) -> None:
 
 
 def _sqlite_at_revision(db_file: Path, revision: str) -> None:
-    """Migrate an isolated sqlite file to the requested revision (0013/0014/0015)."""
+    """Migrate an isolated sqlite file to the requested revision (0013/0014/0017)."""
     env = {**os.environ, "HFM_DATABASE_URL": f"sqlite+aiosqlite:///{db_file}"}
     run = subprocess.run(
         [PYTHON, "-m", "alembic", "-c", "alembic.ini", "upgrade", revision],
@@ -160,11 +160,11 @@ def _sqlite_at_revision(db_file: Path, revision: str) -> None:
     assert run.returncode == 0, run.stderr[-2000:]
 
 
-def test_migration_verification_accepts_0015(tmp_path: Path) -> None:
-    db_file = tmp_path / "at0015.db"
-    _sqlite_at_revision(db_file, "0015")
+def test_migration_verification_accepts_0017(tmp_path: Path) -> None:
+    db_file = tmp_path / "at0017.db"
+    _sqlite_at_revision(db_file, "0017")
     errors = validator.verify_migration(
-        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0015"
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0017"
     )
     assert errors == []
 
@@ -173,7 +173,7 @@ def test_migration_verification_blocks_stale_0014(tmp_path: Path) -> None:
     db_file = tmp_path / "at0014.db"
     _sqlite_at_revision(db_file, "0014")
     errors = validator.verify_migration(
-        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0015"
+        BACKEND_DIR, f"sqlite+aiosqlite:///{db_file}", "0017"
     )
     assert errors and "current revision" in errors[0]
 
@@ -182,7 +182,7 @@ def test_migration_verification_fails_on_unreachable_database() -> None:
     errors = validator.verify_migration(
         BACKEND_DIR,
         "postgresql+asyncpg://user:secret@127.0.0.1:59999/nope",
-        "0015",
+        "0017",
     )
     assert errors and ("database unreachable" in errors[0] or "heads" in errors[0])
 
@@ -190,9 +190,9 @@ def test_migration_verification_fails_on_unreachable_database() -> None:
 # ------------------------------------------------------- deploy-gate launcher
 
 
-def test_deploy_gate_test_env_0015_passes(tmp_path: Path) -> None:
+def test_deploy_gate_test_env_0017_passes(tmp_path: Path) -> None:
     db_file = tmp_path / "gate-ok.db"
-    _sqlite_at_revision(db_file, "0015")
+    _sqlite_at_revision(db_file, "0017")
     env_file = _write_env(
         tmp_path / "gate-test.env",
         {
@@ -261,3 +261,71 @@ def test_deploy_gate_rejects_template_prod_config(tmp_path: Path) -> None:
     assert "MIGRATION_GATE=FAIL" in run.stdout
     # Redacted: the placeholder value itself never appears after the FAIL line.
     assert "CHANGEME:CHANGEME" not in run.stdout.split("MIGRATION_GATE=FAIL")[1]
+
+
+# --------------------------------------------------- operator env-file guardrail
+
+
+def _env_file(tmp_path: Path, values: dict[str, str]) -> Path:
+    path = tmp_path / "operator.env"
+    path.write_text(
+        "\n".join(f"{k}={v}" for k, v in values.items()) + "\n", encoding="utf-8"
+    )
+    return path
+
+
+def test_env_file_may_not_silently_override_an_explicit_database_url(tmp_path: Path) -> None:
+    """The bug this guards: a run aimed at a scratch database landing on prod.
+
+    The operator sets HFM_DATABASE_URL, passes the production --env-file, and
+    the file used to replace it with nothing said. Now the two must agree.
+    """
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_prod"})
+    base = {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_scratch"}
+
+    try:
+        validator.merge_env(base, env_file)
+        raise AssertionError("a differing HFM_DATABASE_URL must not be silently overridden")
+    except validator.EnvConflictError as exc:
+        assert "HFM_DATABASE_URL" in str(exc)
+        # Values may carry credentials, so the message must not echo them.
+        assert "hfm_prod" not in str(exc) and "hfm_scratch" not in str(exc)
+
+
+def test_env_file_conflict_message_names_only_keys(tmp_path: Path) -> None:
+    env_file = _env_file(
+        tmp_path,
+        {"HFM_DATABASE_URL": "postgresql+asyncpg://u:pw@db/hfm_prod", "HFM_ENV": "prod"},
+    )
+    base = {"HFM_DATABASE_URL": "postgresql+asyncpg://u:pw@db/hfm_other", "HFM_ENV": "dev"}
+    try:
+        validator.merge_env(base, env_file)
+        raise AssertionError("expected a conflict")
+    except validator.EnvConflictError as exc:
+        assert "pw" not in str(exc)
+        assert "HFM_DATABASE_URL" in str(exc) and "HFM_ENV" in str(exc)
+
+
+def test_env_file_fills_keys_absent_from_the_environment(tmp_path: Path) -> None:
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": "postgresql+asyncpg://db/hfm_prod"})
+    merged = validator.merge_env({}, env_file)
+    assert merged["HFM_DATABASE_URL"] == "postgresql+asyncpg://db/hfm_prod"
+
+
+def test_env_file_agreeing_with_the_environment_is_allowed(tmp_path: Path) -> None:
+    """The documented invocation sets both to the same DSN; that must keep working."""
+    dsn = "postgresql+asyncpg://db/hfm_prod"
+    env_file = _env_file(tmp_path, {"HFM_DATABASE_URL": dsn})
+    assert validator.merge_env({"HFM_DATABASE_URL": dsn}, env_file)["HFM_DATABASE_URL"] == dsn
+
+
+def test_db_target_never_echoes_credentials() -> None:
+    described = validator.describe_db_target(
+        {"HFM_DATABASE_URL": "postgresql+asyncpg://hfm_user:S3cr3t@db.internal:5432/hfm_prod"}
+    )
+    assert described == "postgresql+asyncpg://db.internal:5432/hfm_prod"
+    assert "S3cr3t" not in described and "hfm_user" not in described
+
+
+def test_db_target_reports_a_missing_url_rather_than_guessing() -> None:
+    assert "not set" in validator.describe_db_target({})
